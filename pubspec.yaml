@@ -1,0 +1,81 @@
+name: toneharbor
+description: "ToneHarbor · Your music, all in harbor."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0
+
+environment:
+  sdk: ^3.10.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+  rhttp: ^0.15.0
+  flutter_riverpod: ^3.1.0
+  hooks_riverpod: ^3.1.0
+  flutter_hooks: ^0.21.3
+  marquee: ^2.3.0
+  path: ^1.9.0
+  path_provider: ^2.1.4
+  go_router: ^17.0.1 
+  shared_preferences: ^2.5.4
+  sqflite: ^2.4.2
+  freezed_annotation: ^3.0.0
+  riverpod_annotation: ^4.0.0
+  material_color_utilities: ^0.11.1
+  logger: ^2.6.2
+  synchronized: ^3.1.0
+  file_picker: ^10.3.10
+  lyricskit:
+    git:
+      url: https://git.nxcloud.club:12750/LyricTracers/lyricskit.git
+      ref: main
+  system_music_monitor:
+    git:
+      url: https://git.nxcloud.club:12750/LyricTracers/system_music_monitor.git
+      ref: main
+  tray_manager:
+    git:
+      url: https://git.nxcloud.club:12750/LyricTracers/tray_manager.git
+      ref: main
+  window_manager:
+    git:
+      url: https://git.nxcloud.club:12750/LyricTracers/window_manager.git
+      ref: main 
+  flutter_native_splash:
+    git:
+      url: https://git.nxcloud.club:12750/LyricTracers/flutter_native_splash.git
+      ref: main
+  flutter_lyric:
+    git:
+      url: https://git.nxcloud.club:12750/LyricTracers/flutter_lyric.git
+      ref: main
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  riverpod_generator: ^4.0.0
+  build_runner: ^2.4.0
+  freezed: ^3.2.0
+  json_serializable: ^6.7.0 
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icons/
+
+flutter_native_splash:
+  color: "#F8F6F0"
+  window_width: 800
+  window_height: 600
+  window_button_visibility: true
+  skip_taskbar: false
+  center: true
+  hide_titlebar: true
+  animation_type: audioEqualizer
+  animation_color: "#4A5859"
+  text: "「拾音坞｜一坞藏万乐，双耳遇知音」"
+  text_color: "#4A5859"

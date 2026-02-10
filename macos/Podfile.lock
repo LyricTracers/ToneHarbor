@@ -1,0 +1,72 @@
+PODS:
+  - file_picker (0.0.1):
+    - FlutterMacOS
+  - flutter_native_splash (2.4.7):
+    - FlutterMacOS
+  - FlutterMacOS (1.0.0)
+  - rhttp (0.0.1):
+    - FlutterMacOS
+  - screen_retriever_macos (0.0.1):
+    - FlutterMacOS
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - sqflite_darwin (0.0.4):
+    - Flutter
+    - FlutterMacOS
+  - system_music_monitor (0.0.1):
+    - FlutterMacOS (>= 1.0.0)
+  - tray_manager (0.0.1):
+    - FlutterMacOS
+  - window_manager (0.5.0):
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - file_picker (from `Flutter/ephemeral/.symlinks/plugins/file_picker/macos`)
+  - flutter_native_splash (from `Flutter/ephemeral/.symlinks/plugins/flutter_native_splash/macos`)
+  - FlutterMacOS (from `Flutter/ephemeral`)
+  - rhttp (from `Flutter/ephemeral/.symlinks/plugins/rhttp/macos`)
+  - screen_retriever_macos (from `Flutter/ephemeral/.symlinks/plugins/screen_retriever_macos/macos`)
+  - shared_preferences_foundation (from `Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - sqflite_darwin (from `Flutter/ephemeral/.symlinks/plugins/sqflite_darwin/darwin`)
+  - system_music_monitor (from `Flutter/ephemeral/.symlinks/plugins/system_music_monitor/macos`)
+  - tray_manager (from `Flutter/ephemeral/.symlinks/plugins/tray_manager/macos`)
+  - window_manager (from `Flutter/ephemeral/.symlinks/plugins/window_manager/macos`)
+
+EXTERNAL SOURCES:
+  file_picker:
+    :path: Flutter/ephemeral/.symlinks/plugins/file_picker/macos
+  flutter_native_splash:
+    :path: Flutter/ephemeral/.symlinks/plugins/flutter_native_splash/macos
+  FlutterMacOS:
+    :path: Flutter/ephemeral
+  rhttp:
+    :path: Flutter/ephemeral/.symlinks/plugins/rhttp/macos
+  screen_retriever_macos:
+    :path: Flutter/ephemeral/.symlinks/plugins/screen_retriever_macos/macos
+  shared_preferences_foundation:
+    :path: Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin
+  sqflite_darwin:
+    :path: Flutter/ephemeral/.symlinks/plugins/sqflite_darwin/darwin
+  system_music_monitor:
+    :path: Flutter/ephemeral/.symlinks/plugins/system_music_monitor/macos
+  tray_manager:
+    :path: Flutter/ephemeral/.symlinks/plugins/tray_manager/macos
+  window_manager:
+    :path: Flutter/ephemeral/.symlinks/plugins/window_manager/macos
+
+SPEC CHECKSUMS:
+  file_picker: 7584aae6fa07a041af2b36a2655122d42f578c1a
+  flutter_native_splash: 9f095b07b279b8a0c3604af4d71d9c88f95f8761
+  FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
+  rhttp: 08d791d6373089de796318f4cfb172cbcf34e78b
+  screen_retriever_macos: 452e51764a9e1cdb74b3c541238795849f21557f
+  shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
+  sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
+  system_music_monitor: 502addd2b34c862b7ebabbd02dc9d366add19671
+  tray_manager: a104b5c81b578d83f3c3d0f40a997c8b10810166
+  window_manager: b729e31d38fb04905235df9ea896128991cad99e
+
+PODFILE CHECKSUM: 54d867c82ac51cbd61b565781b9fada492027009
+
+COCOAPODS: 1.16.2
