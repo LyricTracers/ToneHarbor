@@ -12,41 +12,42 @@ import 'package:toneharbor/init/initialized.dart';
 part 'auth_provider.g.dart';
 
 @keepAlive
+class UseHttp extends _$UseHttp {
+  @override
+  Future<bool> build() async {
+    return await getUseHttp();
+  }
+
+  Future<void> toggle() async {
+    final useHttp = await getUseHttp();
+    final sp = await SharedPreferences.getInstance();
+    await sp.setBool(useHttpKey, !useHttp);
+    state = AsyncData(useHttp);
+  }
+}
+
+@keepAlive
 class ServerUrl extends _$ServerUrl {
-  String cacheServerUrl = '';
   @override
   Future<String> build() async {
-    if (cacheServerUrl.isNotEmpty) {
-      return cacheServerUrl;
-    }
     final sp = await SharedPreferences.getInstance();
-    final serverUrl = sp.getString(serverUrlKey) ?? '';
-    if (serverUrl.isNotEmpty) {
-      cacheServerUrl = serverUrl;
-      return serverUrl;
-    }
-    return '';
+    return sp.getString(serverUrlKey) ?? '';
   }
 
   Future<void> setServerUrl(String serverUrl) async {
     final sp = await SharedPreferences.getInstance();
     await sp.setString(serverUrlKey, serverUrl);
-    cacheServerUrl = serverUrl;
+    state = AsyncData(serverUrl);
   }
 }
 
 @keepAlive
 class AccountInfo extends _$AccountInfo {
-  String cacheAccountJson = '';
   @override
   Future<Account?> build() async {
-    if (cacheAccountJson.isNotEmpty) {
-      return Account.fromJson(jsonDecode(cacheAccountJson));
-    }
     final sp = await SharedPreferences.getInstance();
-    final accountJson = sp.getString(accountKey) ?? '';
-    if (accountJson.isNotEmpty) {
-      cacheAccountJson = accountJson;
+    final accountJson = sp.getString(accountKey);
+    if (accountJson != null && accountJson.isNotEmpty) {
       return Account.fromJson(jsonDecode(accountJson));
     }
     return null;
@@ -55,24 +56,20 @@ class AccountInfo extends _$AccountInfo {
   Future<void> setAccount(Account account) async {
     final sp = await SharedPreferences.getInstance();
     await sp.setString(accountKey, jsonEncode(account.toJson()));
-    cacheAccountJson = jsonEncode(account.toJson());
+    state = AsyncData(account);
   }
 }
 
 @keepAlive
 class AudioStationCookiesInfo extends _$AudioStationCookiesInfo {
-  AudioStationCookies? cacheCookies;
   @override
   Future<AudioStationCookies?> build() async {
-    if (cacheCookies != null && cacheCookies!.isValid) {
-      return cacheCookies!;
-    }
     final sp = await SharedPreferences.getInstance();
-    final cookies = sp.getString(cookieKey) ?? '';
-    if (cookies.isNotEmpty) {
-      cacheCookies = AudioStationCookies.fromJson(jsonDecode(cookies));
-      if (cacheCookies!.isValid) {
-        return cacheCookies!;
+    final cookies = sp.getString(cookieKey);
+    if (cookies != null && cookies.isNotEmpty) {
+      final cookie = AudioStationCookies.fromJson(jsonDecode(cookies));
+      if (cookie.isValid) {
+        return cookie;
       }
     }
     return null;
@@ -80,15 +77,16 @@ class AudioStationCookiesInfo extends _$AudioStationCookiesInfo {
 
   Future<void> setCookies(String cookies) async {
     if (cookies.isEmpty) {
+      state = const AsyncData(null);
       return;
     }
     var cookie = AudioStationCookies.fromJson(jsonDecode(cookies));
     if (cookie.isValid) {
-      cacheCookies = cookie;
       final sp = await SharedPreferences.getInstance();
       await sp.setString(cookieKey, cookies);
+      state = AsyncData(cookie);
     } else {
-      cacheCookies = null;
+      state = const AsyncData(null);
     }
   }
 }

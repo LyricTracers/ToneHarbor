@@ -29,3 +29,9 @@ Future<bool> getSyncSongIcon() async {
   final savedValue = prefs.getBool(syncSongIconKey);
   return savedValue ?? true;
 }
+
+Future<bool> getUseHttp() async {
+  final prefs = await SharedPreferences.getInstance();
+  final useHttp = prefs.getBool(useHttpKey);
+  return useHttp ?? true;
+}

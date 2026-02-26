@@ -6,8 +6,6 @@ import 'package:toneharbor/models/audio_station/auth.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/base_bg_layout.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toneharbor/init/initialized.dart';
 
 class LoginPage extends BaseBgLayout {
   const LoginPage({super.key});
@@ -99,7 +97,7 @@ class LoginPage extends BaseBgLayout {
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(32),
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
+          constraints: const BoxConstraints(maxWidth: 400),
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(

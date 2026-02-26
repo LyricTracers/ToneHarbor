@@ -9,6 +9,49 @@ part of 'auth_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(UseHttp)
+final useHttpProvider = UseHttpProvider._();
+
+final class UseHttpProvider extends $AsyncNotifierProvider<UseHttp, bool> {
+  UseHttpProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'useHttpProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$useHttpHash();
+
+  @$internal
+  @override
+  UseHttp create() => UseHttp();
+}
+
+String _$useHttpHash() => r'92bc5905a217802f7fb5b265c377b5da0a15236b';
+
+abstract class _$UseHttp extends $AsyncNotifier<bool> {
+  FutureOr<bool> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<bool>, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<bool>, bool>,
+              AsyncValue<bool>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(ServerUrl)
 final serverUrlProvider = ServerUrlProvider._();
 
@@ -33,7 +76,7 @@ final class ServerUrlProvider
   ServerUrl create() => ServerUrl();
 }
 
-String _$serverUrlHash() => r'bf7a41a365262675b772167d08499071fea42d4e';
+String _$serverUrlHash() => r'7fe209fd0931762ef5f770232c4f9a28b70a00a8';
 
 abstract class _$ServerUrl extends $AsyncNotifier<String> {
   FutureOr<String> build();
@@ -186,4 +229,4 @@ final class LoginProvider
   }
 }
 
-String _$loginHash() => r'2f2eeb7545e3f3f5d3841b8ef0937d9677f34c5b';
+String _$loginHash() => r'74c709e040cc4915b4792e94aaf10c4280fb7898';
