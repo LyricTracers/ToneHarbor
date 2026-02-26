@@ -37,3 +37,11 @@ T getValueWhenReadyWithRef<T>(
     error: (_, __) => defaultValue,
   );
 }
+
+ColorScheme getColorSchemeWhenReady(WidgetRef ref) {
+  return getValueWhenReadyWithWidgetRef(
+    ref,
+    getColorSchemeProvider,
+    defaultColorScheme,
+  );
+}

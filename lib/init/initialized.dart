@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:tray_manager/tray_manager.dart';
@@ -16,6 +17,8 @@ part 'initialized_log.dart';
 
 late final ColorScheme defaultColorScheme;
 late final ImageProvider defaultSongIconProvider;
+const keepAlive = Riverpod(keepAlive: true);
+
 Future<void> initialized() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Rhttp.init();

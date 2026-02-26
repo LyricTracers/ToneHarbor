@@ -1,8 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
+import 'package:toneharbor/providers/audio_station/auth_provider.dart';
+import 'package:toneharbor/providers/locale_provider.dart';
+import 'package:toneharbor/widgets/login_page.dart';
+import 'package:toneharbor/widgets/home_layout.dart';
 import 'init/initialized.dart';
 import 'utils/base_utils.dart';
+import 'l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
+
+class SlideTransitionPage extends CustomTransitionPage<void> {
+  const SlideTransitionPage({
+    required super.child,
+    super.transitionDuration = const Duration(milliseconds: 300),
+    super.reverseTransitionDuration = const Duration(milliseconds: 300),
+  }) : super(transitionsBuilder: _buildSlideTransition);
+
+  static Widget _buildSlideTransition(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    final slideAnimation = Tween<Offset>(
+      begin: const Offset(1.0, 0.0),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: animation, curve: Curves.easeInOutSine));
+
+    final fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: animation, curve: Curves.easeInOutSine));
+
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        return SlideTransition(
+          position: slideAnimation,
+          child: FadeTransition(opacity: fadeAnimation, child: child),
+        );
+      },
+      child: child,
+    );
+  }
+}
 
 void main() async {
   await initialized();
@@ -16,16 +60,66 @@ void main() async {
 
 class MyApp extends HookConsumerWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final colorScheme = getColorSchemeWhenReady(ref);
-    // return MaterialApp(
-    //   title: 'Flutter Demo',
-    //   theme: ThemeData(
-    //     colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-    //   ),
-    //   home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    // );
-    return const Text("data");
+    final colorScheme = getColorSchemeWhenReady(ref);
+    final localeAsync = ref.watch(localeProvider);
+    final cookiesInfoAsync = ref.watch(audioStationCookiesInfoProvider);
+
+    final router = useMemoized(
+      () => GoRouter(
+        routes: [
+          ShellRoute(
+            routes: [
+              GoRoute(
+                path: '/',
+                pageBuilder: (context, state) =>
+                    SlideTransitionPage(child: const Text("data")),
+              ),
+            ],
+            builder: (context, state, child) {
+              return HomeLayout(child: child);
+            },
+          ),
+          GoRoute(
+            path: '/login',
+            pageBuilder: (context, state) =>
+                const MaterialPage(child: LoginPage()),
+          ),
+        ],
+        redirect: (context, state) {
+          if (cookiesInfoAsync.isLoading) {
+            return null;
+          }
+
+          if (cookiesInfoAsync.hasError) {
+            return '/login';
+          }
+
+          final cookiesInfo = cookiesInfoAsync.value;
+          if (cookiesInfo == null || !cookiesInfo.isValid) {
+            return '/login';
+          }
+
+          return null;
+        },
+      ),
+      [cookiesInfoAsync],
+    );
+    return MaterialApp.router(
+      title: 'ToneHarbor',
+      theme: ThemeData(colorScheme: colorScheme, useMaterial3: true),
+      debugShowCheckedModeBanner: false,
+      locale: localeAsync.value ?? const Locale('zh'),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('en'), Locale('zh')],
+      routerConfig: router,
+    );
   }
 }

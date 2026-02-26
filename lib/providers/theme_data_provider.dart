@@ -7,8 +7,6 @@ import 'package:toneharbor/utils/base_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 part 'theme_data_provider.g.dart';
 
-const keepAlive = Riverpod(keepAlive: true);
-
 @riverpod
 class DynamicScheme extends _$DynamicScheme {
   @override

@@ -1,0 +1,15 @@
+{
+  "@@last_modified": "2025-02-26T00:00:00.000Z",
+  "appTitle": "拾音坞",
+  "appSubtitle": "一坞藏万乐，双耳遇知音",
+  "username": "用户名",
+  "password": "密码",
+  "serverUrl": "服务器地址",
+  "error_serverUrl": "请输入有效的服务器地址（例如：192.168.1.100:5000）",
+  "error_username": "请输入用户名",
+  "error_password": "请输入密码",
+  "error_invalidUrl": "服务器地址格式无效",
+  "useHttps": "使用HTTPS",
+  "signIn": "登录",
+  "loading": "「加载中｜请稍后」"
+}

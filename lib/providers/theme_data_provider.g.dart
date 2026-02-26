@@ -139,7 +139,7 @@ final class GetColorSchemeProvider
   }
 }
 
-String _$getColorSchemeHash() => r'b4096180b70a2378bc596fc961e8a7a342f376ea';
+String _$getColorSchemeHash() => r'9e37cba6fcd2b012ade6878e64a2fb075d3f5205';
 
 @ProviderFor(SyncSongIcon)
 final syncSongIconProvider = SyncSongIconProvider._();

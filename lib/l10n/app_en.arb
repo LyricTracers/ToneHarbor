@@ -1,0 +1,15 @@
+{
+  "@@last_modified": "2025-02-26T00:00:00.000Z",
+  "appTitle": "ToneHarbor",
+  "appSubtitle": "Your music, all in harbor.",
+  "serverUrl": "Server URL",
+  "error_serverUrl": "Please enter a valid server address (e.g., 192.168.1.100:5000)",
+  "error_username": "Please enter your username",
+  "error_password": "Please enter your password",
+  "error_invalidUrl": "Invalid server address format",
+  "useHttps": "Use HTTPS",
+  "username": "Username",
+  "password": "Password",
+  "signIn": "Login",
+   "loading": "「Please wait a moment」"
+}
