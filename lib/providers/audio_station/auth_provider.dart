@@ -22,7 +22,7 @@ class UseHttp extends _$UseHttp {
     final useHttp = await getUseHttp();
     final sp = await SharedPreferences.getInstance();
     await sp.setBool(useHttpKey, !useHttp);
-    state = AsyncData(useHttp);
+    state = AsyncData(!useHttp);
   }
 }
 
