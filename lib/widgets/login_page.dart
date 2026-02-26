@@ -44,7 +44,7 @@ class LoginPage extends BaseBgLayout {
       return null;
     }, [accountInfo]);
 
-    final useHttps = useState(true);
+    final useHttps = getValueWhenReadyWithWidgetRef(ref, useHttpProvider, true);
     final obscurePassword = useState(true);
     final serverUrlError = useState<String?>(null);
     final usernameError = useState<String?>(null);
@@ -198,8 +198,9 @@ class LoginPage extends BaseBgLayout {
                 Row(
                   children: [
                     Checkbox(
-                      value: useHttps.value,
-                      onChanged: (value) => useHttps.value = value ?? true,
+                      value: useHttps,
+                      onChanged: (value) =>
+                          ref.read(useHttpProvider.notifier).toggle(),
                     ),
                     Text(l10n.useHttps),
                   ],
