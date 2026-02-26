@@ -1,8 +1,12 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toneharbor/models/audio_station/auth.dart';
+import 'package:toneharbor/providers/locale_provider.dart';
+import 'package:toneharbor/utils/Excetions.dart';
+import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/consts.dart';
 import 'package:toneharbor/init/initialized.dart';
 part 'auth_provider.g.dart';
@@ -87,4 +91,23 @@ class AudioStationCookiesInfo extends _$AudioStationCookiesInfo {
       cacheCookies = null;
     }
   }
+}
+
+@riverpod
+Future<AuthResponse?> login(Ref ref) async {
+  final l10n = getValueWhenReadyWithRef(ref, appLocalizationsProvider, null);
+  if (l10n == null) {
+    throw AudioStationException(message: 'AppLocalizations not found');
+  }
+
+  final serverUrl = getValueWhenReadyWithRef(ref, serverUrlProvider, '');
+  if (serverUrl.isEmpty) {
+    throw AudioStationException(message: l10n.error_invalidUrl);
+  }
+
+  final accountInfo = getValueWhenReadyWithRef(ref, accountInfoProvider, null);
+  if (accountInfo == null) {
+    throw AudioStationException(message: l10n.error_account_info_invalid);
+  }
+  return null;
 }

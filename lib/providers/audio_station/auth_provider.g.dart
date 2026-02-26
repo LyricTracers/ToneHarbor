@@ -148,3 +148,42 @@ abstract class _$AudioStationCookiesInfo
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(login)
+final loginProvider = LoginProvider._();
+
+final class LoginProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<AuthResponse?>,
+          AuthResponse?,
+          FutureOr<AuthResponse?>
+        >
+    with $FutureModifier<AuthResponse?>, $FutureProvider<AuthResponse?> {
+  LoginProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'loginProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$loginHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<AuthResponse?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<AuthResponse?> create(Ref ref) {
+    return login(ref);
+  }
+}
+
+String _$loginHash() => r'2f2eeb7545e3f3f5d3841b8ef0937d9677f34c5b';

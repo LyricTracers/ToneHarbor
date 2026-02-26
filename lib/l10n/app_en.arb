@@ -11,5 +11,6 @@
   "username": "Username",
   "password": "Password",
   "signIn": "Login",
-   "loading": "「Please wait a moment」"
+  "loading": "「Please wait a moment」",
+  "error_account_info_invalid": "User information is invalid"
 }

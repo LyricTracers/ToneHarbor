@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/models/audio_station/auth.dart';
+import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/base_bg_layout.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toneharbor/init/initialized.dart';
 
 class LoginPage extends BaseBgLayout {
   const LoginPage({super.key});
@@ -15,11 +18,33 @@ class LoginPage extends BaseBgLayout {
     WidgetRef ref,
     ValueNotifier<bool> loadFlag,
   ) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = getValueWhenReadyWithWidgetRef(
+      ref,
+      appLocalizationsProvider,
+      AppLocalizations.of(context),
+    )!;
     final colorScheme = getColorSchemeWhenReady(ref);
+    final serverUrlAsync = ref.watch(serverUrlProvider);
+    final accountInfo = ref.watch(accountInfoProvider);
     final serverUrlController = useTextEditingController();
+
+    useEffect(() {
+      if (serverUrlAsync.hasValue && serverUrlAsync.value != null) {
+        serverUrlController.text = serverUrlAsync.value!;
+      }
+      return null;
+    }, [serverUrlAsync]);
+
     final usernameController = useTextEditingController();
     final passwordController = useTextEditingController();
+
+    useEffect(() {
+      if (accountInfo.hasValue && accountInfo.value != null) {
+        usernameController.text = accountInfo.value!.account;
+        passwordController.text = accountInfo.value!.passwd;
+      }
+      return null;
+    }, [accountInfo]);
 
     final useHttps = useState(true);
     final obscurePassword = useState(true);
@@ -58,11 +83,14 @@ class LoginPage extends BaseBgLayout {
 
       loadFlag.value = true;
 
-      final prefs = await SharedPreferences.getInstance();
+      final serverUrlNotifier = ref.read(serverUrlProvider.notifier);
+      await serverUrlNotifier.setServerUrl(serverUrl);
 
-      await prefs.setString('serverUrl', serverUrl);
-      await prefs.setString('username', username);
-      await prefs.setBool('useHttps', useHttps.value);
+      final accountInfoNotifier = ref.read(accountInfoProvider.notifier);
+      await accountInfoNotifier.setAccount(
+        Account(account: username, passwd: password),
+      );
+
       await Future.delayed(const Duration(seconds: 1));
       loadFlag.value = false;
     }

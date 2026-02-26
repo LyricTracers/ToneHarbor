@@ -169,6 +169,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'「Please wait a moment」'**
   String get loading;
+
+  /// No description provided for @error_account_info_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'User information is invalid'**
+  String get error_account_info_invalid;
 }
 
 class _AppLocalizationsDelegate

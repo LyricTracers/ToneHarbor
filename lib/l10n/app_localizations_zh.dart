@@ -43,4 +43,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get loading => '「加载中｜请稍后」';
+
+  @override
+  String get error_account_info_invalid => '用户信息无效';
 }

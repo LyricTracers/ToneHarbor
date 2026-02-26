@@ -44,4 +44,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loading => '「Please wait a moment」';
+
+  @override
+  String get error_account_info_invalid => 'User information is invalid';
 }

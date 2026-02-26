@@ -9,6 +9,7 @@
   "error_username": "请输入用户名",
   "error_password": "请输入密码",
   "error_invalidUrl": "服务器地址格式无效",
+  "error_account_info_invalid": "用户信息无效",
   "useHttps": "使用HTTPS",
   "signIn": "登录",
   "loading": "「加载中｜请稍后」"

@@ -2,11 +2,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
 part 'locale_provider.g.dart';
 
-@riverpod
+@keepAlive
 class LocaleNotifier extends _$LocaleNotifier {
   @override
   Future<Locale> build() async {
@@ -27,4 +29,10 @@ class LocaleNotifier extends _$LocaleNotifier {
         : const Locale('zh');
     await setLocale(newLocale);
   }
+}
+
+@keepAlive
+Future<AppLocalizations> appLocalizations(Ref ref) async {
+  final locale = getValueWhenReadyWithRef(ref, localeProvider, Locale('zh'));
+  return AppLocalizations.delegate.load(locale);
 }
