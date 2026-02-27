@@ -92,7 +92,7 @@ final class ArtistsProvider
   }
 }
 
-String _$artistsHash() => r'31b89aa1f1de203caca9ded802a4c75b14593828';
+String _$artistsHash() => r'c0878a9803fb2d59e16e7cdf9f3c414bb8e7d100';
 
 final class ArtistsFamily extends $Family
     with
@@ -142,6 +142,139 @@ final class ArtistsFamily extends $Family
   String toString() => r'artistsProvider';
 }
 
+@ProviderFor(searchArtists)
+final searchArtistsProvider = SearchArtistsFamily._();
+
+final class SearchArtistsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ArtistResponse>,
+          ArtistResponse,
+          FutureOr<ArtistResponse>
+        >
+    with $FutureModifier<ArtistResponse>, $FutureProvider<ArtistResponse> {
+  SearchArtistsProvider._({
+    required SearchArtistsFamily super.from,
+    required ({
+      String filter,
+      String library,
+      int limit,
+      int offset,
+      String sortBy,
+      String sortDirection,
+      Duration? cacheDuration,
+    })
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'searchArtistsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$searchArtistsHash();
+
+  @override
+  String toString() {
+    return r'searchArtistsProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ArtistResponse> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ArtistResponse> create(Ref ref) {
+    final argument =
+        this.argument
+            as ({
+              String filter,
+              String library,
+              int limit,
+              int offset,
+              String sortBy,
+              String sortDirection,
+              Duration? cacheDuration,
+            });
+    return searchArtists(
+      ref,
+      filter: argument.filter,
+      library: argument.library,
+      limit: argument.limit,
+      offset: argument.offset,
+      sortBy: argument.sortBy,
+      sortDirection: argument.sortDirection,
+      cacheDuration: argument.cacheDuration,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SearchArtistsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$searchArtistsHash() => r'd27ca9831ea209a0920f914dca233612b458976f';
+
+final class SearchArtistsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ArtistResponse>,
+          ({
+            String filter,
+            String library,
+            int limit,
+            int offset,
+            String sortBy,
+            String sortDirection,
+            Duration? cacheDuration,
+          })
+        > {
+  SearchArtistsFamily._()
+    : super(
+        retry: null,
+        name: r'searchArtistsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  SearchArtistsProvider call({
+    required String filter,
+    String library = 'all',
+    int limit = 5000,
+    int offset = 0,
+    String sortBy = 'name',
+    String sortDirection = 'asc',
+    Duration? cacheDuration = const Duration(minutes: 1),
+  }) => SearchArtistsProvider._(
+    argument: (
+      filter: filter,
+      library: library,
+      limit: limit,
+      offset: offset,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+      cacheDuration: cacheDuration,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'searchArtistsProvider';
+}
+
 @ProviderFor(ArtistsState)
 final artistsStateProvider = ArtistsStateProvider._();
 
@@ -174,7 +307,7 @@ final class ArtistsStateProvider
   }
 }
 
-String _$artistsStateHash() => r'68582240cad49b70929e39fb8e3ed7e67b0d1d88';
+String _$artistsStateHash() => r'54531294956292974b27a0fb68c821919157e9ea';
 
 abstract class _$ArtistsState extends $Notifier<ArtistResponse?> {
   ArtistResponse? build();

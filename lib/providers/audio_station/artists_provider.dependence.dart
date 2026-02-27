@@ -74,7 +74,7 @@ Future<ArtistResponse> _sendArtistRequest<T>({
 /// [sortDirection] 排序方向，默认 'ASC'
 /// [additional] 额外信息，默认 'avg_rating'
 /// [cacheDuration] 缓存时长，不传则不使用缓存
-Future<ArtistResponse> getArtists({
+Future<ArtistResponse> _getArtists({
   required Ref ref,
   int limit = 100,
   int offset = 0,
@@ -143,7 +143,7 @@ Future<ArtistResponse> getArtists({
 /// [sortBy] 排序字段，默认 'name'
 /// [sortDirection] 排序方向，默认 'asc'
 /// [cacheDuration] 缓存时长，不传则不使用缓存
-Future<ArtistResponse> searchArtists({
+Future<ArtistResponse> _searchArtists({
   required Ref ref,
   required String filter,
   String library = 'all',

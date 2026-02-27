@@ -23,7 +23,7 @@ Future<ArtistResponse> artists(
   String additional = 'avg_rating',
   Duration? cacheDuration = const Duration(minutes: 5),
 }) async {
-  return await getArtists(
+  return await _getArtists(
     ref: ref,
     limit: limit,
     offset: offset,
@@ -31,6 +31,29 @@ Future<ArtistResponse> artists(
     sortBy: sortBy,
     sortDirection: sortDirection,
     additional: additional,
+    cacheDuration: cacheDuration,
+  );
+}
+
+@riverpod
+Future<ArtistResponse> searchArtists(
+  Ref ref, {
+  required String filter,
+  String library = 'all',
+  int limit = 5000,
+  int offset = 0,
+  String sortBy = 'name',
+  String sortDirection = 'asc',
+  Duration? cacheDuration = const Duration(minutes: 1),
+}) async {
+  return await _searchArtists(
+    ref: ref,
+    filter: filter,
+    library: library,
+    limit: limit,
+    offset: offset,
+    sortBy: sortBy,
+    sortDirection: sortDirection,
     cacheDuration: cacheDuration,
   );
 }
@@ -54,7 +77,7 @@ class ArtistsState extends _$ArtistsState {
     state = null;
     try {
       // 直接调用 getArtists 函数，而不是通过 artistsProvider
-      final response = await getArtists(
+      final response = await _getArtists(
         ref: ref,
         limit: limit,
         offset: offset,
