@@ -242,6 +242,36 @@ abstract class AppLocalizations {
   /// **'Failed to get the list of folders'**
   String get error_getFolders_failed;
 
+  /// No description provided for @error_getSongs_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get the list of songs'**
+  String get error_getSongs_failed;
+
+  /// No description provided for @error_getAlbumSongs_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get the list of album songs'**
+  String get error_getAlbumSongs_failed;
+
+  /// No description provided for @error_getLyrics_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get lyrics'**
+  String get error_getLyrics_failed;
+
+  /// No description provided for @error_searchLyrics_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to search lyrics'**
+  String get error_searchLyrics_failed;
+
+  /// No description provided for @error_getSongInfo_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get song information'**
+  String get error_getSongInfo_failed;
+
   /// No description provided for @error_getServerInfo_failed.
   ///
   /// In en, this message translates to:

@@ -84,6 +84,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_getFolders_failed => 'Failed to get the list of folders';
 
   @override
+  String get error_getSongs_failed => 'Failed to get the list of songs';
+
+  @override
+  String get error_getAlbumSongs_failed =>
+      'Failed to get the list of album songs';
+
+  @override
+  String get error_getLyrics_failed => 'Failed to get lyrics';
+
+  @override
+  String get error_searchLyrics_failed => 'Failed to search lyrics';
+
+  @override
+  String get error_getSongInfo_failed => 'Failed to get song information';
+
+  @override
   String get error_getServerInfo_failed => 'Failed to get server information';
 
   @override

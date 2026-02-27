@@ -81,6 +81,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_getFolders_failed => '获取文件夹列表失败';
 
   @override
+  String get error_getSongs_failed => '获取歌曲列表失败';
+
+  @override
+  String get error_getAlbumSongs_failed => '获取专辑歌曲失败';
+
+  @override
+  String get error_getLyrics_failed => '获取歌词失败';
+
+  @override
+  String get error_searchLyrics_failed => '搜索歌词失败';
+
+  @override
+  String get error_getSongInfo_failed => '获取歌曲信息失败';
+
+  @override
   String get error_getServerInfo_failed => '获取服务器信息失败';
 
   @override

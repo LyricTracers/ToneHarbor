@@ -18,6 +18,8 @@ class HomeLayout extends BaseBgLayout {
     final albumsState = ref.watch(albumsStateProvider);
     // 监听 folders 状态
     final foldersState = ref.watch(foldersStateProvider);
+    // 监听 songs 状态
+    final songsState = ref.watch(songsStateProvider);
 
     return Center(
       child: SingleChildScrollView(
@@ -267,6 +269,190 @@ class HomeLayout extends BaseBgLayout {
                 }
               },
               child: const Text('测试获取 DSM 信息'),
+            ),
+            const SizedBox(height: 40),
+
+            // 测试 songs 功能
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  await ref.read(songsStateProvider.notifier).fetchSongs();
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(const SnackBar(content: Text('获取歌曲列表成功')));
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试获取歌曲列表'),
+            ),
+            const SizedBox(height: 20),
+
+            // 显示歌曲结果
+            songsState == null
+                ? const Text('点击按钮获取歌曲列表')
+                : Column(
+                    children: [
+                      Text('歌曲数量: ${songsState.data?.total ?? 0}'),
+                      const SizedBox(height: 10),
+                      if (songsState.data?.songs != null &&
+                          songsState.data!.songs!.isNotEmpty)
+                        Text('第一个歌曲: ${songsState.data!.songs![0].title}'),
+                    ],
+                  ),
+
+            const SizedBox(height: 20),
+
+            // 测试获取随机歌曲
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final results = await ref.read(
+                    randomSongsProvider(limit: 10).future,
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '获取随机歌曲成功，找到 ${results.data?.total ?? 0} 首歌曲',
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试获取随机歌曲'),
+            ),
+            const SizedBox(height: 20),
+
+            // 搜索歌曲功能
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final results = await ref.read(
+                    searchSongsProvider(title: '光年之外', limit: 100).future,
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '搜索歌曲成功，找到 ${results.data?.total ?? 0} 首歌曲',
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('搜索歌曲：光年之外'),
+            ),
+            const SizedBox(height: 20),
+
+            // 测试获取艺术家的歌曲
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final results = await ref.read(
+                    artistSongsProvider(artist: '周深', limit: 10).future,
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '获取艺术家歌曲成功，找到 ${results.data?.total ?? 0} 首歌曲',
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试获取艺术家歌曲：周深'),
+            ),
+            const SizedBox(height: 20),
+
+            // 测试获取歌词
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final results = await ref.read(
+                    lyricsProvider(id: 'music_785331').future,
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '获取歌词成功，歌词长度: ${results.data?.lyrics?.length ?? 0}',
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试获取歌词'),
+            ),
+            const SizedBox(height: 20),
+
+            // 搜索歌词功能
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final results = await ref.read(
+                    searchLyricsProvider(title: '光年之外', limit: 10).future,
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '搜索歌词成功，找到 ${results.data?.lyrics?.length ?? 0} 条歌词',
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('搜索歌词：光年之外'),
+            ),
+            const SizedBox(height: 20),
+
+            // 测试获取歌曲信息
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final results = await ref.read(
+                    songInfoProvider(id: 'music_785331').future,
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '获取歌曲信息成功，歌曲数量: ${results.data?.songs?.length ?? 0}',
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试获取歌曲信息'),
             ),
           ],
         ),
