@@ -72,6 +72,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_syno_login_410 => 'Password must be changed';
 
   @override
+  String get error_getArtists_failed => 'Failed to get the list of artists';
+
+  @override
+  String get error_syno_request_100 => 'Unknown error.';
+
+  @override
+  String get error_syno_request_101 =>
+      'No parameter of API, method or version.';
+
+  @override
+  String get error_syno_request_102 => 'The requested API does not exist.';
+
+  @override
+  String get error_syno_request_103 => 'The requested method does not exist.';
+
+  @override
+  String get error_syno_request_104 =>
+      'The requested version does not support the functionality.';
+
+  @override
+  String get error_syno_request_105 =>
+      'The logged in session does not have permission.';
+
+  @override
+  String get error_syno_request_106 => 'Session timeout.';
+
+  @override
+  String get error_syno_request_107 =>
+      'Session interrupted by duplicated login.';
+
+  @override
+  String get error_syno_request_114 => 'Lost parameters for this API';
+
+  @override
+  String get error_syno_request_150 =>
+      'Request source IP does not match the login IP.';
+
+  @override
+  String get error_network_error => 'Network Error';
+
+  @override
+  String get error_response_parse_failed => 'Response Parsing failed';
+
+  @override
   String get useHttps => 'Use HTTPS';
 
   @override

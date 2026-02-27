@@ -94,3 +94,48 @@ bool isValidServerUrl(String url) {
       domainPortPattern.hasMatch(url) ||
       localhostPattern.hasMatch(url);
 }
+
+Map<String, dynamic> parseJsonResponse(String body) {
+  try {
+    return json.decode(body) as Map<String, dynamic>;
+  } catch (e) {
+    try {
+      final decoded = json.decode(body);
+      if (decoded is String) {
+        return json.decode(decoded) as Map<String, dynamic>;
+      }
+      throw Exception('Unable to parse response: $body');
+    } catch (e2) {
+      throw Exception('Unable to parse response: $body');
+    }
+  }
+}
+
+String getAudioReuqestErrorMessage(
+  AppLocalizations l10n,
+  String defaultMessage,
+  int? errorCode,
+) {
+  switch (errorCode) {
+    case 100:
+      return l10n.error_syno_request_100;
+    case 101:
+      return l10n.error_syno_request_101;
+    case 102:
+      return l10n.error_syno_request_102;
+    case 103:
+      return l10n.error_syno_request_103;
+    case 104:
+      return l10n.error_syno_request_104;
+    case 105:
+      return l10n.error_syno_request_105;
+    case 106:
+      return l10n.error_syno_request_106;
+    case 114:
+      return l10n.error_syno_request_114;
+    case 150:
+      return l10n.error_syno_request_150;
+    default:
+      return defaultMessage;
+  }
+}

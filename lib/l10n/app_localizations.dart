@@ -218,6 +218,84 @@ abstract class AppLocalizations {
   /// **'Password must be changed'**
   String get error_syno_login_410;
 
+  /// No description provided for @error_getArtists_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get the list of artists'**
+  String get error_getArtists_failed;
+
+  /// No description provided for @error_syno_request_100.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown error.'**
+  String get error_syno_request_100;
+
+  /// No description provided for @error_syno_request_101.
+  ///
+  /// In en, this message translates to:
+  /// **'No parameter of API, method or version.'**
+  String get error_syno_request_101;
+
+  /// No description provided for @error_syno_request_102.
+  ///
+  /// In en, this message translates to:
+  /// **'The requested API does not exist.'**
+  String get error_syno_request_102;
+
+  /// No description provided for @error_syno_request_103.
+  ///
+  /// In en, this message translates to:
+  /// **'The requested method does not exist.'**
+  String get error_syno_request_103;
+
+  /// No description provided for @error_syno_request_104.
+  ///
+  /// In en, this message translates to:
+  /// **'The requested version does not support the functionality.'**
+  String get error_syno_request_104;
+
+  /// No description provided for @error_syno_request_105.
+  ///
+  /// In en, this message translates to:
+  /// **'The logged in session does not have permission.'**
+  String get error_syno_request_105;
+
+  /// No description provided for @error_syno_request_106.
+  ///
+  /// In en, this message translates to:
+  /// **'Session timeout.'**
+  String get error_syno_request_106;
+
+  /// No description provided for @error_syno_request_107.
+  ///
+  /// In en, this message translates to:
+  /// **'Session interrupted by duplicated login.'**
+  String get error_syno_request_107;
+
+  /// No description provided for @error_syno_request_114.
+  ///
+  /// In en, this message translates to:
+  /// **'Lost parameters for this API'**
+  String get error_syno_request_114;
+
+  /// No description provided for @error_syno_request_150.
+  ///
+  /// In en, this message translates to:
+  /// **'Request source IP does not match the login IP.'**
+  String get error_syno_request_150;
+
+  /// No description provided for @error_network_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Network Error'**
+  String get error_network_error;
+
+  /// No description provided for @error_response_parse_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Response Parsing failed'**
+  String get error_response_parse_failed;
+
   /// No description provided for @useHttps.
   ///
   /// In en, this message translates to:

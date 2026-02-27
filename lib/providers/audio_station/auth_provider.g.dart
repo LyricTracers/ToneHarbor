@@ -192,6 +192,39 @@ abstract class _$AudioStationCookiesInfo
   }
 }
 
+@ProviderFor(baseUrl)
+final baseUrlProvider = BaseUrlProvider._();
+
+final class BaseUrlProvider
+    extends $FunctionalProvider<AsyncValue<String>, String, FutureOr<String>>
+    with $FutureModifier<String>, $FutureProvider<String> {
+  BaseUrlProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'baseUrlProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$baseUrlHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<String> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<String> create(Ref ref) {
+    return baseUrl(ref);
+  }
+}
+
+String _$baseUrlHash() => r'd86f1f259031daaa950aa8d9b2c68dab62ff8d27';
+
 @ProviderFor(SynoToken)
 final synoTokenProvider = SynoTokenProvider._();
 
@@ -274,7 +307,7 @@ final class AuthTokenProvider
   }
 }
 
-String _$authTokenHash() => r'ee9f70a1395287e265aa506873093ddc938596f3';
+String _$authTokenHash() => r'7873fb8be3c88a1a2e613e37b079111f22744b3c';
 
 @ProviderFor(login)
 final loginProvider = LoginProvider._();
@@ -313,4 +346,4 @@ final class LoginProvider
   }
 }
 
-String _$loginHash() => r'628707a6e0744c2957ea3ef3da1be649a26aa7e1';
+String _$loginHash() => r'0008599a409f0e7d14df71667138a6c9a1ff721e';

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ui';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:rhttp/rhttp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -101,6 +102,17 @@ class AudioStationCookiesInfo extends _$AudioStationCookiesInfo {
 }
 
 @keepAlive
+Future<String> baseUrl(Ref ref) async {
+  final serverUrl = await ref.watch(serverUrlProvider.future);
+  if (serverUrl.isEmpty) {
+    throw AudioStationException(message: '服务器地址不能为空');
+  }
+  final useHttp = await ref.watch(useHttpProvider.future);
+  final scheme = useHttp ? 'https' : 'http';
+  return '$scheme://$serverUrl';
+}
+
+@keepAlive
 class SynoToken extends _$SynoToken {
   @override
   String? build() {
@@ -124,13 +136,6 @@ Future<String?> authToken(Ref ref) async {
     return synotoken;
   }
 
-  final serverUrl = getValueWhenReadyWithRef(ref, serverUrlProvider, '');
-
-  if (serverUrl.isEmpty) {
-    logger.d('serverUrl 为空，返回 null');
-    return null;
-  }
-
   final cookiesInfo = getValueWhenReadyWithRef(
     ref,
     audioStationCookiesInfoProvider,
@@ -144,26 +149,35 @@ Future<String?> authToken(Ref ref) async {
         getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
       );
       logger.d('开始刷新 token');
-      final response = await _refreshToken(ref, serverUrl, cookiesInfo, l10n);
+      final response = await _refreshToken(ref, cookiesInfo, l10n);
       logger.d('刷新 token 完成: ${response.data?.synotoken}');
       if (response.data?.synotoken != null) {
-        ref
-            .read(synoTokenProvider.notifier)
-            .setSynotoken(response.data!.synotoken);
+        // 延迟修改状态，避免在构建过程中修改
+        Future.microtask(() {
+          ref
+              .read(synoTokenProvider.notifier)
+              .setSynotoken(response.data!.synotoken);
+        });
         return response.data!.synotoken;
       }
     } catch (e) {
       logger.w('获取 synotoken 失败: $e');
-      ref
-          .read(audioStationCookiesInfoProvider.notifier)
-          .setCookies(
-            AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
-          );
-      ref.read(synoTokenProvider.notifier).clear();
+      // 延迟修改状态，避免在构建过程中修改
+      Future.microtask(() {
+        ref
+            .read(audioStationCookiesInfoProvider.notifier)
+            .setCookies(
+              AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
+            );
+        ref.read(synoTokenProvider.notifier).clear();
+      });
     }
   } else {
     logger.d('Cookie 无效，返回 null');
-    ref.read(synoTokenProvider.notifier).clear();
+    // 延迟修改状态，避免在构建过程中修改
+    Future.microtask(() {
+      ref.read(synoTokenProvider.notifier).clear();
+    });
   }
 
   return null;
@@ -176,10 +190,6 @@ Future<AuthResponse> login(Ref ref) async {
   var l10n = lookupAppLocalizations(
     getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
   );
-  final serverUrl = getValueWhenReadyWithRef(ref, serverUrlProvider, '');
-  if (serverUrl.isEmpty) {
-    throw AudioStationException(message: l10n.error_invalidUrl);
-  }
 
   final accountInfo = getValueWhenReadyWithRef(ref, accountInfoProvider, null);
   if (accountInfo == null) {
@@ -196,7 +206,7 @@ Future<AuthResponse> login(Ref ref) async {
   if (hasValidCookies) {
     logger.d('Cookie 有效，尝试刷新 token');
     try {
-      return await _refreshToken(ref, serverUrl, cookiesInfo, l10n);
+      return await _refreshToken(ref, cookiesInfo, l10n);
     } catch (e) {
       logger.w('刷新 token 失败，尝试完整登录: $e');
     }
@@ -204,5 +214,5 @@ Future<AuthResponse> login(Ref ref) async {
 
   logger.d('进行完整登录');
 
-  return await _fullLogin(ref, serverUrl, accountInfo, l10n);
+  return await _fullLogin(ref, accountInfo, l10n);
 }

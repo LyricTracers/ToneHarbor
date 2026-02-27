@@ -27,6 +27,46 @@ String _getLoginErrorMessage(AppLocalizations l10n, int? errorCode) {
   }
 }
 
+Future<Map<String, String>?> getAuthHeadersWithWidgetRef(WidgetRef ref) async {
+  final serverUrl = await ref.read(serverUrlProvider.future);
+  if (serverUrl.isEmpty) {
+    logger.w('serverUrl 为空，返回 null');
+    return null;
+  }
+
+  final baseUrl = await ref.read(baseUrlProvider.future);
+
+  final headers = <String, String>{
+    'x-requested-with': 'XMLHttpRequest',
+    'accept': '*/*',
+    'accept-language': 'zh-CN,zh;q=0.9',
+    'origin': baseUrl,
+    'referer': '$baseUrl/music/',
+  };
+
+  final cookiesInfo = await ref.read(audioStationCookiesInfoProvider.future);
+
+  if (cookiesInfo == null || !cookiesInfo.isValid) {
+    logger.d('Cookie 无效，返回 null');
+    return null;
+  }
+
+  final cookieString = "${cookiesInfo.id}; ${cookiesInfo.did}";
+  headers['Cookie'] = cookieString;
+  logger.d('使用Cookie: $cookieString');
+
+  final synotoken = ref.read(synoTokenProvider);
+  if (synotoken == null) {
+    logger.d('synotoken 为空，返回 null');
+    return null;
+  }
+
+  headers['x-syno-token'] = synotoken;
+  logger.d('使用SynoToken: $synotoken');
+
+  return headers;
+}
+
 Future<Map<String, String>?> getAuthHeaders(Ref ref) async {
   final serverUrl = await ref.read(serverUrlProvider.future);
   if (serverUrl.isEmpty) {
@@ -34,9 +74,7 @@ Future<Map<String, String>?> getAuthHeaders(Ref ref) async {
     return null;
   }
 
-  final useHttp = await getUseHttp();
-  final scheme = useHttp ? 'https' : 'http';
-  final baseUrl = '$scheme://$serverUrl';
+  final baseUrl = await ref.read(baseUrlProvider.future);
 
   final headers = <String, String>{
     'x-requested-with': 'XMLHttpRequest',
@@ -71,13 +109,10 @@ Future<Map<String, String>?> getAuthHeaders(Ref ref) async {
 
 Future<AuthResponse> _fullLogin(
   Ref ref,
-  String serverUrl,
   Account account,
   AppLocalizations l10n,
 ) async {
-  final useHttp = await getUseHttp();
-  final scheme = useHttp ? 'https' : 'http';
-  final baseUrl = '$scheme://$serverUrl';
+  final baseUrl = await ref.read(baseUrlProvider.future);
 
   final request = AuthRequest(
     api: 'SYNO.API.Auth',
@@ -116,12 +151,14 @@ Future<AuthResponse> _fullLogin(
   );
 
   if (response.statusCode != 200) {
-    ref
-        .read(audioStationCookiesInfoProvider.notifier)
-        .setCookies(
-          AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
-        );
-    ref.read(synoTokenProvider.notifier).clear();
+    Future.microtask(() {
+      ref
+          .read(audioStationCookiesInfoProvider.notifier)
+          .setCookies(
+            AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
+          );
+      ref.read(synoTokenProvider.notifier).clear();
+    });
     throw AudioStationException(
       message: _getLoginErrorMessage(l10n, null),
       statusCode: response.statusCode,
@@ -132,12 +169,14 @@ Future<AuthResponse> _fullLogin(
   final result = AuthResponse.fromJson(jsonBody);
   logger.i("result:$result");
   if (!result.success) {
-    ref
-        .read(audioStationCookiesInfoProvider.notifier)
-        .setCookies(
-          AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
-        );
-    ref.read(synoTokenProvider.notifier).clear();
+    Future.microtask(() {
+      ref
+          .read(audioStationCookiesInfoProvider.notifier)
+          .setCookies(
+            AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
+          );
+      ref.read(synoTokenProvider.notifier).clear();
+    });
     final errorCode = result.error?['code'];
     throw AudioStationException(
       message: _getLoginErrorMessage(l10n, errorCode is int ? errorCode : null),
@@ -173,34 +212,34 @@ Future<AuthResponse> _fullLogin(
       }
     }
   }
-  ref
-      .read(audioStationCookiesInfoProvider.notifier)
-      .setCookies(
-        AudioStationCookies(
-          id: id,
-          idExpires: idExpires,
-          did: did,
-          didExpires: didExpires,
-        ),
-      );
+  Future.microtask(() {
+    ref
+        .read(audioStationCookiesInfoProvider.notifier)
+        .setCookies(
+          AudioStationCookies(
+            id: id,
+            idExpires: idExpires,
+            did: did,
+            didExpires: didExpires,
+          ),
+        );
 
-  if (result.data?.synotoken != null) {
-    ref.read(synoTokenProvider.notifier).setSynotoken(result.data!.synotoken);
-  }
+    if (result.data?.synotoken != null) {
+      ref.read(synoTokenProvider.notifier).setSynotoken(result.data!.synotoken);
+    }
+  });
 
   return result;
 }
 
 Future<AuthResponse> _refreshToken(
   Ref ref,
-  String serverUrl,
   AudioStationCookies cookies,
   AppLocalizations l10n,
 ) async {
-  final useHttp = await getUseHttp();
-  final scheme = useHttp ? 'https' : 'http';
-  final baseUrl = '$scheme://$serverUrl';
-
+  // 直接使用传入的 serverUrl 构建 baseUrl，而不是通过 ref 获取
+  final baseUrl = await ref.read(baseUrlProvider.future);
+  logger.d('刷新Token，使用baseUrl: $baseUrl');
   final cookieString = '${cookies.did}; ${cookies.id}';
 
   final response = await httpClientWrapper.post(
@@ -222,12 +261,15 @@ Future<AuthResponse> _refreshToken(
   );
 
   if (response.statusCode != 200) {
-    ref
-        .read(audioStationCookiesInfoProvider.notifier)
-        .setCookies(
-          AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
-        );
-    ref.read(synoTokenProvider.notifier).clear();
+    // 延迟修改状态，避免在构建过程中修改
+    Future.microtask(() {
+      ref
+          .read(audioStationCookiesInfoProvider.notifier)
+          .setCookies(
+            AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
+          );
+      ref.read(synoTokenProvider.notifier).clear();
+    });
     throw AudioStationException(
       message: _getLoginErrorMessage(l10n, null),
       statusCode: response.statusCode,
@@ -238,12 +280,15 @@ Future<AuthResponse> _refreshToken(
   final result = AuthResponse.fromJson(jsonBody);
 
   if (!result.success) {
-    ref
-        .read(audioStationCookiesInfoProvider.notifier)
-        .setCookies(
-          AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
-        );
-    ref.read(synoTokenProvider.notifier).clear();
+    // 延迟修改状态，避免在构建过程中修改
+    Future.microtask(() {
+      ref
+          .read(audioStationCookiesInfoProvider.notifier)
+          .setCookies(
+            AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
+          );
+      ref.read(synoTokenProvider.notifier).clear();
+    });
     final errorCode = result.error?['code'];
     throw AudioStationException(
       message: _getLoginErrorMessage(l10n, errorCode is int ? errorCode : null),
@@ -251,9 +296,12 @@ Future<AuthResponse> _refreshToken(
     );
   }
 
-  if (result.data?.synotoken != null) {
-    ref.read(synoTokenProvider.notifier).setSynotoken(result.data!.synotoken);
-  }
+  // 延迟修改状态，避免在构建过程中修改
+  Future.microtask(() {
+    if (result.data?.synotoken != null) {
+      ref.read(synoTokenProvider.notifier).setSynotoken(result.data!.synotoken);
+    }
+  });
 
   return result;
 }

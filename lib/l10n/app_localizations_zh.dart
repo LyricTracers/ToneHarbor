@@ -69,6 +69,45 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_syno_login_410 => '必须更改密码';
 
   @override
+  String get error_getArtists_failed => '获取艺术家列表失败';
+
+  @override
+  String get error_syno_request_100 => '未知错误';
+
+  @override
+  String get error_syno_request_101 => '没有API、方法或版本的参数';
+
+  @override
+  String get error_syno_request_102 => '请求的API不存在';
+
+  @override
+  String get error_syno_request_103 => '请求的方法不存在';
+
+  @override
+  String get error_syno_request_104 => '请求的版本不支持该功能';
+
+  @override
+  String get error_syno_request_105 => '登录的会话没有权限';
+
+  @override
+  String get error_syno_request_106 => '会话超时';
+
+  @override
+  String get error_syno_request_107 => '会话因重复登录而中断';
+
+  @override
+  String get error_syno_request_114 => '此API的参数丢失';
+
+  @override
+  String get error_syno_request_150 => '请求源IP与登录IP不匹配';
+
+  @override
+  String get error_network_error => '网络错误';
+
+  @override
+  String get error_response_parse_failed => '解析失败';
+
+  @override
   String get useHttps => '使用HTTPS';
 
   @override
