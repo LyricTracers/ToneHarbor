@@ -236,8 +236,6 @@ Future<Map<String, String>?> getAuthHeaders(Ref ref) async {
   final serverUrl = await ref.read(serverUrlProvider.future);
   if (serverUrl.isEmpty) {
     logger.w('serverUrl 为空，返回 null');
-    await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-    ref.invalidate(authTokenProvider);
     return null;
   }
 
@@ -257,9 +255,6 @@ Future<Map<String, String>?> getAuthHeaders(Ref ref) async {
 
   if (cookiesInfo == null || !cookiesInfo.isValid) {
     logger.d('Cookie 无效，返回 null');
-    await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-    ref.invalidate(authTokenProvider);
-
     return null;
   }
 
@@ -270,8 +265,6 @@ Future<Map<String, String>?> getAuthHeaders(Ref ref) async {
   final synotoken = ref.read(synoTokenProvider);
   if (synotoken == null) {
     logger.d('synotoken 为空，返回 null');
-    await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-    ref.invalidate(authTokenProvider);
     return null;
   }
 
