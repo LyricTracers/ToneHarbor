@@ -24,6 +24,7 @@
   "error_syno_login_410": "必须更改密码",
   "error_getArtists_failed": "获取艺术家列表失败",
   "error_getAlbums_failed": "获取专辑列表失败",
+  "error_getFolders_failed": "获取文件夹列表失败",
   "error_search_failed": "搜索%s失败",
   "error_syno_request_100": "未知错误",
   "error_syno_request_101": "没有API、方法或版本的参数",

@@ -78,6 +78,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_getAlbums_failed => '获取专辑列表失败';
 
   @override
+  String get error_getFolders_failed => '获取文件夹列表失败';
+
+  @override
   String get error_syno_request_100 => '未知错误';
 
   @override

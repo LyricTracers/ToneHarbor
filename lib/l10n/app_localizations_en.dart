@@ -81,6 +81,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_getAlbums_failed => 'Failed to get the list of albums';
 
   @override
+  String get error_getFolders_failed => 'Failed to get the list of folders';
+
+  @override
   String get error_syno_request_100 => 'Unknown error.';
 
   @override

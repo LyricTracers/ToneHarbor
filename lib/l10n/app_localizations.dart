@@ -236,6 +236,12 @@ abstract class AppLocalizations {
   /// **'Failed to get the list of albums'**
   String get error_getAlbums_failed;
 
+  /// No description provided for @error_getFolders_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get the list of folders'**
+  String get error_getFolders_failed;
+
   /// No description provided for @error_syno_request_100.
   ///
   /// In en, this message translates to:
