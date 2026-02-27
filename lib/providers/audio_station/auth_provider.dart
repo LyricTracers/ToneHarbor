@@ -116,6 +116,13 @@ class AudioStationCookiesInfo extends _$AudioStationCookiesInfo {
       state = AsyncData(cookies);
     }
   }
+
+  Future<void> clearCookie() async {
+    final sp = await SharedPreferences.getInstance();
+    await sp.remove(cookieKey);
+    ref.read(synoTokenProvider.notifier).clear();
+    state = const AsyncData(null);
+  }
 }
 
 @keepAlive
@@ -223,6 +230,55 @@ Future<AuthResponse> login(Ref ref) async {
   logger.d('进行完整登录');
 
   return await _fullLogin(ref, serverUrl, accountInfo, l10n);
+}
+
+Future<Map<String, String>?> getAuthHeaders(Ref ref) async {
+  final serverUrl = await ref.read(serverUrlProvider.future);
+  if (serverUrl.isEmpty) {
+    logger.w('serverUrl 为空，返回 null');
+    await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+    ref.invalidate(authTokenProvider);
+    return null;
+  }
+
+  final useHttp = await getUseHttp();
+  final scheme = useHttp ? 'https' : 'http';
+  final baseUrl = '$scheme://$serverUrl';
+
+  final headers = <String, String>{
+    'x-requested-with': 'XMLHttpRequest',
+    'accept': '*/*',
+    'accept-language': 'zh-CN,zh;q=0.9',
+    'origin': baseUrl,
+    'referer': '$baseUrl/music/',
+  };
+
+  final cookiesInfo = await ref.read(audioStationCookiesInfoProvider.future);
+
+  if (cookiesInfo == null || !cookiesInfo.isValid) {
+    logger.d('Cookie 无效，返回 null');
+    await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+    ref.invalidate(authTokenProvider);
+
+    return null;
+  }
+
+  final cookieString = "${cookiesInfo.id}; ${cookiesInfo.did}";
+  headers['Cookie'] = cookieString;
+  logger.d('使用Cookie: $cookieString');
+
+  final synotoken = ref.read(synoTokenProvider);
+  if (synotoken == null) {
+    logger.d('synotoken 为空，返回 null');
+    await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+    ref.invalidate(authTokenProvider);
+    return null;
+  }
+
+  headers['x-syno-token'] = synotoken;
+  logger.d('使用SynoToken: $synotoken');
+
+  return headers;
 }
 
 Future<AuthResponse> _fullLogin(
