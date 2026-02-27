@@ -61,7 +61,7 @@ class LoginPage extends BaseBgLayout {
         return;
       }
 
-      if (!_isValidServerUrl(serverUrl)) {
+      if (!isValidServerUrl(serverUrl)) {
         serverUrlError.value = l10n.error_invalidUrl;
         return;
       }
@@ -241,19 +241,5 @@ class LoginPage extends BaseBgLayout {
         ),
       ),
     );
-  }
-
-  static bool _isValidServerUrl(String url) {
-    final ipPortPattern = RegExp(
-      r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}$',
-    );
-    final domainPortPattern = RegExp(
-      r'^[a-zA-Z0-9][a-zA-Z0-9\-\.]+\.[a-zA-Z0-9\-]+:\d{1,5}$',
-    );
-    final localhostPattern = RegExp(r'^localhost:\d{1,5}$');
-
-    return ipPortPattern.hasMatch(url) ||
-        domainPortPattern.hasMatch(url) ||
-        localhostPattern.hasMatch(url);
   }
 }

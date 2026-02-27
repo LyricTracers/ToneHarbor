@@ -109,6 +109,7 @@ class AudioStationCookiesInfo extends _$AudioStationCookiesInfo {
     final sp = await SharedPreferences.getInstance();
     if (!cookies.isValid) {
       await sp.remove(cookieKey);
+      ref.read(synoTokenProvider.notifier).clear();
       state = const AsyncData(null);
       return;
     } else {
