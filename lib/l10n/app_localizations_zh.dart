@@ -81,6 +81,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_getFolders_failed => '获取文件夹列表失败';
 
   @override
+  String get error_getServerInfo_failed => '获取服务器信息失败';
+
+  @override
+  String get error_getDSMInfo_failed => '获取 DSM 信息失败';
+
+  @override
   String get error_syno_request_100 => '未知错误';
 
   @override

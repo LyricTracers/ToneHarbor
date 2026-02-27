@@ -220,6 +220,54 @@ class HomeLayout extends BaseBgLayout {
                         Text('第一个文件夹: ${foldersState.data!.items![0].title}'),
                     ],
                   ),
+            const SizedBox(height: 40),
+
+            // 测试获取 Audio Station 服务器信息
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final result = await ref.read(
+                    audioStationInfoProvider().future,
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '获取服务器信息成功，版本: ${result.data?.versionString ?? '未知'}',
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试获取 Audio Station 服务器信息'),
+            ),
+            const SizedBox(height: 20),
+
+            // 测试获取 DSM 信息
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final result = await ref.read(dsmInfoProvider().future);
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '获取 DSM 信息成功，型号: ${result.data?.model ?? '未知'}',
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试获取 DSM 信息'),
+            ),
           ],
         ),
       ),

@@ -242,6 +242,18 @@ abstract class AppLocalizations {
   /// **'Failed to get the list of folders'**
   String get error_getFolders_failed;
 
+  /// No description provided for @error_getServerInfo_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get server information'**
+  String get error_getServerInfo_failed;
+
+  /// No description provided for @error_getDSMInfo_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get DSM information'**
+  String get error_getDSMInfo_failed;
+
   /// No description provided for @error_syno_request_100.
   ///
   /// In en, this message translates to:

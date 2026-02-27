@@ -84,6 +84,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_getFolders_failed => 'Failed to get the list of folders';
 
   @override
+  String get error_getServerInfo_failed => 'Failed to get server information';
+
+  @override
+  String get error_getDSMInfo_failed => 'Failed to get DSM information';
+
+  @override
   String get error_syno_request_100 => 'Unknown error.';
 
   @override
