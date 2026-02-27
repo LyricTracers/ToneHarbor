@@ -19,14 +19,15 @@ Future<AudioStationInfoResponse> _sendAudioStationInfoRequest({
 
   final baseUrl = await ref.read(baseUrlProvider.future);
 
+  final params = Map<String, dynamic>.from(request.toJson())
+    ..removeWhere((key, value) => value == null);
+
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
       '$baseUrl/music/webapi/AudioStation/info.cgi',
       body: HttpBody.form(
-        request.toJson().map(
-          (key, value) => MapEntry(key, value?.toString() ?? ''),
-        ),
+        params.map((key, value) => MapEntry(key, value.toString())),
       ),
       headers: HttpHeaders.rawMap({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -89,13 +90,14 @@ Future<DSMInfoResponse> _sendDSMInfoRequest({
 
   final baseUrl = await ref.read(baseUrlProvider.future);
 
+  final params = Map<String, dynamic>.from(request.toJson())
+    ..removeWhere((key, value) => value == null);
+
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.get(
       '$baseUrl/webapi/entry.cgi',
-      query: request.toJson().map(
-        (key, value) => MapEntry(key, value?.toString() ?? ''),
-      ),
+      query: params.map((key, value) => MapEntry(key, value.toString())),
       headers: HttpHeaders.rawMap({'accept': '*/*', ...authHeaders}),
     );
   } catch (e) {

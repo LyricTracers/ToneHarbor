@@ -30,6 +30,8 @@
   "error_getLyrics_failed": "获取歌词失败",
   "error_searchLyrics_failed": "搜索歌词失败",
   "error_getSongInfo_failed": "获取歌曲信息失败",
+  "error_setRating_failed": "设置评分失败",
+  "error_getNumberOfPlugIns_failed": "获取插件数量失败",
   "error_getServerInfo_failed": "获取服务器信息失败",
   "error_getDSMInfo_failed": "获取 DSM 信息失败",
   "error_search_failed": "搜索%s失败",

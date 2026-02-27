@@ -170,6 +170,23 @@ Future<SongInfoResponse> songInfo(
 }
 
 @riverpod
+Future<SetRatingResponse> setRating(
+  Ref ref, {
+  required String id,
+  int rating = 5,
+}) async {
+  return await _setRating(ref: ref, id: id, rating: rating);
+}
+
+@riverpod
+Future<GetNumberOfPlugInsResponse> numberOfPlugIns(
+  Ref ref, {
+  Duration? cacheDuration = const Duration(hours: 24),
+}) async {
+  return await _getNumberOfPlugIns(ref: ref, cacheDuration: cacheDuration);
+}
+
+@riverpod
 class SongsState extends _$SongsState {
   @override
   SongListResponse? build() {

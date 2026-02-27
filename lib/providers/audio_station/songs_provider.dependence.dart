@@ -20,12 +20,15 @@ Future<SongListResponse> _sendSongRequest<T>({
 
   final baseUrl = await ref.read(baseUrlProvider.future);
 
+  final params = Map<String, dynamic>.from(toJson())
+    ..removeWhere((key, value) => value == null);
+
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
       '$baseUrl/music/webapi/AudioStation/song.cgi',
       body: HttpBody.form(
-        toJson().map((key, value) => MapEntry(key, value?.toString() ?? '')),
+        params.map((key, value) => MapEntry(key, value.toString())),
       ),
       headers: HttpHeaders.rawMap({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -89,12 +92,15 @@ Future<LyricsResponse> _sendLyricsRequest<T>({
 
   final baseUrl = await ref.read(baseUrlProvider.future);
 
+  final params = Map<String, dynamic>.from(toJson())
+    ..removeWhere((key, value) => value == null);
+
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
       '$baseUrl/music/webapi/AudioStation/lyrics.cgi',
       body: HttpBody.form(
-        toJson().map((key, value) => MapEntry(key, value?.toString() ?? '')),
+        params.map((key, value) => MapEntry(key, value.toString())),
       ),
       headers: HttpHeaders.rawMap({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -227,12 +233,15 @@ Future<SongInfoResponse> _sendSongInfoRequest<T>({
 
   final baseUrl = await ref.read(baseUrlProvider.future);
 
+  final params = Map<String, dynamic>.from(toJson())
+    ..removeWhere((key, value) => value == null);
+
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
       '$baseUrl/music/webapi/AudioStation/song.cgi',
       body: HttpBody.form(
-        toJson().map((key, value) => MapEntry(key, value?.toString() ?? '')),
+        params.map((key, value) => MapEntry(key, value.toString())),
       ),
       headers: HttpHeaders.rawMap({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -335,6 +344,187 @@ Future<SongListResponse> _getSongs({
     defaultError: l10n.error_getSongs_failed,
     l10n: l10n,
   );
+
+  if (cacheDuration != null) {
+    await saveToCache(
+      cacheKey: cacheKey,
+      jsonBody: result.toJson(),
+      cacheDuration: cacheDuration,
+      group: 'song',
+    );
+  }
+
+  return result;
+}
+
+/// 设置歌曲评分
+///
+/// [id] 歌曲 ID
+/// [rating] 评分，默认 5
+Future<SetRatingResponse> _setRating({
+  required Ref ref,
+  required String id,
+  int rating = 5,
+}) async {
+  final authHeaders = await getAuthHeaders(ref);
+  if (authHeaders == null) {
+    logger.w('认证失败，返回空结果');
+    Future.microtask(() async {
+      await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+      ref.invalidate(authTokenProvider);
+    });
+    return SetRatingResponse(success: false);
+  }
+
+  final baseUrl = await ref.read(baseUrlProvider.future);
+
+  final request = SetRatingRequest(
+    api: 'SYNO.AudioStation.Song',
+    method: 'setrating',
+    id: id,
+    rating: rating,
+    version: 3,
+  );
+
+  final l10n = lookupAppLocalizations(
+    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
+  );
+
+  final params = Map<String, dynamic>.from(request.toJson())
+    ..removeWhere((key, value) => value == null);
+
+  late final HttpTextResponse response;
+  try {
+    response = await httpClientWrapper.post(
+      '$baseUrl/music/webapi/AudioStation/song.cgi',
+      body: HttpBody.form(
+        params.map((key, value) => MapEntry(key, value.toString())),
+      ),
+      headers: HttpHeaders.rawMap({
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        ...authHeaders,
+      }),
+    );
+  } catch (e) {
+    logger.e('发送请求失败: $e');
+    throw AudioStationException(message: l10n.error_network_error);
+  }
+
+  if (response.statusCode != 200) {
+    logger.e('请求失败，状态码：${response.statusCode}');
+    throw AudioStationException(
+      message: l10n.error_setRating_failed,
+      statusCode: response.statusCode,
+    );
+  }
+
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw AudioStationException(message: l10n.error_response_parse_failed);
+  }
+
+  final result = SetRatingResponse.fromJson(jsonBody);
+  if (!result.success) {
+    final errorCode = jsonBody['error']?['code'];
+    final errorMessage = errorCode is int
+        ? getAudioReuqestErrorMessage(
+            l10n,
+            l10n.error_setRating_failed,
+            errorCode,
+          )
+        : l10n.error_setRating_failed;
+    logger.e('请求失败，错误码：$errorCode，错误信息：$errorMessage');
+    throw AudioStationException(
+      message: errorMessage,
+      statusCode: errorCode is int ? errorCode : null,
+    );
+  }
+
+  return result;
+}
+
+/// 获取插件数量
+///
+/// [cacheDuration] 缓存时长，不传则不使用缓存
+Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
+  required Ref ref,
+  Duration? cacheDuration,
+}) async {
+  final cacheKey = 'getNumberOfPlugIns';
+
+  if (cacheDuration != null) {
+    final cached = await getFromCache<GetNumberOfPlugInsResponse>(
+      cacheKey: cacheKey,
+      group: 'song',
+      fromJson: (json) => GetNumberOfPlugInsResponse.fromJson(json),
+    );
+    if (cached != null) {
+      return cached;
+    }
+  }
+
+  final authHeaders = await getAuthHeaders(ref);
+  if (authHeaders == null) {
+    logger.w('认证失败，返回空结果');
+    Future.microtask(() async {
+      await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+      ref.invalidate(authTokenProvider);
+    });
+    return GetNumberOfPlugInsResponse(success: false, hasPlugIn: 0);
+  }
+
+  final baseUrl = await ref.read(baseUrlProvider.future);
+
+  final request = GetNumberOfPlugInsRequest(action: 'getNumberOfPlugIns');
+
+  final l10n = lookupAppLocalizations(
+    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
+  );
+
+  final params = Map<String, dynamic>.from(request.toJson())
+    ..removeWhere((key, value) => value == null);
+
+  late final HttpTextResponse response;
+  try {
+    response = await httpClientWrapper.post(
+      '$baseUrl/webman/3rdparty/AudioStation/webUI/audio_search_lyrics.cgi',
+      body: HttpBody.form(
+        params.map((key, value) => MapEntry(key, value.toString())),
+      ),
+      headers: HttpHeaders.rawMap({
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        ...authHeaders,
+      }),
+    );
+  } catch (e) {
+    logger.e('发送请求失败: $e');
+    throw AudioStationException(message: l10n.error_network_error);
+  }
+
+  if (response.statusCode != 200) {
+    logger.e('请求失败，状态码：${response.statusCode}');
+    throw AudioStationException(
+      message: l10n.error_getNumberOfPlugIns_failed,
+      statusCode: response.statusCode,
+    );
+  }
+
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw AudioStationException(message: l10n.error_response_parse_failed);
+  }
+
+  final result = GetNumberOfPlugInsResponse.fromJson(jsonBody);
+  if (!result.success) {
+    logger.e('获取插件数量失败');
+    throw AudioStationException(message: l10n.error_getNumberOfPlugIns_failed);
+  }
 
   if (cacheDuration != null) {
     await saveToCache(

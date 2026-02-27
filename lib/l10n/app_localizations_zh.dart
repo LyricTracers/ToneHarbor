@@ -96,6 +96,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_getSongInfo_failed => '获取歌曲信息失败';
 
   @override
+  String get error_setRating_failed => '设置评分失败';
+
+  @override
+  String get error_getNumberOfPlugIns_failed => '获取插件数量失败';
+
+  @override
   String get error_getServerInfo_failed => '获取服务器信息失败';
 
   @override

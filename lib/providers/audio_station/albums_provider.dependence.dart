@@ -20,12 +20,15 @@ Future<AlbumResponse> _sendAlbumRequest<T>({
 
   final baseUrl = await ref.read(baseUrlProvider.future);
 
+  final params = Map<String, dynamic>.from(toJson())
+    ..removeWhere((key, value) => value == null);
+
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
       '$baseUrl/music/webapi/AudioStation/album.cgi',
       body: HttpBody.form(
-        toJson().map((key, value) => MapEntry(key, value?.toString() ?? '')),
+        params.map((key, value) => MapEntry(key, value.toString())),
       ),
       headers: HttpHeaders.rawMap({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',

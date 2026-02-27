@@ -100,6 +100,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_getSongInfo_failed => 'Failed to get song information';
 
   @override
+  String get error_setRating_failed => 'Failed to set rating';
+
+  @override
+  String get error_getNumberOfPlugIns_failed =>
+      'Failed to get the number of plugins';
+
+  @override
   String get error_getServerInfo_failed => 'Failed to get server information';
 
   @override

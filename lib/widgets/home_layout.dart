@@ -454,6 +454,56 @@ class HomeLayout extends BaseBgLayout {
               },
               child: const Text('测试获取歌曲信息'),
             ),
+            const SizedBox(height: 20),
+
+            // 测试设置歌曲评分
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final results = await ref.read(
+                    setRatingProvider(id: 'music_785331', rating: 5).future,
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '设置评分成功: ${results?.success == true ? '成功' : '失败'}',
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试设置歌曲评分'),
+            ),
+            const SizedBox(height: 20),
+
+            // 测试获取插件数量
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final results = await ref.read(
+                    numberOfPlugInsProvider().future,
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '获取插件数量成功，插件数量: ${results?.hasPlugIn ?? 0}',
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试获取插件数量'),
+            ),
           ],
         ),
       ),

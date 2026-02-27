@@ -29,6 +29,8 @@
   "error_getLyrics_failed": "Failed to get lyrics",
   "error_searchLyrics_failed": "Failed to search lyrics",
   "error_getSongInfo_failed": "Failed to get song information",
+  "error_setRating_failed": "Failed to set rating",
+  "error_getNumberOfPlugIns_failed": "Failed to get the number of plugins",
   "error_getServerInfo_failed": "Failed to get server information",
   "error_getDSMInfo_failed": "Failed to get DSM information",
   "error_syno_request_100": "Unknown error.",

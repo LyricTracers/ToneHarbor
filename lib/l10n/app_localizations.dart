@@ -272,6 +272,18 @@ abstract class AppLocalizations {
   /// **'Failed to get song information'**
   String get error_getSongInfo_failed;
 
+  /// No description provided for @error_setRating_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to set rating'**
+  String get error_setRating_failed;
+
+  /// No description provided for @error_getNumberOfPlugIns_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get the number of plugins'**
+  String get error_getNumberOfPlugIns_failed;
+
   /// No description provided for @error_getServerInfo_failed.
   ///
   /// In en, this message translates to:

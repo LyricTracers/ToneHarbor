@@ -958,6 +958,169 @@ final class SongInfoFamily extends $Family
   String toString() => r'songInfoProvider';
 }
 
+@ProviderFor(setRating)
+final setRatingProvider = SetRatingFamily._();
+
+final class SetRatingProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<SetRatingResponse>,
+          SetRatingResponse,
+          FutureOr<SetRatingResponse>
+        >
+    with
+        $FutureModifier<SetRatingResponse>,
+        $FutureProvider<SetRatingResponse> {
+  SetRatingProvider._({
+    required SetRatingFamily super.from,
+    required ({String id, int rating}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'setRatingProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$setRatingHash();
+
+  @override
+  String toString() {
+    return r'setRatingProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<SetRatingResponse> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<SetRatingResponse> create(Ref ref) {
+    final argument = this.argument as ({String id, int rating});
+    return setRating(ref, id: argument.id, rating: argument.rating);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SetRatingProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$setRatingHash() => r'620f63e4fc383f9bc23a78e01b588b96623ef21b';
+
+final class SetRatingFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<SetRatingResponse>,
+          ({String id, int rating})
+        > {
+  SetRatingFamily._()
+    : super(
+        retry: null,
+        name: r'setRatingProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  SetRatingProvider call({required String id, int rating = 5}) =>
+      SetRatingProvider._(argument: (id: id, rating: rating), from: this);
+
+  @override
+  String toString() => r'setRatingProvider';
+}
+
+@ProviderFor(numberOfPlugIns)
+final numberOfPlugInsProvider = NumberOfPlugInsFamily._();
+
+final class NumberOfPlugInsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<GetNumberOfPlugInsResponse>,
+          GetNumberOfPlugInsResponse,
+          FutureOr<GetNumberOfPlugInsResponse>
+        >
+    with
+        $FutureModifier<GetNumberOfPlugInsResponse>,
+        $FutureProvider<GetNumberOfPlugInsResponse> {
+  NumberOfPlugInsProvider._({
+    required NumberOfPlugInsFamily super.from,
+    required Duration? super.argument,
+  }) : super(
+         retry: null,
+         name: r'numberOfPlugInsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$numberOfPlugInsHash();
+
+  @override
+  String toString() {
+    return r'numberOfPlugInsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<GetNumberOfPlugInsResponse> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<GetNumberOfPlugInsResponse> create(Ref ref) {
+    final argument = this.argument as Duration?;
+    return numberOfPlugIns(ref, cacheDuration: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is NumberOfPlugInsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$numberOfPlugInsHash() => r'd53e842ecaf3196462a8259c893c32670627c814';
+
+final class NumberOfPlugInsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<GetNumberOfPlugInsResponse>,
+          Duration?
+        > {
+  NumberOfPlugInsFamily._()
+    : super(
+        retry: null,
+        name: r'numberOfPlugInsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  NumberOfPlugInsProvider call({
+    Duration? cacheDuration = const Duration(hours: 24),
+  }) => NumberOfPlugInsProvider._(argument: cacheDuration, from: this);
+
+  @override
+  String toString() => r'numberOfPlugInsProvider';
+}
+
 @ProviderFor(SongsState)
 final songsStateProvider = SongsStateProvider._();
 
