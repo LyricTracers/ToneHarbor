@@ -146,6 +146,12 @@ abstract class AppLocalizations {
   /// **'Login failed'**
   String get error_login_failed;
 
+  /// No description provided for @error_search_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'search %s failed'**
+  String get error_search_failed;
+
   /// No description provided for @error_token_refresh_failed.
   ///
   /// In en, this message translates to:

@@ -1116,6 +1116,287 @@ as int,
 
 
 /// @nodoc
+mixin _$SearchArtistRequest {
+
+ String get api; String get method; String get version; String get filter; String get library; int get limit; int get offset;@JsonKey(name: 'sort_by') String get sortBy;@JsonKey(name: 'sort_direction') String get sortDirection;
+/// Create a copy of SearchArtistRequest
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SearchArtistRequestCopyWith<SearchArtistRequest> get copyWith => _$SearchArtistRequestCopyWithImpl<SearchArtistRequest>(this as SearchArtistRequest, _$identity);
+
+  /// Serializes this SearchArtistRequest to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SearchArtistRequest&&(identical(other.api, api) || other.api == api)&&(identical(other.method, method) || other.method == method)&&(identical(other.version, version) || other.version == version)&&(identical(other.filter, filter) || other.filter == filter)&&(identical(other.library, library) || other.library == library)&&(identical(other.limit, limit) || other.limit == limit)&&(identical(other.offset, offset) || other.offset == offset)&&(identical(other.sortBy, sortBy) || other.sortBy == sortBy)&&(identical(other.sortDirection, sortDirection) || other.sortDirection == sortDirection));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,api,method,version,filter,library,limit,offset,sortBy,sortDirection);
+
+@override
+String toString() {
+  return 'SearchArtistRequest(api: $api, method: $method, version: $version, filter: $filter, library: $library, limit: $limit, offset: $offset, sortBy: $sortBy, sortDirection: $sortDirection)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SearchArtistRequestCopyWith<$Res>  {
+  factory $SearchArtistRequestCopyWith(SearchArtistRequest value, $Res Function(SearchArtistRequest) _then) = _$SearchArtistRequestCopyWithImpl;
+@useResult
+$Res call({
+ String api, String method, String version, String filter, String library, int limit, int offset,@JsonKey(name: 'sort_by') String sortBy,@JsonKey(name: 'sort_direction') String sortDirection
+});
+
+
+
+
+}
+/// @nodoc
+class _$SearchArtistRequestCopyWithImpl<$Res>
+    implements $SearchArtistRequestCopyWith<$Res> {
+  _$SearchArtistRequestCopyWithImpl(this._self, this._then);
+
+  final SearchArtistRequest _self;
+  final $Res Function(SearchArtistRequest) _then;
+
+/// Create a copy of SearchArtistRequest
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? api = null,Object? method = null,Object? version = null,Object? filter = null,Object? library = null,Object? limit = null,Object? offset = null,Object? sortBy = null,Object? sortDirection = null,}) {
+  return _then(_self.copyWith(
+api: null == api ? _self.api : api // ignore: cast_nullable_to_non_nullable
+as String,method: null == method ? _self.method : method // ignore: cast_nullable_to_non_nullable
+as String,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as String,filter: null == filter ? _self.filter : filter // ignore: cast_nullable_to_non_nullable
+as String,library: null == library ? _self.library : library // ignore: cast_nullable_to_non_nullable
+as String,limit: null == limit ? _self.limit : limit // ignore: cast_nullable_to_non_nullable
+as int,offset: null == offset ? _self.offset : offset // ignore: cast_nullable_to_non_nullable
+as int,sortBy: null == sortBy ? _self.sortBy : sortBy // ignore: cast_nullable_to_non_nullable
+as String,sortDirection: null == sortDirection ? _self.sortDirection : sortDirection // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [SearchArtistRequest].
+extension SearchArtistRequestPatterns on SearchArtistRequest {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SearchArtistRequest value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _SearchArtistRequest() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SearchArtistRequest value)  $default,){
+final _that = this;
+switch (_that) {
+case _SearchArtistRequest():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SearchArtistRequest value)?  $default,){
+final _that = this;
+switch (_that) {
+case _SearchArtistRequest() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String api,  String method,  String version,  String filter,  String library,  int limit,  int offset, @JsonKey(name: 'sort_by')  String sortBy, @JsonKey(name: 'sort_direction')  String sortDirection)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _SearchArtistRequest() when $default != null:
+return $default(_that.api,_that.method,_that.version,_that.filter,_that.library,_that.limit,_that.offset,_that.sortBy,_that.sortDirection);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String api,  String method,  String version,  String filter,  String library,  int limit,  int offset, @JsonKey(name: 'sort_by')  String sortBy, @JsonKey(name: 'sort_direction')  String sortDirection)  $default,) {final _that = this;
+switch (_that) {
+case _SearchArtistRequest():
+return $default(_that.api,_that.method,_that.version,_that.filter,_that.library,_that.limit,_that.offset,_that.sortBy,_that.sortDirection);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String api,  String method,  String version,  String filter,  String library,  int limit,  int offset, @JsonKey(name: 'sort_by')  String sortBy, @JsonKey(name: 'sort_direction')  String sortDirection)?  $default,) {final _that = this;
+switch (_that) {
+case _SearchArtistRequest() when $default != null:
+return $default(_that.api,_that.method,_that.version,_that.filter,_that.library,_that.limit,_that.offset,_that.sortBy,_that.sortDirection);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _SearchArtistRequest extends SearchArtistRequest {
+  const _SearchArtistRequest({required this.api, required this.method, required this.version, required this.filter, required this.library, required this.limit, required this.offset, @JsonKey(name: 'sort_by') required this.sortBy, @JsonKey(name: 'sort_direction') required this.sortDirection}): super._();
+  factory _SearchArtistRequest.fromJson(Map<String, dynamic> json) => _$SearchArtistRequestFromJson(json);
+
+@override final  String api;
+@override final  String method;
+@override final  String version;
+@override final  String filter;
+@override final  String library;
+@override final  int limit;
+@override final  int offset;
+@override@JsonKey(name: 'sort_by') final  String sortBy;
+@override@JsonKey(name: 'sort_direction') final  String sortDirection;
+
+/// Create a copy of SearchArtistRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SearchArtistRequestCopyWith<_SearchArtistRequest> get copyWith => __$SearchArtistRequestCopyWithImpl<_SearchArtistRequest>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$SearchArtistRequestToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SearchArtistRequest&&(identical(other.api, api) || other.api == api)&&(identical(other.method, method) || other.method == method)&&(identical(other.version, version) || other.version == version)&&(identical(other.filter, filter) || other.filter == filter)&&(identical(other.library, library) || other.library == library)&&(identical(other.limit, limit) || other.limit == limit)&&(identical(other.offset, offset) || other.offset == offset)&&(identical(other.sortBy, sortBy) || other.sortBy == sortBy)&&(identical(other.sortDirection, sortDirection) || other.sortDirection == sortDirection));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,api,method,version,filter,library,limit,offset,sortBy,sortDirection);
+
+@override
+String toString() {
+  return 'SearchArtistRequest(api: $api, method: $method, version: $version, filter: $filter, library: $library, limit: $limit, offset: $offset, sortBy: $sortBy, sortDirection: $sortDirection)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SearchArtistRequestCopyWith<$Res> implements $SearchArtistRequestCopyWith<$Res> {
+  factory _$SearchArtistRequestCopyWith(_SearchArtistRequest value, $Res Function(_SearchArtistRequest) _then) = __$SearchArtistRequestCopyWithImpl;
+@override @useResult
+$Res call({
+ String api, String method, String version, String filter, String library, int limit, int offset,@JsonKey(name: 'sort_by') String sortBy,@JsonKey(name: 'sort_direction') String sortDirection
+});
+
+
+
+
+}
+/// @nodoc
+class __$SearchArtistRequestCopyWithImpl<$Res>
+    implements _$SearchArtistRequestCopyWith<$Res> {
+  __$SearchArtistRequestCopyWithImpl(this._self, this._then);
+
+  final _SearchArtistRequest _self;
+  final $Res Function(_SearchArtistRequest) _then;
+
+/// Create a copy of SearchArtistRequest
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? api = null,Object? method = null,Object? version = null,Object? filter = null,Object? library = null,Object? limit = null,Object? offset = null,Object? sortBy = null,Object? sortDirection = null,}) {
+  return _then(_SearchArtistRequest(
+api: null == api ? _self.api : api // ignore: cast_nullable_to_non_nullable
+as String,method: null == method ? _self.method : method // ignore: cast_nullable_to_non_nullable
+as String,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as String,filter: null == filter ? _self.filter : filter // ignore: cast_nullable_to_non_nullable
+as String,library: null == library ? _self.library : library // ignore: cast_nullable_to_non_nullable
+as String,limit: null == limit ? _self.limit : limit // ignore: cast_nullable_to_non_nullable
+as int,offset: null == offset ? _self.offset : offset // ignore: cast_nullable_to_non_nullable
+as int,sortBy: null == sortBy ? _self.sortBy : sortBy // ignore: cast_nullable_to_non_nullable
+as String,sortDirection: null == sortDirection ? _self.sortDirection : sortDirection // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$ArtistData {
 
  List<Artist>? get artists; int get offset; int get total;

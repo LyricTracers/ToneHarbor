@@ -139,3 +139,42 @@ String getAudioReuqestErrorMessage(
       return defaultMessage;
   }
 }
+
+Future<T?> getFromCache<T>({
+  required String cacheKey,
+  required String group,
+  required T Function(Map<String, dynamic> json) fromJson,
+}) async {
+  try {
+    final cachedJson = await audioStationRequestCache.get(
+      cacheKey,
+      group: group,
+    );
+    if (cachedJson != null) {
+      logger.i('cacheKey: $cacheKey 从缓存读取数据');
+      return fromJson(cachedJson);
+    }
+  } catch (e) {
+    logger.w('cacheKey: $cacheKey 读取缓存失败: $e');
+  }
+  return null;
+}
+
+Future<void> saveToCache({
+  required String cacheKey,
+  required Map<String, dynamic> jsonBody,
+  required Duration cacheDuration,
+  required String group,
+}) async {
+  try {
+    await audioStationRequestCache.set(
+      cacheKey,
+      jsonBody,
+      duration: cacheDuration,
+      group: group,
+    );
+    logger.d('cacheKey: $cacheKey的数据已缓存');
+  } catch (e) {
+    logger.w('cacheKey: $cacheKey 缓存数据失败: $e');
+  }
+}

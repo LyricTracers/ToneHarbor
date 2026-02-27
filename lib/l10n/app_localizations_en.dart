@@ -34,6 +34,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_login_failed => 'Login failed';
 
   @override
+  String get error_search_failed => 'search %s failed';
+
+  @override
   String get error_token_refresh_failed => 'Failed to refresh token';
 
   @override

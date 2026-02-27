@@ -33,6 +33,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_login_failed => '登录失败';
 
   @override
+  String get error_search_failed => '搜索%s失败';
+
+  @override
   String get error_token_refresh_failed => '刷新 token 失败';
 
   @override

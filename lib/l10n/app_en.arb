@@ -8,6 +8,7 @@
   "error_password": "Please enter your password",
   "error_invalidUrl": "Invalid server address format",
   "error_login_failed": "Login failed",
+  "error_search_failed": "search %s failed",
   "error_token_refresh_failed": "Failed to refresh token",
   "error_account_info_invalid": "User information is invalid",
   "error_syno_login_400": "No such account or incorrect password",

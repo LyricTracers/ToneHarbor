@@ -1,5 +1,79 @@
 part of 'artists_provider.dart';
 
+/// 发送艺术家请求并处理响应
+Future<ArtistResponse> _sendArtistRequest<T>({
+  required Ref ref,
+  required T request,
+  required Map<String, dynamic> Function() toJson,
+  required String defaultError,
+  required AppLocalizations l10n,
+}) async {
+  final authHeaders = await getAuthHeaders(ref);
+  if (authHeaders == null) {
+    logger.w('认证失败，返回空结果');
+    return ArtistResponse(success: false);
+  }
+
+  final baseUrl = await ref.read(baseUrlProvider.future);
+
+  late final HttpTextResponse response;
+  try {
+    response = await httpClientWrapper.post(
+      '$baseUrl/music/webapi/AudioStation/artist.cgi',
+      body: HttpBody.form(
+        toJson().map((key, value) => MapEntry(key, value?.toString() ?? '')),
+      ),
+      headers: HttpHeaders.rawMap({
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        ...authHeaders,
+      }),
+    );
+  } catch (e) {
+    logger.e('发送请求失败: $e');
+    throw AudioStationException(message: l10n.error_network_error);
+  }
+
+  if (response.statusCode != 200) {
+    logger.e('请求失败，状态码：${response.statusCode}');
+    throw AudioStationException(
+      message: defaultError,
+      statusCode: response.statusCode,
+    );
+  }
+
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw AudioStationException(message: l10n.error_response_parse_failed);
+  }
+
+  final result = ArtistResponse.fromJson(jsonBody);
+  if (!result.success) {
+    final errorCode = jsonBody['error']?['code'];
+    final errorMessage = errorCode is int
+        ? getAudioReuqestErrorMessage(l10n, defaultError, errorCode)
+        : defaultError;
+    logger.e('请求失败，错误码：$errorCode，错误信息：$errorMessage');
+    throw AudioStationException(
+      message: errorMessage,
+      statusCode: errorCode is int ? errorCode : null,
+    );
+  }
+
+  return result;
+}
+
+/// 获取艺术家列表
+///
+/// [limit] 返回的艺术家数量，默认 100
+/// [offset] 偏移量，默认 0
+/// [library] 库类型，默认 'shared'
+/// [sortBy] 排序字段，默认 'name'
+/// [sortDirection] 排序方向，默认 'ASC'
+/// [additional] 额外信息，默认 'avg_rating'
+/// [cacheDuration] 缓存时长，不传则不使用缓存
 Future<ArtistResponse> getArtists({
   required Ref ref,
   int limit = 100,
@@ -10,28 +84,20 @@ Future<ArtistResponse> getArtists({
   String additional = 'avg_rating',
   Duration? cacheDuration,
 }) async {
-  // 生成缓存键
   final cacheKey =
       'getArtists:$limit:$offset:$library:$sortBy:$sortDirection:$additional';
 
-  // 尝试从缓存读取
   if (cacheDuration != null) {
-    try {
-      final cachedJson = await audioStationRequestCache.get(
-        cacheKey,
-        group: 'artist',
-      );
-      if (cachedJson != null) {
-        logger.i('从缓存读取艺术家列表');
-        return ArtistResponse.fromJson(cachedJson);
-      }
-    } catch (e) {
-      logger.w('读取缓存失败: $e');
-      // 缓存失败不影响主流程，继续执行
+    final cached = await getFromCache<ArtistResponse>(
+      cacheKey: cacheKey,
+      group: 'artist',
+      fromJson: (json) => ArtistResponse.fromJson(json),
+    );
+    if (cached != null) {
+      return cached;
     }
   }
 
-  // 准备请求参数
   final request = ArtistRequest(
     api: 'SYNO.AudioStation.Artist',
     method: 'list',
@@ -44,89 +110,92 @@ Future<ArtistResponse> getArtists({
     sortDirection: sortDirection,
   );
 
-  // 获取认证 headers
-  final authHeaders = await getAuthHeaders(ref);
-  if (authHeaders == null) {
-    logger.w('认证失败，返回空结果');
-    return ArtistResponse(success: false);
-  }
-
-  // 获取 baseUrl
-  final baseUrl = await ref.read(baseUrlProvider.future);
   final l10n = lookupAppLocalizations(
     getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
   );
 
-  // 发送请求
-  late final HttpTextResponse response;
-  try {
-    response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/artist.cgi',
-      body: HttpBody.form(
-        request.toJson().map(
-          (key, value) => MapEntry(key, value?.toString() ?? ''),
-        ),
-      ),
-      headers: HttpHeaders.rawMap({
-        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        ...authHeaders,
-      }),
-    );
-  } catch (e) {
-    logger.e('发送请求失败: $e');
-    throw AudioStationException(message: l10n.error_network_error);
-  }
+  final result = await _sendArtistRequest(
+    ref: ref,
+    request: request,
+    toJson: () => request.toJson(),
+    defaultError: l10n.error_getArtists_failed,
+    l10n: l10n,
+  );
 
-  // 处理响应
-  if (response.statusCode != 200) {
-    logger.e('获取艺术家列表失败，状态码：${response.statusCode}');
-    throw AudioStationException(
-      message: l10n.error_getArtists_failed,
-      statusCode: response.statusCode,
-    );
-  }
-
-  // 解析响应
-  late final Map<String, dynamic> jsonBody;
-  try {
-    jsonBody = parseJsonResponse(response.body);
-  } catch (e) {
-    logger.e('解析响应失败: $e');
-    throw AudioStationException(message: l10n.error_response_parse_failed);
-  }
-
-  // 检查响应状态
-  final result = ArtistResponse.fromJson(jsonBody);
-  if (!result.success) {
-    final errorCode = jsonBody['error']?['code'];
-    final errorMessage = errorCode is int
-        ? getAudioReuqestErrorMessage(
-            l10n,
-            l10n.error_getArtists_failed,
-            errorCode,
-          )
-        : l10n.error_getArtists_failed;
-    logger.e('获取艺术家列表失败，错误码：$errorCode，错误信息：$errorMessage');
-    throw AudioStationException(
-      message: errorMessage,
-      statusCode: errorCode is int ? errorCode : null,
-    );
-  }
-
-  // 缓存结果
   if (cacheDuration != null) {
-    try {
-      await audioStationRequestCache.set(
-        cacheKey,
-        jsonBody,
-        duration: cacheDuration,
-        group: 'artist',
-      );
-      logger.d('艺术家列表已缓存');
-    } catch (e) {
-      logger.w('缓存失败: $e');
-      // 缓存失败不影响主流程
+    await saveToCache(
+      cacheKey: cacheKey,
+      jsonBody: result.toJson(),
+      cacheDuration: cacheDuration,
+      group: 'artist',
+    );
+  }
+
+  return result;
+}
+
+/// 搜索艺术家
+///
+/// [filter] 艺术家名称，必填
+/// [library] 库类型，默认 'all'，可选 'shared', 'personal'
+/// [limit] 返回的艺术家数量，默认 5000
+/// [offset] 偏移量，默认 0
+/// [sortBy] 排序字段，默认 'name'
+/// [sortDirection] 排序方向，默认 'asc'
+/// [cacheDuration] 缓存时长，不传则不使用缓存
+Future<ArtistResponse> searchArtists({
+  required Ref ref,
+  required String filter,
+  String library = 'all',
+  int limit = 5000,
+  int offset = 0,
+  String sortBy = 'name',
+  String sortDirection = 'asc',
+  Duration? cacheDuration,
+}) async {
+  final cacheKey =
+      'searchArtists:$filter:$library:$limit:$offset:$sortBy:$sortDirection';
+
+  if (cacheDuration != null) {
+    final cached = await getFromCache<ArtistResponse>(
+      cacheKey: cacheKey,
+      group: 'artist',
+      fromJson: (json) => ArtistResponse.fromJson(json),
+    );
+    if (cached != null) {
+      return cached;
     }
+  }
+
+  final request = SearchArtistRequest(
+    api: 'SYNO.AudioStation.Artist',
+    method: 'list',
+    version: '1',
+    filter: filter,
+    library: library,
+    limit: limit,
+    offset: offset,
+    sortBy: sortBy,
+    sortDirection: sortDirection,
+  );
+  final l10n = lookupAppLocalizations(
+    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
+  );
+  final result = await _sendArtistRequest(
+    ref: ref,
+    request: request,
+    toJson: () => request.toJson(),
+    defaultError: l10n.error_search_failed.replaceFirst('%s', filter),
+    l10n: l10n,
+  );
+
+  if (cacheDuration != null) {
+    await saveToCache(
+      cacheKey: cacheKey,
+      jsonBody: result.toJson(),
+      cacheDuration: cacheDuration,
+      group: 'artist',
+    );
   }
 
   return result;

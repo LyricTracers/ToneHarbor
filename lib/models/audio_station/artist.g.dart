@@ -59,6 +59,33 @@ Map<String, dynamic> _$ArtistRequestToJson(_ArtistRequest instance) =>
       'version': instance.version,
     };
 
+_SearchArtistRequest _$SearchArtistRequestFromJson(Map<String, dynamic> json) =>
+    _SearchArtistRequest(
+      api: json['api'] as String,
+      method: json['method'] as String,
+      version: json['version'] as String,
+      filter: json['filter'] as String,
+      library: json['library'] as String,
+      limit: (json['limit'] as num).toInt(),
+      offset: (json['offset'] as num).toInt(),
+      sortBy: json['sort_by'] as String,
+      sortDirection: json['sort_direction'] as String,
+    );
+
+Map<String, dynamic> _$SearchArtistRequestToJson(
+  _SearchArtistRequest instance,
+) => <String, dynamic>{
+  'api': instance.api,
+  'method': instance.method,
+  'version': instance.version,
+  'filter': instance.filter,
+  'library': instance.library,
+  'limit': instance.limit,
+  'offset': instance.offset,
+  'sort_by': instance.sortBy,
+  'sort_direction': instance.sortDirection,
+};
+
 _ArtistData _$ArtistDataFromJson(Map<String, dynamic> json) => _ArtistData(
   artists: (json['artists'] as List<dynamic>?)
       ?.map((e) => Artist.fromJson(e as Map<String, dynamic>))

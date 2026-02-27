@@ -46,6 +46,25 @@ sealed class ArtistRequest with _$ArtistRequest {
 }
 
 @freezed
+sealed class SearchArtistRequest with _$SearchArtistRequest {
+  const SearchArtistRequest._();
+  const factory SearchArtistRequest({
+    required String api,
+    required String method,
+    required String version,
+    required String filter,
+    required String library,
+    required int limit,
+    required int offset,
+    @JsonKey(name: 'sort_by') required String sortBy,
+    @JsonKey(name: 'sort_direction') required String sortDirection,
+  }) = _SearchArtistRequest;
+
+  factory SearchArtistRequest.fromJson(Map<String, dynamic> json) =>
+      _$SearchArtistRequestFromJson(json);
+}
+
+@freezed
 sealed class ArtistData with _$ArtistData {
   const ArtistData._();
   const factory ArtistData({
