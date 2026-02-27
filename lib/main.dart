@@ -67,45 +67,47 @@ class MyApp extends HookConsumerWidget {
     final localeAsync = ref.watch(localeProvider);
     final synotokenAsync = ref.watch(authTokenProvider);
 
-    final router = GoRouter(
-      routes: [
-        ShellRoute(
-          routes: [
-            GoRoute(
-              path: '/',
-              pageBuilder: (context, state) =>
-                  SlideTransitionPage(child: const Text("data")),
-            ),
-          ],
-          builder: (context, state, child) {
-            return HomeLayout(child: child);
-          },
-        ),
-        GoRoute(
-          path: '/login',
-          pageBuilder: (context, state) =>
-              const MaterialPage(child: LoginPage()),
-        ),
-      ],
-      redirect: (context, state) {
-        if (synotokenAsync.isLoading) {
+    final router = useMemoized(() {
+      return GoRouter(
+        routes: [
+          ShellRoute(
+            routes: [
+              GoRoute(
+                path: '/',
+                pageBuilder: (context, state) =>
+                    SlideTransitionPage(child: const Text("data")),
+              ),
+            ],
+            builder: (context, state, child) {
+              return HomeLayout(child: child);
+            },
+          ),
+          GoRoute(
+            path: '/login',
+            pageBuilder: (context, state) =>
+                const MaterialPage(child: LoginPage()),
+          ),
+        ],
+        redirect: (context, state) {
+          if (synotokenAsync.isLoading) {
+            return null;
+          }
+
+          if (synotokenAsync.hasError) {
+            logger.w('认证检查失败: ${synotokenAsync.error}');
+            return '/login';
+          }
+
+          if (synotokenAsync.value == null) {
+            logger.d('未认证，跳转到登录页');
+            return '/login';
+          }
+
+          logger.d('已认证');
           return null;
-        }
-
-        if (synotokenAsync.hasError) {
-          logger.w('认证检查失败: ${synotokenAsync.error}');
-          return '/login';
-        }
-
-        if (synotokenAsync.value == null) {
-          logger.d('未认证，跳转到登录页');
-          return '/login';
-        }
-
-        logger.d('已认证');
-        return null;
-      },
-    );
+        },
+      );
+    }, [synotokenAsync]);
 
     return MaterialApp.router(
       title: 'ToneHarbor',
