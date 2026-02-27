@@ -30,9 +30,3 @@ class LocaleNotifier extends _$LocaleNotifier {
     await setLocale(newLocale);
   }
 }
-
-@keepAlive
-Future<AppLocalizations> appLocalizations(Ref ref) async {
-  final locale = getValueWhenReadyWithRef(ref, localeProvider, Locale('zh'));
-  return AppLocalizations.delegate.load(locale);
-}

@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/auth.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/excetions.dart';
 import 'package:toneharbor/widgets/base_bg_layout.dart';
 
 class LoginPage extends BaseBgLayout {
   const LoginPage({super.key});
 
   @override
-  Widget buildContent(
-    BuildContext context,
-    WidgetRef ref,
-    ValueNotifier<bool> loadFlag,
-  ) {
-    final l10n = getValueWhenReadyWithWidgetRef(
-      ref,
-      appLocalizationsProvider,
-      AppLocalizations.of(context),
-    )!;
+  Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
+    final l10n = lookupAppLocalizations(
+      getValueWhenReadyWithWidgetRef(ref, localeProvider, Locale('zh')),
+    );
     final colorScheme = getColorSchemeWhenReady(ref);
     final serverUrlAsync = ref.watch(serverUrlProvider);
     final accountInfo = ref.watch(accountInfoProvider);
@@ -50,7 +47,7 @@ class LoginPage extends BaseBgLayout {
     final usernameError = useState<String?>(null);
     final passwordError = useState<String?>(null);
 
-    Future<void> handleLogin() async {
+    Future<void> handleLogin(BuildContext context) async {
       final serverUrl = serverUrlController.text.trim();
       final username = usernameController.text.trim();
       final password = passwordController.text.trim();
@@ -79,8 +76,6 @@ class LoginPage extends BaseBgLayout {
         return;
       }
 
-      loadFlag.value = true;
-
       final serverUrlNotifier = ref.read(serverUrlProvider.notifier);
       await serverUrlNotifier.setServerUrl(serverUrl);
 
@@ -89,8 +84,35 @@ class LoginPage extends BaseBgLayout {
         Account(account: username, passwd: password),
       );
 
-      await Future.delayed(const Duration(seconds: 1));
-      loadFlag.value = false;
+      try {
+        ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+        final response = await ref.read(loginProvider.future);
+        ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+
+        if (response.success) {
+          logger.i("登录成功");
+          if (context.mounted) {
+            ref.invalidate(authTokenProvider);
+            context.go('/');
+          }
+        }
+      } catch (e) {
+        logger.e("登录异常: $e");
+
+        ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+
+        if (context.mounted) {
+          if (e is AudioStationException) {
+            showSnackBar(e.message, context, colorScheme.secondary);
+          } else {
+            showSnackBar(
+              l10n.error_login_failed,
+              context,
+              colorScheme.secondary,
+            );
+          }
+        }
+      }
     }
 
     return Center(
@@ -141,7 +163,7 @@ class LoginPage extends BaseBgLayout {
                         : null,
                   ),
                   keyboardType: TextInputType.url,
-                  enabled: !loadFlag.value,
+                  enabled: !requestFlag,
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -161,7 +183,7 @@ class LoginPage extends BaseBgLayout {
                         : null,
                   ),
                   keyboardType: TextInputType.text,
-                  enabled: !loadFlag.value,
+                  enabled: !requestFlag,
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -191,8 +213,8 @@ class LoginPage extends BaseBgLayout {
                         : null,
                   ),
                   obscureText: obscurePassword.value,
-                  enabled: !loadFlag.value,
-                  onSubmitted: (_) => handleLogin(),
+                  enabled: !requestFlag,
+                  onSubmitted: (_) => handleLogin(context),
                 ),
                 const SizedBox(height: 16),
                 Row(
@@ -207,7 +229,7 @@ class LoginPage extends BaseBgLayout {
                 ),
                 const SizedBox(height: 24),
                 FilledButton(
-                  onPressed: loadFlag.value ? null : handleLogin,
+                  onPressed: requestFlag ? null : () => handleLogin(context),
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),

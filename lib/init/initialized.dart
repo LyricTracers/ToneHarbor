@@ -7,6 +7,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:rhttp/rhttp.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:tray_manager/tray_manager.dart';
@@ -23,6 +24,7 @@ Future<void> initialized() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Rhttp.init();
   initLogger();
+  initHttpClientWrapper();
   await CacheManager.instance.init();
   await LyricsCacheKeyManager().initDatabase();
   defaultSongIconProvider = const AssetImage(iconPlaceholder);
@@ -49,4 +51,27 @@ Future<void> _initTray() async {
     final String base64Image = base64Encode(imageData.buffer.asUint8List());
     await trayManager.setMusicPlayerPopover(defaultArtwork: base64Image);
   }
+}
+
+HttpClientWrapper get httpClientWrapper => _httpClientWrapper;
+late final HttpClientWrapper _httpClientWrapper;
+
+void initHttpClientWrapper() {
+  _httpClientWrapper = HttpClientWrapper(
+    settings: const ClientSettings(
+      timeoutSettings: TimeoutSettings(
+        timeout: Duration(seconds: 30),
+        connectTimeout: Duration(seconds: 10),
+      ),
+    ),
+    retryInterceptor: RetryInterceptor(
+      maxRetries: 3,
+      delay: (attempt) => Duration(milliseconds: 500 * (attempt + 1)),
+      beforeRetry: (attempt, request, response, exception) async {
+        logger.w('after【Retrying $attempt count】 throw $exception');
+        return request;
+      },
+    ),
+    loggingInterceptor: LoggingInterceptor(logger: logger),
+  );
 }

@@ -140,6 +140,84 @@ abstract class AppLocalizations {
   /// **'Invalid server address format'**
   String get error_invalidUrl;
 
+  /// No description provided for @error_login_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed'**
+  String get error_login_failed;
+
+  /// No description provided for @error_token_refresh_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to refresh token'**
+  String get error_token_refresh_failed;
+
+  /// No description provided for @error_account_info_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'User information is invalid'**
+  String get error_account_info_invalid;
+
+  /// No description provided for @error_syno_login_400.
+  ///
+  /// In en, this message translates to:
+  /// **'No such account or incorrect password'**
+  String get error_syno_login_400;
+
+  /// No description provided for @error_syno_login_401.
+  ///
+  /// In en, this message translates to:
+  /// **'Account disabled'**
+  String get error_syno_login_401;
+
+  /// No description provided for @error_syno_login_402.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied'**
+  String get error_syno_login_402;
+
+  /// No description provided for @error_syno_login_403.
+  ///
+  /// In en, this message translates to:
+  /// **'2-factor authentication code required'**
+  String get error_syno_login_403;
+
+  /// No description provided for @error_syno_login_404.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to authenticate 2-factor authentication code'**
+  String get error_syno_login_404;
+
+  /// No description provided for @error_syno_login_406.
+  ///
+  /// In en, this message translates to:
+  /// **'Enforce to authenticate with 2-factor authentication code'**
+  String get error_syno_login_406;
+
+  /// No description provided for @error_syno_login_407.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked IP source'**
+  String get error_syno_login_407;
+
+  /// No description provided for @error_syno_login_408.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired password cannot change'**
+  String get error_syno_login_408;
+
+  /// No description provided for @error_syno_login_409.
+  ///
+  /// In en, this message translates to:
+  /// **'Password expired'**
+  String get error_syno_login_409;
+
+  /// No description provided for @error_syno_login_410.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be changed'**
+  String get error_syno_login_410;
+
   /// No description provided for @useHttps.
   ///
   /// In en, this message translates to:
@@ -170,11 +248,11 @@ abstract class AppLocalizations {
   /// **'「Please wait a moment」'**
   String get loading;
 
-  /// No description provided for @error_account_info_invalid.
+  /// No description provided for @has_copy.
   ///
   /// In en, this message translates to:
-  /// **'User information is invalid'**
-  String get error_account_info_invalid;
+  /// **'Copied:'**
+  String get has_copy;
 }
 
 class _AppLocalizationsDelegate

@@ -20,8 +20,8 @@ sealed class AudioStationCookies with _$AudioStationCookies {
   bool get isValid =>
       did.isNotEmpty &&
       id.isNotEmpty &&
-      DateTime.now().millisecondsSinceEpoch < didExpires * 1000 &&
-      DateTime.now().millisecondsSinceEpoch < idExpires * 1000;
+      DateTime.now().millisecondsSinceEpoch < didExpires &&
+      DateTime.now().millisecondsSinceEpoch < idExpires;
 }
 
 @freezed

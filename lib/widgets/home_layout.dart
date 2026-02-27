@@ -8,11 +8,7 @@ class HomeLayout extends BaseBgLayout {
   const HomeLayout({super.key, required this.child});
 
   @override
-  Widget buildContent(
-    BuildContext context,
-    WidgetRef ref,
-    ValueNotifier<bool> loadFlag,
-  ) {
+  Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
     var l10n = AppLocalizations.of(context)!;
     return Center(child: Text(l10n.appTitle));
   }

@@ -8,6 +8,7 @@ const String localeKey = 'locale_l10n';
 const String serverUrlKey = 'server_url';
 const String accountKey = 'account';
 const String cookieKey = 'audio_station_cookies';
+const String synotokenKey = 'synotoken';
 const String useHttpKey = 'use_http';
 
 // pic path

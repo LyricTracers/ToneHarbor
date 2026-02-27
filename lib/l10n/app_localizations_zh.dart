@@ -30,6 +30,45 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_invalidUrl => '服务器地址格式无效';
 
   @override
+  String get error_login_failed => '登录失败';
+
+  @override
+  String get error_token_refresh_failed => '刷新 token 失败';
+
+  @override
+  String get error_account_info_invalid => '用户信息无效';
+
+  @override
+  String get error_syno_login_400 => '无此账户或密码错误';
+
+  @override
+  String get error_syno_login_401 => '账户已禁用';
+
+  @override
+  String get error_syno_login_402 => '权限被拒绝';
+
+  @override
+  String get error_syno_login_403 => '需要双因素认证码';
+
+  @override
+  String get error_syno_login_404 => '双因素认证码验证失败';
+
+  @override
+  String get error_syno_login_406 => '强制使用双因素验证码进行认证';
+
+  @override
+  String get error_syno_login_407 => 'IP源已被封锁';
+
+  @override
+  String get error_syno_login_408 => '过期密码无法更改';
+
+  @override
+  String get error_syno_login_409 => '密码已过期';
+
+  @override
+  String get error_syno_login_410 => '必须更改密码';
+
+  @override
   String get useHttps => '使用HTTPS';
 
   @override
@@ -45,5 +84,5 @@ class AppLocalizationsZh extends AppLocalizations {
   String get loading => '「加载中｜请稍后」';
 
   @override
-  String get error_account_info_invalid => '用户信息无效';
+  String get has_copy => '已复制:';
 }

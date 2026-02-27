@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/providers/theme_data_provider.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'dart:ui' as ui;
@@ -13,7 +14,6 @@ abstract class BaseBgLayout extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final loadFlag = useState(false);
     final colorScheme = getColorSchemeWhenReady(ref);
     var syncSongIcon = getValueWhenReadyWithWidgetRef(
       ref,
@@ -30,6 +30,7 @@ abstract class BaseBgLayout extends HookConsumerWidget {
       loadDefaultThemeIconProvider,
       defaultSongIconProvider,
     );
+    var requestFlag = ref.watch(requestFlagProvider);
     var targetIcon = syncSongIcon ? songIcon : defaultIcon ?? songIcon;
     final gradientDecoration = BoxDecoration(
       gradient: LinearGradient(
@@ -90,8 +91,8 @@ abstract class BaseBgLayout extends HookConsumerWidget {
               decoration: gradientDecoration,
             ),
           ),
-          buildContent(context, ref, loadFlag),
-          loadFlag.value
+          buildContent(context, ref, requestFlag),
+          requestFlag
               ? const Center(child: AudioEqualizerLoader())
               : const SizedBox.shrink(),
         ],
@@ -99,9 +100,5 @@ abstract class BaseBgLayout extends HookConsumerWidget {
     );
   }
 
-  Widget buildContent(
-    BuildContext context,
-    WidgetRef ref,
-    ValueNotifier<bool> loadFlag,
-  );
+  Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag);
 }

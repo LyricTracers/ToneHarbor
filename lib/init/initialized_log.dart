@@ -46,7 +46,11 @@ class LoggingInterceptor extends Interceptor {
 
     switch (response) {
       case HttpTextResponse textResponse:
-        logger?.i("Body:${textResponse.body.length}");
+        final body = textResponse.body;
+        if (body.isNotEmpty) {
+          final preview = body.length > 200 ? body.substring(0, 200) : body;
+          logger?.i("Body length:${body.length}, body:$preview");
+        }
         break;
       default:
     }
@@ -143,8 +147,6 @@ class FileLogOutput extends LogOutput {
 }
 
 late final Logger logger;
-late final HttpClientWrapper httpClientWrapper;
-
 void initLogger() {
   logger = Logger(
     level: Level.all,
@@ -155,17 +157,5 @@ void initLogger() {
       error: PrettyPrinter(),
       fatal: PrettyPrinter(),
     ),
-  );
-
-  httpClientWrapper = HttpClientWrapper(
-    retryInterceptor: RetryInterceptor(
-      maxRetries: 3,
-      delay: (attempt) => Duration(milliseconds: 500 * (attempt + 1)),
-      beforeRetry: (attempt, request, response, exception) async {
-        logger.w('after【Retrying $attempt count】 throw $exception');
-        return request;
-      },
-    ),
-    loggingInterceptor: LoggingInterceptor(logger: logger),
   );
 }

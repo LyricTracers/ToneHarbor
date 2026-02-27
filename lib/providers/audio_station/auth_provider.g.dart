@@ -32,7 +32,7 @@ final class UseHttpProvider extends $AsyncNotifierProvider<UseHttp, bool> {
   UseHttp create() => UseHttp();
 }
 
-String _$useHttpHash() => r'92bc5905a217802f7fb5b265c377b5da0a15236b';
+String _$useHttpHash() => r'5a8af9503d6726715bef148212e3ef35c1b2ecd3';
 
 abstract class _$UseHttp extends $AsyncNotifier<bool> {
   FutureOr<bool> build();
@@ -120,7 +120,7 @@ final class AccountInfoProvider
   AccountInfo create() => AccountInfo();
 }
 
-String _$accountInfoHash() => r'e281258fe0da70ad8822979891205d5c11e79c20';
+String _$accountInfoHash() => r'a936422207f3bf1189a29d1e9eb0744f11e1474f';
 
 abstract class _$AccountInfo extends $AsyncNotifier<Account?> {
   FutureOr<Account?> build();
@@ -166,7 +166,7 @@ final class AudioStationCookiesInfoProvider
 }
 
 String _$audioStationCookiesInfoHash() =>
-    r'170a6ac60b1710fe2d8fdb3cb50adede76f70718';
+    r'2ec79ae53a31714571925f469d785dd9469bbfc5';
 
 abstract class _$AudioStationCookiesInfo
     extends $AsyncNotifier<AudioStationCookies?> {
@@ -192,17 +192,101 @@ abstract class _$AudioStationCookiesInfo
   }
 }
 
+@ProviderFor(SynoToken)
+final synoTokenProvider = SynoTokenProvider._();
+
+final class SynoTokenProvider extends $NotifierProvider<SynoToken, String?> {
+  SynoTokenProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'synoTokenProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$synoTokenHash();
+
+  @$internal
+  @override
+  SynoToken create() => SynoToken();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String?>(value),
+    );
+  }
+}
+
+String _$synoTokenHash() => r'abcdbe877815306732e1fb5238b4b629ed013822';
+
+abstract class _$SynoToken extends $Notifier<String?> {
+  String? build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<String?, String?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<String?, String?>,
+              String?,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(authToken)
+final authTokenProvider = AuthTokenProvider._();
+
+final class AuthTokenProvider
+    extends $FunctionalProvider<AsyncValue<String?>, String?, FutureOr<String?>>
+    with $FutureModifier<String?>, $FutureProvider<String?> {
+  AuthTokenProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'authTokenProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$authTokenHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<String?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<String?> create(Ref ref) {
+    return authToken(ref);
+  }
+}
+
+String _$authTokenHash() => r'ee9f70a1395287e265aa506873093ddc938596f3';
+
 @ProviderFor(login)
 final loginProvider = LoginProvider._();
 
 final class LoginProvider
     extends
         $FunctionalProvider<
-          AsyncValue<AuthResponse?>,
-          AuthResponse?,
-          FutureOr<AuthResponse?>
+          AsyncValue<AuthResponse>,
+          AuthResponse,
+          FutureOr<AuthResponse>
         >
-    with $FutureModifier<AuthResponse?>, $FutureProvider<AuthResponse?> {
+    with $FutureModifier<AuthResponse>, $FutureProvider<AuthResponse> {
   LoginProvider._()
     : super(
         from: null,
@@ -219,14 +303,14 @@ final class LoginProvider
 
   @$internal
   @override
-  $FutureProviderElement<AuthResponse?> $createElement(
+  $FutureProviderElement<AuthResponse> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<AuthResponse?> create(Ref ref) {
+  FutureOr<AuthResponse> create(Ref ref) {
     return login(ref);
   }
 }
 
-String _$loginHash() => r'74c709e040cc4915b4792e94aaf10c4280fb7898';
+String _$loginHash() => r'628707a6e0744c2957ea3ef3da1be649a26aa7e1';
