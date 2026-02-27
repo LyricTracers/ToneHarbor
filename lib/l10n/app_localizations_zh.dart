@@ -75,6 +75,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_getArtists_failed => '获取艺术家列表失败';
 
   @override
+  String get error_getAlbums_failed => '获取专辑列表失败';
+
+  @override
   String get error_syno_request_100 => '未知错误';
 
   @override

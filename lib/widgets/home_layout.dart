@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
-import 'package:toneharbor/providers/audio_station/artists_provider.dart';
-import 'package:toneharbor/providers/audio_station/auth_provider.dart';
+import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/widgets/base_bg_layout.dart';
 
 class HomeLayout extends BaseBgLayout {
@@ -15,6 +14,8 @@ class HomeLayout extends BaseBgLayout {
 
     // 监听 artists 状态
     final artistsState = ref.watch(artistsStateProvider);
+    // 监听 albums 状态
+    final albumsState = ref.watch(albumsStateProvider);
 
     return Center(
       child: SingleChildScrollView(
@@ -62,17 +63,17 @@ class HomeLayout extends BaseBgLayout {
             ElevatedButton(
               onPressed: () async {
                 try {
-                  final results = await ref.read(searchArtistsProvider(
-                    filter: '周深',
-                    library: 'all',
-                    limit: 100,
-                  ).future);
+                  final results = await ref.read(
+                    searchArtistsProvider(
+                      filter: '周深',
+                      library: 'all',
+                      limit: 100,
+                    ).future,
+                  );
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(
-                        '搜索成功，找到 ${results.data?.total ?? 0} 个艺术家',
-                      ),
+                      content: Text('搜索成功，找到 ${results.data?.total ?? 0} 个艺术家'),
                     ),
                   );
                 } catch (e) {
@@ -99,6 +100,90 @@ class HomeLayout extends BaseBgLayout {
                 );
               },
               child: const Text('测试认证 Headers'),
+            ),
+            const SizedBox(height: 40),
+
+            // 测试 albums 功能
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  await ref.read(albumsStateProvider.notifier).fetchAlbums();
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(const SnackBar(content: Text('获取专辑列表成功')));
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试获取专辑列表'),
+            ),
+            const SizedBox(height: 20),
+
+            // 显示专辑结果
+            albumsState == null
+                ? const Text('点击按钮获取专辑列表')
+                : Column(
+                    children: [
+                      Text('专辑数量: ${albumsState.data?.total ?? 0}'),
+                      const SizedBox(height: 10),
+                      if (albumsState.data?.albums != null &&
+                          albumsState.data!.albums!.isNotEmpty)
+                        Text('第一个专辑: ${albumsState.data!.albums![0].name}'),
+                    ],
+                  ),
+
+            const SizedBox(height: 20),
+
+            // 测试获取最近添加的专辑
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final results = await ref.read(
+                    recentAlbumsProvider(limit: 50).future,
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '获取最近专辑成功，找到 ${results.data?.total ?? 0} 个专辑',
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试获取最近添加的专辑'),
+            ),
+            const SizedBox(height: 20),
+
+            // 搜索专辑功能
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final results = await ref.read(
+                    searchAlbumsProvider(filter: '周杰伦', limit: 100).future,
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '搜索专辑成功，找到 ${results.data?.total ?? 0} 个专辑',
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('搜索专辑：周杰伦'),
             ),
           ],
         ),

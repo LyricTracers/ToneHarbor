@@ -22,6 +22,7 @@
   "error_syno_login_409": "Password expired",
   "error_syno_login_410": "Password must be changed",
   "error_getArtists_failed": "Failed to get the list of artists",
+  "error_getAlbums_failed": "Failed to get the list of albums",
   "error_syno_request_100": "Unknown error.",
   "error_syno_request_101": "No parameter of API, method or version.",
   "error_syno_request_102": "The requested API does not exist.",

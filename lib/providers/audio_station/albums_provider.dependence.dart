@@ -1,7 +1,7 @@
-part of 'artists_provider.dart';
+part of 'albums_provider.dart';
 
-/// 发送艺术家请求并处理响应
-Future<ArtistResponse> _sendArtistRequest<T>({
+/// 发送专辑请求并处理响应
+Future<AlbumResponse> _sendAlbumRequest<T>({
   required Ref ref,
   required T request,
   required Map<String, dynamic> Function() toJson,
@@ -15,7 +15,7 @@ Future<ArtistResponse> _sendArtistRequest<T>({
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
       ref.invalidate(authTokenProvider);
     });
-    return ArtistResponse(success: false);
+    return AlbumResponse(success: false);
   }
 
   final baseUrl = await ref.read(baseUrlProvider.future);
@@ -23,7 +23,7 @@ Future<ArtistResponse> _sendArtistRequest<T>({
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/artist.cgi',
+      '$baseUrl/music/webapi/AudioStation/album.cgi',
       body: HttpBody.form(
         toJson().map((key, value) => MapEntry(key, value?.toString() ?? '')),
       ),
@@ -53,7 +53,7 @@ Future<ArtistResponse> _sendArtistRequest<T>({
     throw AudioStationException(message: l10n.error_response_parse_failed);
   }
 
-  final result = ArtistResponse.fromJson(jsonBody);
+  final result = AlbumResponse.fromJson(jsonBody);
   if (!result.success) {
     final errorCode = jsonBody['error']?['code'];
     final errorMessage = errorCode is int
@@ -69,60 +69,63 @@ Future<ArtistResponse> _sendArtistRequest<T>({
   return result;
 }
 
-/// 获取艺术家列表
+/// 获取专辑列表
 ///
-/// [limit] 返回的艺术家数量，默认 100
+/// [limit] 返回的专辑数量，默认 100
 /// [offset] 偏移量，默认 0
-/// [library] 库类型，默认 'shared'
-/// [sortBy] 排序字段，默认 'name'
-/// [sortDirection] 排序方向，默认 'ASC'
+/// [library] 库类型，默认 'shared'，可选 'all','personal'
+/// [sortBy] 排序字段，默认 'name','time','random'
+/// [sortDirection] 排序方向，默认 'asc'，可选 'desc'
 /// [additional] 额外信息，默认 'avg_rating'
+/// [artist] 艺术家名称，可选
 /// [cacheDuration] 缓存时长，不传则不使用缓存
-Future<ArtistResponse> _getArtists({
+Future<AlbumResponse> _getAlbums({
   required Ref ref,
   int limit = 100,
   int offset = 0,
   String library = 'shared',
   String sortBy = 'name',
-  String sortDirection = 'ASC',
+  String sortDirection = 'asc',
   String additional = 'avg_rating',
+  String? artist,
   Duration? cacheDuration,
 }) async {
   final cacheKey =
-      'getArtists:$limit:$offset:$library:$sortBy:$sortDirection:$additional';
+      'getAlbums:$limit:$offset:$library:$sortBy:$sortDirection:$additional:$artist';
 
   if (cacheDuration != null) {
-    final cached = await getFromCache<ArtistResponse>(
+    final cached = await getFromCache<AlbumResponse>(
       cacheKey: cacheKey,
-      group: 'artist',
-      fromJson: (json) => ArtistResponse.fromJson(json),
+      group: 'album',
+      fromJson: (json) => AlbumResponse.fromJson(json),
     );
     if (cached != null) {
       return cached;
     }
   }
 
-  final request = ArtistRequest(
-    api: 'SYNO.AudioStation.Artist',
+  final request = AlbumRequest(
+    api: 'SYNO.AudioStation.Album',
     method: 'list',
-    version: 4,
+    version: 3,
     limit: limit,
     offset: offset,
     library: library,
     additional: additional,
     sortBy: sortBy,
     sortDirection: sortDirection,
+    artist: artist,
   );
 
   final l10n = lookupAppLocalizations(
     getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
   );
 
-  final result = await _sendArtistRequest(
+  final result = await _sendAlbumRequest(
     ref: ref,
     request: request,
     toJson: () => request.toJson(),
-    defaultError: l10n.error_getArtists_failed,
+    defaultError: l10n.error_getAlbums_failed,
     l10n: l10n,
   );
 
@@ -131,52 +134,49 @@ Future<ArtistResponse> _getArtists({
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
       cacheDuration: cacheDuration,
-      group: 'artist',
+      group: 'album',
     );
   }
 
   return result;
 }
 
-/// 搜索艺术家
+/// 搜索专辑
 ///
-/// [filter] 艺术家名称，必填
-/// [library] 库类型，默认 'all'，可选 'shared', 'personal'
-/// [limit] 返回的艺术家数量，默认 5000
+/// [filter] 专辑标题，必填
+/// [limit] 返回的专辑数量，默认 100
 /// [offset] 偏移量，默认 0
 /// [sortBy] 排序字段，默认 'name'
 /// [sortDirection] 排序方向，默认 'asc'
 /// [cacheDuration] 缓存时长，不传则不使用缓存
-Future<ArtistResponse> _searchArtists({
+Future<AlbumResponse> _searchAlbums({
   required Ref ref,
   required String filter,
-  String library = 'all',
-  int limit = 5000,
+  int limit = 100,
   int offset = 0,
   String sortBy = 'name',
   String sortDirection = 'asc',
   Duration? cacheDuration,
 }) async {
-  final cacheKey =
-      'searchArtists:$filter:$library:$limit:$offset:$sortBy:$sortDirection';
+  final cacheKey = 'searchAlbums:$filter:$limit:$offset:$sortBy:$sortDirection';
 
   if (cacheDuration != null) {
-    final cached = await getFromCache<ArtistResponse>(
+    final cached = await getFromCache<AlbumResponse>(
       cacheKey: cacheKey,
-      group: 'artist',
-      fromJson: (json) => ArtistResponse.fromJson(json),
+      group: 'album',
+      fromJson: (json) => AlbumResponse.fromJson(json),
     );
     if (cached != null) {
       return cached;
     }
   }
 
-  final request = SearchArtistRequest(
-    api: 'SYNO.AudioStation.Artist',
+  final request = SearchAlbumRequest(
+    api: 'SYNO.AudioStation.Album',
     method: 'list',
-    version: '1',
+    version: 1,
     filter: filter,
-    library: library,
+    library: 'shared',
     limit: limit,
     offset: offset,
     sortBy: sortBy,
@@ -185,7 +185,7 @@ Future<ArtistResponse> _searchArtists({
   final l10n = lookupAppLocalizations(
     getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
   );
-  final result = await _sendArtistRequest(
+  final result = await _sendAlbumRequest(
     ref: ref,
     request: request,
     toJson: () => request.toJson(),
@@ -198,7 +198,7 @@ Future<ArtistResponse> _searchArtists({
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
       cacheDuration: cacheDuration,
-      group: 'artist',
+      group: 'album',
     );
   }
 
