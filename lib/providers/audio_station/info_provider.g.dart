@@ -66,7 +66,7 @@ final class AudioStationInfoProvider
   }
 }
 
-String _$audioStationInfoHash() => r'5e0e5b272a99730d22053bfed5c6b0fad6283d52';
+String _$audioStationInfoHash() => r'84f4d2f9e26220901e51c78a5a271cf6e5edcebc';
 
 final class AudioStationInfoFamily extends $Family
     with
@@ -83,9 +83,8 @@ final class AudioStationInfoFamily extends $Family
         isAutoDispose: true,
       );
 
-  AudioStationInfoProvider call({
-    Duration? cacheDuration = const Duration(minutes: 5),
-  }) => AudioStationInfoProvider._(argument: cacheDuration, from: this);
+  AudioStationInfoProvider call({Duration? cacheDuration}) =>
+      AudioStationInfoProvider._(argument: cacheDuration, from: this);
 
   @override
   String toString() => r'audioStationInfoProvider';
@@ -146,7 +145,7 @@ final class DsmInfoProvider
   }
 }
 
-String _$dsmInfoHash() => r'cd3cbbe3c94c41b8ea5e06b1d964084c09c9ed8e';
+String _$dsmInfoHash() => r'fc59140b3e4224fa157047fbd4251ebf5f0468c9';
 
 final class DsmInfoFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<DSMInfoResponse>, Duration?> {
@@ -159,9 +158,8 @@ final class DsmInfoFamily extends $Family
         isAutoDispose: true,
       );
 
-  DsmInfoProvider call({
-    Duration? cacheDuration = const Duration(minutes: 5),
-  }) => DsmInfoProvider._(argument: cacheDuration, from: this);
+  DsmInfoProvider call({Duration? cacheDuration}) =>
+      DsmInfoProvider._(argument: cacheDuration, from: this);
 
   @override
   String toString() => r'dsmInfoProvider';
