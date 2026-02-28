@@ -60,8 +60,8 @@ void initHttpClientWrapper() {
   httpClientWrapper = HttpClientWrapper(
     settings: const ClientSettings(
       timeoutSettings: TimeoutSettings(
-        timeout: Duration(seconds: 30),
-        connectTimeout: Duration(seconds: 10),
+        timeout: Duration(seconds: 60),
+        connectTimeout: Duration(seconds: 15),
       ),
     ),
     retryInterceptor: RetryInterceptor(
