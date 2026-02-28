@@ -515,6 +515,7 @@ class HomeLayout extends BaseBgLayout {
                   await ref
                       .read(audioStationCookiesInfoProvider.notifier)
                       .clearCookie();
+                  ref.invalidate(authTokenProvider);
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Cookie 已清除，请尝试其他操作')),

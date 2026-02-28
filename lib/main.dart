@@ -88,6 +88,7 @@ class MyApp extends HookConsumerWidget {
           ),
         ],
         redirect: (context, state) {
+          logger.d('redirect: ${state.fullPath}');
           if (synotokenAsync.isLoading) {
             return null;
           }
