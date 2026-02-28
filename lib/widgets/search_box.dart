@@ -21,7 +21,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
   final BoxDecoration? listDecoration;
   final List<String>? lockItems;
   final Color? lockTextColor;
-  final Function(String)? onHistoryItemSelected;
+  final Function(String)? onSubmitSearch;
   final bool updateSelectedHistoryItemDateTime;
   final InputDecoration? decoration;
 
@@ -44,7 +44,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
     this.listDecoration,
     this.lockItems,
     this.lockTextColor,
-    this.onHistoryItemSelected,
+    this.onSubmitSearch,
     this.updateSelectedHistoryItemDateTime = false,
     this.decoration,
   });
@@ -129,7 +129,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
                         .addSearch(value);
                   }
                   showHistory.value = false;
-                  onHistoryItemSelected?.call(value);
+                  onSubmitSearch?.call(value);
                 },
                 onRemoveHistory: (value) {
                   ref.read(searchHistoryProvider.notifier).removeSearch(value);
@@ -171,6 +171,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
         }
         showHistory.value = false;
         focusNode.unfocus();
+        onSubmitSearch?.call(value);
       },
       decoration: decoration?.copyWith(
         suffixIcon: Row(

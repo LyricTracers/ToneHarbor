@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/base_bg_layout.dart';
@@ -54,6 +55,9 @@ class HomeLayout extends BaseBgLayout {
                         vertical: 8,
                       ),
                     ),
+                    onSubmitSearch: (value) {
+                      logger.i("onSubmitSearch: $value");
+                    },
                   ),
                 ),
                 const Text("data"),
