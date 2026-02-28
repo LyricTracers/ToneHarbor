@@ -113,6 +113,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_getDSMInfo_failed => 'Failed to get DSM information';
 
   @override
+  String get error_getPlaylists_failed => 'Failed to get playlists';
+
+  @override
+  String get error_getPlaylistDetail_failed => 'Failed to get playlist detail';
+
+  @override
+  String get error_getPlaylistInfo_failed => 'Failed to get playlist info';
+
+  @override
+  String get error_createPlaylist_failed => 'Failed to create playlist';
+
+  @override
+  String get error_renamePlaylist_failed => 'Failed to rename playlist';
+
+  @override
+  String get error_deletePlaylist_failed => 'Failed to delete playlist';
+
+  @override
+  String get error_addSongToPlaylist_failed => 'Failed to add song to playlist';
+
+  @override
+  String get error_removeMissingSongs_failed =>
+      'Failed to remove missing songs';
+
+  @override
   String get error_syno_request_100 => 'Unknown error.';
 
   @override

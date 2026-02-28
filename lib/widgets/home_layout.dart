@@ -525,6 +525,85 @@ class HomeLayout extends BaseBgLayout {
               },
               child: const Text('测试清除 Cookie（模拟过期）'),
             ),
+            const SizedBox(height: 40),
+
+            // 测试获取播放列表
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final results = await ref.read(playlistsProvider().future);
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('获取播放列表成功，数量: ${results.data?.total ?? 0}'),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试获取播放列表'),
+            ),
+            const SizedBox(height: 20),
+
+            // 测试创建播放列表
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final results = await createPlaylist(
+                    ref: ref,
+                    name: '测试播放列表_${DateTime.now().millisecondsSinceEpoch}',
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('创建播放列表: ${results.success ? '成功' : '失败'}'),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试创建播放列表'),
+            ),
+            const SizedBox(height: 20),
+
+            // 测试获取播放列表详情
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final playlistList = await ref.read(
+                    playlistsProvider().future,
+                  );
+                  final playlists = playlistList.data?.playlists;
+                  if (playlists == null || playlists.isEmpty) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(const SnackBar(content: Text('没有可用的播放列表')));
+                    return;
+                  }
+                  final results = await ref.read(
+                    playlistDetailProvider(id: playlists.first.id).future,
+                  );
+                  if (!context.mounted) return;
+                  final playlist = results.data?.playlists?.firstOrNull;
+                  final songsCount = playlist?.additional?.songs?.length ?? 0;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('获取播放列表详情成功，歌曲数量: $songsCount')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试获取播放列表详情'),
+            ),
           ],
         ),
       ),

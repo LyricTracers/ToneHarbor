@@ -296,6 +296,54 @@ abstract class AppLocalizations {
   /// **'Failed to get DSM information'**
   String get error_getDSMInfo_failed;
 
+  /// No description provided for @error_getPlaylists_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get playlists'**
+  String get error_getPlaylists_failed;
+
+  /// No description provided for @error_getPlaylistDetail_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get playlist detail'**
+  String get error_getPlaylistDetail_failed;
+
+  /// No description provided for @error_getPlaylistInfo_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get playlist info'**
+  String get error_getPlaylistInfo_failed;
+
+  /// No description provided for @error_createPlaylist_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create playlist'**
+  String get error_createPlaylist_failed;
+
+  /// No description provided for @error_renamePlaylist_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to rename playlist'**
+  String get error_renamePlaylist_failed;
+
+  /// No description provided for @error_deletePlaylist_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete playlist'**
+  String get error_deletePlaylist_failed;
+
+  /// No description provided for @error_addSongToPlaylist_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add song to playlist'**
+  String get error_addSongToPlaylist_failed;
+
+  /// No description provided for @error_removeMissingSongs_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to remove missing songs'**
+  String get error_removeMissingSongs_failed;
+
   /// No description provided for @error_syno_request_100.
   ///
   /// In en, this message translates to:

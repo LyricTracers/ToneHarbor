@@ -108,6 +108,30 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_getDSMInfo_failed => '获取 DSM 信息失败';
 
   @override
+  String get error_getPlaylists_failed => '获取播放列表失败';
+
+  @override
+  String get error_getPlaylistDetail_failed => '获取播放列表详情失败';
+
+  @override
+  String get error_getPlaylistInfo_failed => '获取播放列表信息失败';
+
+  @override
+  String get error_createPlaylist_failed => '创建播放列表失败';
+
+  @override
+  String get error_renamePlaylist_failed => '重命名播放列表失败';
+
+  @override
+  String get error_deletePlaylist_failed => '删除播放列表失败';
+
+  @override
+  String get error_addSongToPlaylist_failed => '添加歌曲到播放列表失败';
+
+  @override
+  String get error_removeMissingSongs_failed => '清除遗失歌曲失败';
+
+  @override
   String get error_syno_request_100 => '未知错误';
 
   @override
