@@ -223,7 +223,7 @@ class InputHistoryTextField extends HookConsumerWidget {
   }
 }
 
-class _HistoryOverlay extends HookConsumerWidget {
+class _HistoryOverlay extends ConsumerWidget {
   final Offset textFieldOffset;
   final Size textFieldSize;
   final List<String> displayList;
@@ -269,7 +269,6 @@ class _HistoryOverlay extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    logger.i('_HistoryOverlay build, displayList: $displayList');
     return Stack(
       children: [
         Positioned.fill(
