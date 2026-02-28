@@ -93,7 +93,7 @@ class HomeLayout extends BaseBgLayout {
             // 其他测试按钮
             ElevatedButton(
               onPressed: () async {
-                final headers = await getAuthHeadersWithWidgetRef(ref);
+                final headers = await ref.read(authHeadersProvider.future);
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

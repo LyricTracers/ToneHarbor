@@ -152,7 +152,6 @@ Future<String?> authToken(Ref ref) async {
       final response = await _refreshToken(ref, cookiesInfo, l10n);
       logger.d('刷新 token 完成: ${response.data?.synotoken}');
       if (response.data?.synotoken != null) {
-        // 延迟修改状态，避免在构建过程中修改
         Future.microtask(() {
           ref
               .read(synoTokenProvider.notifier)
@@ -162,7 +161,6 @@ Future<String?> authToken(Ref ref) async {
       }
     } catch (e) {
       logger.w('获取 synotoken 失败: $e');
-      // 延迟修改状态，避免在构建过程中修改
       Future.microtask(() {
         ref
             .read(audioStationCookiesInfoProvider.notifier)
@@ -174,13 +172,53 @@ Future<String?> authToken(Ref ref) async {
     }
   } else {
     logger.d('Cookie 无效，返回 null');
-    // 延迟修改状态，避免在构建过程中修改
     Future.microtask(() {
       ref.read(synoTokenProvider.notifier).clear();
     });
   }
 
   return null;
+}
+
+@riverpod
+Future<Map<String, String>?> authHeaders(Ref ref) async {
+  final serverUrl = await ref.watch(serverUrlProvider.future);
+  if (serverUrl.isEmpty) {
+    logger.w('serverUrl 为空，返回 null');
+    return null;
+  }
+
+  final baseUrl = await ref.watch(baseUrlProvider.future);
+
+  final headers = <String, String>{
+    'x-requested-with': 'XMLHttpRequest',
+    'accept': '*/*',
+    'accept-language': 'zh-CN,zh;q=0.9',
+    'origin': baseUrl,
+    'referer': '$baseUrl/music/',
+  };
+
+  final cookiesInfo = await ref.watch(audioStationCookiesInfoProvider.future);
+
+  if (cookiesInfo == null || !cookiesInfo.isValid) {
+    logger.d('Cookie 无效，返回 null');
+    return null;
+  }
+
+  final cookieString = "${cookiesInfo.id}; ${cookiesInfo.did}";
+  headers['Cookie'] = cookieString;
+  logger.d('使用Cookie: $cookieString');
+
+  final synotoken = ref.read(synoTokenProvider);
+  if (synotoken == null) {
+    logger.d('synotoken 为空，返回 null');
+    return null;
+  }
+
+  headers['x-syno-token'] = synotoken;
+  logger.d('使用SynoToken: $synotoken');
+
+  return headers;
 }
 
 Future<AuthResponse> login(WidgetRef ref) async {

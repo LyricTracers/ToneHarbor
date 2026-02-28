@@ -308,3 +308,44 @@ final class AuthTokenProvider
 }
 
 String _$authTokenHash() => r'7873fb8be3c88a1a2e613e37b079111f22744b3c';
+
+@ProviderFor(authHeaders)
+final authHeadersProvider = AuthHeadersProvider._();
+
+final class AuthHeadersProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Map<String, String>?>,
+          Map<String, String>?,
+          FutureOr<Map<String, String>?>
+        >
+    with
+        $FutureModifier<Map<String, String>?>,
+        $FutureProvider<Map<String, String>?> {
+  AuthHeadersProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'authHeadersProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$authHeadersHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<Map<String, String>?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Map<String, String>?> create(Ref ref) {
+    return authHeaders(ref);
+  }
+}
+
+String _$authHeadersHash() => r'42b8084c8726cf7ef1e9ab2ce7b5924692bc5a5b';

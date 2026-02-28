@@ -8,7 +8,7 @@ Future<ArtistResponse> _sendArtistRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await getAuthHeaders(ref);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {

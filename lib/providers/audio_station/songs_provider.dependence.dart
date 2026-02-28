@@ -8,7 +8,7 @@ Future<SongListResponse> _sendSongRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await getAuthHeaders(ref);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -80,7 +80,7 @@ Future<LyricsResponse> _sendLyricsRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await getAuthHeaders(ref);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -152,7 +152,7 @@ Future<SearchLyricsResponse> _sendSearchLyricsRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await getAuthHeaders(ref);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -221,7 +221,7 @@ Future<SongInfoResponse> _sendSongInfoRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await getAuthHeaders(ref);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -366,7 +366,7 @@ Future<SetRatingResponse> setRating({
   required String id,
   int rating = 5,
 }) async {
-  final authHeaders = await getAuthHeadersWithWidgetRef(ref);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -466,7 +466,7 @@ Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
     }
   }
 
-  final authHeaders = await getAuthHeaders(ref);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
