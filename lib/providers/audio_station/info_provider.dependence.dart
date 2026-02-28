@@ -1,5 +1,136 @@
 part of 'info_provider.dart';
 
+Future<Map<String, dynamic>> testConnection({required WidgetRef ref}) async {
+  final l10n = lookupAppLocalizations(
+    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
+  );
+
+  final baseUrl = await ref.read(baseUrlProvider.future);
+
+  late final HttpTextResponse response;
+  try {
+    response = await httpClientWrapper.get(
+      '$baseUrl/webman/pingpong.cgi',
+      query: {'quickconnect': 'true'},
+    );
+  } catch (e) {
+    logger.e('发送请求失败: $e');
+    throw AudioStationException(message: l10n.error_network_error);
+  }
+
+  if (response.statusCode != 200) {
+    throw AudioStationException(
+      message: l10n.error_network_error,
+      statusCode: response.statusCode,
+    );
+  }
+
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw AudioStationException(message: l10n.error_response_parse_failed);
+  }
+
+  if (jsonBody['success'] == false) {
+    final errorCode = jsonBody['error']?['code'];
+    final errorMessage = errorCode is int
+        ? getAudioReuqestErrorMessage(l10n, l10n.error_network_error, errorCode)
+        : (jsonBody['error']?['message'] ?? l10n.error_network_error);
+    throw AudioStationException(
+      message: errorMessage,
+      statusCode: errorCode is int ? errorCode : null,
+    );
+  }
+
+  return jsonBody;
+}
+
+Future<SynoAPIInfoResponse> queryAPI({
+  required WidgetRef ref,
+  String query = 'all',
+  Duration? cacheDuration,
+}) async {
+  final l10n = lookupAppLocalizations(
+    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
+  );
+
+  final cacheKey = 'queryAPI:$query';
+
+  if (cacheDuration != null) {
+    final cached = await getFromCache<SynoAPIInfoResponse>(
+      cacheKey: cacheKey,
+      group: 'queryAPI',
+      fromJson: (json) => SynoAPIInfoResponse.fromJson(json),
+    );
+    if (cached != null) {
+      logger.d('从缓存中获取查询所有可用的 API 响应: $cached');
+      return cached;
+    }
+  }
+
+  final baseUrl = await ref.read(baseUrlProvider.future);
+
+  late final HttpTextResponse response;
+  try {
+    response = await httpClientWrapper.get(
+      '$baseUrl/webapi/query.cgi',
+      query: {
+        'version': '1',
+        'api': 'SYNO.API.Info',
+        'method': 'query',
+        'query': query,
+      },
+    );
+  } catch (e) {
+    logger.e('发送请求失败: $e');
+    throw AudioStationException(message: l10n.error_network_error);
+  }
+
+  if (response.statusCode != 200) {
+    throw AudioStationException(
+      message: l10n.error_network_error,
+      statusCode: response.statusCode,
+    );
+  }
+
+  logger.d('查询所有可用的 API 响应: ${response.body}');
+
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw AudioStationException(message: l10n.error_response_parse_failed);
+  }
+
+  final result = SynoAPIInfoResponse.fromJson(jsonBody);
+
+  if (!result.success) {
+    final errorCode = jsonBody['error']?['code'];
+    final errorMessage = errorCode is int
+        ? getAudioReuqestErrorMessage(l10n, l10n.error_network_error, errorCode)
+        : l10n.error_network_error;
+    throw AudioStationException(
+      message: errorMessage,
+      statusCode: errorCode is int ? errorCode : null,
+    );
+  }
+
+  if (cacheDuration != null) {
+    logger.d('缓存查询所有可用的 API 响应: $jsonBody');
+    await saveToCache(
+      cacheKey: cacheKey,
+      jsonBody: jsonBody,
+      cacheDuration: cacheDuration,
+      group: 'queryAPI',
+    );
+  }
+
+  return result;
+}
+
 /// 发送 Audio Station 信息请求并处理响应
 Future<AudioStationInfoResponse> _sendAudioStationInfoRequest({
   required Ref ref,
