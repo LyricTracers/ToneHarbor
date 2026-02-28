@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
 
 class InputHistoryTextField extends HookConsumerWidget {
@@ -89,8 +90,6 @@ class InputHistoryTextField extends HookConsumerWidget {
       void onFocusChanged() {
         if (hasFocusExpand && showHistoryList && focusNode.hasFocus) {
           showHistory.value = true;
-        } else if (!focusNode.hasFocus) {
-          showHistory.value = false;
         }
       }
 
@@ -113,6 +112,7 @@ class InputHistoryTextField extends HookConsumerWidget {
 
     useEffect(() {
       if (showHistory.value && enableHistory) {
+        logger.i('Creating overlay, displayList: $displayList');
         overlayEntry.value?.remove();
         overlayEntry.value = null;
 
@@ -123,8 +123,10 @@ class InputHistoryTextField extends HookConsumerWidget {
             final offset = renderBox.localToGlobal(Offset.zero);
             final size = renderBox.size;
 
+            logger.i('Inserting overlay at offset: $offset, size: $size');
+
             overlayEntry.value = OverlayEntry(
-              builder: (context) => _HistoryOverlay(
+              builder: (overlayContext) => _HistoryOverlay(
                 textFieldOffset: offset,
                 textFieldSize: size,
                 displayList: displayList,
@@ -140,6 +142,7 @@ class InputHistoryTextField extends HookConsumerWidget {
                 historyListItemLayoutBuilder: historyListItemLayoutBuilder,
                 showDeleteIcon: showDeleteIcon,
                 onHistoryItemSelected: (value) async {
+                  logger.i('onHistoryItemSelected: $value');
                   controller.text = value;
                   currentText.value = value;
                   if (updateSelectedHistoryItemDateTime) {
@@ -151,18 +154,28 @@ class InputHistoryTextField extends HookConsumerWidget {
                   onHistoryItemSelected?.call(value);
                 },
                 onRemoveHistory: (value) {
+                  logger.i('onRemoveHistory: $value');
                   ref.read(searchHistoryProvider.notifier).removeSearch(value);
                 },
                 onDismiss: () {
+                  logger.i('onDismiss');
                   showHistory.value = false;
                   focusNode.unfocus();
                 },
               ),
             );
-            Overlay.of(context).insert(overlayEntry.value!);
+
+            final overlayState = Overlay.of(textFieldKey.currentContext!);
+            overlayState.insert(overlayEntry.value!);
+            logger.i('Overlay inserted successfully');
+          } else {
+            logger.i('RenderBox is null');
           }
         });
       } else {
+        logger.i(
+          'Removing overlay, showHistory: ${showHistory.value}, enableHistory: $enableHistory',
+        );
         overlayEntry.value?.remove();
         overlayEntry.value = null;
       }
@@ -210,7 +223,7 @@ class InputHistoryTextField extends HookConsumerWidget {
   }
 }
 
-class _HistoryOverlay extends StatelessWidget {
+class _HistoryOverlay extends HookConsumerWidget {
   final Offset textFieldOffset;
   final Size textFieldSize;
   final List<String> displayList;
@@ -255,13 +268,19 @@ class _HistoryOverlay extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    logger.i('_HistoryOverlay build, displayList: $displayList');
     return Stack(
       children: [
-        GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: onDismiss,
-          child: Container(color: Colors.black.withValues(alpha: 0.3)),
+        Positioned.fill(
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              logger.i('onTap dismiss overlay');
+              onDismiss();
+            },
+            child: Container(color: Colors.black.withValues(alpha: 0.3)),
+          ),
         ),
         Positioned(
           top: textFieldOffset.dy + textFieldSize.height,
@@ -296,31 +315,61 @@ class _HistoryOverlay extends StatelessWidget {
                       );
                     }
 
-                    return Container(
-                      decoration: listRowDecoration,
-                      child: ListTile(
-                        dense: true,
-                        leading: Icon(
-                          isLockItem ? Icons.lock : Icons.history,
-                          size: historyIconSize ?? 18,
-                          color: isLockItem ? lockTextColor : null,
-                        ),
-                        title: Text(
-                          item,
-                          style: listTextStyle?.copyWith(
-                            color: isLockItem ? lockTextColor : null,
+                    return Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          logger.i('onTap history item: $item');
+                          onHistoryItemSelected(item);
+                        },
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        child: SizedBox(
+                          height: 48,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  isLockItem ? Icons.lock : Icons.history,
+                                  size: historyIconSize ?? 18,
+                                  color: isLockItem ? lockTextColor : null,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    item,
+                                    style: listTextStyle?.copyWith(
+                                      color: isLockItem ? lockTextColor : null,
+                                    ),
+                                  ),
+                                ),
+                                if (!isLockItem && showDeleteIcon)
+                                  Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      onTap: () {
+                                        logger.i('onTap remove history: $item');
+                                        onRemoveHistory(item);
+                                      },
+                                      splashColor: Colors.transparent,
+                                      highlightColor: Colors.transparent,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8),
+                                        child: Icon(
+                                          deleteIcon ?? Icons.close,
+                                          size: deleteIconSize ?? 18,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
                         ),
-                        trailing: !isLockItem && showDeleteIcon
-                            ? GestureDetector(
-                                onTap: () => onRemoveHistory(item),
-                                child: Icon(
-                                  deleteIcon ?? Icons.close,
-                                  size: deleteIconSize ?? 18,
-                                ),
-                              )
-                            : null,
-                        onTap: () => onHistoryItemSelected(item),
                       ),
                     );
                   },
