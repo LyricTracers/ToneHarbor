@@ -4,8 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:toneharbor/providers/providers.dart';
-import 'package:toneharbor/widgets/login_page.dart';
-import 'package:toneharbor/widgets/home_layout.dart';
+import 'package:toneharbor/widgets/widgets.dart';
 import 'init/initialized.dart';
 import 'utils/base_utils.dart';
 import 'l10n/app_localizations.dart';
@@ -85,6 +84,11 @@ class MyApp extends HookConsumerWidget {
             path: '/login',
             pageBuilder: (context, state) =>
                 const MaterialPage(child: LoginPage()),
+          ),
+          GoRoute(
+            path: '/test',
+            pageBuilder: (context, state) =>
+                const MaterialPage(child: TestLayout()),
           ),
         ],
         redirect: (context, state) {

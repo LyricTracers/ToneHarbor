@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -31,6 +32,10 @@ class HomeLayout extends BaseBgLayout {
             Text(l10n.appSubtitle),
             const SizedBox(height: 20),
 
+            ElevatedButton(
+              onPressed: () async => context.push('/test'),
+              child: const Text('跳转测试页'),
+            ),
             // 测试 artists 功能
             ElevatedButton(
               onPressed: () async {
