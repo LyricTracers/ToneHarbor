@@ -488,6 +488,18 @@ abstract class AppLocalizations {
   /// **'Response Parsing failed'**
   String get error_response_parse_failed;
 
+  /// No description provided for @testConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Test Connection'**
+  String get testConnection;
+
+  /// No description provided for @testConnectionSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection test successful'**
+  String get testConnectionSuccess;
+
   /// No description provided for @useHttps.
   ///
   /// In en, this message translates to:

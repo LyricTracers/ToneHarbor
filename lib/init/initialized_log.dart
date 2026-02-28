@@ -69,7 +69,7 @@ class FileLogOutput extends LogOutput {
 
   @override
   Future<void> init() async {
-    var targetDir = await getApplicationDocumentsDirectory();
+    var targetDir = await getApplicationCacheDirectory();
     logFilePath = '${targetDir.path}/$logFileName';
     debugPrint("logFilePath = $logFilePath");
     final File file = File(logFilePath);

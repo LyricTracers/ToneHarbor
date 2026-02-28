@@ -65,6 +65,8 @@
   "error_syno_request_150": "Request source IP does not match the login IP.",
   "error_network_error": "Network Error",
   "error_response_parse_failed": "Response Parsing failed",
+  "testConnection": "Test Connection",
+  "testConnectionSuccess": "Connection test successful",
   "useHttps": "Use HTTPS",
   "username": "Username",
   "password": "Password",

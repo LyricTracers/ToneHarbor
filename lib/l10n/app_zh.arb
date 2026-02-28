@@ -67,6 +67,8 @@
   "error_syno_request_150": "请求源IP与登录IP不匹配",
   "error_network_error": "网络错误",
   "error_response_parse_failed": "解析失败",
+  "testConnection": "测试连通性",
+  "testConnectionSuccess": "连通性测试成功",
   "useHttps": "使用HTTPS",
   "signIn": "登录",
   "loading": "「加载中｜请稍后」",

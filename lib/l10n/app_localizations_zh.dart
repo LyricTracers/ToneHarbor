@@ -204,6 +204,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_response_parse_failed => '解析失败';
 
   @override
+  String get testConnection => '测试连通性';
+
+  @override
+  String get testConnectionSuccess => '连通性测试成功';
+
+  @override
   String get useHttps => '使用HTTPS';
 
   @override

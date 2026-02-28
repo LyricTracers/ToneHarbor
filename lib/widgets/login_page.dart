@@ -46,6 +46,52 @@ class LoginPage extends BaseBgLayout {
     final serverUrlError = useState<String?>(null);
     final usernameError = useState<String?>(null);
     final passwordError = useState<String?>(null);
+    final testingConnection = useState(false);
+
+    Future<void> handleTestConnection() async {
+      final serverUrl = serverUrlController.text.trim();
+      serverUrlError.value = null;
+
+      if (serverUrl.isEmpty) {
+        serverUrlError.value = l10n.error_serverUrl;
+        return;
+      }
+
+      if (!isValidServerUrl(serverUrl)) {
+        serverUrlError.value = l10n.error_invalidUrl;
+        return;
+      }
+
+      final serverUrlNotifier = ref.read(serverUrlProvider.notifier);
+      await serverUrlNotifier.setServerUrl(serverUrl);
+
+      testingConnection.value = true;
+      try {
+        await testConnection(ref: ref);
+        if (context.mounted) {
+          showSnackBar(
+            l10n.testConnectionSuccess,
+            context,
+            colorScheme.primary,
+          );
+        }
+      } catch (e) {
+        logger.e("测试连通性异常: $e");
+        if (context.mounted) {
+          if (e is AudioStationException) {
+            showSnackBar(e.message, context, colorScheme.secondary);
+          } else {
+            showSnackBar(
+              l10n.error_network_error,
+              context,
+              colorScheme.secondary,
+            );
+          }
+        }
+      } finally {
+        testingConnection.value = false;
+      }
+    }
 
     Future<void> handleLogin(BuildContext context) async {
       final serverUrl = serverUrlController.text.trim();
@@ -151,6 +197,17 @@ class LoginPage extends BaseBgLayout {
                     labelText: l10n.serverUrl,
                     hintText: '192.168.1.100:5000',
                     prefixIcon: const Icon(Icons.dns),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        testingConnection.value
+                            ? Icons.hourglass_empty
+                            : Icons.wifi,
+                      ),
+                      onPressed: testingConnection.value || requestFlag
+                          ? null
+                          : handleTestConnection,
+                      tooltip: l10n.testConnection,
+                    ),
                     border: const OutlineInputBorder(),
                     errorText: serverUrlError.value,
                     errorBorder: serverUrlError.value != null

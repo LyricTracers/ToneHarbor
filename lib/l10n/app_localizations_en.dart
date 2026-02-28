@@ -217,6 +217,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_response_parse_failed => 'Response Parsing failed';
 
   @override
+  String get testConnection => 'Test Connection';
+
+  @override
+  String get testConnectionSuccess => 'Connection test successful';
+
+  @override
   String get useHttps => 'Use HTTPS';
 
   @override
