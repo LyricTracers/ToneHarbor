@@ -91,6 +91,7 @@ Future<int> downloadSong({
   required String id,
   String format = 'mp3',
   required String filePath,
+  bool resume = true,
 }) async {
   final l10n = lookupAppLocalizations(
     getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
@@ -106,11 +107,20 @@ Future<int> downloadSong({
     return 0;
   }
 
-  final response = await httpClientWrapper.getStream(
+  final file = File(filePath);
+  int existingBytes = 0;
+
+  if (resume && await file.exists()) {
+    existingBytes = await file.length();
+  }
+
+  final rangeHeader = existingBytes > 0 ? 'bytes=$existingBytes-' : 'bytes=0-';
+
+  final response = await downloadHttpClientWrapper.getStream(
     streamUrl,
     headers: HttpHeaders.rawMap({
       ...authHeaders,
-      'range': 'bytes=0-',
+      'range': rangeHeader,
       'accept': '*/*',
       'sec-fetch-dest': 'audio',
       'sec-fetch-mode': 'no-cors',
@@ -128,10 +138,11 @@ Future<int> downloadSong({
     );
   }
 
-  final file = File(filePath);
-  final sink = file.openWrite();
+  final sink = file.openWrite(
+    mode: existingBytes > 0 ? FileMode.append : FileMode.write,
+  );
 
-  var totalBytes = 0;
+  var totalBytes = existingBytes;
   await for (final chunk in response.body) {
     sink.add(chunk);
     totalBytes += chunk.length;
@@ -173,7 +184,7 @@ Future<Uint8List> downloadCover({
     return Uint8List(0);
   }
 
-  final response = await httpClientWrapper.getStream(
+  final response = await downloadHttpClientWrapper.getStream(
     coverUrl,
     headers: HttpHeaders.rawMap({
       ...authHeaders,
@@ -242,7 +253,7 @@ Future<List<String>> batchDownloadSongs({
   final downloadUrl =
       '$baseUrl/music/webapi/AudioStation/download.cgi/$encodedFilename';
 
-  final response = await httpClientWrapper.getStream(
+  final response = await downloadHttpClientWrapper.getStream(
     downloadUrl,
     query: request.toJson().map(
       (key, value) => MapEntry(key, value?.toString() ?? ''),

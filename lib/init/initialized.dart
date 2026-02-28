@@ -18,6 +18,7 @@ part 'initialized_log.dart';
 late final ColorScheme defaultColorScheme;
 late final ImageProvider defaultSongIconProvider;
 late final HttpClientWrapper httpClientWrapper;
+late final HttpClientWrapper downloadHttpClientWrapper;
 late final PersistentApiCache<Map<String, dynamic>> audioStationRequestCache;
 
 const keepAlive = Riverpod(keepAlive: true);
@@ -71,6 +72,16 @@ void initHttpClientWrapper() {
         logger.w('after【Retrying $attempt count】 throw $exception');
         return request;
       },
+    ),
+    loggingInterceptor: LoggingInterceptor(logger: logger),
+  );
+
+  downloadHttpClientWrapper = HttpClientWrapper(
+    settings: const ClientSettings(
+      timeoutSettings: TimeoutSettings(
+        timeout: Duration(minutes: 30),
+        connectTimeout: Duration(seconds: 30),
+      ),
     ),
     loggingInterceptor: LoggingInterceptor(logger: logger),
   );
