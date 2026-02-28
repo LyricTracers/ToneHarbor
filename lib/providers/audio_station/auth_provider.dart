@@ -205,7 +205,7 @@ Future<Map<String, String>?> authHeaders(Ref ref) async {
     return null;
   }
 
-  final cookieString = "${cookiesInfo.id}; ${cookiesInfo.did}";
+  final cookieString = "id=${cookiesInfo.id}; did=${cookiesInfo.did}";
   headers['Cookie'] = cookieString;
   logger.d('使用Cookie: $cookieString');
 

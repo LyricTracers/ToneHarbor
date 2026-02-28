@@ -42,7 +42,7 @@ packages:
     source: hosted
     version: "4.0.9"
   archive_gbk:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "."
       ref: main
@@ -573,7 +573,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "0fd7c9f69b826c19a8adf99b7975b475772236bd"
+      resolved-ref: "250271310d5de5bbdf3783346141675cca85133b"
       url: "https://git.nxcloud.club:12750/LyricTracers/lyricskit.git"
     source: git
     version: "0.1.0"
@@ -878,10 +878,10 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences_android
-      sha256: cbc40be9be1c5af4dab4d6e0de4d5d3729e6f3d65b89d21e1815d57705644a6f
+      sha256: "8374d6200ab33ac99031a852eba4c8eb2170c4bf20778b3e2c9eccb45384fb41"
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
-    version: "2.4.20"
+    version: "2.4.21"
   shared_preferences_foundation:
     dependency: transitive
     description:

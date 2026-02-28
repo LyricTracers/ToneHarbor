@@ -138,6 +138,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'Failed to remove missing songs';
 
   @override
+  String get error_getStreamUrl_failed => 'Failed to get stream URL';
+
+  @override
+  String get error_getCoverUrl_failed => 'Failed to get cover URL';
+
+  @override
+  String get error_downloadSong_failed => 'Failed to download song';
+
+  @override
+  String get error_downloadCover_failed => 'Failed to download cover';
+
+  @override
+  String get error_batchDownload_failed => 'Failed to batch download';
+
+  @override
+  String get error_extractZip_failed => 'Failed to extract ZIP file';
+
+  @override
+  String get error_invalidCookie => 'Valid cookie not found';
+
+  @override
   String get error_syno_request_100 => 'Unknown error.';
 
   @override

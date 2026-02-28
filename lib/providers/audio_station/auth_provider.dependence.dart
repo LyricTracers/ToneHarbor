@@ -118,13 +118,13 @@ Future<AuthResponse> _fullLogin(
       var parts = value.split(';');
       if (parts.length > 2) {
         if (parts[0].startsWith("id=") && parts[1].startsWith("expires=")) {
-          id = parts[0];
+          id = parts[0].substring(3);
           idExpires = format
               .parse(parts[1].substring(8))
               .millisecondsSinceEpoch;
         } else if (parts[0].startsWith("did=") &&
             parts[1].startsWith("expires=")) {
-          did = parts[0];
+          did = parts[0].substring(4);
           didExpires = format
               .parse(parts[1].substring(8))
               .millisecondsSinceEpoch;
@@ -160,7 +160,7 @@ Future<AuthResponse> _refreshToken(
   // 直接使用传入的 serverUrl 构建 baseUrl，而不是通过 ref 获取
   final baseUrl = await ref.read(baseUrlProvider.future);
   logger.d('刷新Token，使用baseUrl: $baseUrl');
-  final cookieString = '${cookies.did}; ${cookies.id}';
+  final cookieString = 'did=${cookies.did}; id=${cookies.id}';
 
   final response = await httpClientWrapper.post(
     '$baseUrl/music/webapi/entry.cgi?api=SYNO.API.Auth',
@@ -233,7 +233,7 @@ Future<AuthResponse> _refreshTokenWithWidgetRef(
 ) async {
   final baseUrl = await ref.read(baseUrlProvider.future);
   logger.d('刷新Token，使用baseUrl: $baseUrl');
-  final cookieString = '${cookies.did}; ${cookies.id}';
+  final cookieString = 'did=${cookies.did}; id=${cookies.id}';
 
   final response = await httpClientWrapper.post(
     '$baseUrl/music/webapi/entry.cgi?api=SYNO.API.Auth',

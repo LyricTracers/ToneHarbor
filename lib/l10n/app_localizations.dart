@@ -344,6 +344,48 @@ abstract class AppLocalizations {
   /// **'Failed to remove missing songs'**
   String get error_removeMissingSongs_failed;
 
+  /// No description provided for @error_getStreamUrl_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get stream URL'**
+  String get error_getStreamUrl_failed;
+
+  /// No description provided for @error_getCoverUrl_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get cover URL'**
+  String get error_getCoverUrl_failed;
+
+  /// No description provided for @error_downloadSong_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to download song'**
+  String get error_downloadSong_failed;
+
+  /// No description provided for @error_downloadCover_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to download cover'**
+  String get error_downloadCover_failed;
+
+  /// No description provided for @error_batchDownload_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to batch download'**
+  String get error_batchDownload_failed;
+
+  /// No description provided for @error_extractZip_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to extract ZIP file'**
+  String get error_extractZip_failed;
+
+  /// No description provided for @error_invalidCookie.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid cookie not found'**
+  String get error_invalidCookie;
+
   /// No description provided for @error_syno_request_100.
   ///
   /// In en, this message translates to:

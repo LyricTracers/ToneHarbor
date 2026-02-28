@@ -1,0 +1,291 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:archive_gbk/archive.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rhttp/rhttp.dart';
+import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/models/audio_station/download.dart';
+import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/utils/excetions.dart';
+
+Future<String> getStreamUrl({
+  required WidgetRef ref,
+  required String id,
+  String format = 'mp3',
+}) async {
+  final cookiesInfo = await ref.read(audioStationCookiesInfoProvider.future);
+  if (cookiesInfo == null || !cookiesInfo.isValid) {
+    Future.microtask(() async {
+      await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+      ref.invalidate(authTokenProvider);
+    });
+    return "";
+  }
+
+  final baseUrl = await ref.read(baseUrlProvider.future);
+  final synotoken = ref.read(synoTokenProvider);
+  final timestamp = DateTime.now().millisecondsSinceEpoch;
+
+  final queryParams = {
+    'sid': cookiesInfo.id,
+    'api': 'SYNO.AudioStation.Stream',
+    'version': '2',
+    'method': 'stream',
+    'id': id,
+    '_dc': timestamp.toString(),
+    'SynoToken': synotoken ?? '',
+  };
+
+  final queryString = queryParams.entries
+      .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
+      .join('&');
+
+  final streamUrl =
+      '$baseUrl/music/webapi/AudioStation/stream.cgi/0.$format?$queryString';
+
+  return streamUrl;
+}
+
+Future<String> getCoverUrl({
+  required WidgetRef ref,
+  required String albumName,
+  required String albumArtistName,
+  String view = 'album',
+  bool outputDefault = true,
+  bool isHr = true,
+  String library = 'shared',
+}) async {
+  final baseUrl = await ref.read(baseUrlProvider.future);
+  final synotoken = ref.read(synoTokenProvider);
+  final timestamp = DateTime.now().millisecondsSinceEpoch;
+
+  final queryParams = {
+    'api': 'SYNO.AudioStation.Cover',
+    'output_default': outputDefault.toString(),
+    'is_hr': isHr.toString(),
+    'version': '3',
+    'library': library,
+    '_dc': timestamp.toString(),
+    'method': 'getcover',
+    'view': view,
+    'album_name': albumName,
+    'album_artist_name': albumArtistName,
+    'SynoToken': synotoken ?? '',
+  };
+
+  final queryString = queryParams.entries
+      .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
+      .join('&');
+
+  final coverUrl = '$baseUrl/music/webapi/AudioStation/cover.cgi?$queryString';
+
+  return coverUrl;
+}
+
+Future<int> downloadSong({
+  required WidgetRef ref,
+  required String id,
+  String format = 'mp3',
+  required String filePath,
+}) async {
+  final streamUrl = await getStreamUrl(ref: ref, id: id, format: format);
+  final authHeaders = await ref.read(authHeadersProvider.future);
+  if (authHeaders == null) {
+    throw AudioStationException(message: '认证失败，无法下载歌曲');
+  }
+
+  final response = await httpClientWrapper.getStream(
+    streamUrl,
+    headers: HttpHeaders.rawMap({
+      ...authHeaders,
+      'range': 'bytes=0-',
+      'accept': '*/*',
+      'sec-fetch-dest': 'audio',
+      'sec-fetch-mode': 'no-cors',
+      'sec-fetch-site': 'same-origin',
+    }),
+  );
+
+  if (response.statusCode != 200 && response.statusCode != 206) {
+    throw AudioStationException(
+      message: '下载失败，状态码: ${response.statusCode}',
+      statusCode: response.statusCode,
+    );
+  }
+
+  final file = File(filePath);
+  final sink = file.openWrite();
+
+  var totalBytes = 0;
+  await for (final chunk in response.body) {
+    sink.add(chunk);
+    totalBytes += chunk.length;
+  }
+
+  await sink.close();
+  return totalBytes;
+}
+
+Future<Uint8List> downloadCover({
+  required WidgetRef ref,
+  required String albumName,
+  required String albumArtistName,
+  String view = 'album',
+  bool outputDefault = true,
+  bool isHr = true,
+  String library = 'shared',
+}) async {
+  final coverUrl = await getCoverUrl(
+    ref: ref,
+    albumName: albumName,
+    albumArtistName: albumArtistName,
+    view: view,
+    outputDefault: outputDefault,
+    isHr: isHr,
+    library: library,
+  );
+
+  final authHeaders = await ref.read(authHeadersProvider.future);
+  if (authHeaders == null) {
+    throw AudioStationException(message: '认证失败，无法下载封面');
+  }
+
+  final response = await httpClientWrapper.getStream(
+    coverUrl,
+    headers: HttpHeaders.rawMap({
+      ...authHeaders,
+      'accept': 'image/*',
+      'sec-fetch-dest': 'image',
+      'sec-fetch-mode': 'no-cors',
+      'sec-fetch-site': 'same-origin',
+    }),
+  );
+
+  if (response.statusCode != 200 && response.statusCode != 206) {
+    throw AudioStationException(
+      message: '下载封面失败，状态码: ${response.statusCode}',
+      statusCode: response.statusCode,
+    );
+  }
+
+  final bytesBuilder = BytesBuilder();
+  await for (final chunk in response.body) {
+    bytesBuilder.add(chunk);
+  }
+
+  return bytesBuilder.toBytes();
+}
+
+Future<List<String>> batchDownloadSongs({
+  required WidgetRef ref,
+  required List<String> songIds,
+  String library = 'shared',
+  required String directoryPath,
+  bool autoExtract = true,
+}) async {
+  if (songIds.isEmpty) {
+    throw AudioStationException(message: '歌曲列表不能为空');
+  }
+
+  final authHeaders = await ref.read(authHeadersProvider.future);
+  if (authHeaders == null) {
+    throw AudioStationException(message: '认证失败，无法批量下载');
+  }
+
+  final baseUrl = await ref.read(baseUrlProvider.future);
+  final defaultFilename = '${songIds.first}_批量下载.zip';
+
+  final request = BatchDownloadRequest(
+    api: 'SYNO.AudioStation.Download',
+    method: 'download',
+    version: '1',
+    songs: songIds.join(','),
+    library: library,
+    filename: '',
+  );
+
+  final encodedFilename = Uri.encodeComponent(defaultFilename);
+  final downloadUrl =
+      '$baseUrl/music/webapi/AudioStation/download.cgi/$encodedFilename';
+
+  final response = await httpClientWrapper.getStream(
+    downloadUrl,
+    query: request.toJson().map(
+      (key, value) => MapEntry(key, value?.toString() ?? ''),
+    ),
+    headers: HttpHeaders.rawMap({
+      ...authHeaders,
+      'accept': '*/*',
+      'sec-fetch-dest': 'document',
+      'sec-fetch-mode': 'navigate',
+      'sec-fetch-site': 'same-origin',
+    }),
+  );
+
+  if (response.statusCode != 200 && response.statusCode != 206) {
+    throw AudioStationException(
+      message: '批量下载失败，状态码: ${response.statusCode}',
+      statusCode: response.statusCode,
+    );
+  }
+
+  final zipFilePath = '$directoryPath/$defaultFilename';
+  final file = File(zipFilePath);
+  final sink = file.openWrite();
+
+  await for (final chunk in response.body) {
+    sink.add(chunk);
+  }
+
+  await sink.close();
+
+  if (autoExtract) {
+    final extractedFiles = await extractZipFile(zipFilePath, directoryPath);
+    await file.delete();
+    return extractedFiles;
+  }
+
+  return [zipFilePath];
+}
+
+Future<List<String>> extractZipFile(
+  String zipPath,
+  String targetDirectory,
+) async {
+  final bytes = await File(zipPath).readAsBytes();
+  final archive = ZipDecoder().decodeBytes(bytes);
+
+  final extractedFiles = <String>[];
+  for (final file in archive) {
+    var filename = file.name;
+
+    if (file.isFile) {
+      final data = file.content as List<int>;
+
+      final filePath = '$targetDirectory/$filename';
+      final outputFile = File(filePath);
+      await outputFile.create(recursive: true);
+      await outputFile.writeAsBytes(data);
+      extractedFiles.add(filePath);
+    }
+  }
+
+  final filesToDelete = extractedFiles
+      .where(
+        (filePath) => filePath.endsWith('.m3u') || filePath.endsWith('.m3u8'),
+      )
+      .toList();
+
+  for (final fileToDelete in filesToDelete) {
+    try {
+      await File(fileToDelete).delete();
+      extractedFiles.remove(fileToDelete);
+      logger.d('已删除播放列表文件: $fileToDelete');
+    } catch (e) {
+      logger.d('删除文件失败: $fileToDelete, 错误: $e');
+    }
+  }
+
+  return extractedFiles;
+}
