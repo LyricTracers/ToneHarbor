@@ -23,12 +23,6 @@ class SearchHistoryTextField extends HookConsumerWidget {
   final BoxDecoration? listDecoration;
   final List<String>? lockItems;
   final Color? lockTextColor;
-  final Widget Function(
-    TextEditingController controller,
-    String value,
-    int index,
-  )?
-  historyListItemLayoutBuilder;
   final Function(String)? onHistoryItemSelected;
   final bool updateSelectedHistoryItemDateTime;
   final InputDecoration? decoration;
@@ -54,7 +48,6 @@ class SearchHistoryTextField extends HookConsumerWidget {
     this.listDecoration,
     this.lockItems,
     this.lockTextColor,
-    this.historyListItemLayoutBuilder,
     this.onHistoryItemSelected,
     this.updateSelectedHistoryItemDateTime = false,
     this.decoration,
@@ -130,7 +123,6 @@ class SearchHistoryTextField extends HookConsumerWidget {
                 listTextStyle: listTextStyle,
                 listDecoration: listDecoration,
                 lockTextColor: lockTextColor,
-                historyListItemLayoutBuilder: historyListItemLayoutBuilder,
                 showDeleteIcon: showDeleteIcon,
                 onHistoryItemSelected: (value) async {
                   controller.text = value;
@@ -215,12 +207,6 @@ class _HistoryOverlay extends StatelessWidget {
   final TextStyle? listTextStyle;
   final BoxDecoration? listDecoration;
   final Color? lockTextColor;
-  final Widget Function(
-    TextEditingController controller,
-    String value,
-    int index,
-  )?
-  historyListItemLayoutBuilder;
   final bool showDeleteIcon;
   final Function(String) onHistoryItemSelected;
   final Function(String) onRemoveHistory;
@@ -238,7 +224,6 @@ class _HistoryOverlay extends StatelessWidget {
     required this.listTextStyle,
     required this.listDecoration,
     required this.lockTextColor,
-    required this.historyListItemLayoutBuilder,
     required this.showDeleteIcon,
     required this.onHistoryItemSelected,
     required this.onRemoveHistory,
@@ -282,14 +267,6 @@ class _HistoryOverlay extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final isLockItem = index < (lockItems?.length ?? 0);
                     final item = displayList[index];
-
-                    if (historyListItemLayoutBuilder != null) {
-                      return historyListItemLayoutBuilder!(
-                        TextEditingController(),
-                        item,
-                        index,
-                      );
-                    }
 
                     return InkWell(
                       onTap: () {
