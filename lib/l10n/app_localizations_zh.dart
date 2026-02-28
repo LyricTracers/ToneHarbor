@@ -226,4 +226,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get has_copy => '已复制:';
+
+  @override
+  String get search => '搜索';
+
+  @override
+  String get searchHint => '搜索歌曲、艺术家、专辑...';
+
+  @override
+  String get searchHistoryLabel => '搜索历史';
+
+  @override
+  String get clearHistory => '清空';
+
+  @override
+  String get noSearchHistory => '暂无搜索历史';
+
+  @override
+  String get searchingFor => '搜索:';
 }

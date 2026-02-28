@@ -38,3 +38,49 @@ class LocaleNotifier extends _$LocaleNotifier {
     await setLocale(newLocale);
   }
 }
+
+@keepAlive
+class SearchHistoryNotifier extends _$SearchHistoryNotifier {
+  @override
+  Future<List<String>> build() async {
+    final prefs = await SharedPreferences.getInstance();
+    final history = prefs.getStringList(searchHistoryKey) ?? ['测试1', 'test'];
+    return history;
+  }
+
+  Future<void> addSearch(String query) async {
+    if (query.trim().isEmpty) return;
+
+    final currentHistory = state.value ?? [];
+    final updatedHistory = List<String>.from(currentHistory);
+    updatedHistory.remove(query);
+    updatedHistory.insert(0, query);
+
+    if (updatedHistory.length > 10) {
+      updatedHistory.removeRange(10, updatedHistory.length);
+    }
+
+    state = AsyncValue.data(updatedHistory);
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(searchHistoryKey, updatedHistory);
+  }
+
+  Future<void> removeSearch(String query) async {
+    final currentHistory = state.value ?? [];
+    final updatedHistory = List<String>.from(currentHistory);
+    updatedHistory.remove(query);
+
+    state = AsyncValue.data(updatedHistory);
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(searchHistoryKey, updatedHistory);
+  }
+
+  Future<void> clearHistory() async {
+    state = AsyncValue.data(['测试1', 'test']);
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(searchHistoryKey, ['测试1', 'test']);
+  }
+}

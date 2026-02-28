@@ -535,6 +535,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Copied:'**
   String get has_copy;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search songs, artists, albums...'**
+  String get searchHint;
+
+  /// No description provided for @searchHistoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search History'**
+  String get searchHistoryLabel;
+
+  /// No description provided for @clearHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clearHistory;
+
+  /// No description provided for @noSearchHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No search history'**
+  String get noSearchHistory;
+
+  /// No description provided for @searchingFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching:'**
+  String get searchingFor;
 }
 
 class _AppLocalizationsDelegate

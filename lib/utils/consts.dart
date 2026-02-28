@@ -10,6 +10,7 @@ const String accountKey = 'account';
 const String cookieKey = 'audio_station_cookies';
 const String synotokenKey = 'synotoken';
 const String useHttpKey = 'use_http';
+const String searchHistoryKey = 'search_history';
 
 // pic path
 const String iconPlaceholder = 'assets/icons/icon_placeholder.png';

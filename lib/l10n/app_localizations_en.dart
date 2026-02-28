@@ -239,4 +239,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get has_copy => 'Copied:';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get searchHint => 'Search songs, artists, albums...';
+
+  @override
+  String get searchHistoryLabel => 'Search History';
+
+  @override
+  String get clearHistory => 'Clear';
+
+  @override
+  String get noSearchHistory => 'No search history';
+
+  @override
+  String get searchingFor => 'Searching:';
 }

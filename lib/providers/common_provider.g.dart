@@ -103,3 +103,48 @@ abstract class _$LocaleNotifier extends $AsyncNotifier<Locale> {
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(SearchHistoryNotifier)
+final searchHistoryProvider = SearchHistoryNotifierProvider._();
+
+final class SearchHistoryNotifierProvider
+    extends $AsyncNotifierProvider<SearchHistoryNotifier, List<String>> {
+  SearchHistoryNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'searchHistoryProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$searchHistoryNotifierHash();
+
+  @$internal
+  @override
+  SearchHistoryNotifier create() => SearchHistoryNotifier();
+}
+
+String _$searchHistoryNotifierHash() =>
+    r'0966461be9606f31e486605e6d630be754b169c9';
+
+abstract class _$SearchHistoryNotifier extends $AsyncNotifier<List<String>> {
+  FutureOr<List<String>> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<List<String>>, List<String>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<List<String>>, List<String>>,
+              AsyncValue<List<String>>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
