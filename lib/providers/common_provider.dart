@@ -44,7 +44,7 @@ class SearchHistoryNotifier extends _$SearchHistoryNotifier {
   @override
   Future<List<String>> build() async {
     final prefs = await SharedPreferences.getInstance();
-    final history = prefs.getStringList(searchHistoryKey) ?? ['测试1', 'test'];
+    final history = prefs.getStringList(searchHistoryKey) ?? [];
     return history;
   }
 
@@ -78,9 +78,9 @@ class SearchHistoryNotifier extends _$SearchHistoryNotifier {
   }
 
   Future<void> clearHistory() async {
-    state = AsyncValue.data(['测试1', 'test']);
+    state = AsyncValue.data([]);
 
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(searchHistoryKey, ['测试1', 'test']);
+    await prefs.setStringList(searchHistoryKey, []);
   }
 }

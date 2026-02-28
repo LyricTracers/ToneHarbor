@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/base_bg_layout.dart';
 import 'package:toneharbor/widgets/widgets.dart';
+part 'home_layout_logic.dart';
 
 class HomeLayout extends BaseBgLayout {
   final Widget child;
-  const HomeLayout({super.key, required this.child});
+  const HomeLayout({super.key, super.showLoading = false, required this.child});
 
   @override
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
@@ -57,6 +59,7 @@ class HomeLayout extends BaseBgLayout {
                     ),
                     onSubmitSearch: (value) {
                       logger.i("onSubmitSearch: $value");
+                      onSubmitSearch(ref, value);
                     },
                   ),
                 ),

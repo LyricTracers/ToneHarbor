@@ -8,7 +8,8 @@ import 'dart:ui' as ui;
 import 'package:toneharbor/widgets/audio_equalizer_loader.dart';
 
 abstract class BaseBgLayout extends HookConsumerWidget {
-  const BaseBgLayout({super.key});
+  const BaseBgLayout({super.key, this.showLoading = true});
+  final bool showLoading;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -90,8 +91,10 @@ abstract class BaseBgLayout extends HookConsumerWidget {
             ),
           ),
           buildContent(context, ref, requestFlag),
-          requestFlag
-              ? const Center(child: AudioEqualizerLoader())
+          showLoading
+              ? requestFlag
+                    ? const Center(child: AudioEqualizerLoader())
+                    : const SizedBox.shrink()
               : const SizedBox.shrink(),
         ],
       ),
