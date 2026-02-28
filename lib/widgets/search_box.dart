@@ -272,10 +272,7 @@ class _HistoryOverlay extends StatelessWidget {
             child: Container(
               decoration:
                   listDecoration ??
-                  BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  BoxDecoration(borderRadius: BorderRadius.circular(8)),
               child: ScrollConfiguration(
                 behavior: ScrollConfiguration.of(
                   context,
@@ -294,57 +291,51 @@ class _HistoryOverlay extends StatelessWidget {
                       );
                     }
 
-                    return Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () {
-                          onHistoryItemSelected(item);
-                        },
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        child: SizedBox(
-                          height: itemHeight,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  isLockItem ? Icons.lock : Icons.history,
-                                  size: historyIconSize ?? 18,
-                                  color: isLockItem ? lockTextColor : null,
+                    return InkWell(
+                      onTap: () {
+                        onHistoryItemSelected(item);
+                      },
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      child: SizedBox(
+                        height: itemHeight,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                isLockItem ? Icons.lock : Icons.history,
+                                size: historyIconSize ?? 18,
+                                color: isLockItem ? lockTextColor : null,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  item,
+                                  style: listTextStyle?.copyWith(
+                                    color: isLockItem ? lockTextColor : null,
+                                  ),
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    item,
-                                    style: listTextStyle?.copyWith(
-                                      color: isLockItem ? lockTextColor : null,
+                              ),
+                              if (!isLockItem && showDeleteIcon)
+                                InkWell(
+                                  onTap: () {
+                                    onRemoveHistory(item);
+                                  },
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Icon(
+                                      deleteIcon ?? Icons.close,
+                                      size: deleteIconSize ?? 18,
                                     ),
                                   ),
                                 ),
-                                if (!isLockItem && showDeleteIcon)
-                                  Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      onTap: () {
-                                        onRemoveHistory(item);
-                                      },
-                                      splashColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8),
-                                        child: Icon(
-                                          deleteIcon ?? Icons.close,
-                                          size: deleteIconSize ?? 18,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
+                            ],
                           ),
                         ),
                       ),
