@@ -338,7 +338,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "2966332a6d6d4ca80fe0a7b01650e58782b13045"
+      resolved-ref: a253564fc91eb713baffa49dcf7f930e9f166e98
       url: "https://git.nxcloud.club:12750/LyricTracers/flutter_native_splash.git"
     source: git
     version: "2.4.7"
