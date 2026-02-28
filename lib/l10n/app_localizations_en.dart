@@ -159,6 +159,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_invalidCookie => 'Valid cookie not found';
 
   @override
+  String get error_songListEmpty => 'Song list cannot be empty';
+
+  @override
+  String get error_authFailed => 'Authentication failed';
+
+  @override
+  String get error_downloadFailedWithCode => 'Download failed, status code: %s';
+
+  @override
+  String get error_downloadCoverFailedWithCode =>
+      'Failed to download cover, status code: %s';
+
+  @override
+  String get error_batchDownloadFailedWithCode =>
+      'Batch download failed, status code: %s';
+
+  @override
   String get error_syno_request_100 => 'Unknown error.';
 
   @override

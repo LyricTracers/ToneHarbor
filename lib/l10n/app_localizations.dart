@@ -386,6 +386,36 @@ abstract class AppLocalizations {
   /// **'Valid cookie not found'**
   String get error_invalidCookie;
 
+  /// No description provided for @error_songListEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Song list cannot be empty'**
+  String get error_songListEmpty;
+
+  /// No description provided for @error_authFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication failed'**
+  String get error_authFailed;
+
+  /// No description provided for @error_downloadFailedWithCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Download failed, status code: %s'**
+  String get error_downloadFailedWithCode;
+
+  /// No description provided for @error_downloadCoverFailedWithCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to download cover, status code: %s'**
+  String get error_downloadCoverFailedWithCode;
+
+  /// No description provided for @error_batchDownloadFailedWithCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Batch download failed, status code: %s'**
+  String get error_batchDownloadFailedWithCode;
+
   /// No description provided for @error_syno_request_100.
   ///
   /// In en, this message translates to:

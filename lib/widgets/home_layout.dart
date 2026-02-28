@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/widgets/base_bg_layout.dart';
@@ -603,6 +605,177 @@ class HomeLayout extends BaseBgLayout {
                 }
               },
               child: const Text('测试获取播放列表详情'),
+            ),
+            const SizedBox(height: 40),
+
+            // 测试获取播放流 URL
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final url = await getStreamUrl(
+                    ref: ref,
+                    id: 'music_785331',
+                    format: 'mp3',
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '获取播放流 URL 成功: ${url.isNotEmpty ? '成功' : '失败'}',
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试获取播放流 URL'),
+            ),
+            const SizedBox(height: 20),
+
+            // 测试获取封面 URL
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final songsResult = await ref.read(
+                    searchSongsProvider(title: '光年之外', limit: 1).future,
+                  );
+                  final songs = songsResult.data?.songs;
+                  if (songs == null || songs.isEmpty) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(const SnackBar(content: Text('未找到歌曲')));
+                    return;
+                  }
+                  final song = songs.first;
+                  final url = await getCoverUrl(
+                    ref: ref,
+                    albumName: song.additional?.songTag?.album ?? '',
+                    albumArtistName:
+                        song.additional?.songTag?.albumArtist ?? '',
+                  );
+                  logger.d('获取到的封面 URL: $url');
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '获取封面 URL 成功: ${url.isNotEmpty ? '成功' : '失败'}',
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试获取封面 URL'),
+            ),
+            const SizedBox(height: 20),
+
+            // 测试下载封面
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final songsResult = await ref.read(
+                    searchSongsProvider(title: '光年之外', limit: 1).future,
+                  );
+                  final songs = songsResult.data?.songs;
+                  if (songs == null || songs.isEmpty) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(const SnackBar(content: Text('未找到歌曲')));
+                    return;
+                  }
+                  final song = songs.first;
+                  final bytes = await downloadCover(
+                    ref: ref,
+                    albumName: song.additional?.songTag?.album ?? '',
+                    albumArtistName:
+                        song.additional?.songTag?.albumArtist ?? '',
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('下载封面成功，大小: ${bytes.length} bytes')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试下载封面'),
+            ),
+            const SizedBox(height: 20),
+
+            // 测试下载歌曲
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final directory = await getApplicationDocumentsDirectory();
+                  final fileName = 'music_785331.mp3';
+                  final filePath = '${directory.path}/$fileName';
+
+                  final fileSize = await downloadSong(
+                    ref: ref,
+                    id: 'music_785331',
+                    filePath: filePath,
+                  );
+                  logger.d('下载成功，文件大小: $fileSize 字节，已保存到: $filePath');
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('下载成功，文件大小: $fileSize 字节，已保存到: $filePath'),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试下载歌曲'),
+            ),
+            const SizedBox(height: 20),
+
+            // 测试批量下载歌曲
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final directory = await getApplicationDocumentsDirectory();
+
+                  final extractedFiles = await batchDownloadSongs(
+                    ref: ref,
+                    songIds: [
+                      'music_794723',
+                      'music_771278',
+                      'music_772243',
+                      'music_745650',
+                    ],
+                    directoryPath: directory.path,
+                  );
+                  logger.d(
+                    '下载并解压成功\n解压文件数: ${extractedFiles.length}\n文件列表:\n${extractedFiles.join('\n')}',
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '下载并解压成功\n解压文件数: ${extractedFiles.length}\n文件列表:\n${extractedFiles.join('\n')}',
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试批量下载歌曲'),
             ),
           ],
         ),

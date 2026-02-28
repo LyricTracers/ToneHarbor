@@ -153,6 +153,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_invalidCookie => '未找到有效Cookie';
 
   @override
+  String get error_songListEmpty => '歌曲列表不能为空';
+
+  @override
+  String get error_authFailed => '认证失败';
+
+  @override
+  String get error_downloadFailedWithCode => '下载失败，状态码: %s';
+
+  @override
+  String get error_downloadCoverFailedWithCode => '下载封面失败，状态码: %s';
+
+  @override
+  String get error_batchDownloadFailedWithCode => '批量下载失败，状态码: %s';
+
+  @override
   String get error_syno_request_100 => '未知错误';
 
   @override

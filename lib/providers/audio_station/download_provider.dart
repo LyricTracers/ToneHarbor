@@ -1,12 +1,15 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:archive_gbk/archive.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rhttp/rhttp.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/excetions.dart';
 
 Future<String> getStreamUrl({
@@ -89,10 +92,18 @@ Future<int> downloadSong({
   String format = 'mp3',
   required String filePath,
 }) async {
+  final l10n = lookupAppLocalizations(
+    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
+  );
+
   final streamUrl = await getStreamUrl(ref: ref, id: id, format: format);
   final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
-    throw AudioStationException(message: '认证失败，无法下载歌曲');
+    Future.microtask(() async {
+      await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+      ref.invalidate(authTokenProvider);
+    });
+    return 0;
   }
 
   final response = await httpClientWrapper.getStream(
@@ -109,7 +120,10 @@ Future<int> downloadSong({
 
   if (response.statusCode != 200 && response.statusCode != 206) {
     throw AudioStationException(
-      message: '下载失败，状态码: ${response.statusCode}',
+      message: l10n.error_downloadFailedWithCode.replaceFirst(
+        '%s',
+        response.statusCode.toString(),
+      ),
       statusCode: response.statusCode,
     );
   }
@@ -136,6 +150,10 @@ Future<Uint8List> downloadCover({
   bool isHr = true,
   String library = 'shared',
 }) async {
+  final l10n = lookupAppLocalizations(
+    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
+  );
+
   final coverUrl = await getCoverUrl(
     ref: ref,
     albumName: albumName,
@@ -148,7 +166,11 @@ Future<Uint8List> downloadCover({
 
   final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
-    throw AudioStationException(message: '认证失败，无法下载封面');
+    Future.microtask(() async {
+      await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+      ref.invalidate(authTokenProvider);
+    });
+    return Uint8List(0);
   }
 
   final response = await httpClientWrapper.getStream(
@@ -164,7 +186,10 @@ Future<Uint8List> downloadCover({
 
   if (response.statusCode != 200 && response.statusCode != 206) {
     throw AudioStationException(
-      message: '下载封面失败，状态码: ${response.statusCode}',
+      message: l10n.error_downloadCoverFailedWithCode.replaceFirst(
+        '%s',
+        response.statusCode.toString(),
+      ),
       statusCode: response.statusCode,
     );
   }
@@ -184,17 +209,25 @@ Future<List<String>> batchDownloadSongs({
   required String directoryPath,
   bool autoExtract = true,
 }) async {
+  final l10n = lookupAppLocalizations(
+    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
+  );
+
   if (songIds.isEmpty) {
-    throw AudioStationException(message: '歌曲列表不能为空');
+    throw AudioStationException(message: l10n.error_songListEmpty);
   }
 
   final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
-    throw AudioStationException(message: '认证失败，无法批量下载');
+    Future.microtask(() async {
+      await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+      ref.invalidate(authTokenProvider);
+    });
+    return [];
   }
 
   final baseUrl = await ref.read(baseUrlProvider.future);
-  final defaultFilename = '${songIds.first}_批量下载.zip';
+  final defaultFilename = '${songIds.first}_batch_download.zip';
 
   final request = BatchDownloadRequest(
     api: 'SYNO.AudioStation.Download',
@@ -225,7 +258,10 @@ Future<List<String>> batchDownloadSongs({
 
   if (response.statusCode != 200 && response.statusCode != 206) {
     throw AudioStationException(
-      message: '批量下载失败，状态码: ${response.statusCode}',
+      message: l10n.error_batchDownloadFailedWithCode.replaceFirst(
+        '%s',
+        response.statusCode.toString(),
+      ),
       statusCode: response.statusCode,
     );
   }
@@ -281,9 +317,9 @@ Future<List<String>> extractZipFile(
     try {
       await File(fileToDelete).delete();
       extractedFiles.remove(fileToDelete);
-      logger.d('已删除播放列表文件: $fileToDelete');
+      logger.d('Deleted playlist file: $fileToDelete');
     } catch (e) {
-      logger.d('删除文件失败: $fileToDelete, 错误: $e');
+      logger.d('Failed to delete file: $fileToDelete, error: $e');
     }
   }
 
