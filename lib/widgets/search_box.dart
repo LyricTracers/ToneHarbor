@@ -271,20 +271,20 @@ class _HistoryOverlay extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Stack(
       children: [
-        Positioned.fill(
+        Positioned(
           child: GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () {
               logger.i('onTap dismiss overlay');
               onDismiss();
             },
-            child: Container(color: Colors.black.withValues(alpha: 0.3)),
           ),
         ),
         Positioned(
           top: textFieldOffset.dy + textFieldSize.height,
           left: textFieldOffset.dx,
           width: textFieldSize.width,
+          height: displayList.length * 48.0,
           child: Material(
             elevation: 4,
             borderRadius: BorderRadius.circular(8),
