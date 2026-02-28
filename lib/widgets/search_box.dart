@@ -4,8 +4,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/providers/providers.dart';
 
 class SearchHistoryTextField extends HookConsumerWidget {
-  final String historyKey;
-  final int limit;
   final bool hasFocusExpand;
   final bool showHistoryIcon;
   final bool showDeleteIcon;
@@ -29,8 +27,6 @@ class SearchHistoryTextField extends HookConsumerWidget {
 
   const SearchHistoryTextField({
     super.key,
-    required this.historyKey,
-    this.limit = 5,
     this.hasFocusExpand = true,
     this.showHistoryIcon = true,
     this.showDeleteIcon = true,
@@ -185,7 +181,22 @@ class SearchHistoryTextField extends HookConsumerWidget {
                 padding: const EdgeInsets.only(right: 8),
                 child: Icon(
                   historyIcon ?? Icons.history,
-                  size: historyIconSize ?? 20,
+                  size: historyIconSize ?? 16,
+                ),
+              ),
+
+            if (!showHistoryIcon && controller.text.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: GestureDetector(
+                  onTap: () {
+                    controller.clear();
+                    currentText.value = '';
+                  },
+                  child: Icon(
+                    deleteIcon ?? Icons.clear,
+                    size: deleteIconSize ?? 16,
+                  ),
                 ),
               ),
           ],

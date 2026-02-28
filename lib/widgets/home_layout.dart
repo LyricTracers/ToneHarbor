@@ -41,12 +41,14 @@ class HomeLayout extends BaseBgLayout {
                 Padding(
                   padding: const EdgeInsets.only(top: 20, bottom: 8),
                   child: SearchHistoryTextField(
-                    historyKey: 'search',
-                    limit: 10,
+                    showHistoryIcon: false,
+                    listTextStyle: const TextStyle(fontSize: 14),
                     decoration: InputDecoration(
                       labelText: l10n.search,
+                      labelStyle: const TextStyle(fontSize: 16),
                       hintText: l10n.searchHint,
-                      prefixIcon: const Icon(Icons.search),
+                      hintStyle: const TextStyle(fontSize: 14),
+                      prefixIcon: const Icon(Icons.search, size: 16),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 8,
