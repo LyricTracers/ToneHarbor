@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rhttp/rhttp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -167,15 +168,6 @@ Future<SongInfoResponse> songInfo(
     additional: additional,
     cacheDuration: cacheDuration,
   );
-}
-
-@riverpod
-Future<SetRatingResponse> setRating(
-  Ref ref, {
-  required String id,
-  int rating = 5,
-}) async {
-  return await _setRating(ref: ref, id: id, rating: rating);
 }
 
 @riverpod

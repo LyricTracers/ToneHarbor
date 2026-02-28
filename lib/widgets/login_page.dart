@@ -86,7 +86,7 @@ class LoginPage extends BaseBgLayout {
 
       try {
         ref.read(requestFlagProvider.notifier).setRequestFlag(true);
-        final response = await ref.read(loginProvider.future);
+        final response = await login(ref);
         ref.read(requestFlagProvider.notifier).setRequestFlag(false);
 
         if (response.success) {

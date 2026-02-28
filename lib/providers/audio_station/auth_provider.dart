@@ -183,20 +183,21 @@ Future<String?> authToken(Ref ref) async {
   return null;
 }
 
-@riverpod
-Future<AuthResponse> login(Ref ref) async {
-  ref.keepAlive();
-
+Future<AuthResponse> login(WidgetRef ref) async {
   var l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
+    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
   );
 
-  final accountInfo = getValueWhenReadyWithRef(ref, accountInfoProvider, null);
+  final accountInfo = getValueWhenReadyWithWidgetRef(
+    ref,
+    accountInfoProvider,
+    null,
+  );
   if (accountInfo == null) {
     throw AudioStationException(message: l10n.error_account_info_invalid);
   }
 
-  final cookiesInfo = getValueWhenReadyWithRef(
+  final cookiesInfo = getValueWhenReadyWithWidgetRef(
     ref,
     audioStationCookiesInfoProvider,
     null,
@@ -206,7 +207,7 @@ Future<AuthResponse> login(Ref ref) async {
   if (hasValidCookies) {
     logger.d('Cookie 有效，尝试刷新 token');
     try {
-      return await _refreshToken(ref, cookiesInfo, l10n);
+      return await _refreshTokenWithWidgetRef(ref, cookiesInfo, l10n);
     } catch (e) {
       logger.w('刷新 token 失败，尝试完整登录: $e');
     }

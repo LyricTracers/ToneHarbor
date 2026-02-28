@@ -108,7 +108,7 @@ Future<Map<String, String>?> getAuthHeaders(Ref ref) async {
 }
 
 Future<AuthResponse> _fullLogin(
-  Ref ref,
+  WidgetRef ref,
   Account account,
   AppLocalizations l10n,
 ) async {
@@ -297,6 +297,76 @@ Future<AuthResponse> _refreshToken(
   }
 
   // 延迟修改状态，避免在构建过程中修改
+  Future.microtask(() {
+    if (result.data?.synotoken != null) {
+      ref.read(synoTokenProvider.notifier).setSynotoken(result.data!.synotoken);
+    }
+  });
+
+  return result;
+}
+
+Future<AuthResponse> _refreshTokenWithWidgetRef(
+  WidgetRef ref,
+  AudioStationCookies cookies,
+  AppLocalizations l10n,
+) async {
+  final baseUrl = await ref.read(baseUrlProvider.future);
+  logger.d('刷新Token，使用baseUrl: $baseUrl');
+  final cookieString = '${cookies.did}; ${cookies.id}';
+
+  final response = await httpClientWrapper.post(
+    '$baseUrl/music/webapi/entry.cgi?api=SYNO.API.Auth',
+    body: HttpBody.form({
+      'method': 'token',
+      'version': '6',
+      'updateSynoToken': 'true',
+    }),
+    headers: HttpHeaders.rawMap({
+      'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      'x-requested-with': 'XMLHttpRequest',
+      'accept': '*/*',
+      'accept-language': 'zh-CN,zh;q=0.9',
+      'origin': baseUrl,
+      'referer': '$baseUrl/music/',
+      'Cookie': cookieString,
+    }),
+  );
+
+  if (response.statusCode != 200) {
+    Future.microtask(() {
+      ref
+          .read(audioStationCookiesInfoProvider.notifier)
+          .setCookies(
+            AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
+          );
+      ref.read(synoTokenProvider.notifier).clear();
+    });
+    throw AudioStationException(
+      message: _getLoginErrorMessage(l10n, null),
+      statusCode: response.statusCode,
+    );
+  }
+
+  final jsonBody = jsonDecode(response.body);
+  final result = AuthResponse.fromJson(jsonBody);
+
+  if (!result.success) {
+    Future.microtask(() {
+      ref
+          .read(audioStationCookiesInfoProvider.notifier)
+          .setCookies(
+            AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
+          );
+      ref.read(synoTokenProvider.notifier).clear();
+    });
+    final errorCode = result.error?['code'];
+    throw AudioStationException(
+      message: _getLoginErrorMessage(l10n, errorCode is int ? errorCode : null),
+      statusCode: errorCode is int ? errorCode : null,
+    );
+  }
+
   Future.microtask(() {
     if (result.data?.synotoken != null) {
       ref.read(synoTokenProvider.notifier).setSynotoken(result.data!.synotoken);

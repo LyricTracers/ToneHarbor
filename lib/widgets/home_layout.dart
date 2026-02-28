@@ -460,15 +460,15 @@ class HomeLayout extends BaseBgLayout {
             ElevatedButton(
               onPressed: () async {
                 try {
-                  final results = await ref.read(
-                    setRatingProvider(id: 'music_785331', rating: 5).future,
+                  final results = await setRating(
+                    ref: ref,
+                    id: 'music_785331',
+                    rating: 5,
                   );
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(
-                        '设置评分成功: ${results?.success == true ? '成功' : '失败'}',
-                      ),
+                      content: Text('设置评分成功: ${results.success ? '成功' : '失败'}'),
                     ),
                   );
                 } catch (e) {
@@ -503,6 +503,27 @@ class HomeLayout extends BaseBgLayout {
                 }
               },
               child: const Text('测试获取插件数量'),
+            ),
+            const SizedBox(height: 20),
+
+            // 测试 Cookie 过期
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  await ref
+                      .read(audioStationCookiesInfoProvider.notifier)
+                      .clearCookie();
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Cookie 已清除，请尝试其他操作')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('错误: $e')));
+                }
+              },
+              child: const Text('测试清除 Cookie（模拟过期）'),
             ),
           ],
         ),

@@ -361,12 +361,12 @@ Future<SongListResponse> _getSongs({
 ///
 /// [id] 歌曲 ID
 /// [rating] 评分，默认 5
-Future<SetRatingResponse> _setRating({
-  required Ref ref,
+Future<SetRatingResponse> setRating({
+  required WidgetRef ref,
   required String id,
   int rating = 5,
 }) async {
-  final authHeaders = await getAuthHeaders(ref);
+  final authHeaders = await getAuthHeadersWithWidgetRef(ref);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -387,7 +387,7 @@ Future<SetRatingResponse> _setRating({
   );
 
   final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
+    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
   );
 
   final params = Map<String, dynamic>.from(request.toJson())
