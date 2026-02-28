@@ -255,3 +255,54 @@ Future<AuthResponse> login(WidgetRef ref) async {
 
   return await _fullLogin(ref, accountInfo, l10n);
 }
+
+Future<LogoutResponse> logout(WidgetRef ref) async {
+  final l10n = lookupAppLocalizations(
+    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
+  );
+
+  final authHeaders = await ref.read(authHeadersProvider.future);
+  if (authHeaders == null) {
+    logger.w('认证失败，返回空结果');
+    Future.microtask(() async {
+      await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+      ref.read(synoTokenProvider.notifier).clear();
+    });
+    return LogoutResponse(success: false);
+  }
+
+  final baseUrl = await ref.read(baseUrlProvider.future);
+
+  final request = LogoutRequest(
+    api: 'SYNO.API.Auth',
+    method: 'logout',
+    version: '6',
+  );
+
+  final response = await httpClientWrapper.get(
+    '$baseUrl/webapi/entry.cgi',
+    query: request.toJson().map(
+      (key, value) => MapEntry(key, value?.toString() ?? ''),
+    ),
+    headers: HttpHeaders.rawMap({'accept': '*/*', ...authHeaders}),
+  );
+
+  if (response.statusCode != 200) {
+    throw AudioStationException(
+      message: l10n.error_login_failed,
+      statusCode: response.statusCode,
+    );
+  }
+
+  final jsonBody = parseJsonResponse(response.body);
+  final result = LogoutResponse.fromJson(jsonBody);
+
+  if (!result.success) {
+    throw AudioStationException(message: l10n.error_login_failed);
+  }
+
+  await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+  ref.invalidate(authTokenProvider);
+
+  return result;
+}
