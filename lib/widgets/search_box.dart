@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
 
-class InputHistoryTextField extends HookConsumerWidget {
+class SearchHistoryTextField extends HookConsumerWidget {
   final String historyKey;
   final int limit;
   final bool hasFocusExpand;
@@ -33,10 +32,8 @@ class InputHistoryTextField extends HookConsumerWidget {
   final Function(String)? onHistoryItemSelected;
   final bool updateSelectedHistoryItemDateTime;
   final InputDecoration? decoration;
-  final int? maxLines;
-  final int? minLines;
 
-  const InputHistoryTextField({
+  const SearchHistoryTextField({
     super.key,
     required this.historyKey,
     this.limit = 5,
@@ -61,8 +58,6 @@ class InputHistoryTextField extends HookConsumerWidget {
     this.onHistoryItemSelected,
     this.updateSelectedHistoryItemDateTime = false,
     this.decoration,
-    this.maxLines = 1,
-    this.minLines = 1,
   });
 
   @override
@@ -112,7 +107,6 @@ class InputHistoryTextField extends HookConsumerWidget {
 
     useEffect(() {
       if (showHistory.value && enableHistory) {
-        logger.i('Creating overlay, displayList: $displayList');
         overlayEntry.value?.remove();
         overlayEntry.value = null;
 
@@ -122,8 +116,6 @@ class InputHistoryTextField extends HookConsumerWidget {
           if (renderBox != null) {
             final offset = renderBox.localToGlobal(Offset.zero);
             final size = renderBox.size;
-
-            logger.i('Inserting overlay at offset: $offset, size: $size');
 
             overlayEntry.value = OverlayEntry(
               builder: (overlayContext) => _HistoryOverlay(
@@ -136,13 +128,11 @@ class InputHistoryTextField extends HookConsumerWidget {
                 deleteIcon: deleteIcon,
                 deleteIconSize: deleteIconSize,
                 listTextStyle: listTextStyle,
-                listRowDecoration: listRowDecoration,
                 listDecoration: listDecoration,
                 lockTextColor: lockTextColor,
                 historyListItemLayoutBuilder: historyListItemLayoutBuilder,
                 showDeleteIcon: showDeleteIcon,
                 onHistoryItemSelected: (value) async {
-                  logger.i('onHistoryItemSelected: $value');
                   controller.text = value;
                   currentText.value = value;
                   if (updateSelectedHistoryItemDateTime) {
@@ -154,11 +144,9 @@ class InputHistoryTextField extends HookConsumerWidget {
                   onHistoryItemSelected?.call(value);
                 },
                 onRemoveHistory: (value) {
-                  logger.i('onRemoveHistory: $value');
                   ref.read(searchHistoryProvider.notifier).removeSearch(value);
                 },
                 onDismiss: () {
-                  logger.i('onDismiss');
                   showHistory.value = false;
                   focusNode.unfocus();
                 },
@@ -167,15 +155,9 @@ class InputHistoryTextField extends HookConsumerWidget {
 
             final overlayState = Overlay.of(textFieldKey.currentContext!);
             overlayState.insert(overlayEntry.value!);
-            logger.i('Overlay inserted successfully');
-          } else {
-            logger.i('RenderBox is null');
           }
         });
       } else {
-        logger.i(
-          'Removing overlay, showHistory: ${showHistory.value}, enableHistory: $enableHistory',
-        );
         overlayEntry.value?.remove();
         overlayEntry.value = null;
       }
@@ -190,8 +172,6 @@ class InputHistoryTextField extends HookConsumerWidget {
       key: textFieldKey,
       controller: controller,
       focusNode: focusNode,
-      maxLines: maxLines,
-      minLines: minLines,
       onTap: () {
         if (hasFocusExpand && showHistoryList) {
           showHistory.value = true;
@@ -223,7 +203,7 @@ class InputHistoryTextField extends HookConsumerWidget {
   }
 }
 
-class _HistoryOverlay extends ConsumerWidget {
+class _HistoryOverlay extends StatelessWidget {
   final Offset textFieldOffset;
   final Size textFieldSize;
   final List<String> displayList;
@@ -233,7 +213,6 @@ class _HistoryOverlay extends ConsumerWidget {
   final IconData? deleteIcon;
   final double? deleteIconSize;
   final TextStyle? listTextStyle;
-  final BoxDecoration? listRowDecoration;
   final BoxDecoration? listDecoration;
   final Color? lockTextColor;
   final Widget Function(
@@ -257,7 +236,6 @@ class _HistoryOverlay extends ConsumerWidget {
     required this.deleteIcon,
     required this.deleteIconSize,
     required this.listTextStyle,
-    required this.listRowDecoration,
     required this.listDecoration,
     required this.lockTextColor,
     required this.historyListItemLayoutBuilder,
@@ -268,14 +246,17 @@ class _HistoryOverlay extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    final itemHeight = 48.0;
+    final listHeight = displayList.length * itemHeight;
+    final maxHeight = listHeight > 300 ? 300.0 : listHeight;
+
     return Stack(
       children: [
-        Positioned(
+        Positioned.fill(
           child: GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () {
-              logger.i('onTap dismiss overlay');
               onDismiss();
             },
           ),
@@ -284,12 +265,11 @@ class _HistoryOverlay extends ConsumerWidget {
           top: textFieldOffset.dy + textFieldSize.height,
           left: textFieldOffset.dx,
           width: textFieldSize.width,
-          height: displayList.length * 48.0,
+          height: maxHeight,
           child: Material(
             elevation: 4,
             borderRadius: BorderRadius.circular(8),
             child: Container(
-              constraints: const BoxConstraints(maxHeight: 300),
               decoration:
                   listDecoration ??
                   BoxDecoration(
@@ -318,13 +298,12 @@ class _HistoryOverlay extends ConsumerWidget {
                       color: Colors.transparent,
                       child: InkWell(
                         onTap: () {
-                          logger.i('onTap history item: $item');
                           onHistoryItemSelected(item);
                         },
                         splashColor: Colors.transparent,
                         highlightColor: Colors.transparent,
                         child: SizedBox(
-                          height: 48,
+                          height: itemHeight,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 12,
@@ -351,7 +330,6 @@ class _HistoryOverlay extends ConsumerWidget {
                                     color: Colors.transparent,
                                     child: InkWell(
                                       onTap: () {
-                                        logger.i('onTap remove history: $item');
                                         onRemoveHistory(item);
                                       },
                                       splashColor: Colors.transparent,

@@ -40,7 +40,7 @@ class HomeLayout extends BaseBgLayout {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 20, bottom: 8),
-                  child: InputHistoryTextField(
+                  child: SearchHistoryTextField(
                     historyKey: 'search',
                     limit: 10,
                     decoration: InputDecoration(
