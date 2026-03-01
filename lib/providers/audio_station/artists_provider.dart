@@ -7,7 +7,6 @@ import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/artist.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
-import 'package:toneharbor/utils/excetions.dart';
 
 part 'artists_provider.dependence.dart';
 part 'artists_provider.g.dart';
@@ -22,17 +21,25 @@ Future<ArtistResponse> artists(
   String sortDirection = 'ASC',
   String additional = 'avg_rating',
   Duration? cacheDuration = const Duration(minutes: 5),
+  Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
-  return await _getArtists(
-    ref: ref,
-    limit: limit,
-    offset: offset,
-    library: library,
-    sortBy: sortBy,
-    sortDirection: sortDirection,
-    additional: additional,
-    cacheDuration: cacheDuration,
-  );
+  final link = ref.keepAliveFor(keepAliveDuration);
+  try {
+    return await _getArtists(
+      ref: ref,
+      limit: limit,
+      offset: offset,
+      library: library,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+      additional: additional,
+      cacheDuration: cacheDuration,
+    );
+  } finally {
+    if (keepAliveDuration != null) {
+      link.close();
+    }
+  }
 }
 
 @keepAlive
@@ -44,18 +51,26 @@ Future<ArtistResponse> searchArtists(
   int offset = 0,
   String sortBy = 'name',
   String sortDirection = 'asc',
-  Duration? cacheDuration = const Duration(minutes: 1),
+  Duration? cacheDuration = const Duration(minutes: 5),
+  Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
-  return await _searchArtists(
-    ref: ref,
-    filter: filter,
-    library: library,
-    limit: limit,
-    offset: offset,
-    sortBy: sortBy,
-    sortDirection: sortDirection,
-    cacheDuration: cacheDuration,
-  );
+  final link = ref.keepAliveFor(keepAliveDuration);
+  try {
+    return await _searchArtists(
+      ref: ref,
+      filter: filter,
+      library: library,
+      limit: limit,
+      offset: offset,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+      cacheDuration: cacheDuration,
+    );
+  } finally {
+    if (keepAliveDuration != null) {
+      link.close();
+    }
+  }
 }
 
 @riverpod

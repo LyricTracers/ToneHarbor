@@ -30,6 +30,7 @@ final class ArtistsProvider
       String sortDirection,
       String additional,
       Duration? cacheDuration,
+      Duration? keepAliveDuration,
     })
     super.argument,
   }) : super(
@@ -68,6 +69,7 @@ final class ArtistsProvider
               String sortDirection,
               String additional,
               Duration? cacheDuration,
+              Duration? keepAliveDuration,
             });
     return artists(
       ref,
@@ -78,6 +80,7 @@ final class ArtistsProvider
       sortDirection: argument.sortDirection,
       additional: argument.additional,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -92,7 +95,7 @@ final class ArtistsProvider
   }
 }
 
-String _$artistsHash() => r'c0878a9803fb2d59e16e7cdf9f3c414bb8e7d100';
+String _$artistsHash() => r'6292abef5863edda0a0780f4989ef362b0f953c3';
 
 final class ArtistsFamily extends $Family
     with
@@ -106,6 +109,7 @@ final class ArtistsFamily extends $Family
             String sortDirection,
             String additional,
             Duration? cacheDuration,
+            Duration? keepAliveDuration,
           })
         > {
   ArtistsFamily._()
@@ -125,6 +129,7 @@ final class ArtistsFamily extends $Family
     String sortDirection = 'ASC',
     String additional = 'avg_rating',
     Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => ArtistsProvider._(
     argument: (
       limit: limit,
@@ -134,6 +139,7 @@ final class ArtistsFamily extends $Family
       sortDirection: sortDirection,
       additional: additional,
       cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );
@@ -163,6 +169,7 @@ final class SearchArtistsProvider
       String sortBy,
       String sortDirection,
       Duration? cacheDuration,
+      Duration? keepAliveDuration,
     })
     super.argument,
   }) : super(
@@ -201,6 +208,7 @@ final class SearchArtistsProvider
               String sortBy,
               String sortDirection,
               Duration? cacheDuration,
+              Duration? keepAliveDuration,
             });
     return searchArtists(
       ref,
@@ -211,6 +219,7 @@ final class SearchArtistsProvider
       sortBy: argument.sortBy,
       sortDirection: argument.sortDirection,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -225,7 +234,7 @@ final class SearchArtistsProvider
   }
 }
 
-String _$searchArtistsHash() => r'5d030c11331db70503e76fc1502a363c0e949e66';
+String _$searchArtistsHash() => r'83b20867569a454f8dd2348e7d068e41d6f887b8';
 
 final class SearchArtistsFamily extends $Family
     with
@@ -239,6 +248,7 @@ final class SearchArtistsFamily extends $Family
             String sortBy,
             String sortDirection,
             Duration? cacheDuration,
+            Duration? keepAliveDuration,
           })
         > {
   SearchArtistsFamily._()
@@ -257,7 +267,8 @@ final class SearchArtistsFamily extends $Family
     int offset = 0,
     String sortBy = 'name',
     String sortDirection = 'asc',
-    Duration? cacheDuration = const Duration(minutes: 1),
+    Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => SearchArtistsProvider._(
     argument: (
       filter: filter,
@@ -267,6 +278,7 @@ final class SearchArtistsFamily extends $Family
       sortBy: sortBy,
       sortDirection: sortDirection,
       cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );
