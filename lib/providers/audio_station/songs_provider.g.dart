@@ -315,7 +315,7 @@ final class RandomSongsProvider
   }
 }
 
-String _$randomSongsHash() => r'fd5b96e78e567d40997af690f1e547c205b4c1d0';
+String _$randomSongsHash() => r'd824ccd41b9b8850e843a746cf1635374de0921f';
 
 final class RandomSongsFamily extends $Family
     with
@@ -344,7 +344,7 @@ final class RandomSongsFamily extends $Family
     int offset = 0,
     String library = 'shared',
     String additional = 'song_tag,song_audio,song_rating',
-    Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? cacheDuration,
     Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => RandomSongsProvider._(
     argument: (
@@ -1188,7 +1188,7 @@ final class NumberOfPlugInsProvider
   }
 }
 
-String _$numberOfPlugInsHash() => r'6a01371c1e599b8ab3b5df6d7b6436841d2c34a7';
+String _$numberOfPlugInsHash() => r'412b0049f09b11ee321fd44fe71af901b9aee4ae';
 
 final class NumberOfPlugInsFamily extends $Family
     with
@@ -1207,7 +1207,7 @@ final class NumberOfPlugInsFamily extends $Family
 
   NumberOfPlugInsProvider call({
     Duration? cacheDuration = const Duration(hours: 24),
-    Duration? keepAliveDuration = const Duration(hours: 24),
+    Duration? keepAliveDuration = const Duration(minutes: 1),
   }) => NumberOfPlugInsProvider._(
     argument: (
       cacheDuration: cacheDuration,
