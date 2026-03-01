@@ -16,7 +16,12 @@ Future<RemoveMissingSongsResponse> removeMissingSongs(
   Ref ref, {
   required String id,
 }) async {
-  return await _removeMissingSongs(ref: ref, id: id);
+  final link = ref.keepAlive();
+  try {
+    return await _removeMissingSongs(ref: ref, id: id);
+  } finally {
+    link.close();
+  }
 }
 
 @riverpod
@@ -26,13 +31,18 @@ Future<AddPlaylistSongsResponse> removeSongsFromPlaylist(
   required int offset,
   required int limit,
 }) async {
-  return await _addSongToPlaylist(
-    ref: ref,
-    id: id,
-    songId: '',
-    offset: offset,
-    limit: limit,
-  );
+  final link = ref.keepAlive();
+  try {
+    return await _addSongToPlaylist(
+      ref: ref,
+      id: id,
+      songId: '',
+      offset: offset,
+      limit: limit,
+    );
+  } finally {
+    link.close();
+  }
 }
 
 @riverpod
@@ -44,14 +54,19 @@ Future<AddPlaylistSongsResponse> addSongsToPlaylist(
   int limit = 0,
   bool skipDuplicate = false,
 }) async {
-  return await _addSongToPlaylist(
-    ref: ref,
-    id: id,
-    songId: songIds.join(','),
-    offset: offset,
-    limit: limit,
-    skipDuplicate: skipDuplicate,
-  );
+  final link = ref.keepAlive();
+  try {
+    return await _addSongToPlaylist(
+      ref: ref,
+      id: id,
+      songId: songIds.join(','),
+      offset: offset,
+      limit: limit,
+      skipDuplicate: skipDuplicate,
+    );
+  } finally {
+    link.close();
+  }
 }
 
 @riverpod
@@ -63,14 +78,19 @@ Future<AddPlaylistSongsResponse> addSongToPlaylist(
   int limit = 0,
   bool skipDuplicate = false,
 }) async {
-  return await _addSongToPlaylist(
-    ref: ref,
-    id: id,
-    songId: songId,
-    offset: offset,
-    limit: limit,
-    skipDuplicate: skipDuplicate,
-  );
+  final link = ref.keepAlive();
+  try {
+    return await _addSongToPlaylist(
+      ref: ref,
+      id: id,
+      songId: songId,
+      offset: offset,
+      limit: limit,
+      skipDuplicate: skipDuplicate,
+    );
+  } finally {
+    link.close();
+  }
 }
 
 @riverpod
@@ -78,7 +98,12 @@ Future<DeletePlaylistResponse> deletePlaylist(
   Ref ref, {
   required String id,
 }) async {
-  return await _deletePlaylist(ref: ref, id: id);
+  final link = ref.keepAlive();
+  try {
+    return await _deletePlaylist(ref: ref, id: id);
+  } finally {
+    link.close();
+  }
 }
 
 @riverpod
@@ -87,7 +112,12 @@ Future<RenamePlaylistResponse> renamePlaylist(
   required String id,
   required String newName,
 }) async {
-  return await _renamePlaylist(ref: ref, id: id, newName: newName);
+  final link = ref.keepAlive();
+  try {
+    return await _renamePlaylist(ref: ref, id: id, newName: newName);
+  } finally {
+    link.close();
+  }
 }
 
 @riverpod
@@ -95,7 +125,12 @@ Future<CreatePlaylistResponse> createPlaylist(
   Ref ref, {
   required String name,
 }) async {
-  return await _createPlaylist(ref: ref, name: name);
+  final link = ref.keepAlive();
+  try {
+    return await _createPlaylist(ref: ref, name: name);
+  } finally {
+    link.close();
+  }
 }
 
 @riverpod
@@ -107,16 +142,24 @@ Future<PlaylistListResponse> playlists(
   String sortBy = '',
   String sortDirection = 'ASC',
   Duration? cacheDuration = const Duration(minutes: 5),
+  Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
-  return await _getPlaylists(
-    ref: ref,
-    limit: limit,
-    offset: offset,
-    library: library,
-    sortBy: sortBy,
-    sortDirection: sortDirection,
-    cacheDuration: cacheDuration,
-  );
+  final link = ref.keepAliveFor(keepAliveDuration);
+  try {
+    return await _getPlaylists(
+      ref: ref,
+      limit: limit,
+      offset: offset,
+      library: library,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+      cacheDuration: cacheDuration,
+    );
+  } finally {
+    if (keepAliveDuration != null) {
+      link.close();
+    }
+  }
 }
 
 @riverpod
@@ -130,18 +173,26 @@ Future<PlaylistDetailResponse> playlistDetail(
   String sortBy = '',
   String sortDirection = 'ASC',
   Duration? cacheDuration = const Duration(minutes: 5),
+  Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
-  return await _getPlaylistDetail(
-    ref: ref,
-    id: id,
-    library: library,
-    additional: additional,
-    limit: limit,
-    offset: offset,
-    sortBy: sortBy,
-    sortDirection: sortDirection,
-    cacheDuration: cacheDuration,
-  );
+  final link = ref.keepAliveFor(keepAliveDuration);
+  try {
+    return await _getPlaylistDetail(
+      ref: ref,
+      id: id,
+      library: library,
+      additional: additional,
+      limit: limit,
+      offset: offset,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+      cacheDuration: cacheDuration,
+    );
+  } finally {
+    if (keepAliveDuration != null) {
+      link.close();
+    }
+  }
 }
 
 @riverpod
@@ -150,13 +201,21 @@ Future<PlaylistDetailResponse> playlistInfo(
   required String id,
   String additional = 'songs',
   Duration? cacheDuration = const Duration(minutes: 5),
+  Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
-  return await _getPlaylistInfo(
-    ref: ref,
-    id: id,
-    additional: additional,
-    cacheDuration: cacheDuration,
-  );
+  final link = ref.keepAliveFor(keepAliveDuration);
+  try {
+    return await _getPlaylistInfo(
+      ref: ref,
+      id: id,
+      additional: additional,
+      cacheDuration: cacheDuration,
+    );
+  } finally {
+    if (keepAliveDuration != null) {
+      link.close();
+    }
+  }
 }
 
 @riverpod

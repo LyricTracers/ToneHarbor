@@ -315,7 +315,7 @@ final class RandomSongsProvider
   }
 }
 
-String _$randomSongsHash() => r'd824ccd41b9b8850e843a746cf1635374de0921f';
+String _$randomSongsHash() => r'c133700572d6c5d173cdc3ca42cac3ada73ab162';
 
 final class RandomSongsFamily extends $Family
     with

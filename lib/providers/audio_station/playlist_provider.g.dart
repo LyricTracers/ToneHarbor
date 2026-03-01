@@ -67,7 +67,7 @@ final class RemoveMissingSongsProvider
 }
 
 String _$removeMissingSongsHash() =>
-    r'7ca0e34198b07ac7accef703d3ffbeabf1b0f221';
+    r'0bf676e70c20957a80dd563a47f97d123e039db8';
 
 final class RemoveMissingSongsFamily extends $Family
     with
@@ -155,7 +155,7 @@ final class RemoveSongsFromPlaylistProvider
 }
 
 String _$removeSongsFromPlaylistHash() =>
-    r'd0c627f60f6ee390703d42f8854cd1035cfca575';
+    r'50dc06dea57a2facc850428868f110ad08ce103f';
 
 final class RemoveSongsFromPlaylistFamily extends $Family
     with
@@ -265,7 +265,7 @@ final class AddSongsToPlaylistProvider
 }
 
 String _$addSongsToPlaylistHash() =>
-    r'a5b8246197e27ef454e2e039677ac20e9be4f8f1';
+    r'41bf239e09e1f3d6c52891af6b02d1cca3450b19';
 
 final class AddSongsToPlaylistFamily extends $Family
     with
@@ -388,7 +388,7 @@ final class AddSongToPlaylistProvider
   }
 }
 
-String _$addSongToPlaylistHash() => r'bd6e5d3ab9b084f2f21a2ff9726adb9e723a1761';
+String _$addSongToPlaylistHash() => r'a38e09ff698ad7e8705efa43f3cd0f15d777fb5a';
 
 final class AddSongToPlaylistFamily extends $Family
     with
@@ -489,7 +489,7 @@ final class DeletePlaylistProvider
   }
 }
 
-String _$deletePlaylistHash() => r'ff54495835063b5550e5cb7986792bebdc610244';
+String _$deletePlaylistHash() => r'd833c7ad60fa1cecc8f98303678fdbf95bf9a493';
 
 final class DeletePlaylistFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<DeletePlaylistResponse>, String> {
@@ -566,7 +566,7 @@ final class RenamePlaylistProvider
   }
 }
 
-String _$renamePlaylistHash() => r'8780aecc1f2f3c75848d04d8c3dd92461cee081f';
+String _$renamePlaylistHash() => r'e9fb6798bd54d18ddf8d13139553788430484535';
 
 final class RenamePlaylistFamily extends $Family
     with
@@ -650,7 +650,7 @@ final class CreatePlaylistProvider
   }
 }
 
-String _$createPlaylistHash() => r'0a6d40ee469a5c6e9dd5cff2f373f4146c12ffd6';
+String _$createPlaylistHash() => r'04ccda0729d234e1eee086e61ea79680aba91bc4';
 
 final class CreatePlaylistFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<CreatePlaylistResponse>, String> {
@@ -692,6 +692,7 @@ final class PlaylistsProvider
       String sortBy,
       String sortDirection,
       Duration? cacheDuration,
+      Duration? keepAliveDuration,
     })
     super.argument,
   }) : super(
@@ -729,6 +730,7 @@ final class PlaylistsProvider
               String sortBy,
               String sortDirection,
               Duration? cacheDuration,
+              Duration? keepAliveDuration,
             });
     return playlists(
       ref,
@@ -738,6 +740,7 @@ final class PlaylistsProvider
       sortBy: argument.sortBy,
       sortDirection: argument.sortDirection,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -752,7 +755,7 @@ final class PlaylistsProvider
   }
 }
 
-String _$playlistsHash() => r'f46029f4501e65abf4b53c1efa8605c6a4ce5296';
+String _$playlistsHash() => r'6a9e98a3ed7258f7bebd1ffa8242f28c5e54c218';
 
 final class PlaylistsFamily extends $Family
     with
@@ -765,6 +768,7 @@ final class PlaylistsFamily extends $Family
             String sortBy,
             String sortDirection,
             Duration? cacheDuration,
+            Duration? keepAliveDuration,
           })
         > {
   PlaylistsFamily._()
@@ -783,6 +787,7 @@ final class PlaylistsFamily extends $Family
     String sortBy = '',
     String sortDirection = 'ASC',
     Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => PlaylistsProvider._(
     argument: (
       limit: limit,
@@ -791,6 +796,7 @@ final class PlaylistsFamily extends $Family
       sortBy: sortBy,
       sortDirection: sortDirection,
       cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );
@@ -823,6 +829,7 @@ final class PlaylistDetailProvider
       String sortBy,
       String sortDirection,
       Duration? cacheDuration,
+      Duration? keepAliveDuration,
     })
     super.argument,
   }) : super(
@@ -862,6 +869,7 @@ final class PlaylistDetailProvider
               String sortBy,
               String sortDirection,
               Duration? cacheDuration,
+              Duration? keepAliveDuration,
             });
     return playlistDetail(
       ref,
@@ -873,6 +881,7 @@ final class PlaylistDetailProvider
       sortBy: argument.sortBy,
       sortDirection: argument.sortDirection,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -887,7 +896,7 @@ final class PlaylistDetailProvider
   }
 }
 
-String _$playlistDetailHash() => r'3137e7b917e2ee54f3cb102060c97fa70c21339c';
+String _$playlistDetailHash() => r'd78bd83e8cfd081a811783b0872bb9c3548f090b';
 
 final class PlaylistDetailFamily extends $Family
     with
@@ -902,6 +911,7 @@ final class PlaylistDetailFamily extends $Family
             String sortBy,
             String sortDirection,
             Duration? cacheDuration,
+            Duration? keepAliveDuration,
           })
         > {
   PlaylistDetailFamily._()
@@ -922,6 +932,7 @@ final class PlaylistDetailFamily extends $Family
     String sortBy = '',
     String sortDirection = 'ASC',
     Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => PlaylistDetailProvider._(
     argument: (
       id: id,
@@ -932,6 +943,7 @@ final class PlaylistDetailFamily extends $Family
       sortBy: sortBy,
       sortDirection: sortDirection,
       cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );
@@ -955,7 +967,12 @@ final class PlaylistInfoProvider
         $FutureProvider<PlaylistDetailResponse> {
   PlaylistInfoProvider._({
     required PlaylistInfoFamily super.from,
-    required ({String id, String additional, Duration? cacheDuration})
+    required ({
+      String id,
+      String additional,
+      Duration? cacheDuration,
+      Duration? keepAliveDuration,
+    })
     super.argument,
   }) : super(
          retry: null,
@@ -985,12 +1002,18 @@ final class PlaylistInfoProvider
   FutureOr<PlaylistDetailResponse> create(Ref ref) {
     final argument =
         this.argument
-            as ({String id, String additional, Duration? cacheDuration});
+            as ({
+              String id,
+              String additional,
+              Duration? cacheDuration,
+              Duration? keepAliveDuration,
+            });
     return playlistInfo(
       ref,
       id: argument.id,
       additional: argument.additional,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -1005,13 +1028,18 @@ final class PlaylistInfoProvider
   }
 }
 
-String _$playlistInfoHash() => r'c89d5f4e17ab9ecb8cee36bcd40f4639576f81dc';
+String _$playlistInfoHash() => r'618c75f7e815af1829fa39ff9a4151d24e75fb96';
 
 final class PlaylistInfoFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<PlaylistDetailResponse>,
-          ({String id, String additional, Duration? cacheDuration})
+          ({
+            String id,
+            String additional,
+            Duration? cacheDuration,
+            Duration? keepAliveDuration,
+          })
         > {
   PlaylistInfoFamily._()
     : super(
@@ -1026,8 +1054,14 @@ final class PlaylistInfoFamily extends $Family
     required String id,
     String additional = 'songs',
     Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => PlaylistInfoProvider._(
-    argument: (id: id, additional: additional, cacheDuration: cacheDuration),
+    argument: (
+      id: id,
+      additional: additional,
+      cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
+    ),
     from: this,
   );
 
