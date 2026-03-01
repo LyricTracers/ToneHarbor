@@ -31,6 +31,7 @@ final class FoldersProvider
       String sortDirection,
       String additional,
       Duration? cacheDuration,
+      Duration? keepAliveDuration,
     })
     super.argument,
   }) : super(
@@ -70,6 +71,7 @@ final class FoldersProvider
               String sortDirection,
               String additional,
               Duration? cacheDuration,
+              Duration? keepAliveDuration,
             });
     return folders(
       ref,
@@ -81,6 +83,7 @@ final class FoldersProvider
       sortDirection: argument.sortDirection,
       additional: argument.additional,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -95,7 +98,7 @@ final class FoldersProvider
   }
 }
 
-String _$foldersHash() => r'495be1a142cf5b890d0df602a94fa128cb4da700';
+String _$foldersHash() => r'aa2b75c4bbfb61d714c4bf710d78ab8c446525a0';
 
 final class FoldersFamily extends $Family
     with
@@ -110,6 +113,7 @@ final class FoldersFamily extends $Family
             String sortDirection,
             String additional,
             Duration? cacheDuration,
+            Duration? keepAliveDuration,
           })
         > {
   FoldersFamily._()
@@ -129,7 +133,8 @@ final class FoldersFamily extends $Family
     String sortBy = 'song_rating',
     String sortDirection = 'DESC',
     String additional = 'song_tag,song_audio,song_rating',
-    Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? cacheDuration = const Duration(minutes: 100),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => FoldersProvider._(
     argument: (
       id: id,
@@ -140,6 +145,7 @@ final class FoldersFamily extends $Family
       sortDirection: sortDirection,
       additional: additional,
       cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );

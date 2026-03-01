@@ -21,19 +21,27 @@ Future<FolderResponse> folders(
   String sortBy = 'song_rating',
   String sortDirection = 'DESC',
   String additional = 'song_tag,song_audio,song_rating',
-  Duration? cacheDuration = const Duration(minutes: 5),
+  Duration? cacheDuration = const Duration(minutes: 100),
+  Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
-  return await _getFolders(
-    ref: ref,
-    id: id,
-    limit: limit,
-    offset: offset,
-    library: library,
-    sortBy: sortBy,
-    sortDirection: sortDirection,
-    additional: additional,
-    cacheDuration: cacheDuration,
-  );
+  final link = ref.keepAliveFor(keepAliveDuration);
+  try {
+    return await _getFolders(
+      ref: ref,
+      id: id,
+      limit: limit,
+      offset: offset,
+      library: library,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+      additional: additional,
+      cacheDuration: cacheDuration,
+    );
+  } finally {
+    if (keepAliveDuration != null) {
+      link.close();
+    }
+  }
 }
 
 @riverpod
