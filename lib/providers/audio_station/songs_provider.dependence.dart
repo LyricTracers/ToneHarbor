@@ -34,6 +34,7 @@ Future<SongListResponse> _sendSongRequest<T>({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         ...authHeaders,
       }),
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');
@@ -106,6 +107,7 @@ Future<LyricsResponse> _sendLyricsRequest<T>({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         ...authHeaders,
       }),
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');
@@ -175,6 +177,7 @@ Future<SearchLyricsResponse> _sendSearchLyricsRequest<T>({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         ...authHeaders,
       }),
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');
@@ -247,6 +250,7 @@ Future<SongInfoResponse> _sendSongInfoRequest<T>({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         ...authHeaders,
       }),
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');
@@ -361,8 +365,8 @@ Future<SongListResponse> _getSongs({
 ///
 /// [id] 歌曲 ID
 /// [rating] 评分，默认 5
-Future<SetRatingResponse> setRating({
-  required WidgetRef ref,
+Future<SetRatingResponse> _setRating({
+  required Ref ref,
   required String id,
   int rating = 5,
 }) async {
@@ -387,7 +391,7 @@ Future<SetRatingResponse> setRating({
   );
 
   final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
+    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
   );
 
   final params = Map<String, dynamic>.from(request.toJson())
@@ -404,6 +408,7 @@ Future<SetRatingResponse> setRating({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         ...authHeaders,
       }),
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');
@@ -498,6 +503,7 @@ Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         ...authHeaders,
       }),
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');

@@ -208,7 +208,7 @@ class TestLayout extends BaseBgLayout {
       });
 
       try {
-        await setRating(ref: ref, id: 'music_785331', rating: 5);
+        await ref.read(setRatingProvider(id: 'music_785331', rating: 5).future);
         updateRequest(
           requestId: requestId,
           status: 'success',

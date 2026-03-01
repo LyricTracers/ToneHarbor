@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:rhttp/rhttp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -14,6 +15,14 @@ import 'package:toneharbor/providers/theme_data_provider.dart';
 import 'package:toneharbor/utils/consts.dart';
 part 'base_funs_sp.dart';
 part 'base_funs_theme.dart';
+
+extension CancelTokenX on Ref {
+  CancelToken cancelToken() {
+    final cancelToken = CancelToken();
+    onDispose(cancelToken.cancel);
+    return cancelToken;
+  }
+}
 
 T getValueWhenReadyWithWidgetRef<T>(
   WidgetRef ref,

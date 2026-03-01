@@ -13,6 +13,15 @@ part 'songs_provider.dependence.dart';
 part 'songs_provider.g.dart';
 
 @riverpod
+Future<SetRatingResponse> setRating(
+  Ref ref, {
+  required String id,
+  int rating = 5,
+}) async {
+  return await _setRating(ref: ref, id: id, rating: rating);
+}
+
+@riverpod
 Future<SongListResponse> songs(
   Ref ref, {
   int limit = 100,
