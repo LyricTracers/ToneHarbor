@@ -49,14 +49,22 @@ Future<AlbumResponse> recentAlbums(
   Ref ref, {
   int limit = 50,
   Duration? cacheDuration = const Duration(minutes: 5),
+  Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
-  return await _getAlbums(
-    ref: ref,
-    limit: limit,
-    sortBy: 'time',
-    sortDirection: 'desc',
-    cacheDuration: cacheDuration,
-  );
+  final link = ref.keepAliveFor(keepAliveDuration);
+  try {
+    return await _getAlbums(
+      ref: ref,
+      limit: limit,
+      sortBy: 'time',
+      sortDirection: 'desc',
+      cacheDuration: cacheDuration,
+    );
+  } finally {
+    if (keepAliveDuration != null) {
+      link.close();
+    }
+  }
 }
 
 @riverpod
@@ -65,13 +73,21 @@ Future<AlbumResponse> artistAlbums(
   required String artist,
   int limit = 100,
   Duration? cacheDuration = const Duration(minutes: 5),
+  Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
-  return await _getAlbums(
-    ref: ref,
-    limit: limit,
-    artist: artist,
-    cacheDuration: cacheDuration,
-  );
+  final link = ref.keepAliveFor(keepAliveDuration);
+  try {
+    return await _getAlbums(
+      ref: ref,
+      limit: limit,
+      artist: artist,
+      cacheDuration: cacheDuration,
+    );
+  } finally {
+    if (keepAliveDuration != null) {
+      link.close();
+    }
+  }
 }
 
 @keepAlive

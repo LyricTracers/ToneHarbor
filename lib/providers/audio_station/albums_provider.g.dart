@@ -167,7 +167,8 @@ final class RecentAlbumsProvider
     with $FutureModifier<AlbumResponse>, $FutureProvider<AlbumResponse> {
   RecentAlbumsProvider._({
     required RecentAlbumsFamily super.from,
-    required ({int limit, Duration? cacheDuration}) super.argument,
+    required ({int limit, Duration? cacheDuration, Duration? keepAliveDuration})
+    super.argument,
   }) : super(
          retry: null,
          name: r'recentAlbumsProvider',
@@ -194,11 +195,18 @@ final class RecentAlbumsProvider
 
   @override
   FutureOr<AlbumResponse> create(Ref ref) {
-    final argument = this.argument as ({int limit, Duration? cacheDuration});
+    final argument =
+        this.argument
+            as ({
+              int limit,
+              Duration? cacheDuration,
+              Duration? keepAliveDuration,
+            });
     return recentAlbums(
       ref,
       limit: argument.limit,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -213,13 +221,13 @@ final class RecentAlbumsProvider
   }
 }
 
-String _$recentAlbumsHash() => r'85aead22af4f91c36c3c3133f2c83bbd252c09f1';
+String _$recentAlbumsHash() => r'231231afc689701754edec4d67a5dd9c9eea6604';
 
 final class RecentAlbumsFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<AlbumResponse>,
-          ({int limit, Duration? cacheDuration})
+          ({int limit, Duration? cacheDuration, Duration? keepAliveDuration})
         > {
   RecentAlbumsFamily._()
     : super(
@@ -233,8 +241,13 @@ final class RecentAlbumsFamily extends $Family
   RecentAlbumsProvider call({
     int limit = 50,
     Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => RecentAlbumsProvider._(
-    argument: (limit: limit, cacheDuration: cacheDuration),
+    argument: (
+      limit: limit,
+      cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
+    ),
     from: this,
   );
 
@@ -255,7 +268,12 @@ final class ArtistAlbumsProvider
     with $FutureModifier<AlbumResponse>, $FutureProvider<AlbumResponse> {
   ArtistAlbumsProvider._({
     required ArtistAlbumsFamily super.from,
-    required ({String artist, int limit, Duration? cacheDuration})
+    required ({
+      String artist,
+      int limit,
+      Duration? cacheDuration,
+      Duration? keepAliveDuration,
+    })
     super.argument,
   }) : super(
          retry: null,
@@ -284,12 +302,19 @@ final class ArtistAlbumsProvider
   @override
   FutureOr<AlbumResponse> create(Ref ref) {
     final argument =
-        this.argument as ({String artist, int limit, Duration? cacheDuration});
+        this.argument
+            as ({
+              String artist,
+              int limit,
+              Duration? cacheDuration,
+              Duration? keepAliveDuration,
+            });
     return artistAlbums(
       ref,
       artist: argument.artist,
       limit: argument.limit,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -304,13 +329,18 @@ final class ArtistAlbumsProvider
   }
 }
 
-String _$artistAlbumsHash() => r'c88bce79e166fbfe8e86763d3c48c708a7705138';
+String _$artistAlbumsHash() => r'69cf8a5bf0c0701ec8cfc9b94feced34fda3af97';
 
 final class ArtistAlbumsFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<AlbumResponse>,
-          ({String artist, int limit, Duration? cacheDuration})
+          ({
+            String artist,
+            int limit,
+            Duration? cacheDuration,
+            Duration? keepAliveDuration,
+          })
         > {
   ArtistAlbumsFamily._()
     : super(
@@ -325,8 +355,14 @@ final class ArtistAlbumsFamily extends $Family
     required String artist,
     int limit = 100,
     Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => ArtistAlbumsProvider._(
-    argument: (artist: artist, limit: limit, cacheDuration: cacheDuration),
+    argument: (
+      artist: artist,
+      limit: limit,
+      cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
+    ),
     from: this,
   );
 
