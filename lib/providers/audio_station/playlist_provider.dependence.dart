@@ -33,6 +33,7 @@ Future<PlaylistListResponse> _sendPlaylistRequest<T>({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         ...authHeaders,
       }),
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');
@@ -104,6 +105,7 @@ Future<PlaylistDetailResponse> _sendPlaylistDetailRequest<T>({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         ...authHeaders,
       }),
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');
@@ -318,8 +320,8 @@ Future<PlaylistDetailResponse> _getPlaylistInfo({
   return result;
 }
 
-Future<CreatePlaylistResponse> createPlaylist({
-  required WidgetRef ref,
+Future<CreatePlaylistResponse> _createPlaylist({
+  required Ref ref,
   required String name,
 }) async {
   final authHeaders = await ref.read(authHeadersProvider.future);
@@ -343,7 +345,7 @@ Future<CreatePlaylistResponse> createPlaylist({
   );
 
   final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
+    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
   );
 
   final params = Map<String, dynamic>.from(request.toJson())
@@ -360,6 +362,7 @@ Future<CreatePlaylistResponse> createPlaylist({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         ...authHeaders,
       }),
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');
@@ -402,8 +405,8 @@ Future<CreatePlaylistResponse> createPlaylist({
   return result;
 }
 
-Future<RenamePlaylistResponse> renamePlaylist({
-  required WidgetRef ref,
+Future<RenamePlaylistResponse> _renamePlaylist({
+  required Ref ref,
   required String id,
   required String newName,
 }) async {
@@ -428,7 +431,7 @@ Future<RenamePlaylistResponse> renamePlaylist({
   );
 
   final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
+    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
   );
 
   final params = Map<String, dynamic>.from(request.toJson())
@@ -445,6 +448,7 @@ Future<RenamePlaylistResponse> renamePlaylist({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         ...authHeaders,
       }),
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');
@@ -487,8 +491,8 @@ Future<RenamePlaylistResponse> renamePlaylist({
   return result;
 }
 
-Future<DeletePlaylistResponse> deletePlaylist({
-  required WidgetRef ref,
+Future<DeletePlaylistResponse> _deletePlaylist({
+  required Ref ref,
   required String id,
 }) async {
   final authHeaders = await ref.read(authHeadersProvider.future);
@@ -511,7 +515,7 @@ Future<DeletePlaylistResponse> deletePlaylist({
   );
 
   final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
+    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
   );
 
   final params = Map<String, dynamic>.from(request.toJson())
@@ -528,6 +532,7 @@ Future<DeletePlaylistResponse> deletePlaylist({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         ...authHeaders,
       }),
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');
@@ -570,8 +575,8 @@ Future<DeletePlaylistResponse> deletePlaylist({
   return result;
 }
 
-Future<AddPlaylistSongsResponse> addSongToPlaylist({
-  required WidgetRef ref,
+Future<AddPlaylistSongsResponse> _addSongToPlaylist({
+  required Ref ref,
   required String id,
   required String songId,
   int offset = -1,
@@ -602,7 +607,7 @@ Future<AddPlaylistSongsResponse> addSongToPlaylist({
   );
 
   final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
+    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
   );
 
   final params = Map<String, dynamic>.from(request.toJson())
@@ -619,6 +624,7 @@ Future<AddPlaylistSongsResponse> addSongToPlaylist({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         ...authHeaders,
       }),
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');
@@ -661,41 +667,8 @@ Future<AddPlaylistSongsResponse> addSongToPlaylist({
   return result;
 }
 
-Future<AddPlaylistSongsResponse> addSongsToPlaylist({
-  required WidgetRef ref,
-  required String id,
-  required List<String> songIds,
-  int offset = -1,
-  int limit = 0,
-  bool skipDuplicate = false,
-}) async {
-  return await addSongToPlaylist(
-    ref: ref,
-    id: id,
-    songId: songIds.join(','),
-    offset: offset,
-    limit: limit,
-    skipDuplicate: skipDuplicate,
-  );
-}
-
-Future<AddPlaylistSongsResponse> removeSongsFromPlaylist({
-  required WidgetRef ref,
-  required String id,
-  required int offset,
-  required int limit,
-}) async {
-  return await addSongToPlaylist(
-    ref: ref,
-    id: id,
-    songId: '',
-    offset: offset,
-    limit: limit,
-  );
-}
-
-Future<RemoveMissingSongsResponse> removeMissingSongs({
-  required WidgetRef ref,
+Future<RemoveMissingSongsResponse> _removeMissingSongs({
+  required Ref ref,
   required String id,
 }) async {
   final authHeaders = await ref.read(authHeadersProvider.future);
@@ -718,7 +691,7 @@ Future<RemoveMissingSongsResponse> removeMissingSongs({
   );
 
   final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
+    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
   );
 
   final params = Map<String, dynamic>.from(request.toJson())
@@ -735,6 +708,7 @@ Future<RemoveMissingSongsResponse> removeMissingSongs({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         ...authHeaders,
       }),
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');

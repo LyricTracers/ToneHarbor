@@ -444,9 +444,10 @@ class TestLayout extends BaseBgLayout {
       });
 
       try {
-        final result = await createPlaylist(
-          ref: ref,
-          name: 'Test Playlist ${DateTime.now().millisecondsSinceEpoch}',
+        final result = await ref.read(
+          createPlaylistProvider(
+            name: 'Test Playlist ${DateTime.now().millisecondsSinceEpoch}',
+          ).future,
         );
         updateRequest(
           requestId: requestId,

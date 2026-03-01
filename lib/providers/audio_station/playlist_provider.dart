@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rhttp/rhttp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -8,10 +7,96 @@ import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/playlist_list.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
-import 'package:toneharbor/utils/excetions.dart';
 
 part 'playlist_provider.dependence.dart';
 part 'playlist_provider.g.dart';
+
+@riverpod
+Future<RemoveMissingSongsResponse> removeMissingSongs(
+  Ref ref, {
+  required String id,
+}) async {
+  return await _removeMissingSongs(ref: ref, id: id);
+}
+
+@riverpod
+Future<AddPlaylistSongsResponse> removeSongsFromPlaylist(
+  Ref ref, {
+  required String id,
+  required int offset,
+  required int limit,
+}) async {
+  return await _addSongToPlaylist(
+    ref: ref,
+    id: id,
+    songId: '',
+    offset: offset,
+    limit: limit,
+  );
+}
+
+@riverpod
+Future<AddPlaylistSongsResponse> addSongsToPlaylist(
+  Ref ref, {
+  required String id,
+  required List<String> songIds,
+  int offset = -1,
+  int limit = 0,
+  bool skipDuplicate = false,
+}) async {
+  return await _addSongToPlaylist(
+    ref: ref,
+    id: id,
+    songId: songIds.join(','),
+    offset: offset,
+    limit: limit,
+    skipDuplicate: skipDuplicate,
+  );
+}
+
+@riverpod
+Future<AddPlaylistSongsResponse> addSongToPlaylist(
+  Ref ref, {
+  required String id,
+  required String songId,
+  int offset = -1,
+  int limit = 0,
+  bool skipDuplicate = false,
+}) async {
+  return await _addSongToPlaylist(
+    ref: ref,
+    id: id,
+    songId: songId,
+    offset: offset,
+    limit: limit,
+    skipDuplicate: skipDuplicate,
+  );
+}
+
+@riverpod
+Future<DeletePlaylistResponse> deletePlaylist(
+  Ref ref, {
+  required String id,
+}) async {
+  return await _deletePlaylist(ref: ref, id: id);
+}
+
+@riverpod
+Future<RenamePlaylistResponse> renamePlaylist(
+  Ref ref, {
+  required String id,
+  required String newName,
+}) async {
+  return await _renamePlaylist(ref: ref, id: id, newName: newName);
+}
+
+@riverpod
+Future<CreatePlaylistResponse> createPlaylist(
+  Ref ref, {
+  required String name,
+}) async {
+  return await _createPlaylist(ref: ref, name: name);
+}
 
 @riverpod
 Future<PlaylistListResponse> playlists(
