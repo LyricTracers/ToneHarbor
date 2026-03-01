@@ -66,7 +66,7 @@ final class SetRatingProvider
   }
 }
 
-String _$setRatingHash() => r'620f63e4fc383f9bc23a78e01b588b96623ef21b';
+String _$setRatingHash() => r'579cbd8a7d344ef5ca07ab57dff12242e243f027';
 
 final class SetRatingFamily extends $Family
     with
@@ -112,6 +112,7 @@ final class SongsProvider
       String additional,
       String? artist,
       Duration? cacheDuration,
+      Duration? keepAliveDuration,
     })
     super.argument,
   }) : super(
@@ -151,6 +152,7 @@ final class SongsProvider
               String additional,
               String? artist,
               Duration? cacheDuration,
+              Duration? keepAliveDuration,
             });
     return songs(
       ref,
@@ -162,6 +164,7 @@ final class SongsProvider
       additional: argument.additional,
       artist: argument.artist,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -176,7 +179,7 @@ final class SongsProvider
   }
 }
 
-String _$songsHash() => r'9af51b22d74382250e3a3ef500d59d139175b230';
+String _$songsHash() => r'f6c42798822b6485cb7b11659e33512e372d2563';
 
 final class SongsFamily extends $Family
     with
@@ -191,6 +194,7 @@ final class SongsFamily extends $Family
             String additional,
             String? artist,
             Duration? cacheDuration,
+            Duration? keepAliveDuration,
           })
         > {
   SongsFamily._()
@@ -211,6 +215,7 @@ final class SongsFamily extends $Family
     String additional = 'song_tag,song_audio,song_rating',
     String? artist,
     Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => SongsProvider._(
     argument: (
       limit: limit,
@@ -221,6 +226,7 @@ final class SongsFamily extends $Family
       additional: additional,
       artist: artist,
       cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );
@@ -248,6 +254,7 @@ final class RandomSongsProvider
       String library,
       String additional,
       Duration? cacheDuration,
+      Duration? keepAliveDuration,
     })
     super.argument,
   }) : super(
@@ -284,6 +291,7 @@ final class RandomSongsProvider
               String library,
               String additional,
               Duration? cacheDuration,
+              Duration? keepAliveDuration,
             });
     return randomSongs(
       ref,
@@ -292,6 +300,7 @@ final class RandomSongsProvider
       library: argument.library,
       additional: argument.additional,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -306,7 +315,7 @@ final class RandomSongsProvider
   }
 }
 
-String _$randomSongsHash() => r'75633ae42ec1d673bf4225bfafaf9eb7ce699b9d';
+String _$randomSongsHash() => r'fd5b96e78e567d40997af690f1e547c205b4c1d0';
 
 final class RandomSongsFamily extends $Family
     with
@@ -318,6 +327,7 @@ final class RandomSongsFamily extends $Family
             String library,
             String additional,
             Duration? cacheDuration,
+            Duration? keepAliveDuration,
           })
         > {
   RandomSongsFamily._()
@@ -335,6 +345,7 @@ final class RandomSongsFamily extends $Family
     String library = 'shared',
     String additional = 'song_tag,song_audio,song_rating',
     Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => RandomSongsProvider._(
     argument: (
       limit: limit,
@@ -342,6 +353,7 @@ final class RandomSongsFamily extends $Family
       library: library,
       additional: additional,
       cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );
@@ -363,7 +375,13 @@ final class ArtistSongsProvider
     with $FutureModifier<SongListResponse>, $FutureProvider<SongListResponse> {
   ArtistSongsProvider._({
     required ArtistSongsFamily super.from,
-    required ({String artist, int limit, int offset, Duration? cacheDuration})
+    required ({
+      String artist,
+      int limit,
+      int offset,
+      Duration? cacheDuration,
+      Duration? keepAliveDuration,
+    })
     super.argument,
   }) : super(
          retry: null,
@@ -398,6 +416,7 @@ final class ArtistSongsProvider
               int limit,
               int offset,
               Duration? cacheDuration,
+              Duration? keepAliveDuration,
             });
     return artistSongs(
       ref,
@@ -405,6 +424,7 @@ final class ArtistSongsProvider
       limit: argument.limit,
       offset: argument.offset,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -419,13 +439,19 @@ final class ArtistSongsProvider
   }
 }
 
-String _$artistSongsHash() => r'8c3f2e8f8d70c8a1f87b0da87f387428131fd1b1';
+String _$artistSongsHash() => r'237ce7ed196571840393d76a6fbbb1acb813ed1f';
 
 final class ArtistSongsFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<SongListResponse>,
-          ({String artist, int limit, int offset, Duration? cacheDuration})
+          ({
+            String artist,
+            int limit,
+            int offset,
+            Duration? cacheDuration,
+            Duration? keepAliveDuration,
+          })
         > {
   ArtistSongsFamily._()
     : super(
@@ -441,12 +467,14 @@ final class ArtistSongsFamily extends $Family
     int limit = 100,
     int offset = 0,
     Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => ArtistSongsProvider._(
     argument: (
       artist: artist,
       limit: limit,
       offset: offset,
       cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );
@@ -476,12 +504,13 @@ final class SearchSongsProvider
       String sortDirection,
       String additional,
       Duration? cacheDuration,
+      Duration? keepAliveDuration,
     })
     super.argument,
   }) : super(
          retry: null,
          name: r'searchSongsProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -514,6 +543,7 @@ final class SearchSongsProvider
               String sortDirection,
               String additional,
               Duration? cacheDuration,
+              Duration? keepAliveDuration,
             });
     return searchSongs(
       ref,
@@ -524,6 +554,7 @@ final class SearchSongsProvider
       sortDirection: argument.sortDirection,
       additional: argument.additional,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -538,7 +569,7 @@ final class SearchSongsProvider
   }
 }
 
-String _$searchSongsHash() => r'4ad5c87ac8ac60dd317e9065370698455686e476';
+String _$searchSongsHash() => r'd3b8d705e4de8f9e34edb8efe6384228ee483562';
 
 final class SearchSongsFamily extends $Family
     with
@@ -552,6 +583,7 @@ final class SearchSongsFamily extends $Family
             String sortDirection,
             String additional,
             Duration? cacheDuration,
+            Duration? keepAliveDuration,
           })
         > {
   SearchSongsFamily._()
@@ -560,7 +592,7 @@ final class SearchSongsFamily extends $Family
         name: r'searchSongsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
 
   SearchSongsProvider call({
@@ -571,6 +603,7 @@ final class SearchSongsFamily extends $Family
     String sortDirection = 'asc',
     String additional = 'song_tag,song_audio,song_rating',
     Duration? cacheDuration = const Duration(minutes: 1),
+    Duration? keepAliveDuration,
   }) => SearchSongsProvider._(
     argument: (
       title: title,
@@ -580,6 +613,7 @@ final class SearchSongsFamily extends $Family
       sortDirection: sortDirection,
       additional: additional,
       cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );
@@ -612,6 +646,7 @@ final class AlbumSongsProvider
       String additional,
       String? artist,
       Duration? cacheDuration,
+      Duration? keepAliveDuration,
     })
     super.argument,
   }) : super(
@@ -653,6 +688,7 @@ final class AlbumSongsProvider
               String additional,
               String? artist,
               Duration? cacheDuration,
+              Duration? keepAliveDuration,
             });
     return albumSongs(
       ref,
@@ -666,6 +702,7 @@ final class AlbumSongsProvider
       additional: argument.additional,
       artist: argument.artist,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -680,7 +717,7 @@ final class AlbumSongsProvider
   }
 }
 
-String _$albumSongsHash() => r'e36c1364028a56c22763de2ebf135367e56abd51';
+String _$albumSongsHash() => r'a892dfbd2bb93535cf3aaa9383be2f50b3e4266e';
 
 final class AlbumSongsFamily extends $Family
     with
@@ -697,6 +734,7 @@ final class AlbumSongsFamily extends $Family
             String additional,
             String? artist,
             Duration? cacheDuration,
+            Duration? keepAliveDuration,
           })
         > {
   AlbumSongsFamily._()
@@ -719,6 +757,7 @@ final class AlbumSongsFamily extends $Family
     String additional = 'song_tag,song_audio,song_rating',
     String? artist,
     Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => AlbumSongsProvider._(
     argument: (
       album: album,
@@ -731,6 +770,7 @@ final class AlbumSongsFamily extends $Family
       additional: additional,
       artist: artist,
       cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );
@@ -752,7 +792,8 @@ final class LyricsProvider
     with $FutureModifier<LyricsResponse>, $FutureProvider<LyricsResponse> {
   LyricsProvider._({
     required LyricsFamily super.from,
-    required ({String id, Duration? cacheDuration}) super.argument,
+    required ({String id, Duration? cacheDuration, Duration? keepAliveDuration})
+    super.argument,
   }) : super(
          retry: null,
          name: r'lyricsProvider',
@@ -779,8 +820,19 @@ final class LyricsProvider
 
   @override
   FutureOr<LyricsResponse> create(Ref ref) {
-    final argument = this.argument as ({String id, Duration? cacheDuration});
-    return lyrics(ref, id: argument.id, cacheDuration: argument.cacheDuration);
+    final argument =
+        this.argument
+            as ({
+              String id,
+              Duration? cacheDuration,
+              Duration? keepAliveDuration,
+            });
+    return lyrics(
+      ref,
+      id: argument.id,
+      cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
+    );
   }
 
   @override
@@ -794,13 +846,13 @@ final class LyricsProvider
   }
 }
 
-String _$lyricsHash() => r'5519d1aeaaa6de2c70018c1281d7ad71822785bb';
+String _$lyricsHash() => r'e69ea1f76a6d1ffd24c22570a6752159521768d4';
 
 final class LyricsFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<LyricsResponse>,
-          ({String id, Duration? cacheDuration})
+          ({String id, Duration? cacheDuration, Duration? keepAliveDuration})
         > {
   LyricsFamily._()
     : super(
@@ -814,8 +866,13 @@ final class LyricsFamily extends $Family
   LyricsProvider call({
     required String id,
     Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => LyricsProvider._(
-    argument: (id: id, cacheDuration: cacheDuration),
+    argument: (
+      id: id,
+      cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
+    ),
     from: this,
   );
 
@@ -844,6 +901,7 @@ final class SearchLyricsProvider
       int limit,
       String additional,
       Duration? cacheDuration,
+      Duration? keepAliveDuration,
     })
     super.argument,
   }) : super(
@@ -880,6 +938,7 @@ final class SearchLyricsProvider
               int limit,
               String additional,
               Duration? cacheDuration,
+              Duration? keepAliveDuration,
             });
     return searchLyrics(
       ref,
@@ -888,6 +947,7 @@ final class SearchLyricsProvider
       limit: argument.limit,
       additional: argument.additional,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -902,7 +962,7 @@ final class SearchLyricsProvider
   }
 }
 
-String _$searchLyricsHash() => r'1f9a750f0d3751d67787b6383087973697198d39';
+String _$searchLyricsHash() => r'7f85a39007030726bbfe101df1f7bc156c04750f';
 
 final class SearchLyricsFamily extends $Family
     with
@@ -914,6 +974,7 @@ final class SearchLyricsFamily extends $Family
             int limit,
             String additional,
             Duration? cacheDuration,
+            Duration? keepAliveDuration,
           })
         > {
   SearchLyricsFamily._()
@@ -931,6 +992,7 @@ final class SearchLyricsFamily extends $Family
     int limit = 10,
     String additional = 'full_lyrics',
     Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => SearchLyricsProvider._(
     argument: (
       title: title,
@@ -938,6 +1000,7 @@ final class SearchLyricsFamily extends $Family
       limit: limit,
       additional: additional,
       cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );
@@ -959,7 +1022,12 @@ final class SongInfoProvider
     with $FutureModifier<SongInfoResponse>, $FutureProvider<SongInfoResponse> {
   SongInfoProvider._({
     required SongInfoFamily super.from,
-    required ({String id, String additional, Duration? cacheDuration})
+    required ({
+      String id,
+      String additional,
+      Duration? cacheDuration,
+      Duration? keepAliveDuration,
+    })
     super.argument,
   }) : super(
          retry: null,
@@ -989,12 +1057,18 @@ final class SongInfoProvider
   FutureOr<SongInfoResponse> create(Ref ref) {
     final argument =
         this.argument
-            as ({String id, String additional, Duration? cacheDuration});
+            as ({
+              String id,
+              String additional,
+              Duration? cacheDuration,
+              Duration? keepAliveDuration,
+            });
     return songInfo(
       ref,
       id: argument.id,
       additional: argument.additional,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -1009,13 +1083,18 @@ final class SongInfoProvider
   }
 }
 
-String _$songInfoHash() => r'a5bf1f30023a6c6ed573fb964007823c7e62236a';
+String _$songInfoHash() => r'2600a44b80dcde8d8ed257aec3fc6c3224cfe75d';
 
 final class SongInfoFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<SongInfoResponse>,
-          ({String id, String additional, Duration? cacheDuration})
+          ({
+            String id,
+            String additional,
+            Duration? cacheDuration,
+            Duration? keepAliveDuration,
+          })
         > {
   SongInfoFamily._()
     : super(
@@ -1030,8 +1109,14 @@ final class SongInfoFamily extends $Family
     required String id,
     String additional = 'song_rating',
     Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => SongInfoProvider._(
-    argument: (id: id, additional: additional, cacheDuration: cacheDuration),
+    argument: (
+      id: id,
+      additional: additional,
+      cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
+    ),
     from: this,
   );
 
@@ -1054,7 +1139,8 @@ final class NumberOfPlugInsProvider
         $FutureProvider<GetNumberOfPlugInsResponse> {
   NumberOfPlugInsProvider._({
     required NumberOfPlugInsFamily super.from,
-    required Duration? super.argument,
+    required ({Duration? cacheDuration, Duration? keepAliveDuration})
+    super.argument,
   }) : super(
          retry: null,
          name: r'numberOfPlugInsProvider',
@@ -1070,7 +1156,7 @@ final class NumberOfPlugInsProvider
   String toString() {
     return r'numberOfPlugInsProvider'
         ''
-        '($argument)';
+        '$argument';
   }
 
   @$internal
@@ -1081,8 +1167,14 @@ final class NumberOfPlugInsProvider
 
   @override
   FutureOr<GetNumberOfPlugInsResponse> create(Ref ref) {
-    final argument = this.argument as Duration?;
-    return numberOfPlugIns(ref, cacheDuration: argument);
+    final argument =
+        this.argument
+            as ({Duration? cacheDuration, Duration? keepAliveDuration});
+    return numberOfPlugIns(
+      ref,
+      cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
+    );
   }
 
   @override
@@ -1096,13 +1188,13 @@ final class NumberOfPlugInsProvider
   }
 }
 
-String _$numberOfPlugInsHash() => r'd53e842ecaf3196462a8259c893c32670627c814';
+String _$numberOfPlugInsHash() => r'6a01371c1e599b8ab3b5df6d7b6436841d2c34a7';
 
 final class NumberOfPlugInsFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<GetNumberOfPlugInsResponse>,
-          Duration?
+          ({Duration? cacheDuration, Duration? keepAliveDuration})
         > {
   NumberOfPlugInsFamily._()
     : super(
@@ -1115,7 +1207,14 @@ final class NumberOfPlugInsFamily extends $Family
 
   NumberOfPlugInsProvider call({
     Duration? cacheDuration = const Duration(hours: 24),
-  }) => NumberOfPlugInsProvider._(argument: cacheDuration, from: this);
+    Duration? keepAliveDuration = const Duration(hours: 24),
+  }) => NumberOfPlugInsProvider._(
+    argument: (
+      cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
+    ),
+    from: this,
+  );
 
   @override
   String toString() => r'numberOfPlugInsProvider';
