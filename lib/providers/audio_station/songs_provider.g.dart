@@ -569,7 +569,7 @@ final class SearchSongsProvider
   }
 }
 
-String _$searchSongsHash() => r'd3b8d705e4de8f9e34edb8efe6384228ee483562';
+String _$searchSongsHash() => r'9dd01b36c82dc497c2f5c8ffdb666e7bd7b883be';
 
 final class SearchSongsFamily extends $Family
     with
@@ -602,7 +602,7 @@ final class SearchSongsFamily extends $Family
     int offset = 0,
     String sortDirection = 'asc',
     String additional = 'song_tag,song_audio,song_rating',
-    Duration? cacheDuration = const Duration(minutes: 1),
+    Duration? cacheDuration = const Duration(minutes: 5),
     Duration? keepAliveDuration,
   }) => SearchSongsProvider._(
     argument: (

@@ -52,7 +52,7 @@ Future<ArtistResponse> searchArtists(
   String sortBy = 'name',
   String sortDirection = 'asc',
   Duration? cacheDuration = const Duration(minutes: 5),
-  Duration? keepAliveDuration = const Duration(minutes: 5),
+  Duration? keepAliveDuration,
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
   try {

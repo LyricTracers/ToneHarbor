@@ -417,7 +417,7 @@ final class SearchAlbumsProvider
   }
 }
 
-String _$searchAlbumsHash() => r'1f92ce1968e06ce9ecb5c3587f240cb51f893f12';
+String _$searchAlbumsHash() => r'6c204a2426303f5b41f11533d72aa0ed1c626829';
 
 final class SearchAlbumsFamily extends $Family
     with
@@ -449,7 +449,7 @@ final class SearchAlbumsFamily extends $Family
     String sortBy = 'name',
     String sortDirection = 'asc',
     Duration? cacheDuration = const Duration(minutes: 5),
-    Duration? keepAliveDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration,
   }) => SearchAlbumsProvider._(
     argument: (
       filter: filter,

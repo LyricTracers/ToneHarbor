@@ -234,7 +234,7 @@ final class SearchArtistsProvider
   }
 }
 
-String _$searchArtistsHash() => r'83b20867569a454f8dd2348e7d068e41d6f887b8';
+String _$searchArtistsHash() => r'ed925cb9e7d02a884bb5ee56202b9724847fee80';
 
 final class SearchArtistsFamily extends $Family
     with
@@ -268,7 +268,7 @@ final class SearchArtistsFamily extends $Family
     String sortBy = 'name',
     String sortDirection = 'asc',
     Duration? cacheDuration = const Duration(minutes: 5),
-    Duration? keepAliveDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration,
   }) => SearchArtistsProvider._(
     argument: (
       filter: filter,

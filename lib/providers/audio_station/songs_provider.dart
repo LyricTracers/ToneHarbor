@@ -120,7 +120,7 @@ Future<SongListResponse> searchSongs(
   int offset = 0,
   String sortDirection = 'asc',
   String additional = 'song_tag,song_audio,song_rating',
-  Duration? cacheDuration = const Duration(minutes: 1),
+  Duration? cacheDuration = const Duration(minutes: 5),
   Duration? keepAliveDuration,
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);

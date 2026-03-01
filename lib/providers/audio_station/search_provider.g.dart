@@ -9,54 +9,81 @@ part of 'search_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(MixSearchResults)
-final mixSearchResultsProvider = MixSearchResultsProvider._();
+@ProviderFor(mixSearch)
+final mixSearchProvider = MixSearchFamily._();
 
-final class MixSearchResultsProvider
-    extends $NotifierProvider<MixSearchResults, MixSearchData?> {
-  MixSearchResultsProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'mixSearchResultsProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+final class MixSearchProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<MixSearchData>,
+          MixSearchData,
+          FutureOr<MixSearchData>
+        >
+    with $FutureModifier<MixSearchData>, $FutureProvider<MixSearchData> {
+  MixSearchProvider._({
+    required MixSearchFamily super.from,
+    required (String, SearchType) super.argument,
+  }) : super(
+         retry: null,
+         name: r'mixSearchProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
-  String debugGetCreateSourceHash() => _$mixSearchResultsHash();
+  String debugGetCreateSourceHash() => _$mixSearchHash();
+
+  @override
+  String toString() {
+    return r'mixSearchProvider'
+        ''
+        '$argument';
+  }
 
   @$internal
   @override
-  MixSearchResults create() => MixSearchResults();
+  $FutureProviderElement<MixSearchData> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(MixSearchData? value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<MixSearchData?>(value),
-    );
+  @override
+  FutureOr<MixSearchData> create(Ref ref) {
+    final argument = this.argument as (String, SearchType);
+    return mixSearch(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is MixSearchProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
   }
 }
 
-String _$mixSearchResultsHash() => r'a292a3318b799000723828698d196d2f7ebf03d4';
+String _$mixSearchHash() => r'ff6a27caa1d6d907275773b12a286d81211ce1e5';
 
-abstract class _$MixSearchResults extends $Notifier<MixSearchData?> {
-  MixSearchData? build();
-  @$mustCallSuper
+final class MixSearchFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<MixSearchData>,
+          (String, SearchType)
+        > {
+  MixSearchFamily._()
+    : super(
+        retry: null,
+        name: r'mixSearchProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  MixSearchProvider call(String query, SearchType type) =>
+      MixSearchProvider._(argument: (query, type), from: this);
+
   @override
-  void runBuild() {
-    final ref = this.ref as $Ref<MixSearchData?, MixSearchData?>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<MixSearchData?, MixSearchData?>,
-              MixSearchData?,
-              Object?,
-              Object?
-            >;
-    element.handleCreate(ref, build);
-  }
+  String toString() => r'mixSearchProvider';
 }

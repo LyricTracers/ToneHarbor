@@ -13,69 +13,6 @@ part 'search_provider.freezed.dart';
 
 enum SearchType { all, songs, artists, albums }
 
-@keepAlive
-class MixSearchResults extends _$MixSearchResults {
-  @override
-  MixSearchData? build() {
-    return null;
-  }
-
-  Future<void> search(String query, SearchType type) async {
-    if (query.trim().isEmpty) {
-      state = null;
-      return;
-    }
-
-    state = MixSearchData.loading();
-
-    try {
-      switch (type) {
-        case SearchType.all:
-          final results = await Future.wait([
-            ref.read(searchSongsProvider(title: query).future),
-            ref.read(searchArtistsProvider(filter: query).future),
-            ref.read(searchAlbumsProvider(filter: query).future),
-          ]);
-
-          state = MixSearchData.loaded(
-            songs: results[0] as SongListResponse,
-            artists: results[1] as ArtistResponse,
-            albums: results[2] as AlbumResponse,
-          );
-          break;
-
-        case SearchType.songs:
-          final songs = await ref.read(
-            searchSongsProvider(title: query).future,
-          );
-          state = MixSearchData.loaded(songs: songs);
-          break;
-
-        case SearchType.artists:
-          final artists = await ref.read(
-            searchArtistsProvider(filter: query).future,
-          );
-          state = MixSearchData.loaded(artists: artists);
-          break;
-
-        case SearchType.albums:
-          final albums = await ref.read(
-            searchAlbumsProvider(filter: query).future,
-          );
-          state = MixSearchData.loaded(albums: albums);
-          break;
-      }
-    } catch (e) {
-      logger.e('搜索失败: $e');
-      state = MixSearchData.error(e.toString());
-    }
-  }
-
-  void clear() {
-    state = null;
-  }
-}
-
 @freezed
 class MixSearchData with _$MixSearchData {
   const factory MixSearchData.loading() = _MixSearchDataLoading;
@@ -89,16 +26,52 @@ class MixSearchData with _$MixSearchData {
   const factory MixSearchData.error(String message) = _MixSearchDataError;
 }
 
-void invalidateAllSearchProviders(Ref ref) {
-  ref.invalidate(mixSearchResultsProvider);
-  ref.invalidate(searchSongsProvider);
-  ref.invalidate(searchArtistsProvider);
-  ref.invalidate(searchAlbumsProvider);
-}
+@riverpod
+Future<MixSearchData> mixSearch(Ref ref, String query, SearchType type) async {
+  var link = ref.keepAlive();
+  try {
+    if (query.trim().isEmpty) {
+      return const MixSearchData.loaded();
+    }
 
-void invalidateAllSearchProvidersWithWidgetRef(WidgetRef ref) {
-  ref.invalidate(mixSearchResultsProvider);
-  ref.invalidate(searchSongsProvider);
-  ref.invalidate(searchArtistsProvider);
-  ref.invalidate(searchAlbumsProvider);
+    try {
+      switch (type) {
+        case SearchType.all:
+          final results = await Future.wait([
+            ref.read(searchSongsProvider(title: query).future),
+            ref.read(searchArtistsProvider(filter: query).future),
+            ref.read(searchAlbumsProvider(filter: query).future),
+          ]);
+
+          return MixSearchData.loaded(
+            songs: results[0] as SongListResponse,
+            artists: results[1] as ArtistResponse,
+            albums: results[2] as AlbumResponse,
+          );
+
+        case SearchType.songs:
+          final songs = await ref.read(
+            searchSongsProvider(title: query).future,
+          );
+          return MixSearchData.loaded(songs: songs);
+
+        case SearchType.artists:
+          final artists = await ref.read(
+            searchArtistsProvider(filter: query).future,
+          );
+          return MixSearchData.loaded(artists: artists);
+
+        case SearchType.albums:
+          final albums = await ref.read(
+            searchAlbumsProvider(filter: query).future,
+          );
+          return MixSearchData.loaded(albums: albums);
+      }
+    } catch (e) {
+      logger.e('搜索失败: $e');
+      return MixSearchData.error(e.toString());
+    }
+  } finally {
+    link.close();
+  }
 }
