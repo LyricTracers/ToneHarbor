@@ -1,8 +1,8 @@
 part of 'info_provider.dart';
 
-Future<Map<String, dynamic>> testConnection({required WidgetRef ref}) async {
+Future<Map<String, dynamic>> _testConnection({required Ref ref}) async {
   final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
+    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
   );
 
   final baseUrl = await ref.read(baseUrlProvider.future);
@@ -12,6 +12,7 @@ Future<Map<String, dynamic>> testConnection({required WidgetRef ref}) async {
     response = await httpClientWrapper.get(
       '$baseUrl/webman/pingpong.cgi',
       query: {'quickconnect': 'true'},
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');
@@ -47,13 +48,13 @@ Future<Map<String, dynamic>> testConnection({required WidgetRef ref}) async {
   return jsonBody;
 }
 
-Future<SynoAPIInfoResponse> queryAPI({
-  required WidgetRef ref,
+Future<SynoAPIInfoResponse> _queryAPI({
+  required Ref ref,
   String query = 'all',
   Duration? cacheDuration,
 }) async {
   final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
+    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
   );
 
   final cacheKey = 'queryAPI:$query';
@@ -82,6 +83,7 @@ Future<SynoAPIInfoResponse> queryAPI({
         'method': 'query',
         'query': query,
       },
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');
@@ -164,6 +166,7 @@ Future<AudioStationInfoResponse> _sendAudioStationInfoRequest({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         ...authHeaders,
       }),
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');
@@ -230,6 +233,7 @@ Future<DSMInfoResponse> _sendDSMInfoRequest({
       '$baseUrl/webapi/entry.cgi',
       query: params.map((key, value) => MapEntry(key, value.toString())),
       headers: HttpHeaders.rawMap({'accept': '*/*', ...authHeaders}),
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');

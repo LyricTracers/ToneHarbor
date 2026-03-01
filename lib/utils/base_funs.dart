@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:hooks_riverpod/misc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rhttp/rhttp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -21,6 +23,15 @@ extension CancelTokenX on Ref {
     final cancelToken = CancelToken();
     onDispose(cancelToken.cancel);
     return cancelToken;
+  }
+
+  KeepAliveLink keepAliveFor(Duration? duration) {
+    final link = this.keepAlive();
+    if (duration != null) {
+      final timer = Timer(duration, link.close);
+      onDispose(timer.cancel);
+    }
+    return link;
   }
 }
 

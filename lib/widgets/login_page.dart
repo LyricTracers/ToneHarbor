@@ -67,7 +67,8 @@ class LoginPage extends BaseBgLayout {
 
       testingConnection.value = true;
       try {
-        await testConnection(ref: ref);
+        final response = await ref.read(testConnectionProvider.future);
+        logger.i("测试连通性响应: $response");
         if (context.mounted) {
           showSnackBar(
             l10n.testConnectionSuccess,

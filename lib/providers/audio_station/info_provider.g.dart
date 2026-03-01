@@ -9,6 +9,154 @@ part of 'info_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(queryAPI)
+final queryAPIProvider = QueryAPIFamily._();
+
+final class QueryAPIProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<SynoAPIInfoResponse>,
+          SynoAPIInfoResponse,
+          FutureOr<SynoAPIInfoResponse>
+        >
+    with
+        $FutureModifier<SynoAPIInfoResponse>,
+        $FutureProvider<SynoAPIInfoResponse> {
+  QueryAPIProvider._({
+    required QueryAPIFamily super.from,
+    required ({
+      String query,
+      Duration? cacheDuration,
+      Duration? keepAliveDuration,
+    })
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'queryAPIProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$queryAPIHash();
+
+  @override
+  String toString() {
+    return r'queryAPIProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<SynoAPIInfoResponse> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<SynoAPIInfoResponse> create(Ref ref) {
+    final argument =
+        this.argument
+            as ({
+              String query,
+              Duration? cacheDuration,
+              Duration? keepAliveDuration,
+            });
+    return queryAPI(
+      ref,
+      query: argument.query,
+      cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is QueryAPIProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$queryAPIHash() => r'b76614e1b53ed99457913e8f9d925bdccedafe5b';
+
+final class QueryAPIFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<SynoAPIInfoResponse>,
+          ({String query, Duration? cacheDuration, Duration? keepAliveDuration})
+        > {
+  QueryAPIFamily._()
+    : super(
+        retry: null,
+        name: r'queryAPIProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  QueryAPIProvider call({
+    String query = 'all',
+    Duration? cacheDuration = const Duration(days: 365),
+    Duration? keepAliveDuration,
+  }) => QueryAPIProvider._(
+    argument: (
+      query: query,
+      cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'queryAPIProvider';
+}
+
+@ProviderFor(testConnection)
+final testConnectionProvider = TestConnectionProvider._();
+
+final class TestConnectionProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Map<String, dynamic>>,
+          Map<String, dynamic>,
+          FutureOr<Map<String, dynamic>>
+        >
+    with
+        $FutureModifier<Map<String, dynamic>>,
+        $FutureProvider<Map<String, dynamic>> {
+  TestConnectionProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'testConnectionProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$testConnectionHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<Map<String, dynamic>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Map<String, dynamic>> create(Ref ref) {
+    return testConnection(ref);
+  }
+}
+
+String _$testConnectionHash() => r'828b729f576cd6534d48f8e8d1f0d269f6bdaaac';
+
 @ProviderFor(audioStationInfo)
 final audioStationInfoProvider = AudioStationInfoFamily._();
 
@@ -24,7 +172,8 @@ final class AudioStationInfoProvider
         $FutureProvider<AudioStationInfoResponse> {
   AudioStationInfoProvider._({
     required AudioStationInfoFamily super.from,
-    required Duration? super.argument,
+    required ({Duration? cacheDuration, Duration? keepAliveDuration})
+    super.argument,
   }) : super(
          retry: null,
          name: r'audioStationInfoProvider',
@@ -40,7 +189,7 @@ final class AudioStationInfoProvider
   String toString() {
     return r'audioStationInfoProvider'
         ''
-        '($argument)';
+        '$argument';
   }
 
   @$internal
@@ -51,8 +200,14 @@ final class AudioStationInfoProvider
 
   @override
   FutureOr<AudioStationInfoResponse> create(Ref ref) {
-    final argument = this.argument as Duration?;
-    return audioStationInfo(ref, cacheDuration: argument);
+    final argument =
+        this.argument
+            as ({Duration? cacheDuration, Duration? keepAliveDuration});
+    return audioStationInfo(
+      ref,
+      cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
+    );
   }
 
   @override
@@ -66,13 +221,13 @@ final class AudioStationInfoProvider
   }
 }
 
-String _$audioStationInfoHash() => r'84f4d2f9e26220901e51c78a5a271cf6e5edcebc';
+String _$audioStationInfoHash() => r'dca049f78fa2c2ed12cc05b82831a3cccb0c8acf';
 
 final class AudioStationInfoFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<AudioStationInfoResponse>,
-          Duration?
+          ({Duration? cacheDuration, Duration? keepAliveDuration})
         > {
   AudioStationInfoFamily._()
     : super(
@@ -83,8 +238,16 @@ final class AudioStationInfoFamily extends $Family
         isAutoDispose: true,
       );
 
-  AudioStationInfoProvider call({Duration? cacheDuration}) =>
-      AudioStationInfoProvider._(argument: cacheDuration, from: this);
+  AudioStationInfoProvider call({
+    Duration? cacheDuration,
+    Duration? keepAliveDuration,
+  }) => AudioStationInfoProvider._(
+    argument: (
+      cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
+    ),
+    from: this,
+  );
 
   @override
   String toString() => r'audioStationInfoProvider';
@@ -103,7 +266,8 @@ final class DsmInfoProvider
     with $FutureModifier<DSMInfoResponse>, $FutureProvider<DSMInfoResponse> {
   DsmInfoProvider._({
     required DsmInfoFamily super.from,
-    required Duration? super.argument,
+    required ({Duration? cacheDuration, Duration? keepAliveDuration})
+    super.argument,
   }) : super(
          retry: null,
          name: r'dsmInfoProvider',
@@ -119,7 +283,7 @@ final class DsmInfoProvider
   String toString() {
     return r'dsmInfoProvider'
         ''
-        '($argument)';
+        '$argument';
   }
 
   @$internal
@@ -130,8 +294,14 @@ final class DsmInfoProvider
 
   @override
   FutureOr<DSMInfoResponse> create(Ref ref) {
-    final argument = this.argument as Duration?;
-    return dsmInfo(ref, cacheDuration: argument);
+    final argument =
+        this.argument
+            as ({Duration? cacheDuration, Duration? keepAliveDuration});
+    return dsmInfo(
+      ref,
+      cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
+    );
   }
 
   @override
@@ -145,10 +315,14 @@ final class DsmInfoProvider
   }
 }
 
-String _$dsmInfoHash() => r'fc59140b3e4224fa157047fbd4251ebf5f0468c9';
+String _$dsmInfoHash() => r'6d6fe27716c3388dbca8b51805d9993384413c59';
 
 final class DsmInfoFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<DSMInfoResponse>, Duration?> {
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<DSMInfoResponse>,
+          ({Duration? cacheDuration, Duration? keepAliveDuration})
+        > {
   DsmInfoFamily._()
     : super(
         retry: null,
@@ -158,8 +332,16 @@ final class DsmInfoFamily extends $Family
         isAutoDispose: true,
       );
 
-  DsmInfoProvider call({Duration? cacheDuration}) =>
-      DsmInfoProvider._(argument: cacheDuration, from: this);
+  DsmInfoProvider call({
+    Duration? cacheDuration,
+    Duration? keepAliveDuration,
+  }) => DsmInfoProvider._(
+    argument: (
+      cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
+    ),
+    from: this,
+  );
 
   @override
   String toString() => r'dsmInfoProvider';

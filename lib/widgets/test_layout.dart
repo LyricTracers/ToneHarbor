@@ -602,7 +602,10 @@ class TestLayout extends BaseBgLayout {
       }
     }
 
-    Future<void> handleGetAudioStationInfo() async {
+    Future<void> handleGetAudioStationInfo(
+      ValueNotifier<bool> isLoading,
+    ) async {
+      isLoading.value = true;
       final requestId = DateTime.now().millisecondsSinceEpoch.toString();
       addRequest({
         'id': requestId,
@@ -628,6 +631,8 @@ class TestLayout extends BaseBgLayout {
           status: 'error',
           response: errorMessage,
         );
+      } finally {
+        isLoading.value = false;
       }
     }
 
@@ -689,6 +694,7 @@ class TestLayout extends BaseBgLayout {
       }
     }
 
+    final isLoading = useState(false);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -954,7 +960,10 @@ class TestLayout extends BaseBgLayout {
                         ),
                       ),
                       ElevatedButton.icon(
-                        onPressed: handleGetAudioStationInfo,
+                        onPressed: isLoading.value
+                            ? null
+                            : () async =>
+                                  await handleGetAudioStationInfo(isLoading),
                         icon: const Icon(Icons.info),
                         label: const Text('获取服务器信息'),
                         style: ElevatedButton.styleFrom(
