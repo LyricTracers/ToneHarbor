@@ -22,18 +22,26 @@ Future<AlbumResponse> albums(
   String additional = 'avg_rating',
   String? artist,
   Duration? cacheDuration = const Duration(minutes: 5),
+  Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
-  return await _getAlbums(
-    ref: ref,
-    limit: limit,
-    offset: offset,
-    library: library,
-    sortBy: sortBy,
-    sortDirection: sortDirection,
-    additional: additional,
-    artist: artist,
-    cacheDuration: cacheDuration,
-  );
+  final link = ref.keepAliveFor(keepAliveDuration);
+  try {
+    return await _getAlbums(
+      ref: ref,
+      limit: limit,
+      offset: offset,
+      library: library,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+      additional: additional,
+      artist: artist,
+      cacheDuration: cacheDuration,
+    );
+  } finally {
+    if (keepAliveDuration != null) {
+      link.close();
+    }
+  }
 }
 
 @riverpod
@@ -74,17 +82,25 @@ Future<AlbumResponse> searchAlbums(
   int offset = 0,
   String sortBy = 'name',
   String sortDirection = 'asc',
-  Duration? cacheDuration = const Duration(minutes: 1),
+  Duration? cacheDuration = const Duration(minutes: 5),
+  Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
-  return await _searchAlbums(
-    ref: ref,
-    filter: filter,
-    limit: limit,
-    offset: offset,
-    sortBy: sortBy,
-    sortDirection: sortDirection,
-    cacheDuration: cacheDuration,
-  );
+  final link = ref.keepAliveFor(keepAliveDuration);
+  try {
+    return await _searchAlbums(
+      ref: ref,
+      filter: filter,
+      limit: limit,
+      offset: offset,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+      cacheDuration: cacheDuration,
+    );
+  } finally {
+    if (keepAliveDuration != null) {
+      link.close();
+    }
+  }
 }
 
 @riverpod

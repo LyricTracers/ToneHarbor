@@ -34,6 +34,7 @@ Future<AlbumResponse> _sendAlbumRequest<T>({
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         ...authHeaders,
       }),
+      cancelToken: ref.cancelToken(),
     );
   } catch (e) {
     logger.e('发送请求失败: $e');

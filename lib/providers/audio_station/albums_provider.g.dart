@@ -31,6 +31,7 @@ final class AlbumsProvider
       String additional,
       String? artist,
       Duration? cacheDuration,
+      Duration? keepAliveDuration,
     })
     super.argument,
   }) : super(
@@ -70,6 +71,7 @@ final class AlbumsProvider
               String additional,
               String? artist,
               Duration? cacheDuration,
+              Duration? keepAliveDuration,
             });
     return albums(
       ref,
@@ -81,6 +83,7 @@ final class AlbumsProvider
       additional: argument.additional,
       artist: argument.artist,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -95,7 +98,7 @@ final class AlbumsProvider
   }
 }
 
-String _$albumsHash() => r'9a8993c6d7817b3244f825835f2b9a680a04fe88';
+String _$albumsHash() => r'f8d34b62130554d44145c120e42a0bae80bfe440';
 
 final class AlbumsFamily extends $Family
     with
@@ -110,6 +113,7 @@ final class AlbumsFamily extends $Family
             String additional,
             String? artist,
             Duration? cacheDuration,
+            Duration? keepAliveDuration,
           })
         > {
   AlbumsFamily._()
@@ -130,6 +134,7 @@ final class AlbumsFamily extends $Family
     String additional = 'avg_rating',
     String? artist,
     Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => AlbumsProvider._(
     argument: (
       limit: limit,
@@ -140,6 +145,7 @@ final class AlbumsFamily extends $Family
       additional: additional,
       artist: artist,
       cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );
@@ -348,6 +354,7 @@ final class SearchAlbumsProvider
       String sortBy,
       String sortDirection,
       Duration? cacheDuration,
+      Duration? keepAliveDuration,
     })
     super.argument,
   }) : super(
@@ -385,6 +392,7 @@ final class SearchAlbumsProvider
               String sortBy,
               String sortDirection,
               Duration? cacheDuration,
+              Duration? keepAliveDuration,
             });
     return searchAlbums(
       ref,
@@ -394,6 +402,7 @@ final class SearchAlbumsProvider
       sortBy: argument.sortBy,
       sortDirection: argument.sortDirection,
       cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
     );
   }
 
@@ -408,7 +417,7 @@ final class SearchAlbumsProvider
   }
 }
 
-String _$searchAlbumsHash() => r'617fe50ac69fcd9e6942b7d79c9cd05520369687';
+String _$searchAlbumsHash() => r'1f92ce1968e06ce9ecb5c3587f240cb51f893f12';
 
 final class SearchAlbumsFamily extends $Family
     with
@@ -421,6 +430,7 @@ final class SearchAlbumsFamily extends $Family
             String sortBy,
             String sortDirection,
             Duration? cacheDuration,
+            Duration? keepAliveDuration,
           })
         > {
   SearchAlbumsFamily._()
@@ -438,7 +448,8 @@ final class SearchAlbumsFamily extends $Family
     int offset = 0,
     String sortBy = 'name',
     String sortDirection = 'asc',
-    Duration? cacheDuration = const Duration(minutes: 1),
+    Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => SearchAlbumsProvider._(
     argument: (
       filter: filter,
@@ -447,6 +458,7 @@ final class SearchAlbumsFamily extends $Family
       sortBy: sortBy,
       sortDirection: sortDirection,
       cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );
