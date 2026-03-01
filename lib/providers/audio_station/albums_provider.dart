@@ -7,7 +7,6 @@ import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/album.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
-import 'package:toneharbor/utils/excetions.dart';
 
 part 'albums_provider.dependence.dart';
 part 'albums_provider.g.dart';
@@ -67,7 +66,7 @@ Future<AlbumResponse> artistAlbums(
   );
 }
 
-@riverpod
+@keepAlive
 Future<AlbumResponse> searchAlbums(
   Ref ref, {
   required String filter,

@@ -128,9 +128,9 @@ class SynoToken extends _$SynoToken {
   }
 }
 
-@riverpod
+@keepAlive
 Future<String?> authToken(Ref ref) async {
-  final synotoken = ref.read(synoTokenProvider);
+  final synotoken = ref.watch(synoTokenProvider);
 
   if (synotoken != null) {
     return synotoken;

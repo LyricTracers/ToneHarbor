@@ -400,7 +400,7 @@ final class SearchSongsProvider
   }) : super(
          retry: null,
          name: r'searchSongsProvider',
-         isAutoDispose: true,
+         isAutoDispose: false,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -457,7 +457,7 @@ final class SearchSongsProvider
   }
 }
 
-String _$searchSongsHash() => r'da80f16473da851b83f127058b6ec24de160610c';
+String _$searchSongsHash() => r'4ad5c87ac8ac60dd317e9065370698455686e476';
 
 final class SearchSongsFamily extends $Family
     with
@@ -479,7 +479,7 @@ final class SearchSongsFamily extends $Family
         name: r'searchSongsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
+        isAutoDispose: false,
       );
 
   SearchSongsProvider call({

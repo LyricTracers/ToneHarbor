@@ -74,7 +74,7 @@ Future<SongListResponse> artistSongs(
   );
 }
 
-@riverpod
+@keepAlive
 Future<SongListResponse> searchSongs(
   Ref ref, {
   required String title,

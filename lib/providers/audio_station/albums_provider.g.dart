@@ -353,7 +353,7 @@ final class SearchAlbumsProvider
   }) : super(
          retry: null,
          name: r'searchAlbumsProvider',
-         isAutoDispose: true,
+         isAutoDispose: false,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -408,7 +408,7 @@ final class SearchAlbumsProvider
   }
 }
 
-String _$searchAlbumsHash() => r'31de64a3e199f00a717d59471796560c26db199d';
+String _$searchAlbumsHash() => r'617fe50ac69fcd9e6942b7d79c9cd05520369687';
 
 final class SearchAlbumsFamily extends $Family
     with
@@ -429,7 +429,7 @@ final class SearchAlbumsFamily extends $Family
         name: r'searchAlbumsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
+        isAutoDispose: false,
       );
 
   SearchAlbumsProvider call({

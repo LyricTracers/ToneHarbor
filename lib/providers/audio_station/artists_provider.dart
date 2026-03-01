@@ -35,7 +35,7 @@ Future<ArtistResponse> artists(
   );
 }
 
-@riverpod
+@keepAlive
 Future<ArtistResponse> searchArtists(
   Ref ref, {
   required String filter,

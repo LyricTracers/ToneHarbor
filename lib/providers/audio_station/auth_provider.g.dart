@@ -288,7 +288,7 @@ final class AuthTokenProvider
         argument: null,
         retry: null,
         name: r'authTokenProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -307,7 +307,7 @@ final class AuthTokenProvider
   }
 }
 
-String _$authTokenHash() => r'7873fb8be3c88a1a2e613e37b079111f22744b3c';
+String _$authTokenHash() => r'c6c744707abd3b98e99c6b568347a0d3ff92f546';
 
 @ProviderFor(authHeaders)
 final authHeadersProvider = AuthHeadersProvider._();

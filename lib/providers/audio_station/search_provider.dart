@@ -1,3 +1,4 @@
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
@@ -86,4 +87,18 @@ class MixSearchData with _$MixSearchData {
   }) = _MixSearchDataLoaded;
 
   const factory MixSearchData.error(String message) = _MixSearchDataError;
+}
+
+void invalidateAllSearchProviders(Ref ref) {
+  ref.invalidate(mixSearchResultsProvider);
+  ref.invalidate(searchSongsProvider);
+  ref.invalidate(searchArtistsProvider);
+  ref.invalidate(searchAlbumsProvider);
+}
+
+void invalidateAllSearchProvidersWithWidgetRef(WidgetRef ref) {
+  ref.invalidate(mixSearchResultsProvider);
+  ref.invalidate(searchSongsProvider);
+  ref.invalidate(searchArtistsProvider);
+  ref.invalidate(searchAlbumsProvider);
 }
