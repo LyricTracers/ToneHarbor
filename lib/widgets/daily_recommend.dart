@@ -7,6 +7,30 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
+class _LayoutConfig {
+  const _LayoutConfig({
+    required this.sidebarWidth,
+    required this.horizontalPadding,
+    required this.itemSpacing,
+    required this.minItemWidth,
+    required this.rows,
+  });
+
+  final double sidebarWidth;
+  final double horizontalPadding;
+  final double itemSpacing;
+  final double minItemWidth;
+  final int rows;
+
+  static const _LayoutConfig defaultConfig = _LayoutConfig(
+    sidebarWidth: 230.0,
+    horizontalPadding: 32.0,
+    itemSpacing: 12.0,
+    minItemWidth: 280.0,
+    rows: 3,
+  );
+}
+
 class DailyRecommend extends ConsumerWidget {
   const DailyRecommend({super.key});
 
@@ -22,6 +46,18 @@ class DailyRecommend extends ConsumerWidget {
     );
   }
 
+  int _calculateColumns(BuildContext context, _LayoutConfig config) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final availableScreenWidth = screenWidth - config.sidebarWidth;
+
+    return ((availableScreenWidth - config.horizontalPadding) /
+            (config.minItemWidth + config.itemSpacing))
+        .floor()
+        .clamp(2, 3);
+  }
+
+  int _getDisplayCount(int columns) => columns == 3 ? 9 : 6;
+
   Widget _buildSongList(
     BuildContext context,
     WidgetRef ref,
@@ -33,56 +69,68 @@ class DailyRecommend extends ConsumerWidget {
       return const Center(child: Text('No songs'));
     }
 
-    final screenWidth = MediaQuery.of(context).size.width;
-    final sidebarWidth = 230.0;
-    final availableScreenWidth = screenWidth - sidebarWidth;
-    final horizontalPadding = 32.0;
-    final itemSpacing = 12.0;
-    final minItemWidth = 280.0;
-
-    final columns =
-        ((availableScreenWidth - horizontalPadding) /
-                (minItemWidth + itemSpacing))
-            .floor()
-            .clamp(2, 3);
-
-    final displayCount = columns == 3 ? 9 : 6;
-    final displaySongs = songs.take(displayCount).toList();
-
-    final rows = 3;
-
+    final config = _LayoutConfig.defaultConfig;
+    final columns = _calculateColumns(context, config);
+    final displaySongs = songs.take(_getDisplayCount(columns)).toList();
     final authHeaders = getValueWhenReadyWithWidgetRef(
       ref,
       authHeadersProvider,
       null,
     );
 
+    return _buildSongGrid(
+      context,
+      ref,
+      displaySongs,
+      colorScheme,
+      authHeaders ?? <String, String>{},
+      config,
+      columns,
+    );
+  }
+
+  Widget _buildShimmerLoading(BuildContext context, ColorScheme colorScheme) {
+    final config = _LayoutConfig.defaultConfig;
+    final columns = _calculateColumns(context, config);
+
+    return _buildShimmerGrid(colorScheme, config, columns);
+  }
+
+  Widget _buildSongGrid(
+    BuildContext context,
+    WidgetRef ref,
+    List<Song> songs,
+    ColorScheme colorScheme,
+    Map<String, String> authHeaders,
+    _LayoutConfig config,
+    int columns,
+  ) {
     return Column(
-      children: List.generate(rows, (rowIndex) {
+      children: List.generate(config.rows, (rowIndex) {
         final rowSongs = <Song>[];
         for (int col = 0; col < columns; col++) {
-          final index = rowIndex + col * rows;
-          if (index < displaySongs.length) {
-            rowSongs.add(displaySongs[index]);
+          final index = rowIndex + col * config.rows;
+          if (index < songs.length) {
+            rowSongs.add(songs[index]);
           }
         }
 
         return Padding(
-          padding: EdgeInsets.only(bottom: rowIndex < rows - 1 ? 8 : 0),
+          padding: EdgeInsets.only(bottom: rowIndex < config.rows - 1 ? 8 : 0),
           child: Row(
             children: rowSongs.map((song) {
               return Expanded(
                 key: ValueKey(song.id),
                 child: Padding(
                   padding: EdgeInsets.only(
-                    right: rowSongs.last == song ? 0 : itemSpacing,
+                    right: rowSongs.last == song ? 0 : config.itemSpacing,
                   ),
                   child: _buildSongItem(
                     context,
                     ref,
                     song,
                     colorScheme,
-                    authHeaders ?? <String, String>{},
+                    authHeaders,
                   ),
                 ),
               );
@@ -93,42 +141,22 @@ class DailyRecommend extends ConsumerWidget {
     );
   }
 
-  Widget _buildShimmerLoading(BuildContext context, ColorScheme colorScheme) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final sidebarWidth = 230.0;
-    final availableScreenWidth = screenWidth - sidebarWidth;
-    final horizontalPadding = 32.0;
-    final itemSpacing = 12.0;
-    final minItemWidth = 280.0;
-
-    final columns =
-        ((availableScreenWidth - horizontalPadding) /
-                (minItemWidth + itemSpacing))
-            .floor()
-            .clamp(2, 3);
-
-    final rows = 3;
-
-    return _buildShimmerList(colorScheme, columns, rows, itemSpacing);
-  }
-
-  Widget _buildShimmerList(
+  Widget _buildShimmerGrid(
     ColorScheme colorScheme,
+    _LayoutConfig config,
     int columns,
-    int rows,
-    double itemSpacing,
   ) {
     return Column(
-      children: List.generate(rows, (rowIndex) {
+      children: List.generate(config.rows, (rowIndex) {
         return Padding(
-          padding: EdgeInsets.only(bottom: rowIndex < rows - 1 ? 8 : 0),
+          padding: EdgeInsets.only(bottom: rowIndex < config.rows - 1 ? 8 : 0),
           child: Row(
             children: List.generate(columns, (colIndex) {
               return Expanded(
                 key: ValueKey('shimmer_$rowIndex$colIndex'),
                 child: Padding(
                   padding: EdgeInsets.only(
-                    right: colIndex == columns - 1 ? 0 : itemSpacing,
+                    right: colIndex == columns - 1 ? 0 : config.itemSpacing,
                   ),
                   child: _SongItemShimmer(colorScheme: colorScheme),
                 ),
