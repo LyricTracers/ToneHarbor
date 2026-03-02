@@ -262,5 +262,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recommend => 'Recommend';
 
   @override
-  String get randomSongs => 'Random Songs';
+  String get daily_recommend => 'Daily Recommend';
 }

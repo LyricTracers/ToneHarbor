@@ -249,5 +249,5 @@ class AppLocalizationsZh extends AppLocalizations {
   String get recommend => '推荐';
 
   @override
-  String get randomSongs => '随机歌曲';
+  String get daily_recommend => '每日推荐';
 }

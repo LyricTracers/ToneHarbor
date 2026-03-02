@@ -578,11 +578,11 @@ abstract class AppLocalizations {
   /// **'Recommend'**
   String get recommend;
 
-  /// No description provided for @randomSongs.
+  /// No description provided for @daily_recommend.
   ///
   /// In en, this message translates to:
-  /// **'Random Songs'**
-  String get randomSongs;
+  /// **'Daily Recommend'**
+  String get daily_recommend;
 }
 
 class _AppLocalizationsDelegate
