@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
@@ -72,9 +73,21 @@ class DailyRecommend extends ConsumerWidget {
     final randomSongs = ref.watch(randomSongsProvider(limit: 9, offset: 0));
 
     return randomSongs.when(
-      data: (data) => _buildSongList(context, ref, data, colorScheme),
-      loading: () => _buildShimmerLoading(context, colorScheme),
-      error: (error, stack) => Center(child: Text('Error: $error')),
+      data: (data) {
+        return _buildSongList(context, ref, data, colorScheme);
+      },
+      loading: () {
+        return _buildShimmerLoading(context, colorScheme);
+      },
+      error: (error, stack) {
+        final config = _LayoutConfig.defaultConfig;
+        final itemConfig = _SongItemConfig.defaultConfig;
+        final totalHeight = config.rows * (itemConfig.height + 8);
+
+        return buildErrorView(context, ref, colorScheme, totalHeight, () {
+          ref.invalidate(randomSongsProvider);
+        });
+      },
     );
   }
 
@@ -285,8 +298,8 @@ class _SongItemShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     final config = _SongItemConfig.defaultConfig;
     return Shimmer.fromColors(
-      baseColor: colorScheme.surfaceContainerHighest,
-      highlightColor: colorScheme.surface,
+      baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      highlightColor: colorScheme.surface.withValues(alpha: 1.0),
       child: Container(
         height: config.height,
         padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -296,7 +309,9 @@ class _SongItemShimmer extends StatelessWidget {
               width: config.coverSize,
               height: config.coverSize,
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest,
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
+                ),
                 borderRadius: BorderRadius.circular(config.borderRadius),
               ),
             ),
@@ -313,7 +328,9 @@ class _SongItemShimmer extends StatelessWidget {
                       height: config.titleFontSize,
                       width: 120,
                       decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainerHighest,
+                        color: colorScheme.surfaceContainerHighest.withValues(
+                          alpha: 0.5,
+                        ),
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -322,7 +339,9 @@ class _SongItemShimmer extends StatelessWidget {
                       height: config.subtitleFontSize,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainerHighest,
+                        color: colorScheme.surfaceContainerHighest.withValues(
+                          alpha: 0.5,
+                        ),
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -334,7 +353,9 @@ class _SongItemShimmer extends StatelessWidget {
               width: config.iconSize,
               height: config.iconSize,
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest,
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
+                ),
                 borderRadius: BorderRadius.circular(4),
               ),
             ),

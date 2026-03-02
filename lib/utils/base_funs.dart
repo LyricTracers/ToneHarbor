@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/misc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -205,4 +206,34 @@ Future<void> saveToCache({
   } catch (e) {
     logger.w('cacheKey: $cacheKey 缓存数据失败: $e');
   }
+}
+
+Widget buildErrorView(
+  BuildContext context,
+  WidgetRef ref,
+  ColorScheme colorScheme,
+  double totalHeight,
+  Function() onTap,
+) {
+  return SizedBox(
+    height: totalHeight,
+    child: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: onTap,
+            child: SvgPicture.asset(
+              loadingErrorIcon,
+              height: totalHeight,
+              colorFilter: ColorFilter.mode(
+                colorScheme.onSurface.withValues(alpha: 0.5),
+                BlendMode.srcIn,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
