@@ -61,9 +61,23 @@ class RecommendPage extends BaseContentPage {
                   top: 16,
                   bottom: 8,
                 ),
-                child: Text(
-                  i10n.daily_recommend,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      i10n.daily_recommend,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        // todo('查看更多');
+                      },
+                      child: Text(i10n.more, style: TextStyle(fontSize: 12)),
+                    ),
+                  ],
                 ),
               ),
               Divider(

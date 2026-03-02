@@ -250,4 +250,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get daily_recommend => '每日推荐';
+
+  @override
+  String get more => '查看更多';
 }

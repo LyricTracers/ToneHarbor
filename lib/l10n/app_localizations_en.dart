@@ -263,4 +263,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get daily_recommend => 'Daily Recommend';
+
+  @override
+  String get more => 'Load More';
 }

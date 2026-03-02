@@ -583,6 +583,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Daily Recommend'**
   String get daily_recommend;
+
+  /// No description provided for @more.
+  ///
+  /// In en, this message translates to:
+  /// **'Load More'**
+  String get more;
 }
 
 class _AppLocalizationsDelegate
