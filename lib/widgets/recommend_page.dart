@@ -20,6 +20,18 @@ class RecommendPage extends BaseContentPage {
           color: colorScheme.onSurface,
         ),
       ),
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.refresh_rounded,
+            color: colorScheme.onSurface,
+            size: 16,
+          ),
+          onPressed: () {
+            ref.invalidate(randomSongsProvider);
+          },
+        ),
+      ],
       centerTitle: false,
       toolbarOpacity: 0.5,
     );
