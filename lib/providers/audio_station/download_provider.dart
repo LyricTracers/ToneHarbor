@@ -97,7 +97,7 @@ Future<int> downloadSong({
   );
 
   final streamUrl = await getStreamUrl(ref: ref, id: id, format: format);
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
   if (authHeaders == null) {
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
@@ -174,7 +174,7 @@ Future<Uint8List> downloadCover({
     library: library,
   );
 
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
   if (authHeaders == null) {
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
@@ -227,7 +227,7 @@ Future<List<String>> batchDownloadSongs({
     throw AudioStationException(message: l10n.error_songListEmpty);
   }
 
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
   if (authHeaders == null) {
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();

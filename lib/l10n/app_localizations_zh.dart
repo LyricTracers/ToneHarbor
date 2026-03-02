@@ -244,4 +244,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get searchingFor => '搜索:';
+
+  @override
+  String get recommend => '推荐';
+
+  @override
+  String get randomSongs => '随机歌曲';
 }

@@ -257,4 +257,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchingFor => 'Searching:';
+
+  @override
+  String get recommend => 'Recommend';
+
+  @override
+  String get randomSongs => 'Random Songs';
 }

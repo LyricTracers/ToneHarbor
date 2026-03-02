@@ -130,17 +130,14 @@ class SynoToken extends _$SynoToken {
 
 @keepAlive
 Future<String?> authToken(Ref ref) async {
+  logger.d('获取 authToken');
   final synotoken = ref.watch(synoTokenProvider);
 
   if (synotoken != null) {
     return synotoken;
   }
 
-  final cookiesInfo = getValueWhenReadyWithRef(
-    ref,
-    audioStationCookiesInfoProvider,
-    null,
-  );
+  final cookiesInfo = await ref.watch(audioStationCookiesInfoProvider.future);
 
   if (cookiesInfo != null && cookiesInfo.isValid) {
     logger.d('Cookie 有效，尝试获取 synotoken');
@@ -153,6 +150,7 @@ Future<String?> authToken(Ref ref) async {
       logger.d('刷新 token 完成: ${response.data?.synotoken}');
       if (response.data?.synotoken != null) {
         Future.microtask(() {
+          if (!ref.mounted) return;
           ref
               .read(synoTokenProvider.notifier)
               .setSynotoken(response.data!.synotoken);
@@ -161,8 +159,9 @@ Future<String?> authToken(Ref ref) async {
       }
     } catch (e) {
       logger.w('获取 synotoken 失败: $e');
-      Future.microtask(() {
-        ref
+      Future.microtask(() async {
+        if (!ref.mounted) return;
+        await ref
             .read(audioStationCookiesInfoProvider.notifier)
             .setCookies(
               AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
@@ -173,6 +172,7 @@ Future<String?> authToken(Ref ref) async {
   } else {
     logger.d('Cookie 无效，返回 null');
     Future.microtask(() {
+      if (!ref.mounted) return;
       ref.read(synoTokenProvider.notifier).clear();
     });
   }
@@ -182,6 +182,13 @@ Future<String?> authToken(Ref ref) async {
 
 @riverpod
 Future<Map<String, String>?> authHeaders(Ref ref) async {
+  logger.d('获取 authHeaders');
+  final authToken = await ref.watch(authTokenProvider.future);
+  if (authToken == null) {
+    logger.w('authToken 为空，返回 null');
+    return null;
+  }
+
   final serverUrl = await ref.watch(serverUrlProvider.future);
   if (serverUrl.isEmpty) {
     logger.w('serverUrl 为空，返回 null');
@@ -209,14 +216,8 @@ Future<Map<String, String>?> authHeaders(Ref ref) async {
   headers['Cookie'] = cookieString;
   logger.d('使用Cookie: $cookieString');
 
-  final synotoken = ref.read(synoTokenProvider);
-  if (synotoken == null) {
-    logger.d('synotoken 为空，返回 null');
-    return null;
-  }
-
-  headers['x-syno-token'] = synotoken;
-  logger.d('使用SynoToken: $synotoken');
+  headers['x-syno-token'] = authToken;
+  logger.d('使用SynoToken: $authToken');
 
   return headers;
 }

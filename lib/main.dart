@@ -72,19 +72,8 @@ class MyApp extends HookConsumerWidget {
             routes: [
               GoRoute(
                 path: '/',
-                pageBuilder: (context, state) => SlideTransitionPage(
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: colorScheme.onPrimary,
-                    ),
-                    onPressed: () {
-                      context.push('/test');
-                    },
-                    icon: const Icon(Icons.arrow_forward),
-                    label: const Text("跳转测试页"),
-                  ),
-                ),
+                pageBuilder: (context, state) =>
+                    SlideTransitionPage(child: const RecommendPage()),
               ),
             ],
             builder: (context, state, child) {

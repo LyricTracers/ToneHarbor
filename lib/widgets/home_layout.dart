@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
@@ -16,6 +17,9 @@ class HomeLayout extends BaseBgLayout {
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
     final colorScheme = getColorSchemeWhenReady(ref);
     final l10n = AppLocalizations.of(context)!;
+    final router = GoRouter.of(context);
+    final isRecommendPage =
+        router.routeInformationProvider.value.uri.path == '/';
     final gradientDecoration = BoxDecoration(
       gradient: LinearGradient(
         begin: Alignment(-0.8, -0.8),
@@ -58,14 +62,59 @@ class HomeLayout extends BaseBgLayout {
                       ),
                     ),
                     onSubmitSearch: (value) {
-                      logger.i("onSubmitSearch: $value");
                       onSubmitSearch(ref, value);
                     },
                   ),
                 ),
-                const Text("data"),
-                const Text("data2"),
-                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: InkWell(
+                    onTap: () {
+                      if (!isRecommendPage) {
+                        context.go('/');
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isRecommendPage
+                            ? colorScheme.primary.withValues(alpha: 0.3)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.recommend,
+                            size: 20,
+                            color: isRecommendPage
+                                ? colorScheme.primary
+                                : colorScheme.onSurface.withValues(alpha: 0.8),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            l10n.recommend,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: isRecommendPage
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                              color: isRecommendPage
+                                  ? colorScheme.primary
+                                  : colorScheme.onSurface.withValues(
+                                      alpha: 0.8,
+                                    ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

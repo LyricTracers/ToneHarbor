@@ -78,5 +78,7 @@
   "searchHistoryLabel": "搜索历史",
   "clearHistory": "清空",
   "noSearchHistory": "暂无搜索历史",
-  "searchingFor": "搜索:"
+  "searchingFor": "搜索:",
+  "recommend": "推荐",
+  "randomSongs": "随机歌曲"
 }

@@ -571,6 +571,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Searching:'**
   String get searchingFor;
+
+  /// No description provided for @recommend.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommend'**
+  String get recommend;
+
+  /// No description provided for @randomSongs.
+  ///
+  /// In en, this message translates to:
+  /// **'Random Songs'**
+  String get randomSongs;
 }
 
 class _AppLocalizationsDelegate

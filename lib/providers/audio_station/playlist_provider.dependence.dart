@@ -7,7 +7,7 @@ Future<PlaylistListResponse> _sendPlaylistRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -79,7 +79,7 @@ Future<PlaylistDetailResponse> _sendPlaylistDetailRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -324,7 +324,7 @@ Future<CreatePlaylistResponse> _createPlaylist({
   required Ref ref,
   required String name,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -410,7 +410,7 @@ Future<RenamePlaylistResponse> _renamePlaylist({
   required String id,
   required String newName,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -495,7 +495,7 @@ Future<DeletePlaylistResponse> _deletePlaylist({
   required Ref ref,
   required String id,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -583,7 +583,7 @@ Future<AddPlaylistSongsResponse> _addSongToPlaylist({
   int limit = 0,
   bool skipDuplicate = false,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -671,7 +671,7 @@ Future<RemoveMissingSongsResponse> _removeMissingSongs({
   required Ref ref,
   required String id,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {

@@ -78,5 +78,7 @@
   "searchHistoryLabel": "Search History",
   "clearHistory": "Clear",
   "noSearchHistory": "No search history",
-  "searchingFor": "Searching:"
+  "searchingFor": "Searching:",
+  "recommend": "Recommend",
+  "randomSongs": "Random Songs"
 }

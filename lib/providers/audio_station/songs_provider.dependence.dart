@@ -8,15 +8,18 @@ Future<SongListResponse> _sendSongRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
+  logger.d('authHeaders: $authHeaders');
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
+      if (!ref.mounted) return;
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
       ref.invalidate(authTokenProvider);
     });
     return SongListResponse(success: false);
   }
+  logger.d('发送歌曲请求: $request');
 
   final baseUrl = await ref.read(baseUrlProvider.future);
 
@@ -81,10 +84,11 @@ Future<LyricsResponse> _sendLyricsRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
+      if (!ref.mounted) return;
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
       ref.invalidate(authTokenProvider);
     });
@@ -154,10 +158,11 @@ Future<SearchLyricsResponse> _sendSearchLyricsRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
+      if (!ref.mounted) return;
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
       ref.invalidate(authTokenProvider);
     });
@@ -224,7 +229,7 @@ Future<SongInfoResponse> _sendSongInfoRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -370,10 +375,11 @@ Future<SetRatingResponse> _setRating({
   required String id,
   int rating = 5,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
+      if (!ref.mounted) return;
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
       ref.invalidate(authTokenProvider);
     });
@@ -471,10 +477,11 @@ Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
     }
   }
 
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
+      if (!ref.mounted) return;
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
       ref.invalidate(authTokenProvider);
     });
