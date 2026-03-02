@@ -15,8 +15,13 @@ class HomeLayout extends BaseBgLayout {
 
   @override
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
+    logger.i("build!!!!");
     final colorScheme = getColorSchemeWhenReady(ref);
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = getValueWhenReadyWithWidgetRef(
+      ref,
+      l10nProvider,
+      AppLocalizations.of(context),
+    )!;
     final router = GoRouter.of(context);
     final isRecommendPage =
         router.routeInformationProvider.value.uri.path == '/';

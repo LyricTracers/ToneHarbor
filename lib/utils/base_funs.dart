@@ -21,15 +21,23 @@ part 'base_funs_theme.dart';
 extension CancelTokenX on Ref {
   CancelToken cancelToken() {
     final cancelToken = CancelToken();
-    onDispose(cancelToken.cancel);
+    onDispose(() {
+      cancelToken.cancel();
+    });
     return cancelToken;
   }
 
   KeepAliveLink keepAliveFor(Duration? duration) {
     final link = this.keepAlive();
     if (duration != null) {
-      final timer = Timer(duration, link.close);
-      onDispose(timer.cancel);
+      final timer = Timer(duration, () {
+        if (mounted) {
+          link.close();
+        }
+      });
+      onDispose(() {
+        timer.cancel();
+      });
     }
     return link;
   }

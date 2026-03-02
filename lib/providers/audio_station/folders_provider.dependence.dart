@@ -8,7 +8,7 @@ Future<FolderResponse> _sendFolderRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -121,9 +121,7 @@ Future<FolderResponse> _getFolders({
     sortDirection: sortDirection,
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final result = await _sendFolderRequest(
     ref: ref,

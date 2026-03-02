@@ -95,7 +95,6 @@ Future<SongListResponse> artistSongs(
   Duration? cacheDuration = const Duration(minutes: 5),
   Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
-  ref.watch(authHeadersProvider);
   final link = ref.keepAliveFor(keepAliveDuration);
   try {
     return await _getSongs(

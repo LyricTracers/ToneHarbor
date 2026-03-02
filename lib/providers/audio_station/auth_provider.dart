@@ -142,9 +142,7 @@ Future<String?> authToken(Ref ref) async {
   if (cookiesInfo != null && cookiesInfo.isValid) {
     logger.d('Cookie 有效，尝试获取 synotoken');
     try {
-      final l10n = lookupAppLocalizations(
-        getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-      );
+      final l10n = await ref.read(l10nProvider.future);
       logger.d('开始刷新 token');
       final response = await _refreshToken(ref, cookiesInfo, l10n);
       logger.d('刷新 token 完成: ${response.data?.synotoken}');
@@ -180,7 +178,7 @@ Future<String?> authToken(Ref ref) async {
   return null;
 }
 
-@riverpod
+@keepAlive
 Future<Map<String, String>?> authHeaders(Ref ref) async {
   logger.d('获取 authHeaders');
   final authToken = await ref.watch(authTokenProvider.future);
@@ -223,9 +221,7 @@ Future<Map<String, String>?> authHeaders(Ref ref) async {
 }
 
 Future<AuthResponse> login(WidgetRef ref) async {
-  var l10n = lookupAppLocalizations(
-    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
-  );
+  var l10n = await ref.read(l10nProvider.future);
 
   final accountInfo = getValueWhenReadyWithWidgetRef(
     ref,
@@ -258,9 +254,7 @@ Future<AuthResponse> login(WidgetRef ref) async {
 }
 
 Future<LogoutResponse> logout(WidgetRef ref) async {
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {

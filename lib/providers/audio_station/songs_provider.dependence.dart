@@ -8,7 +8,7 @@ Future<SongListResponse> _sendSongRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   logger.d('authHeaders: $authHeaders');
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
@@ -84,7 +84,7 @@ Future<LyricsResponse> _sendLyricsRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -158,7 +158,7 @@ Future<SearchLyricsResponse> _sendSearchLyricsRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -229,7 +229,7 @@ Future<SongInfoResponse> _sendSongInfoRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -342,9 +342,7 @@ Future<SongListResponse> _getSongs({
     artist: artist,
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final result = await _sendSongRequest(
     ref: ref,
@@ -375,7 +373,7 @@ Future<SetRatingResponse> _setRating({
   required String id,
   int rating = 5,
 }) async {
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -396,9 +394,7 @@ Future<SetRatingResponse> _setRating({
     version: 3,
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);
@@ -477,7 +473,7 @@ Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
     }
   }
 
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -492,9 +488,7 @@ Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
 
   final request = GetNumberOfPlugInsRequest(action: 'getNumberOfPlugIns');
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);
@@ -605,9 +599,7 @@ Future<SongListResponse> _getAlbumSongs({
     artist: artist,
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final result = await _sendSongRequest(
     ref: ref,
@@ -674,9 +666,7 @@ Future<SongListResponse> _searchSongs({
     title: title,
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final result = await _sendSongRequest(
     ref: ref,
@@ -727,9 +717,7 @@ Future<LyricsResponse> _getLyrics({
     version: 2,
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final result = await _sendLyricsRequest(
     ref: ref,
@@ -789,9 +777,7 @@ Future<SearchLyricsResponse> _searchLyrics({
     additional: additional,
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final result = await _sendSearchLyricsRequest(
     ref: ref,
@@ -845,9 +831,7 @@ Future<SongInfoResponse> _getSongInfo({
     additional: additional,
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final result = await _sendSongInfoRequest(
     ref: ref,

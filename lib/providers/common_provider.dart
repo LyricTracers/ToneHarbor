@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/l10n/app_localizations.dart';
 part 'common_provider.g.dart';
 
 @keepAlive
@@ -83,4 +84,10 @@ class SearchHistoryNotifier extends _$SearchHistoryNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(searchHistoryKey, []);
   }
+}
+
+@keepAlive
+Future<AppLocalizations> l10n(Ref ref) async {
+  final locale = await ref.watch(localeProvider.future);
+  return lookupAppLocalizations(locale);
 }

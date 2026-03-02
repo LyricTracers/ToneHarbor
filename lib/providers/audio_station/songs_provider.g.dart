@@ -439,7 +439,7 @@ final class ArtistSongsProvider
   }
 }
 
-String _$artistSongsHash() => r'237ce7ed196571840393d76a6fbbb1acb813ed1f';
+String _$artistSongsHash() => r'de38089cb3198717f11de37c170ee096f48e1194';
 
 final class ArtistSongsFamily extends $Family
     with

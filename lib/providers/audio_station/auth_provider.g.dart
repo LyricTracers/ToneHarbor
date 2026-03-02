@@ -307,7 +307,7 @@ final class AuthTokenProvider
   }
 }
 
-String _$authTokenHash() => r'c6c744707abd3b98e99c6b568347a0d3ff92f546';
+String _$authTokenHash() => r'9eb8154a907e1a19c12959f6fd59b5cdee3d28e3';
 
 @ProviderFor(authHeaders)
 final authHeadersProvider = AuthHeadersProvider._();
@@ -328,7 +328,7 @@ final class AuthHeadersProvider
         argument: null,
         retry: null,
         name: r'authHeadersProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -348,4 +348,4 @@ final class AuthHeadersProvider
   }
 }
 
-String _$authHeadersHash() => r'70f8f81bbf79faa8620ae2c36bd345bc9d31da43';
+String _$authHeadersHash() => r'1607f8eed45ea79a6231173d8c2e2d1a66affc0b';

@@ -7,7 +7,7 @@ Future<PlaylistListResponse> _sendPlaylistRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -79,7 +79,7 @@ Future<PlaylistDetailResponse> _sendPlaylistDetailRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -178,9 +178,7 @@ Future<PlaylistListResponse> _getPlaylists({
     sortDirection: sortDirection,
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final result = await _sendPlaylistRequest(
     ref: ref,
@@ -240,9 +238,7 @@ Future<PlaylistDetailResponse> _getPlaylistDetail({
     sortDirection: sortDirection,
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final result = await _sendPlaylistDetailRequest(
     ref: ref,
@@ -296,9 +292,7 @@ Future<PlaylistDetailResponse> _getPlaylistInfo({
     sortDirection: 'ASC',
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final result = await _sendPlaylistDetailRequest(
     ref: ref,
@@ -324,7 +318,7 @@ Future<CreatePlaylistResponse> _createPlaylist({
   required Ref ref,
   required String name,
 }) async {
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -344,9 +338,7 @@ Future<CreatePlaylistResponse> _createPlaylist({
     library: 'personal',
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);
@@ -410,7 +402,7 @@ Future<RenamePlaylistResponse> _renamePlaylist({
   required String id,
   required String newName,
 }) async {
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -430,9 +422,7 @@ Future<RenamePlaylistResponse> _renamePlaylist({
     newName: newName,
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);
@@ -495,7 +485,7 @@ Future<DeletePlaylistResponse> _deletePlaylist({
   required Ref ref,
   required String id,
 }) async {
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -514,9 +504,7 @@ Future<DeletePlaylistResponse> _deletePlaylist({
     id: id,
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);
@@ -583,7 +571,7 @@ Future<AddPlaylistSongsResponse> _addSongToPlaylist({
   int limit = 0,
   bool skipDuplicate = false,
 }) async {
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -606,9 +594,7 @@ Future<AddPlaylistSongsResponse> _addSongToPlaylist({
     skipDuplicate: skipDuplicate,
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);
@@ -671,7 +657,7 @@ Future<RemoveMissingSongsResponse> _removeMissingSongs({
   required Ref ref,
   required String id,
 }) async {
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -690,9 +676,7 @@ Future<RemoveMissingSongsResponse> _removeMissingSongs({
     id: id,
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);

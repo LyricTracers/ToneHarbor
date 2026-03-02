@@ -29,8 +29,12 @@ class RecommendPage extends BaseContentPage {
   @override
   Widget buildContent(BuildContext context, WidgetRef ref) {
     var colorScheme = getColorSchemeWhenReady(ref);
-    final randomSongs = ref.read(randomSongsProvider(limit: 10, offset: 0));
-    final i10n = AppLocalizations.of(context)!;
+    final randomSongs = ref.watch(randomSongsProvider(limit: 10, offset: 0));
+    final i10n = getValueWhenReadyWithWidgetRef(
+      ref,
+      l10nProvider,
+      AppLocalizations.of(context),
+    )!;
 
     return SingleChildScrollView(
       child: Container(

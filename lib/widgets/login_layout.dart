@@ -15,9 +15,12 @@ class LoginLayout extends BaseBgLayout {
 
   @override
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
-    final l10n = lookupAppLocalizations(
-      getValueWhenReadyWithWidgetRef(ref, localeProvider, Locale('zh')),
-    );
+    final l10n = getValueWhenReadyWithWidgetRef(
+      ref,
+      l10nProvider,
+      AppLocalizations.of(context),
+    )!;
+
     final colorScheme = getColorSchemeWhenReady(ref);
     final serverUrlAsync = ref.watch(serverUrlProvider);
     final accountInfo = ref.watch(accountInfoProvider);

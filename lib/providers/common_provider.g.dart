@@ -148,3 +148,42 @@ abstract class _$SearchHistoryNotifier extends $AsyncNotifier<List<String>> {
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(l10n)
+final l10nProvider = L10nProvider._();
+
+final class L10nProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<AppLocalizations>,
+          AppLocalizations,
+          FutureOr<AppLocalizations>
+        >
+    with $FutureModifier<AppLocalizations>, $FutureProvider<AppLocalizations> {
+  L10nProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'l10nProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$l10nHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<AppLocalizations> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<AppLocalizations> create(Ref ref) {
+    return l10n(ref);
+  }
+}
+
+String _$l10nHash() => r'35621e807409bd495177e23680254c38dffef3e4';

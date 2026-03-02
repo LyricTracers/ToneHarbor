@@ -1,9 +1,7 @@
 part of 'info_provider.dart';
 
 Future<Map<String, dynamic>> _testConnection({required Ref ref}) async {
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final baseUrl = await ref.read(baseUrlProvider.future);
 
@@ -53,9 +51,7 @@ Future<SynoAPIInfoResponse> _queryAPI({
   String query = 'all',
   Duration? cacheDuration,
 }) async {
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final cacheKey = 'queryAPI:$query';
 
@@ -140,7 +136,7 @@ Future<AudioStationInfoResponse> _sendAudioStationInfoRequest({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -212,7 +208,7 @@ Future<DSMInfoResponse> _sendDSMInfoRequest({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -298,9 +294,7 @@ Future<AudioStationInfoResponse> _getAudioStationInfo({
     version: '6',
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final result = await _sendAudioStationInfoRequest(
     ref: ref,
@@ -347,9 +341,7 @@ Future<DSMInfoResponse> _getDSMInfo({
     version: '2',
   );
 
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final result = await _sendDSMInfoRequest(
     ref: ref,

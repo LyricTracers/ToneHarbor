@@ -92,12 +92,10 @@ Future<int> downloadSong({
   required String filePath,
   bool resume = true,
 }) async {
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final streamUrl = await getStreamUrl(ref: ref, id: id, format: format);
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
@@ -160,9 +158,7 @@ Future<Uint8List> downloadCover({
   bool isHr = true,
   String library = 'shared',
 }) async {
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   final coverUrl = await getCoverUrl(
     ref: ref,
@@ -174,7 +170,7 @@ Future<Uint8List> downloadCover({
     library: library,
   );
 
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
@@ -219,15 +215,13 @@ Future<List<String>> batchDownloadSongs({
   required String directoryPath,
   bool autoExtract = true,
 }) async {
-  final l10n = lookupAppLocalizations(
-    getValueWhenReadyWithWidgetRef(ref, localeProvider, const Locale('zh')),
-  );
+  final l10n = await ref.read(l10nProvider.future);
 
   if (songIds.isEmpty) {
     throw AudioStationException(message: l10n.error_songListEmpty);
   }
 
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
