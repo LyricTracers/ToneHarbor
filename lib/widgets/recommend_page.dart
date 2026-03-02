@@ -75,7 +75,13 @@ class RecommendPage extends BaseContentPage {
                       onPressed: () {
                         // todo('查看更多');
                       },
-                      child: Text(i10n.more, style: TextStyle(fontSize: 12)),
+                      child: Text(
+                        i10n.more,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: colorScheme.onPrimaryContainer,
+                        ),
+                      ),
                     ),
                   ],
                 ),
