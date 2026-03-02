@@ -1,6 +1,7 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -16,7 +17,7 @@ class DailyRecommend extends ConsumerWidget {
 
     return randomSongs.when(
       data: (data) => _buildSongList(context, ref, data, colorScheme),
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => _buildShimmerLoading(context, colorScheme),
       error: (error, stack) => Center(child: Text('Error: $error')),
     );
   }
@@ -50,47 +51,92 @@ class DailyRecommend extends ConsumerWidget {
 
     final rows = 3;
 
-    final authHeadersValue = ref.watch(authHeadersProvider);
+    final authHeaders = getValueWhenReadyWithWidgetRef(
+      ref,
+      authHeadersProvider,
+      null,
+    );
 
-    return authHeadersValue.when(
-      data: (authHeaders) {
-        return Column(
-          children: List.generate(rows, (rowIndex) {
-            final rowSongs = <Song>[];
-            for (int col = 0; col < columns; col++) {
-              final index = rowIndex + col * rows;
-              if (index < displaySongs.length) {
-                rowSongs.add(displaySongs[index]);
-              }
-            }
+    return Column(
+      children: List.generate(rows, (rowIndex) {
+        final rowSongs = <Song>[];
+        for (int col = 0; col < columns; col++) {
+          final index = rowIndex + col * rows;
+          if (index < displaySongs.length) {
+            rowSongs.add(displaySongs[index]);
+          }
+        }
 
-            return Padding(
-              padding: EdgeInsets.only(bottom: rowIndex < rows - 1 ? 8 : 0),
-              child: Row(
-                children: rowSongs.map((song) {
-                  return Expanded(
-                    key: ValueKey(song.id),
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        right: rowSongs.last == song ? 0 : itemSpacing,
-                      ),
-                      child: _buildSongItem(
-                        context,
-                        ref,
-                        song,
-                        colorScheme,
-                        authHeaders ?? <String, String>{},
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            );
-          }),
+        return Padding(
+          padding: EdgeInsets.only(bottom: rowIndex < rows - 1 ? 8 : 0),
+          child: Row(
+            children: rowSongs.map((song) {
+              return Expanded(
+                key: ValueKey(song.id),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    right: rowSongs.last == song ? 0 : itemSpacing,
+                  ),
+                  child: _buildSongItem(
+                    context,
+                    ref,
+                    song,
+                    colorScheme,
+                    authHeaders ?? <String, String>{},
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
         );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(child: Text('Error: $error')),
+      }),
+    );
+  }
+
+  Widget _buildShimmerLoading(BuildContext context, ColorScheme colorScheme) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final sidebarWidth = 230.0;
+    final availableScreenWidth = screenWidth - sidebarWidth;
+    final horizontalPadding = 32.0;
+    final itemSpacing = 12.0;
+    final minItemWidth = 280.0;
+
+    final columns =
+        ((availableScreenWidth - horizontalPadding) /
+                (minItemWidth + itemSpacing))
+            .floor()
+            .clamp(2, 3);
+
+    final rows = 3;
+
+    return _buildShimmerList(colorScheme, columns, rows, itemSpacing);
+  }
+
+  Widget _buildShimmerList(
+    ColorScheme colorScheme,
+    int columns,
+    int rows,
+    double itemSpacing,
+  ) {
+    return Column(
+      children: List.generate(rows, (rowIndex) {
+        return Padding(
+          padding: EdgeInsets.only(bottom: rowIndex < rows - 1 ? 8 : 0),
+          child: Row(
+            children: List.generate(columns, (colIndex) {
+              return Expanded(
+                key: ValueKey('shimmer_$rowIndex$colIndex'),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    right: colIndex == columns - 1 ? 0 : itemSpacing,
+                  ),
+                  child: _SongItemShimmer(colorScheme: colorScheme),
+                ),
+              );
+            }),
+          ),
+        );
+      }),
     );
   }
 
@@ -177,10 +223,10 @@ class DailyRecommend extends ConsumerWidget {
                         text: albumName.isNotEmpty
                             ? albumName
                             : 'Unknown Album',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
-                          color: colorScheme.onSurface,
+                          // color: colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -231,6 +277,72 @@ class DailyRecommend extends ConsumerWidget {
               size: size * 0.4,
               color: colorScheme.onSurface,
             ),
+    );
+  }
+}
+
+class _SongItemShimmer extends StatelessWidget {
+  const _SongItemShimmer({required this.colorScheme});
+
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: colorScheme.surfaceContainerHighest,
+      highlightColor: colorScheme.surface,
+      child: Container(
+        height: 56,
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 13,
+                      width: 120,
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Container(
+                      height: 11,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              width: 18,
+              height: 18,
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
