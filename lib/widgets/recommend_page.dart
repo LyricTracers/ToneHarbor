@@ -51,11 +51,7 @@ class RecommendPage extends BaseContentPage {
                 ),
                 child: Text(
                   i10n.daily_recommend,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
               Divider(

@@ -263,7 +263,11 @@ class DailyRecommend extends ConsumerWidget {
                   ),
                 ),
               ),
-              Icon(Icons.play_circle_outline, size: config.iconSize),
+              Icon(
+                Icons.play_circle_outline,
+                size: config.iconSize,
+                color: colorScheme.onSurfaceVariant,
+              ),
             ],
           ),
         ),
