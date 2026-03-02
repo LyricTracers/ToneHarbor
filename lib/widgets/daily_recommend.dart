@@ -1,5 +1,4 @@
-import 'dart:typed_data';
-
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
@@ -51,32 +50,46 @@ class DailyRecommend extends ConsumerWidget {
 
     final rows = 3;
 
-    return Column(
-      children: List.generate(rows, (rowIndex) {
-        final rowSongs = <Song>[];
-        for (int col = 0; col < columns; col++) {
-          final index = rowIndex + col * rows;
-          if (index < displaySongs.length) {
-            rowSongs.add(displaySongs[index]);
-          }
-        }
+    final authHeadersValue = ref.watch(authHeadersProvider);
 
-        return Padding(
-          padding: EdgeInsets.only(bottom: rowIndex < rows - 1 ? 8 : 0),
-          child: Row(
-            children: rowSongs.map((song) {
-              return Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    right: rowSongs.last == song ? 0 : itemSpacing,
-                  ),
-                  child: _buildSongItem(context, ref, song, colorScheme),
-                ),
-              );
-            }).toList(),
-          ),
+    return authHeadersValue.when(
+      data: (authHeaders) {
+        return Column(
+          children: List.generate(rows, (rowIndex) {
+            final rowSongs = <Song>[];
+            for (int col = 0; col < columns; col++) {
+              final index = rowIndex + col * rows;
+              if (index < displaySongs.length) {
+                rowSongs.add(displaySongs[index]);
+              }
+            }
+
+            return Padding(
+              padding: EdgeInsets.only(bottom: rowIndex < rows - 1 ? 8 : 0),
+              child: Row(
+                children: rowSongs.map((song) {
+                  return Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        right: rowSongs.last == song ? 0 : itemSpacing,
+                      ),
+                      child: _buildSongItem(
+                        context,
+                        ref,
+                        song,
+                        colorScheme,
+                        authHeaders ?? <String, String>{},
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            );
+          }),
         );
-      }),
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(child: Text('Error: $error')),
     );
   }
 
@@ -85,10 +98,16 @@ class DailyRecommend extends ConsumerWidget {
     WidgetRef ref,
     Song song,
     ColorScheme colorScheme,
+    Map<String, String> authHeaders,
   ) {
     final albumName = song.additional?.songTag?.album ?? '';
     final artistName = song.additional?.songTag?.artist ?? '';
     final songTitle = song.title;
+    final albumArtistName = song.additional?.songTag?.albumArtist ?? '';
+
+    final coverUrl = ref.watch(
+      coverUrlProvider(albumName: albumName, albumArtistName: albumArtistName),
+    );
 
     return Material(
       color: Colors.transparent,
@@ -108,26 +127,44 @@ class DailyRecommend extends ConsumerWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: FutureBuilder<Uint8List>(
-                  future: downloadCover(
-                    ref: ref,
-                    albumName: albumName,
-                    albumArtistName:
-                        song.additional?.songTag?.albumArtist ?? '',
-                  ),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                      return Image.memory(
-                        snapshot.data!,
-                        width: 48,
-                        height: 48,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            _buildPlaceholder(colorScheme, 48),
-                      );
+                child: coverUrl.when(
+                  data: (url) {
+                    if (url.isEmpty) {
+                      return _buildPlaceholder(colorScheme, 48);
                     }
-                    return _buildPlaceholder(colorScheme, 48);
+                    return ExtendedImage.network(
+                      url,
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.cover,
+                      headers: authHeaders,
+                      cache: true,
+                      cacheKey: song.id,
+                      clearMemoryCacheIfFailed: true,
+                      loadStateChanged: (state) {
+                        switch (state.extendedImageLoadState) {
+                          case LoadState.loading:
+                            return _buildPlaceholder(
+                              colorScheme,
+                              48,
+                              isLoading: true,
+                            );
+                          case LoadState.completed:
+                            return ExtendedRawImage(
+                              image: state.extendedImageInfo?.image,
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.cover,
+                            );
+                          case LoadState.failed:
+                            return _buildPlaceholder(colorScheme, 48);
+                        }
+                      },
+                    );
                   },
+                  loading: () =>
+                      _buildPlaceholder(colorScheme, 48, isLoading: true),
+                  error: (error, stack) => _buildPlaceholder(colorScheme, 48),
                 ),
               ),
               Expanded(
@@ -171,19 +208,34 @@ class DailyRecommend extends ConsumerWidget {
     );
   }
 
-  Widget _buildPlaceholder(ColorScheme colorScheme, double size) {
+  Widget _buildPlaceholder(
+    ColorScheme colorScheme,
+    double size, {
+    bool isLoading = false,
+  }) {
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
+        color: colorScheme.onSurface.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Icon(
-        Icons.music_note,
-        size: size * 0.4,
-        color: colorScheme.onSurfaceVariant,
-      ),
+      child: isLoading
+          ? Center(
+              child: SizedBox(
+                width: size * 0.4,
+                height: size * 0.4,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+            )
+          : Icon(
+              Icons.music_note,
+              size: size * 0.4,
+              color: colorScheme.onSurface,
+            ),
     );
   }
 }

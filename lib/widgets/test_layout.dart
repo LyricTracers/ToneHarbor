@@ -506,10 +506,11 @@ class TestLayout extends BaseBgLayout {
       });
 
       try {
-        final url = await getCoverUrl(
-          ref: ref,
-          albumName: 'Unknown Album',
-          albumArtistName: 'Unknown Artist',
+        final url = await ref.read(
+          coverUrlProvider(
+            albumName: 'Unknown Album',
+            albumArtistName: 'Unknown Artist',
+          ).future,
         );
         updateRequest(
           requestId: requestId,

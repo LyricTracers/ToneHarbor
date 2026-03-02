@@ -1,15 +1,16 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:archive_gbk/archive.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:rhttp/rhttp.dart';
 import 'package:toneharbor/init/initialized.dart';
-import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+
+part 'download_provider.g.dart';
 
 Future<String> getStreamUrl({
   required WidgetRef ref,
@@ -49,8 +50,25 @@ Future<String> getStreamUrl({
   return streamUrl;
 }
 
-Future<String> getCoverUrl({
-  required WidgetRef ref,
+@riverpod
+Future<String> coverUrl(
+  Ref ref, {
+  required String albumName,
+  required String albumArtistName,
+  String view = 'album',
+  bool outputDefault = true,
+  bool isHr = true,
+  String library = 'shared',
+}) async {
+  return _getCoverUrl(
+    ref: ref,
+    albumName: albumName,
+    albumArtistName: albumArtistName,
+  );
+}
+
+Future<String> _getCoverUrl({
+  required Ref ref,
   required String albumName,
   required String albumArtistName,
   String view = 'album',
@@ -81,6 +99,7 @@ Future<String> getCoverUrl({
       .join('&');
 
   final coverUrl = '$baseUrl/music/webapi/AudioStation/cover.cgi?$queryString';
+  logger.i("getcoverUrl:${coverUrl}");
 
   return coverUrl;
 }
@@ -160,14 +179,15 @@ Future<Uint8List> downloadCover({
 }) async {
   final l10n = await ref.read(l10nProvider.future);
 
-  final coverUrl = await getCoverUrl(
-    ref: ref,
-    albumName: albumName,
-    albumArtistName: albumArtistName,
-    view: view,
-    outputDefault: outputDefault,
-    isHr: isHr,
-    library: library,
+  final coverUrl = await ref.read(
+    coverUrlProvider(
+      albumName: albumName,
+      albumArtistName: albumArtistName,
+      view: view,
+      outputDefault: outputDefault,
+      isHr: isHr,
+      library: library,
+    ).future,
   );
 
   final authHeaders = await ref.read(authHeadersProvider.future);
