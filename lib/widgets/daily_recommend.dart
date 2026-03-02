@@ -31,6 +31,39 @@ class _LayoutConfig {
   );
 }
 
+class _SongItemConfig {
+  const _SongItemConfig({
+    required this.height,
+    required this.coverSize,
+    required this.horizontalPadding,
+    required this.titleFontSize,
+    required this.subtitleFontSize,
+    required this.iconSize,
+    required this.borderRadius,
+    required this.marqueeSpacing,
+  });
+
+  final double height;
+  final double coverSize;
+  final double horizontalPadding;
+  final double titleFontSize;
+  final double subtitleFontSize;
+  final double iconSize;
+  final double borderRadius;
+  final double marqueeSpacing;
+
+  static const _SongItemConfig defaultConfig = _SongItemConfig(
+    height: 56,
+    coverSize: 48,
+    horizontalPadding: 10,
+    titleFontSize: 13,
+    subtitleFontSize: 11,
+    iconSize: 18,
+    borderRadius: 8,
+    marqueeSpacing: 2,
+  );
+}
+
 class DailyRecommend extends ConsumerWidget {
   const DailyRecommend({super.key});
 
@@ -45,18 +78,6 @@ class DailyRecommend extends ConsumerWidget {
       error: (error, stack) => Center(child: Text('Error: $error')),
     );
   }
-
-  int _calculateColumns(BuildContext context, _LayoutConfig config) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final availableScreenWidth = screenWidth - config.sidebarWidth;
-
-    return ((availableScreenWidth - config.horizontalPadding) /
-            (config.minItemWidth + config.itemSpacing))
-        .floor()
-        .clamp(2, 3);
-  }
-
-  int _getDisplayCount(int columns) => columns == 3 ? 9 : 6;
 
   Widget _buildSongList(
     BuildContext context,
@@ -96,6 +117,18 @@ class DailyRecommend extends ConsumerWidget {
     return _buildShimmerGrid(colorScheme, config, columns);
   }
 
+  int _calculateColumns(BuildContext context, _LayoutConfig config) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final availableScreenWidth = screenWidth - config.sidebarWidth;
+
+    return ((availableScreenWidth - config.horizontalPadding) /
+            (config.minItemWidth + config.itemSpacing))
+        .floor()
+        .clamp(2, 3);
+  }
+
+  int _getDisplayCount(int columns) => columns == 3 ? 9 : 6;
+
   Widget _buildSongGrid(
     BuildContext context,
     WidgetRef ref,
@@ -105,40 +138,18 @@ class DailyRecommend extends ConsumerWidget {
     _LayoutConfig config,
     int columns,
   ) {
-    return Column(
-      children: List.generate(config.rows, (rowIndex) {
-        final rowSongs = <Song>[];
-        for (int col = 0; col < columns; col++) {
-          final index = rowIndex + col * config.rows;
-          if (index < songs.length) {
-            rowSongs.add(songs[index]);
-          }
-        }
-
-        return Padding(
-          padding: EdgeInsets.only(bottom: rowIndex < config.rows - 1 ? 8 : 0),
-          child: Row(
-            children: rowSongs.map((song) {
-              return Expanded(
-                key: ValueKey(song.id),
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    right: rowSongs.last == song ? 0 : config.itemSpacing,
-                  ),
-                  child: _buildSongItem(
-                    context,
-                    ref,
-                    song,
-                    colorScheme,
-                    authHeaders,
-                  ),
-                ),
-              );
-            }).toList(),
+    return _buildGrid(config, columns, (rowIndex, colIndex, index) {
+      final song = songs[index];
+      return Expanded(
+        key: ValueKey(song.id),
+        child: Padding(
+          padding: EdgeInsets.only(
+            right: colIndex == columns - 1 ? 0 : config.itemSpacing,
           ),
-        );
-      }),
-    );
+          child: _buildSongItem(context, ref, song, colorScheme, authHeaders),
+        ),
+      );
+    }, songs.length);
   }
 
   Widget _buildShimmerGrid(
@@ -146,21 +157,36 @@ class DailyRecommend extends ConsumerWidget {
     _LayoutConfig config,
     int columns,
   ) {
+    return _buildGrid(config, columns, (rowIndex, colIndex, index) {
+      return Expanded(
+        key: ValueKey('shimmer_$rowIndex$colIndex'),
+        child: Padding(
+          padding: EdgeInsets.only(
+            right: colIndex == columns - 1 ? 0 : config.itemSpacing,
+          ),
+          child: _SongItemShimmer(colorScheme: colorScheme),
+        ),
+      );
+    }, columns * config.rows);
+  }
+
+  Widget _buildGrid(
+    _LayoutConfig config,
+    int columns,
+    Widget Function(int rowIndex, int colIndex, int index) itemBuilder,
+    int itemCount,
+  ) {
     return Column(
       children: List.generate(config.rows, (rowIndex) {
         return Padding(
           padding: EdgeInsets.only(bottom: rowIndex < config.rows - 1 ? 8 : 0),
           child: Row(
             children: List.generate(columns, (colIndex) {
-              return Expanded(
-                key: ValueKey('shimmer_$rowIndex$colIndex'),
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    right: colIndex == columns - 1 ? 0 : config.itemSpacing,
-                  ),
-                  child: _SongItemShimmer(colorScheme: colorScheme),
-                ),
-              );
+              final index = rowIndex + colIndex * config.rows;
+              if (index >= itemCount) {
+                return const Expanded(child: SizedBox());
+              }
+              return itemBuilder(rowIndex, colIndex, index);
             }),
           ),
         );
@@ -178,71 +204,38 @@ class DailyRecommend extends ConsumerWidget {
     final albumName = song.additional?.songTag?.album ?? '';
     final artistName = song.additional?.songTag?.artist ?? '';
     final songTitle = song.title;
-    final albumArtistName = song.additional?.songTag?.albumArtist ?? '';
-
-    final coverUrl = ref.watch(
-      coverUrlProvider(albumName: albumName, albumArtistName: albumArtistName),
-    );
+    final config = _SongItemConfig.defaultConfig;
 
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(config.borderRadius),
       child: InkWell(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(config.borderRadius),
         hoverColor: colorScheme.surface.withValues(alpha: 0.3),
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         onTap: () {},
         child: Container(
-          height: 56,
+          height: config.height,
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: coverUrl.when(
-                  data: (url) {
-                    if (url.isEmpty) {
-                      return _buildPlaceholder(colorScheme, 48);
-                    }
-                    return ExtendedImage.network(
-                      url,
-                      width: 48,
-                      height: 48,
-                      fit: BoxFit.cover,
-                      headers: authHeaders,
-                      cache: true,
-                      cacheKey: song.id,
-                      clearMemoryCacheIfFailed: true,
-                      loadStateChanged: (state) {
-                        switch (state.extendedImageLoadState) {
-                          case LoadState.loading:
-                            return _buildPlaceholder(
-                              colorScheme,
-                              48,
-                              isLoading: true,
-                            );
-                          case LoadState.completed:
-                            return ExtendedRawImage(
-                              image: state.extendedImageInfo?.image,
-                              width: 48,
-                              height: 48,
-                              fit: BoxFit.cover,
-                            );
-                          case LoadState.failed:
-                            return _buildPlaceholder(colorScheme, 48);
-                        }
-                      },
-                    );
-                  },
-                  loading: () =>
-                      _buildPlaceholder(colorScheme, 48, isLoading: true),
-                  error: (error, stack) => _buildPlaceholder(colorScheme, 48),
+                borderRadius: BorderRadius.circular(config.borderRadius),
+                child: _SongCoverImage(
+                  songId: song.id,
+                  albumName: albumName,
+                  artistName: artistName,
+                  authHeaders: authHeaders,
+                  colorScheme: colorScheme,
+                  config: config,
                 ),
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: config.horizontalPadding,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -254,14 +247,13 @@ class DailyRecommend extends ConsumerWidget {
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
-                          // color: colorScheme.onSurface,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      SizedBox(height: config.marqueeSpacing),
                       SmartMarquee(
                         text: '$artistName - $songTitle',
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: config.subtitleFontSize,
                           color: colorScheme.onSurfaceVariant,
                         ),
                       ),
@@ -269,19 +261,103 @@ class DailyRecommend extends ConsumerWidget {
                   ),
                 ),
               ),
-              const Icon(Icons.play_circle_outline, size: 18),
+              Icon(Icons.play_circle_outline, size: config.iconSize),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildPlaceholder(
-    ColorScheme colorScheme,
-    double size, {
-    bool isLoading = false,
-  }) {
+class _SongCoverImage extends ConsumerWidget {
+  const _SongCoverImage({
+    required this.songId,
+    required this.albumName,
+    required this.artistName,
+    required this.authHeaders,
+    required this.colorScheme,
+    required this.config,
+  });
+
+  final String songId;
+  final String albumName;
+  final String artistName;
+  final Map<String, String> authHeaders;
+  final ColorScheme colorScheme;
+  final _SongItemConfig config;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final coverUrl = ref.watch(
+      coverUrlProvider(albumName: albumName, albumArtistName: artistName),
+    );
+
+    return coverUrl.when(
+      data: (url) {
+        if (url.isEmpty) {
+          return _CoverPlaceholder(
+            colorScheme: colorScheme,
+            size: config.coverSize,
+          );
+        }
+        return ExtendedImage.network(
+          url,
+          width: config.coverSize,
+          height: config.coverSize,
+          fit: BoxFit.cover,
+          headers: authHeaders,
+          cache: true,
+          cacheKey: songId,
+          clearMemoryCacheIfFailed: true,
+          loadStateChanged: (state) {
+            switch (state.extendedImageLoadState) {
+              case LoadState.loading:
+                return _CoverPlaceholder(
+                  colorScheme: colorScheme,
+                  size: config.coverSize,
+                  isLoading: true,
+                );
+              case LoadState.completed:
+                return ExtendedRawImage(
+                  image: state.extendedImageInfo?.image,
+                  width: config.coverSize,
+                  height: config.coverSize,
+                  fit: BoxFit.cover,
+                );
+              case LoadState.failed:
+                return _CoverPlaceholder(
+                  colorScheme: colorScheme,
+                  size: config.coverSize,
+                );
+            }
+          },
+        );
+      },
+      loading: () => _CoverPlaceholder(
+        colorScheme: colorScheme,
+        size: config.coverSize,
+        isLoading: true,
+      ),
+      error: (_, __) =>
+          _CoverPlaceholder(colorScheme: colorScheme, size: config.coverSize),
+    );
+  }
+}
+
+class _CoverPlaceholder extends StatelessWidget {
+  const _CoverPlaceholder({
+    required this.colorScheme,
+    required this.size,
+    this.isLoading = false,
+  });
+
+  final ColorScheme colorScheme;
+  final double size;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: size,
       height: size,
@@ -316,40 +392,43 @@ class _SongItemShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final config = _SongItemConfig.defaultConfig;
     return Shimmer.fromColors(
       baseColor: colorScheme.surfaceContainerHighest,
       highlightColor: colorScheme.surface,
       child: Container(
-        height: 56,
+        height: config.height,
         padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Row(
           children: [
             Container(
-              width: 48,
-              height: 48,
+              width: config.coverSize,
+              height: config.coverSize,
               decoration: BoxDecoration(
                 color: colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(config.borderRadius),
               ),
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.symmetric(
+                  horizontal: config.horizontalPadding,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      height: 13,
+                      height: config.titleFontSize,
                       width: 120,
                       decoration: BoxDecoration(
                         color: colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    SizedBox(height: config.marqueeSpacing),
                     Container(
-                      height: 11,
+                      height: config.subtitleFontSize,
                       width: double.infinity,
                       decoration: BoxDecoration(
                         color: colorScheme.surfaceContainerHighest,
@@ -361,8 +440,8 @@ class _SongItemShimmer extends StatelessWidget {
               ),
             ),
             Container(
-              width: 18,
-              height: 18,
+              width: config.iconSize,
+              height: config.iconSize,
               decoration: BoxDecoration(
                 color: colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(4),
