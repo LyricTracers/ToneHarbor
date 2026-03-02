@@ -83,7 +83,7 @@ final class CoverUrlProvider
   }
 }
 
-String _$coverUrlHash() => r'eafd0ec2d8ed61908e64e238c65c5cf8fa6817ab';
+String _$coverUrlHash() => r'50b35c98ef877849651aad31dec72351728d8db2';
 
 final class CoverUrlFamily extends $Family
     with

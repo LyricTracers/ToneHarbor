@@ -69,6 +69,7 @@ class DailyRecommend extends ConsumerWidget {
               child: Row(
                 children: rowSongs.map((song) {
                   return Expanded(
+                    key: ValueKey(song.id),
                     child: Padding(
                       padding: EdgeInsets.only(
                         right: rowSongs.last == song ? 0 : itemSpacing,
@@ -117,9 +118,7 @@ class DailyRecommend extends ConsumerWidget {
         hoverColor: colorScheme.surface.withValues(alpha: 0.3),
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
-        onTap: () {
-          // TODO: 播放歌曲
-        },
+        onTap: () {},
         child: Container(
           height: 56,
           padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -196,11 +195,7 @@ class DailyRecommend extends ConsumerWidget {
                   ),
                 ),
               ),
-              Icon(
-                Icons.play_circle_outline,
-                color: colorScheme.onSurface,
-                size: 18,
-              ),
+              const Icon(Icons.play_circle_outline, size: 18),
             ],
           ),
         ),

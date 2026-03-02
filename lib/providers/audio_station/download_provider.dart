@@ -60,11 +60,16 @@ Future<String> coverUrl(
   bool isHr = true,
   String library = 'shared',
 }) async {
-  return _getCoverUrl(
-    ref: ref,
-    albumName: albumName,
-    albumArtistName: albumArtistName,
-  );
+  final link = ref.keepAlive();
+  try {
+    return _getCoverUrl(
+      ref: ref,
+      albumName: albumName,
+      albumArtistName: albumArtistName,
+    );
+  } finally {
+    link.close();
+  }
 }
 
 Future<String> _getCoverUrl({
