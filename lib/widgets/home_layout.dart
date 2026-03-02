@@ -15,7 +15,6 @@ class HomeLayout extends BaseBgLayout {
 
   @override
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
-    logger.i("build!!!!");
     final colorScheme = getColorSchemeWhenReady(ref);
     final l10n = getValueWhenReadyWithWidgetRef(
       ref,
