@@ -6,3 +6,4 @@ export 'base_content_page.dart';
 export 'recommend_page.dart';
 export 'smart_marquee.dart';
 export 'daily_recommend.dart';
+export 'song_cover_image.dart';

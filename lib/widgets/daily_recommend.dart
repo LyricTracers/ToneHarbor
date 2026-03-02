@@ -1,4 +1,3 @@
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
@@ -222,13 +221,16 @@ class DailyRecommend extends ConsumerWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(config.borderRadius),
-                child: _SongCoverImage(
+                child: SongCoverImage(
                   songId: song.id,
                   albumName: albumName,
                   artistName: artistName,
                   authHeaders: authHeaders,
                   colorScheme: colorScheme,
-                  config: config,
+                  config: SongCoverImageConfig(
+                    size: config.coverSize,
+                    borderRadius: config.borderRadius,
+                  ),
                 ),
               ),
               Expanded(
@@ -266,121 +268,6 @@ class DailyRecommend extends ConsumerWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _SongCoverImage extends ConsumerWidget {
-  const _SongCoverImage({
-    required this.songId,
-    required this.albumName,
-    required this.artistName,
-    required this.authHeaders,
-    required this.colorScheme,
-    required this.config,
-  });
-
-  final String songId;
-  final String albumName;
-  final String artistName;
-  final Map<String, String> authHeaders;
-  final ColorScheme colorScheme;
-  final _SongItemConfig config;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final coverUrl = ref.watch(
-      coverUrlProvider(albumName: albumName, albumArtistName: artistName),
-    );
-
-    return coverUrl.when(
-      data: (url) {
-        if (url.isEmpty) {
-          return _CoverPlaceholder(
-            colorScheme: colorScheme,
-            size: config.coverSize,
-          );
-        }
-        return ExtendedImage.network(
-          url,
-          width: config.coverSize,
-          height: config.coverSize,
-          fit: BoxFit.cover,
-          headers: authHeaders,
-          cache: true,
-          cacheKey: songId,
-          clearMemoryCacheIfFailed: true,
-          loadStateChanged: (state) {
-            switch (state.extendedImageLoadState) {
-              case LoadState.loading:
-                return _CoverPlaceholder(
-                  colorScheme: colorScheme,
-                  size: config.coverSize,
-                  isLoading: true,
-                );
-              case LoadState.completed:
-                return ExtendedRawImage(
-                  image: state.extendedImageInfo?.image,
-                  width: config.coverSize,
-                  height: config.coverSize,
-                  fit: BoxFit.cover,
-                );
-              case LoadState.failed:
-                return _CoverPlaceholder(
-                  colorScheme: colorScheme,
-                  size: config.coverSize,
-                );
-            }
-          },
-        );
-      },
-      loading: () => _CoverPlaceholder(
-        colorScheme: colorScheme,
-        size: config.coverSize,
-        isLoading: true,
-      ),
-      error: (_, __) =>
-          _CoverPlaceholder(colorScheme: colorScheme, size: config.coverSize),
-    );
-  }
-}
-
-class _CoverPlaceholder extends StatelessWidget {
-  const _CoverPlaceholder({
-    required this.colorScheme,
-    required this.size,
-    this.isLoading = false,
-  });
-
-  final ColorScheme colorScheme;
-  final double size;
-  final bool isLoading;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: colorScheme.onSurface.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: isLoading
-          ? Center(
-              child: SizedBox(
-                width: size * 0.4,
-                height: size * 0.4,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-            )
-          : Icon(
-              Icons.music_note,
-              size: size * 0.4,
-              color: colorScheme.onSurface,
-            ),
     );
   }
 }
