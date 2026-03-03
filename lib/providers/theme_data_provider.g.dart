@@ -139,7 +139,7 @@ final class GetColorSchemeProvider
   }
 }
 
-String _$getColorSchemeHash() => r'84dbef702adabad952ecdaa757a0998ce8023dcc';
+String _$getColorSchemeHash() => r'f100b01d88d7f286dcdf101b4b4de22d9b4d2577';
 
 @ProviderFor(SyncSongIcon)
 final syncSongIconProvider = SyncSongIconProvider._();
@@ -305,7 +305,7 @@ final class LoadDefaultThemeIconProvider
         argument: null,
         retry: null,
         name: r'loadDefaultThemeIconProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -326,4 +326,4 @@ final class LoadDefaultThemeIconProvider
 }
 
 String _$loadDefaultThemeIconHash() =>
-    r'6a7b99eaf1c1d4a47b80f9b3906b3db6d6ff53ed';
+    r'b11d31846034818324d6fa466e7fd9943fb08b45';

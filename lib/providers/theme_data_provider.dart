@@ -105,7 +105,7 @@ class SongIcon extends _$SongIcon {
   }
 }
 
-@riverpod
+@keepAlive
 Future<ImageProvider?> loadDefaultThemeIcon(Ref ref) async {
   final prefs = await getSharedPreferences();
   final savedPath = prefs.getString(defaultThemeIconKey);
