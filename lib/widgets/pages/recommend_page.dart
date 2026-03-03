@@ -93,7 +93,7 @@ class RecommendPage extends BaseContentPage {
                 color: colorScheme.onSurface.withValues(alpha: 0.5),
               ),
               SizedBox(height: 8),
-              const DailyRecommend(),
+              const RecommendPageDailySongs(),
             ],
           ),
         ),

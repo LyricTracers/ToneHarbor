@@ -5,5 +5,5 @@ export 'components/search_box.dart';
 export 'pages/base_content_page.dart';
 export 'pages/recommend_page.dart';
 export 'components/smart_marquee.dart';
-export 'pages/daily_recommend.dart';
+export 'pages/recommend_page_daily_songs.dart';
 export 'components/song_cover_image.dart';

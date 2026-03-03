@@ -64,8 +64,8 @@ class _SongItemConfig {
   );
 }
 
-class DailyRecommend extends ConsumerWidget {
-  const DailyRecommend({super.key});
+class RecommendPageDailySongs extends ConsumerWidget {
+  const RecommendPageDailySongs({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
