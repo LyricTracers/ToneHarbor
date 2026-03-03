@@ -114,6 +114,7 @@ class _SmartMarqueeState extends State<SmartMarquee>
   bool _isHovering = false;
   bool _isDragging = false;
   bool _isInertiaRunning = false;
+  bool _mouseExitedWhileDragging = false;
   double _manualScrollOffset = 0.0;
   double _lastDragX = 0.0;
   double _lastDragTime = 0.0;
@@ -177,6 +178,7 @@ class _SmartMarqueeState extends State<SmartMarquee>
       _isHovering = false;
       _isDragging = false;
       _isInertiaRunning = false;
+      _mouseExitedWhileDragging = false;
       _manualScrollOffset = 0.0;
     });
     _stopInertia();
@@ -229,6 +231,7 @@ class _SmartMarqueeState extends State<SmartMarquee>
       if (mounted) {
         setState(() {
           _isInertiaRunning = false;
+          _manualScrollOffset = 0.0;
         });
       }
     });
@@ -301,9 +304,18 @@ class _SmartMarqueeState extends State<SmartMarquee>
                             metrics.width - availableWidth + padding;
                         setState(() {
                           _isDragging = false;
+                          if (_mouseExitedWhileDragging) {
+                            _isHovering = false;
+                            _mouseExitedWhileDragging = false;
+                          }
                         });
-                        if (maxScrollDistance > 0) {
+                        if (maxScrollDistance > 0 &&
+                            _dragVelocity.abs() >= 100) {
                           _startInertia(_dragVelocity, maxScrollDistance);
+                        } else {
+                          setState(() {
+                            _manualScrollOffset = 0.0;
+                          });
                         }
                       },
                       child: Transform.translate(
@@ -344,6 +356,8 @@ class _SmartMarqueeState extends State<SmartMarquee>
                   setState(() {
                     _isHovering = false;
                   });
+                } else {
+                  _mouseExitedWhileDragging = true;
                 }
               },
               child: child,
