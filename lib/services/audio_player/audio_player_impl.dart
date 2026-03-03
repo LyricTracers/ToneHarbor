@@ -24,7 +24,8 @@ class ToneHarborAudioPlayer extends AudioPlayerInterface
   }
 
   Future<void> setSpeed(double speed) async {
-    await _mkPlayer.setRate(speed);
+    final clampedSpeed = speed.clamp(0.25, 4.0);
+    await _mkPlayer.setRate(clampedSpeed);
   }
 
   Future<void> setAudioDevice(mk.AudioDevice device) async {

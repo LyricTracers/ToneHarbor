@@ -23,7 +23,7 @@ class CustomPlayer extends Player {
           _playerStateStream.add(AudioPlaybackState.paused);
         }
       }),
-      stream.completed.listen((isCompleted) async {
+      stream.completed.listen((isCompleted) {
         if (!isCompleted) return;
         _playerStateStream.add(AudioPlaybackState.completed);
       }),
