@@ -67,11 +67,11 @@ class CustomPlayer extends Player {
 
   @override
   Future<void> dispose() async {
-    for (var element in _subscriptions) {
-      element.cancel();
+    for (final subscription in _subscriptions) {
+      await subscription.cancel();
     }
     await _playerStateStream.close();
-    return super.dispose();
+    await super.dispose();
   }
 
   NativePlayer get nativePlayer => platform as NativePlayer;

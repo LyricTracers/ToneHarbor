@@ -19,8 +19,8 @@ class ToneHarborAudioPlayer extends AudioPlayerInterface
   }
 
   Future<void> setVolume(double volume) async {
-    assert(volume >= 0 && volume <= 1);
-    await _mkPlayer.setVolume(volume * 100);
+    final clampedVolume = volume.clamp(0.0, 1.0);
+    await _mkPlayer.setVolume(clampedVolume * 100);
   }
 
   Future<void> setSpeed(double speed) async {

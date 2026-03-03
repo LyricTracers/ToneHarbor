@@ -19,10 +19,11 @@ mixin ToneHarborAudioPlayersStreams on AudioPlayerInterface {
 
   Stream<int> percentCompletedStream(double percent) {
     return positionStream
-        .asyncMap(
-          (position) async => duration == Duration.zero
+        .map(
+          (position) => duration == Duration.zero
               ? 0
-              : (position.inSeconds / duration.inSeconds * 100).toInt(),
+              : (position.inMilliseconds * 100 / duration.inMilliseconds)
+                    .toInt(),
         )
         .where((event) => event >= percent);
   }
