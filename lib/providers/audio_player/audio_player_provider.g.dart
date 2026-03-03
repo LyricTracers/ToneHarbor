@@ -88,7 +88,7 @@ final class PlaylistNotifierProvider
   }
 }
 
-String _$playlistNotifierHash() => r'8c15d8ebb852bbe08f58c205cea5e356ae269914';
+String _$playlistNotifierHash() => r'd14da75739f6758a0937eb1c520ea3810786b6de';
 
 abstract class _$PlaylistNotifier extends $Notifier<List<Song>> {
   List<Song> build();
@@ -307,7 +307,7 @@ final class ActiveTrackProvider extends $FunctionalProvider<Song?, Song?, Song?>
   }
 }
 
-String _$activeTrackHash() => r'db030bef46f10f0edf5509e0054a6574c71b2eb5';
+String _$activeTrackHash() => r'6b6975e7fe44c039bc61ce5cc6a578a8494c8407';
 
 @ProviderFor(positionStream)
 final positionStreamProvider = PositionStreamProvider._();

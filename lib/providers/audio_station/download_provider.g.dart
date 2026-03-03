@@ -9,6 +9,79 @@ part of 'download_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(streamUrl)
+final streamUrlProvider = StreamUrlFamily._();
+
+final class StreamUrlProvider
+    extends $FunctionalProvider<AsyncValue<String>, String, FutureOr<String>>
+    with $FutureModifier<String>, $FutureProvider<String> {
+  StreamUrlProvider._({
+    required StreamUrlFamily super.from,
+    required ({String id, String format}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'streamUrlProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$streamUrlHash();
+
+  @override
+  String toString() {
+    return r'streamUrlProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<String> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<String> create(Ref ref) {
+    final argument = this.argument as ({String id, String format});
+    return streamUrl(ref, id: argument.id, format: argument.format);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is StreamUrlProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$streamUrlHash() => r'4e04b2903361fddfa6d82ed7ab72e6f8638086f9';
+
+final class StreamUrlFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<String>,
+          ({String id, String format})
+        > {
+  StreamUrlFamily._()
+    : super(
+        retry: null,
+        name: r'streamUrlProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  StreamUrlProvider call({required String id, String format = 'mp3'}) =>
+      StreamUrlProvider._(argument: (id: id, format: format), from: this);
+
+  @override
+  String toString() => r'streamUrlProvider';
+}
+
 @ProviderFor(coverUrl)
 final coverUrlProvider = CoverUrlFamily._();
 

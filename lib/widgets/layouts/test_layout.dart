@@ -477,7 +477,9 @@ class TestLayout extends BaseBgLayout {
       });
 
       try {
-        final url = await getStreamUrl(ref: ref, id: 'music_785331');
+        final url = await ref.read(
+          streamUrlProvider(id: 'music_785331').future,
+        );
         updateRequest(
           requestId: requestId,
           status: 'success',

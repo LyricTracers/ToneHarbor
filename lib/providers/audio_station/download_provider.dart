@@ -12,8 +12,9 @@ import 'package:toneharbor/utils/base_utils.dart';
 
 part 'download_provider.g.dart';
 
-Future<String> getStreamUrl({
-  required WidgetRef ref,
+@riverpod
+Future<String> streamUrl(
+  Ref ref, {
   required String id,
   String format = 'mp3',
 }) async {
@@ -118,7 +119,9 @@ Future<int> downloadSong({
 }) async {
   final l10n = await ref.read(l10nProvider.future);
 
-  final streamUrl = await getStreamUrl(ref: ref, id: id, format: format);
+  final streamUrl = await ref.read(
+    streamUrlProvider(id: id, format: format).future,
+  );
   final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     Future.microtask(() async {

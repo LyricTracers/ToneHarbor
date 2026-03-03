@@ -4,6 +4,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
+import 'package:toneharbor/providers/audio_station/download_provider.dart';
 
 part 'audio_player_provider.g.dart';
 
@@ -33,9 +34,10 @@ class PlaylistNotifier extends _$PlaylistNotifier {
     _tracks = songs;
     state = _tracks;
 
-    final medias = songs.map((song) {
+    final medias = songs.map((song) async {
+      final streamUrl = await ref.read(streamUrlProvider(id: song.id).future);
       return Media(
-        song.path,
+        streamUrl,
         extras: {
           'id': song.id,
           'title': song.title,
@@ -45,7 +47,10 @@ class PlaylistNotifier extends _$PlaylistNotifier {
       );
     }).toList();
 
-    await _player.openPlaylist(medias, initialIndex: initialIndex);
+    await _player.openPlaylist(
+      await Future.wait(medias),
+      initialIndex: initialIndex,
+    );
   }
 
   Future<void> play() async {
