@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/utils/base_utils.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 part 'theme_data_provider.g.dart';
 
 @riverpod
@@ -16,7 +15,7 @@ class DynamicScheme extends _$DynamicScheme {
 
   Future<void> setSchemeVariant(DynamicSchemeVariant value) async {
     state = AsyncValue.data(value);
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await getSharedPreferences();
     await prefs.setInt(dynamicSchemeKey, value.index);
   }
 }
@@ -31,7 +30,7 @@ class ContrastLevel extends _$ContrastLevel {
   Future<void> setContrastLevel(double value) async {
     final clampedValue = value.clamp(-1.0, 1.0);
     state = AsyncValue.data(clampedValue);
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await getSharedPreferences();
     await prefs.setDouble(contrastLevelKey, clampedValue);
   }
 }
@@ -63,7 +62,7 @@ class SyncSongIcon extends _$SyncSongIcon {
   }
 
   Future<void> setSyncSongIcon(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await getSharedPreferences();
     await prefs.setBool(syncSongIconKey, value);
     state = AsyncData(value);
   }

@@ -33,7 +33,7 @@ final class DynamicSchemeProvider
   DynamicScheme create() => DynamicScheme();
 }
 
-String _$dynamicSchemeHash() => r'a8a9322c27d129ad8f45e7b7479ed2bbfc09cf42';
+String _$dynamicSchemeHash() => r'41472a4f7eb828e83c8ed10becfa3dc244b1fdac';
 
 abstract class _$DynamicScheme extends $AsyncNotifier<DynamicSchemeVariant> {
   FutureOr<DynamicSchemeVariant> build();
@@ -82,7 +82,7 @@ final class ContrastLevelProvider
   ContrastLevel create() => ContrastLevel();
 }
 
-String _$contrastLevelHash() => r'e98df1179f5fead0499e5799e60e7b3ae5744ab0';
+String _$contrastLevelHash() => r'b60c726abb39f7fac848d298ac5ae08ad917e88d';
 
 abstract class _$ContrastLevel extends $AsyncNotifier<double> {
   FutureOr<double> build();
@@ -165,7 +165,7 @@ final class SyncSongIconProvider
   SyncSongIcon create() => SyncSongIcon();
 }
 
-String _$syncSongIconHash() => r'6f541b148ff2e8d563482375f791880de8cf951b';
+String _$syncSongIconHash() => r'3f33e126474bcd6417294c878ecafd11d9700d45';
 
 abstract class _$SyncSongIcon extends $AsyncNotifier<bool> {
   FutureOr<bool> build();

@@ -84,7 +84,7 @@ final class LocaleNotifierProvider
   LocaleNotifier create() => LocaleNotifier();
 }
 
-String _$localeNotifierHash() => r'874e14067866ecbc319a40adbec51455f7220ea1';
+String _$localeNotifierHash() => r'96da082f32c4cc9861bacaa037c46ff039a6738f';
 
 abstract class _$LocaleNotifier extends $AsyncNotifier<Locale> {
   FutureOr<Locale> build();
@@ -129,7 +129,7 @@ final class SearchHistoryNotifierProvider
 }
 
 String _$searchHistoryNotifierHash() =>
-    r'0966461be9606f31e486605e6d630be754b169c9';
+    r'8dbb96200539f73af82e5f797ab3d074bb9393fd';
 
 abstract class _$SearchHistoryNotifier extends $AsyncNotifier<List<String>> {
   FutureOr<List<String>> build();

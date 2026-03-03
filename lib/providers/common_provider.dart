@@ -21,19 +21,20 @@ class RequestFlag extends _$RequestFlag {
 class LocaleNotifier extends _$LocaleNotifier {
   @override
   Future<Locale> build() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await getSharedPreferences();
     final localeCode = prefs.getString(localeKey) ?? 'zh';
     return Locale(localeCode);
   }
 
   Future<void> setLocale(Locale locale) async {
     state = AsyncValue.data(locale);
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await getSharedPreferences();
     await prefs.setString(localeKey, locale.languageCode);
   }
 
   Future<void> toggleLanguage() async {
-    final newLocale = state.value?.languageCode == 'zh'
+    final currentLanguageCode = state.value?.languageCode ?? 'zh';
+    final newLocale = currentLanguageCode == 'zh'
         ? const Locale('en')
         : const Locale('zh');
     await setLocale(newLocale);
@@ -44,7 +45,7 @@ class LocaleNotifier extends _$LocaleNotifier {
 class SearchHistoryNotifier extends _$SearchHistoryNotifier {
   @override
   Future<List<String>> build() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await getSharedPreferences();
     final history = prefs.getStringList(searchHistoryKey) ?? [];
     return history;
   }
@@ -63,7 +64,7 @@ class SearchHistoryNotifier extends _$SearchHistoryNotifier {
 
     state = AsyncValue.data(updatedHistory);
 
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await getSharedPreferences();
     await prefs.setStringList(searchHistoryKey, updatedHistory);
   }
 
@@ -74,14 +75,14 @@ class SearchHistoryNotifier extends _$SearchHistoryNotifier {
 
     state = AsyncValue.data(updatedHistory);
 
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await getSharedPreferences();
     await prefs.setStringList(searchHistoryKey, updatedHistory);
   }
 
   Future<void> clearHistory() async {
     state = AsyncValue.data([]);
 
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await getSharedPreferences();
     await prefs.setStringList(searchHistoryKey, []);
   }
 }
