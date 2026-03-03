@@ -263,6 +263,7 @@ class DailyRecommend extends ConsumerWidget {
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
+                        pauseOnHover: true,
                       ),
                       SizedBox(height: config.marqueeSpacing),
                       SmartMarquee(
@@ -271,6 +272,7 @@ class DailyRecommend extends ConsumerWidget {
                           fontSize: config.subtitleFontSize,
                           color: colorScheme.onSurfaceVariant,
                         ),
+                        pauseOnHover: true,
                       ),
                     ],
                   ),
