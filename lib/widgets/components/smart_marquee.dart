@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:marquee/marquee.dart';
+import 'internal_marquee.dart';
 
 class _TextMetricsCache {
   static final Map<String, _TextMetrics> _cache = {};
   static const int _maxCacheSize = 20;
   static final List<String> _cacheKeys = [];
 
-  static _TextMetrics get(String text, TextStyle style) {
-    final key = _generateKey(text, style);
+  static _TextMetrics get(
+    String text,
+    TextStyle style,
+    StrutStyle? strutStyle,
+  ) {
+    final key = _generateKey(text, style, strutStyle);
 
     if (_cache.containsKey(key)) {
       return _cache[key]!;
     }
 
-    final metrics = _TextMetrics.compute(text, style);
+    final metrics = _TextMetrics.compute(text, style, strutStyle);
     _cache[key] = metrics;
     _cacheKeys.add(key);
 
@@ -25,8 +29,12 @@ class _TextMetricsCache {
     return metrics;
   }
 
-  static String _generateKey(String text, TextStyle style) {
-    return '$text|${style.hashCode}';
+  static String _generateKey(
+    String text,
+    TextStyle style,
+    StrutStyle? strutStyle,
+  ) {
+    return '$text|${style.hashCode}|${strutStyle?.hashCode}';
   }
 }
 
@@ -36,11 +44,16 @@ class _TextMetrics {
 
   _TextMetrics._internal(this.width, this.height);
 
-  factory _TextMetrics.compute(String text, TextStyle style) {
+  factory _TextMetrics.compute(
+    String text,
+    TextStyle style,
+    StrutStyle? strutStyle,
+  ) {
     final textPainter = TextPainter(
       text: TextSpan(text: text, style: style),
       textDirection: TextDirection.ltr,
       maxLines: 1,
+      strutStyle: strutStyle,
     )..layout();
     final metrics = _TextMetrics._internal(
       textPainter.width,
@@ -92,6 +105,7 @@ class SmartMarquee extends StatefulWidget {
   final bool pauseOnHover;
   final SmartMarqueeController? controller;
   final AlignmentGeometry alignment;
+  final StrutStyle? strutStyle;
 
   const SmartMarquee({
     super.key,
@@ -104,6 +118,7 @@ class SmartMarquee extends StatefulWidget {
     this.pauseOnHover = false,
     this.controller,
     this.alignment = Alignment.center,
+    this.strutStyle,
   });
 
   @override
@@ -241,7 +256,20 @@ class _SmartMarqueeState extends State<SmartMarquee>
 
   @override
   Widget build(BuildContext context) {
-    final metrics = _TextMetricsCache.get(widget.text, widget.style);
+    final strutStyle =
+        widget.strutStyle ??
+        StrutStyle(
+          fontFamily: widget.style.fontFamily,
+          fontSize: widget.style.fontSize,
+          height: 1.2,
+          forceStrutHeight: true,
+          leading: 0,
+        );
+    final metrics = _TextMetricsCache.get(
+      widget.text,
+      widget.style,
+      strutStyle,
+    );
 
     return RepaintBoundary(
       child: LayoutBuilder(
@@ -263,6 +291,7 @@ class _SmartMarqueeState extends State<SmartMarquee>
                 child: Text(
                   widget.text,
                   style: widget.style,
+                  strutStyle: strutStyle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: widget.alignment == Alignment.center
@@ -344,6 +373,7 @@ class _SmartMarqueeState extends State<SmartMarquee>
                           child: Text(
                             widget.text,
                             style: widget.style,
+                            strutStyle: strutStyle,
                             maxLines: 1,
                             overflow: TextOverflow.visible,
                             softWrap: false,
