@@ -16,6 +16,7 @@ sealed class SongRequest with _$SongRequest {
     @JsonKey(name: 'sort_direction') required String sortDirection,
     required int offset,
     String? artist,
+    @JsonKey(name: 'song_rating_meq') int? songRatingMeq,
   }) = _SongRequest;
   factory SongRequest.fromJson(Map<String, dynamic> json) =>
       _$SongRequestFromJson(json);

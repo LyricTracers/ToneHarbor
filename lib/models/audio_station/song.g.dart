@@ -17,6 +17,7 @@ _SongRequest _$SongRequestFromJson(Map<String, dynamic> json) => _SongRequest(
   sortDirection: json['sort_direction'] as String,
   offset: (json['offset'] as num).toInt(),
   artist: json['artist'] as String?,
+  songRatingMeq: (json['song_rating_meq'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$SongRequestToJson(_SongRequest instance) =>
@@ -31,6 +32,7 @@ Map<String, dynamic> _$SongRequestToJson(_SongRequest instance) =>
       'sort_direction': instance.sortDirection,
       'offset': instance.offset,
       'artist': instance.artist,
+      'song_rating_meq': instance.songRatingMeq,
     };
 
 _SongAudio _$SongAudioFromJson(Map<String, dynamic> json) => _SongAudio(

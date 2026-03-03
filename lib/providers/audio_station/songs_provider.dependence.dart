@@ -303,6 +303,7 @@ Future<SongInfoResponse> _sendSongInfoRequest<T>({
 /// [sortDirection] 排序方向，默认 'ASC'，可选 'DESC'
 /// [additional] 额外信息，默认 'song_tag,song_audio,song_rating'
 /// [artist] 艺术家名称，可选
+/// [songRatingMeq] 评分大于等于，可选，用于获取收藏歌曲
 /// [cacheDuration] 缓存时长，不传则不使用缓存
 Future<SongListResponse> _getSongs({
   required Ref ref,
@@ -313,10 +314,11 @@ Future<SongListResponse> _getSongs({
   String sortDirection = 'ASC',
   String additional = 'song_tag,song_audio,song_rating',
   String? artist,
+  int? songRatingMeq,
   Duration? cacheDuration,
 }) async {
   final cacheKey =
-      'getSongs:$limit:$offset:$library:$sortBy:$sortDirection:$additional:$artist';
+      'getSongs:$limit:$offset:$library:$sortBy:$sortDirection:$additional:$artist:$songRatingMeq';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<SongListResponse>(
@@ -340,6 +342,7 @@ Future<SongListResponse> _getSongs({
     sortBy: sortBy,
     sortDirection: sortDirection,
     artist: artist,
+    songRatingMeq: songRatingMeq,
   );
 
   final l10n = await ref.read(l10nProvider.future);

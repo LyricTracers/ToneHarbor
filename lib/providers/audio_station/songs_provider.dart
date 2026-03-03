@@ -87,6 +87,38 @@ Future<SongListResponse> randomSongs(
 }
 
 @riverpod
+Future<SongListResponse> favoriteSongs(
+  Ref ref, {
+  int limit = 100,
+  int offset = 0,
+  String library = 'shared',
+  String sortBy = 'name',
+  String sortDirection = 'desc',
+  String additional = 'song_tag,song_audio,song_rating',
+  Duration? cacheDuration = const Duration(minutes: 5),
+  Duration? keepAliveDuration = const Duration(minutes: 5),
+}) async {
+  final link = ref.keepAliveFor(keepAliveDuration);
+  try {
+    return await _getSongs(
+      ref: ref,
+      limit: limit,
+      offset: offset,
+      library: library,
+      additional: additional,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+      songRatingMeq: 5,
+      cacheDuration: cacheDuration,
+    );
+  } finally {
+    if (keepAliveDuration == null) {
+      link.close();
+    }
+  }
+}
+
+@riverpod
 Future<SongListResponse> artistSongs(
   Ref ref, {
   required String artist,

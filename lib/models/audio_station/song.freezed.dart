@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SongRequest {
 
- String get api; String get method; String get version; int get limit; String get library; String get additional;@JsonKey(name: 'sort_by') String get sortBy;@JsonKey(name: 'sort_direction') String get sortDirection; int get offset; String? get artist;
+ String get api; String get method; String get version; int get limit; String get library; String get additional;@JsonKey(name: 'sort_by') String get sortBy;@JsonKey(name: 'sort_direction') String get sortDirection; int get offset; String? get artist;@JsonKey(name: 'song_rating_meq') int? get songRatingMeq;
 /// Create a copy of SongRequest
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $SongRequestCopyWith<SongRequest> get copyWith => _$SongRequestCopyWithImpl<Song
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SongRequest&&(identical(other.api, api) || other.api == api)&&(identical(other.method, method) || other.method == method)&&(identical(other.version, version) || other.version == version)&&(identical(other.limit, limit) || other.limit == limit)&&(identical(other.library, library) || other.library == library)&&(identical(other.additional, additional) || other.additional == additional)&&(identical(other.sortBy, sortBy) || other.sortBy == sortBy)&&(identical(other.sortDirection, sortDirection) || other.sortDirection == sortDirection)&&(identical(other.offset, offset) || other.offset == offset)&&(identical(other.artist, artist) || other.artist == artist));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SongRequest&&(identical(other.api, api) || other.api == api)&&(identical(other.method, method) || other.method == method)&&(identical(other.version, version) || other.version == version)&&(identical(other.limit, limit) || other.limit == limit)&&(identical(other.library, library) || other.library == library)&&(identical(other.additional, additional) || other.additional == additional)&&(identical(other.sortBy, sortBy) || other.sortBy == sortBy)&&(identical(other.sortDirection, sortDirection) || other.sortDirection == sortDirection)&&(identical(other.offset, offset) || other.offset == offset)&&(identical(other.artist, artist) || other.artist == artist)&&(identical(other.songRatingMeq, songRatingMeq) || other.songRatingMeq == songRatingMeq));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,api,method,version,limit,library,additional,sortBy,sortDirection,offset,artist);
+int get hashCode => Object.hash(runtimeType,api,method,version,limit,library,additional,sortBy,sortDirection,offset,artist,songRatingMeq);
 
 @override
 String toString() {
-  return 'SongRequest(api: $api, method: $method, version: $version, limit: $limit, library: $library, additional: $additional, sortBy: $sortBy, sortDirection: $sortDirection, offset: $offset, artist: $artist)';
+  return 'SongRequest(api: $api, method: $method, version: $version, limit: $limit, library: $library, additional: $additional, sortBy: $sortBy, sortDirection: $sortDirection, offset: $offset, artist: $artist, songRatingMeq: $songRatingMeq)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $SongRequestCopyWith<$Res>  {
   factory $SongRequestCopyWith(SongRequest value, $Res Function(SongRequest) _then) = _$SongRequestCopyWithImpl;
 @useResult
 $Res call({
- String api, String method, String version, int limit, String library, String additional,@JsonKey(name: 'sort_by') String sortBy,@JsonKey(name: 'sort_direction') String sortDirection, int offset, String? artist
+ String api, String method, String version, int limit, String library, String additional,@JsonKey(name: 'sort_by') String sortBy,@JsonKey(name: 'sort_direction') String sortDirection, int offset, String? artist,@JsonKey(name: 'song_rating_meq') int? songRatingMeq
 });
 
 
@@ -65,7 +65,7 @@ class _$SongRequestCopyWithImpl<$Res>
 
 /// Create a copy of SongRequest
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? api = null,Object? method = null,Object? version = null,Object? limit = null,Object? library = null,Object? additional = null,Object? sortBy = null,Object? sortDirection = null,Object? offset = null,Object? artist = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? api = null,Object? method = null,Object? version = null,Object? limit = null,Object? library = null,Object? additional = null,Object? sortBy = null,Object? sortDirection = null,Object? offset = null,Object? artist = freezed,Object? songRatingMeq = freezed,}) {
   return _then(_self.copyWith(
 api: null == api ? _self.api : api // ignore: cast_nullable_to_non_nullable
 as String,method: null == method ? _self.method : method // ignore: cast_nullable_to_non_nullable
@@ -77,7 +77,8 @@ as String,sortBy: null == sortBy ? _self.sortBy : sortBy // ignore: cast_nullabl
 as String,sortDirection: null == sortDirection ? _self.sortDirection : sortDirection // ignore: cast_nullable_to_non_nullable
 as String,offset: null == offset ? _self.offset : offset // ignore: cast_nullable_to_non_nullable
 as int,artist: freezed == artist ? _self.artist : artist // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,songRatingMeq: freezed == songRatingMeq ? _self.songRatingMeq : songRatingMeq // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -159,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String api,  String method,  String version,  int limit,  String library,  String additional, @JsonKey(name: 'sort_by')  String sortBy, @JsonKey(name: 'sort_direction')  String sortDirection,  int offset,  String? artist)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String api,  String method,  String version,  int limit,  String library,  String additional, @JsonKey(name: 'sort_by')  String sortBy, @JsonKey(name: 'sort_direction')  String sortDirection,  int offset,  String? artist, @JsonKey(name: 'song_rating_meq')  int? songRatingMeq)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SongRequest() when $default != null:
-return $default(_that.api,_that.method,_that.version,_that.limit,_that.library,_that.additional,_that.sortBy,_that.sortDirection,_that.offset,_that.artist);case _:
+return $default(_that.api,_that.method,_that.version,_that.limit,_that.library,_that.additional,_that.sortBy,_that.sortDirection,_that.offset,_that.artist,_that.songRatingMeq);case _:
   return orElse();
 
 }
@@ -180,10 +181,10 @@ return $default(_that.api,_that.method,_that.version,_that.limit,_that.library,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String api,  String method,  String version,  int limit,  String library,  String additional, @JsonKey(name: 'sort_by')  String sortBy, @JsonKey(name: 'sort_direction')  String sortDirection,  int offset,  String? artist)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String api,  String method,  String version,  int limit,  String library,  String additional, @JsonKey(name: 'sort_by')  String sortBy, @JsonKey(name: 'sort_direction')  String sortDirection,  int offset,  String? artist, @JsonKey(name: 'song_rating_meq')  int? songRatingMeq)  $default,) {final _that = this;
 switch (_that) {
 case _SongRequest():
-return $default(_that.api,_that.method,_that.version,_that.limit,_that.library,_that.additional,_that.sortBy,_that.sortDirection,_that.offset,_that.artist);}
+return $default(_that.api,_that.method,_that.version,_that.limit,_that.library,_that.additional,_that.sortBy,_that.sortDirection,_that.offset,_that.artist,_that.songRatingMeq);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -197,10 +198,10 @@ return $default(_that.api,_that.method,_that.version,_that.limit,_that.library,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String api,  String method,  String version,  int limit,  String library,  String additional, @JsonKey(name: 'sort_by')  String sortBy, @JsonKey(name: 'sort_direction')  String sortDirection,  int offset,  String? artist)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String api,  String method,  String version,  int limit,  String library,  String additional, @JsonKey(name: 'sort_by')  String sortBy, @JsonKey(name: 'sort_direction')  String sortDirection,  int offset,  String? artist, @JsonKey(name: 'song_rating_meq')  int? songRatingMeq)?  $default,) {final _that = this;
 switch (_that) {
 case _SongRequest() when $default != null:
-return $default(_that.api,_that.method,_that.version,_that.limit,_that.library,_that.additional,_that.sortBy,_that.sortDirection,_that.offset,_that.artist);case _:
+return $default(_that.api,_that.method,_that.version,_that.limit,_that.library,_that.additional,_that.sortBy,_that.sortDirection,_that.offset,_that.artist,_that.songRatingMeq);case _:
   return null;
 
 }
@@ -212,7 +213,7 @@ return $default(_that.api,_that.method,_that.version,_that.limit,_that.library,_
 @JsonSerializable()
 
 class _SongRequest extends SongRequest {
-  const _SongRequest({required this.api, required this.method, required this.version, required this.limit, required this.library, required this.additional, @JsonKey(name: 'sort_by') required this.sortBy, @JsonKey(name: 'sort_direction') required this.sortDirection, required this.offset, this.artist}): super._();
+  const _SongRequest({required this.api, required this.method, required this.version, required this.limit, required this.library, required this.additional, @JsonKey(name: 'sort_by') required this.sortBy, @JsonKey(name: 'sort_direction') required this.sortDirection, required this.offset, this.artist, @JsonKey(name: 'song_rating_meq') this.songRatingMeq}): super._();
   factory _SongRequest.fromJson(Map<String, dynamic> json) => _$SongRequestFromJson(json);
 
 @override final  String api;
@@ -225,6 +226,7 @@ class _SongRequest extends SongRequest {
 @override@JsonKey(name: 'sort_direction') final  String sortDirection;
 @override final  int offset;
 @override final  String? artist;
+@override@JsonKey(name: 'song_rating_meq') final  int? songRatingMeq;
 
 /// Create a copy of SongRequest
 /// with the given fields replaced by the non-null parameter values.
@@ -239,16 +241,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SongRequest&&(identical(other.api, api) || other.api == api)&&(identical(other.method, method) || other.method == method)&&(identical(other.version, version) || other.version == version)&&(identical(other.limit, limit) || other.limit == limit)&&(identical(other.library, library) || other.library == library)&&(identical(other.additional, additional) || other.additional == additional)&&(identical(other.sortBy, sortBy) || other.sortBy == sortBy)&&(identical(other.sortDirection, sortDirection) || other.sortDirection == sortDirection)&&(identical(other.offset, offset) || other.offset == offset)&&(identical(other.artist, artist) || other.artist == artist));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SongRequest&&(identical(other.api, api) || other.api == api)&&(identical(other.method, method) || other.method == method)&&(identical(other.version, version) || other.version == version)&&(identical(other.limit, limit) || other.limit == limit)&&(identical(other.library, library) || other.library == library)&&(identical(other.additional, additional) || other.additional == additional)&&(identical(other.sortBy, sortBy) || other.sortBy == sortBy)&&(identical(other.sortDirection, sortDirection) || other.sortDirection == sortDirection)&&(identical(other.offset, offset) || other.offset == offset)&&(identical(other.artist, artist) || other.artist == artist)&&(identical(other.songRatingMeq, songRatingMeq) || other.songRatingMeq == songRatingMeq));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,api,method,version,limit,library,additional,sortBy,sortDirection,offset,artist);
+int get hashCode => Object.hash(runtimeType,api,method,version,limit,library,additional,sortBy,sortDirection,offset,artist,songRatingMeq);
 
 @override
 String toString() {
-  return 'SongRequest(api: $api, method: $method, version: $version, limit: $limit, library: $library, additional: $additional, sortBy: $sortBy, sortDirection: $sortDirection, offset: $offset, artist: $artist)';
+  return 'SongRequest(api: $api, method: $method, version: $version, limit: $limit, library: $library, additional: $additional, sortBy: $sortBy, sortDirection: $sortDirection, offset: $offset, artist: $artist, songRatingMeq: $songRatingMeq)';
 }
 
 
@@ -259,7 +261,7 @@ abstract mixin class _$SongRequestCopyWith<$Res> implements $SongRequestCopyWith
   factory _$SongRequestCopyWith(_SongRequest value, $Res Function(_SongRequest) _then) = __$SongRequestCopyWithImpl;
 @override @useResult
 $Res call({
- String api, String method, String version, int limit, String library, String additional,@JsonKey(name: 'sort_by') String sortBy,@JsonKey(name: 'sort_direction') String sortDirection, int offset, String? artist
+ String api, String method, String version, int limit, String library, String additional,@JsonKey(name: 'sort_by') String sortBy,@JsonKey(name: 'sort_direction') String sortDirection, int offset, String? artist,@JsonKey(name: 'song_rating_meq') int? songRatingMeq
 });
 
 
@@ -276,7 +278,7 @@ class __$SongRequestCopyWithImpl<$Res>
 
 /// Create a copy of SongRequest
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? api = null,Object? method = null,Object? version = null,Object? limit = null,Object? library = null,Object? additional = null,Object? sortBy = null,Object? sortDirection = null,Object? offset = null,Object? artist = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? api = null,Object? method = null,Object? version = null,Object? limit = null,Object? library = null,Object? additional = null,Object? sortBy = null,Object? sortDirection = null,Object? offset = null,Object? artist = freezed,Object? songRatingMeq = freezed,}) {
   return _then(_SongRequest(
 api: null == api ? _self.api : api // ignore: cast_nullable_to_non_nullable
 as String,method: null == method ? _self.method : method // ignore: cast_nullable_to_non_nullable
@@ -288,7 +290,8 @@ as String,sortBy: null == sortBy ? _self.sortBy : sortBy // ignore: cast_nullabl
 as String,sortDirection: null == sortDirection ? _self.sortDirection : sortDirection // ignore: cast_nullable_to_non_nullable
 as String,offset: null == offset ? _self.offset : offset // ignore: cast_nullable_to_non_nullable
 as int,artist: freezed == artist ? _self.artist : artist // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,songRatingMeq: freezed == songRatingMeq ? _self.songRatingMeq : songRatingMeq // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

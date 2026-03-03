@@ -362,6 +362,145 @@ final class RandomSongsFamily extends $Family
   String toString() => r'randomSongsProvider';
 }
 
+@ProviderFor(favoriteSongs)
+final favoriteSongsProvider = FavoriteSongsFamily._();
+
+final class FavoriteSongsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<SongListResponse>,
+          SongListResponse,
+          FutureOr<SongListResponse>
+        >
+    with $FutureModifier<SongListResponse>, $FutureProvider<SongListResponse> {
+  FavoriteSongsProvider._({
+    required FavoriteSongsFamily super.from,
+    required ({
+      int limit,
+      int offset,
+      String library,
+      String sortBy,
+      String sortDirection,
+      String additional,
+      Duration? cacheDuration,
+      Duration? keepAliveDuration,
+    })
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'favoriteSongsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$favoriteSongsHash();
+
+  @override
+  String toString() {
+    return r'favoriteSongsProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<SongListResponse> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<SongListResponse> create(Ref ref) {
+    final argument =
+        this.argument
+            as ({
+              int limit,
+              int offset,
+              String library,
+              String sortBy,
+              String sortDirection,
+              String additional,
+              Duration? cacheDuration,
+              Duration? keepAliveDuration,
+            });
+    return favoriteSongs(
+      ref,
+      limit: argument.limit,
+      offset: argument.offset,
+      library: argument.library,
+      sortBy: argument.sortBy,
+      sortDirection: argument.sortDirection,
+      additional: argument.additional,
+      cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is FavoriteSongsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$favoriteSongsHash() => r'bab651f143653f8beedcf7e7fae6c98edd4df958';
+
+final class FavoriteSongsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<SongListResponse>,
+          ({
+            int limit,
+            int offset,
+            String library,
+            String sortBy,
+            String sortDirection,
+            String additional,
+            Duration? cacheDuration,
+            Duration? keepAliveDuration,
+          })
+        > {
+  FavoriteSongsFamily._()
+    : super(
+        retry: null,
+        name: r'favoriteSongsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  FavoriteSongsProvider call({
+    int limit = 100,
+    int offset = 0,
+    String library = 'shared',
+    String sortBy = 'name',
+    String sortDirection = 'desc',
+    String additional = 'song_tag,song_audio,song_rating',
+    Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
+  }) => FavoriteSongsProvider._(
+    argument: (
+      limit: limit,
+      offset: offset,
+      library: library,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+      additional: additional,
+      cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'favoriteSongsProvider';
+}
+
 @ProviderFor(artistSongs)
 final artistSongsProvider = ArtistSongsFamily._();
 

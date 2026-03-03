@@ -83,7 +83,7 @@ Future<String> _getCoverUrl({
 }) async {
   final baseUrl = await ref.read(baseUrlProvider.future);
   final synotoken = ref.read(synoTokenProvider);
-  final timestamp = DateTime.now().millisecondsSinceEpoch;
+  // final timestamp = DateTime.now().millisecondsSinceEpoch;
 
   final queryParams = {
     'api': 'SYNO.AudioStation.Cover',
@@ -91,7 +91,7 @@ Future<String> _getCoverUrl({
     'is_hr': isHr.toString(),
     'version': '3',
     'library': library,
-    '_dc': timestamp.toString(),
+    // '_dc': timestamp.toString(),
     'method': 'getcover',
     'view': view,
     'album_name': albumName,
@@ -104,7 +104,7 @@ Future<String> _getCoverUrl({
       .join('&');
 
   final coverUrl = '$baseUrl/music/webapi/AudioStation/cover.cgi?$queryString';
-  logger.i("getcoverUrl:${coverUrl}");
+  // logger.i("getcoverUrl:${coverUrl}");
 
   return coverUrl;
 }
