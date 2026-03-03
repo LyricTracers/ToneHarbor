@@ -118,7 +118,8 @@ class _SmartMarqueeState extends State<SmartMarquee>
   double _lastDragX = 0.0;
   double _lastDragTime = 0.0;
   double _dragVelocity = 0.0;
-  AnimationController? _inertiaController;
+
+  late final AnimationController _inertiaController;
   Animation<double>? _inertiaAnimation;
 
   bool get isManuallyPaused => _isManuallyPaused;
@@ -131,7 +132,7 @@ class _SmartMarqueeState extends State<SmartMarquee>
     super.initState();
     widget.controller?._attachState(this);
     _inertiaController = AnimationController(vsync: this);
-    _inertiaController!.addListener(_onInertiaUpdate);
+    _inertiaController.addListener(_onInertiaUpdate);
   }
 
   @override
@@ -151,8 +152,8 @@ class _SmartMarqueeState extends State<SmartMarquee>
 
   @override
   void dispose() {
-    _inertiaController?.removeListener(_onInertiaUpdate);
-    _inertiaController?.dispose();
+    _inertiaController.removeListener(_onInertiaUpdate);
+    _inertiaController.dispose();
     widget.controller?._detachState();
     super.dispose();
   }
@@ -175,13 +176,14 @@ class _SmartMarqueeState extends State<SmartMarquee>
       _isManuallyPaused = false;
       _isHovering = false;
       _isDragging = false;
+      _isInertiaRunning = false;
       _manualScrollOffset = 0.0;
     });
     _stopInertia();
   }
 
   void _stopInertia() {
-    _inertiaController?.stop();
+    _inertiaController.stop();
     _inertiaAnimation = null;
     if (_isInertiaRunning) {
       setState(() {
@@ -217,16 +219,13 @@ class _SmartMarqueeState extends State<SmartMarquee>
 
     _inertiaAnimation = Tween<double>(begin: startOffset, end: endOffset)
         .animate(
-          CurvedAnimation(
-            parent: _inertiaController!,
-            curve: Curves.decelerate,
-          ),
+          CurvedAnimation(parent: _inertiaController, curve: Curves.decelerate),
         );
 
-    _inertiaController!.duration = Duration(
+    _inertiaController.duration = Duration(
       milliseconds: duration.clamp(100, 1000),
     );
-    _inertiaController!.forward(from: 0.0).then((_) {
+    _inertiaController.forward(from: 0.0).then((_) {
       if (mounted) {
         setState(() {
           _isInertiaRunning = false;
@@ -243,7 +242,7 @@ class _SmartMarqueeState extends State<SmartMarquee>
       child: LayoutBuilder(
         builder: (context, constraints) {
           final availableWidth = constraints.maxWidth;
-          final padding = 8.0;
+          const padding = 8.0;
 
           final shouldScroll = metrics.width > availableWidth - padding;
 
