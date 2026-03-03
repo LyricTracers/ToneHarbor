@@ -88,7 +88,7 @@ final class PlaylistNotifierProvider
   }
 }
 
-String _$playlistNotifierHash() => r'd14da75739f6758a0937eb1c520ea3810786b6de';
+String _$playlistNotifierHash() => r'97d2dbb1ef64aabcf92f577d40a6389563491612';
 
 abstract class _$PlaylistNotifier extends $Notifier<List<Song>> {
   List<Song> build();

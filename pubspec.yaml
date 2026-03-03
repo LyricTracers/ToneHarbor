@@ -16,8 +16,9 @@ dependencies:
     sdk: flutter
   intl: ^0.20.2
   rhttp: ^0.15.0
-  media_kit: ^1.2.6 # Primary package.
-  media_kit_libs_audio: ^1.0.7 # Native audio dependencies.
+  media_kit: ^1.2.6
+  media_kit_libs_audio: ^1.0.7
+  audio_service_mpris: ^0.2.0
   flutter_riverpod: ^3.1.0
   hooks_riverpod: ^3.1.0
   flutter_hooks: ^0.21.3

@@ -133,7 +133,7 @@ class CommonSongs extends ConsumerWidget {
   }
 }
 
-class _SongItem extends StatelessWidget {
+class _SongItem extends ConsumerWidget {
   const _SongItem({
     required this.song,
     required this.authHeaders,
@@ -147,7 +147,7 @@ class _SongItem extends StatelessWidget {
   final _LayoutConfig config;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final songTitle = song.title.isNotEmpty ? song.title : 'Unknown Song';
     final artistName = song.additional?.songTag?.artist?.isNotEmpty == true
         ? song.additional!.songTag!.artist!
@@ -161,6 +161,9 @@ class _SongItem extends StatelessWidget {
     return InkWell(
       onTap: () {
         logger.d('点击歌曲: $songTitle, 艺术家: $artistName, 专辑: $albumName');
+        ref.read(playlistProvider.notifier).loadPlaylist([
+          song,
+        ], initialIndex: 0);
       },
       borderRadius: BorderRadius.circular(config.coverBorderRadius),
       child: Column(
