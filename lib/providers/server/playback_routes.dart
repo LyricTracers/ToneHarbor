@@ -27,6 +27,12 @@ class PlaybackRoutes {
 
       final authHeaders = await ref.read(authHeadersProvider.future);
       if (authHeaders == null) {
+        Future.microtask(() async {
+          await ref
+              .read(audioStationCookiesInfoProvider.notifier)
+              .clearCookie();
+          ref.invalidate(authTokenProvider);
+        });
         return Response.forbidden("Not authenticated");
       }
 
@@ -65,6 +71,12 @@ class PlaybackRoutes {
 
       final authHeaders = await ref.read(authHeadersProvider.future);
       if (authHeaders == null) {
+        Future.microtask(() async {
+          await ref
+              .read(audioStationCookiesInfoProvider.notifier)
+              .clearCookie();
+          ref.invalidate(authTokenProvider);
+        });
         return Response.forbidden("Not authenticated");
       }
 
