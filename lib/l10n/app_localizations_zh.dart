@@ -258,5 +258,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get recommend_albums => '推荐专辑';
 
   @override
+  String get my_favorite => '我的收藏';
+
+  @override
   String get more => '查看更多';
 }

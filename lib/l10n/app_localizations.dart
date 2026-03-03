@@ -596,6 +596,12 @@ abstract class AppLocalizations {
   /// **'Recommend Albums'**
   String get recommend_albums;
 
+  /// No description provided for @my_favorite.
+  ///
+  /// In en, this message translates to:
+  /// **'My Favorite'**
+  String get my_favorite;
+
   /// No description provided for @more.
   ///
   /// In en, this message translates to:

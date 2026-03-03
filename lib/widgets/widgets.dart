@@ -8,3 +8,4 @@ export 'components/smart_marquee.dart';
 export 'pages/recommend_page_daily_songs.dart';
 export 'components/song_cover_image.dart';
 export 'components/common_albums.dart';
+export 'components/common_songs.dart';

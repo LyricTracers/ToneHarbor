@@ -33,6 +33,7 @@ class RecommendPage extends BaseContentPage {
             ref.invalidate(
               albumsProvider(limit: 20, sortBy: 'year', sortDirection: 'desc'),
             );
+            ref.invalidate(favoriteSongsProvider(limit: 20));
           },
         ),
       ],
@@ -58,6 +59,51 @@ class RecommendPage extends BaseContentPage {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 8,
+                  bottom: 8,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      i10n.my_favorite,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        // todo('查看更多');
+                      },
+                      child: Text(
+                        i10n.more,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(
+                height: 2,
+                indent: 16,
+                endIndent: 16,
+                color: colorScheme.onSurface.withValues(alpha: 0.5),
+              ),
+              SizedBox(height: 8),
+              CommonSongs(
+                songs: ref.watch(favoriteSongsProvider(limit: 20)),
+                onErrorTap: () {
+                  ref.invalidate(favoriteSongsProvider(limit: 20));
+                },
+              ),
               Padding(
                 padding: const EdgeInsets.only(
                   left: 16,

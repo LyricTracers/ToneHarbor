@@ -271,5 +271,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recommend_albums => 'Recommend Albums';
 
   @override
+  String get my_favorite => 'My Favorite';
+
+  @override
   String get more => 'Load More';
 }
