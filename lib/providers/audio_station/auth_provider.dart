@@ -25,7 +25,7 @@ class UseHttp extends _$UseHttp {
 
   Future<void> toggle() async {
     final useHttp = await getUseHttp();
-    final sp = await SharedPreferences.getInstance();
+    final sp = await getSharedPreferences();
     await sp.setBool(useHttpKey, !useHttp);
     state = AsyncData(!useHttp);
   }
@@ -35,12 +35,12 @@ class UseHttp extends _$UseHttp {
 class ServerUrl extends _$ServerUrl {
   @override
   Future<String> build() async {
-    final sp = await SharedPreferences.getInstance();
+    final sp = await getSharedPreferences();
     return sp.getString(serverUrlKey) ?? '';
   }
 
   Future<void> setServerUrl(String serverUrl) async {
-    final sp = await SharedPreferences.getInstance();
+    final sp = await getSharedPreferences();
     await sp.setString(serverUrlKey, serverUrl);
     state = AsyncData(serverUrl);
   }
@@ -50,7 +50,7 @@ class ServerUrl extends _$ServerUrl {
 class AccountInfo extends _$AccountInfo {
   @override
   Future<Account?> build() async {
-    final sp = await SharedPreferences.getInstance();
+    final sp = await getSharedPreferences();
     final accountJson = sp.getString(accountKey);
     if (accountJson != null && accountJson.isNotEmpty) {
       return Account.fromJson(jsonDecode(accountJson));
@@ -59,7 +59,7 @@ class AccountInfo extends _$AccountInfo {
   }
 
   Future<void> setAccount(Account account) async {
-    final sp = await SharedPreferences.getInstance();
+    final sp = await getSharedPreferences();
     await sp.setString(accountKey, jsonEncode(account.toJson()));
     state = AsyncData(account);
   }
@@ -69,7 +69,7 @@ class AccountInfo extends _$AccountInfo {
 class AudioStationCookiesInfo extends _$AudioStationCookiesInfo {
   @override
   Future<AudioStationCookies?> build() async {
-    final sp = await SharedPreferences.getInstance();
+    final sp = await getSharedPreferences();
     final cookies = sp.getString(cookieKey);
     if (cookies != null && cookies.isNotEmpty) {
       final cookie = AudioStationCookies.fromJson(jsonDecode(cookies));
@@ -81,7 +81,7 @@ class AudioStationCookiesInfo extends _$AudioStationCookiesInfo {
   }
 
   Future<void> setCookies(AudioStationCookies cookies) async {
-    final sp = await SharedPreferences.getInstance();
+    final sp = await getSharedPreferences();
     if (!cookies.isValid) {
       await sp.remove(cookieKey);
       ref.read(synoTokenProvider.notifier).clear();
@@ -94,7 +94,7 @@ class AudioStationCookiesInfo extends _$AudioStationCookiesInfo {
   }
 
   Future<void> clearCookie() async {
-    final sp = await SharedPreferences.getInstance();
+    final sp = await getSharedPreferences();
     await sp.remove(cookieKey);
     ref.read(synoTokenProvider.notifier).clear();
     state = const AsyncData(null);
