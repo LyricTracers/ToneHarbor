@@ -539,6 +539,11 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
   bool get showFading =>
       !widget.showFadingOnlyWhenScrolling ? true : !_isOnPause;
 
+  double? _cachedTextWidth;
+  String? _cachedText;
+  TextStyle? _cachedStyle;
+  StrutStyle? _cachedStrutStyle;
+
   @override
   void initState() {
     super.initState();
@@ -565,6 +570,13 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
   @override
   void didUpdateWidget(Widget oldWidget) {
     super.didUpdateWidget(oldWidget as Marquee);
+
+    final oldMarquee = oldWidget;
+    if (oldMarquee.text != widget.text ||
+        oldMarquee.style != widget.style ||
+        oldMarquee.strutStyle != widget.strutStyle) {
+      _cachedTextWidth = null;
+    }
   }
 
   @override
@@ -688,6 +700,13 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
 
   /// Returns the width of the text.
   double _getTextWidth(BuildContext context) {
+    if (_cachedTextWidth != null &&
+        _cachedText == widget.text &&
+        _cachedStyle == widget.style &&
+        _cachedStrutStyle == widget.strutStyle) {
+      return _cachedTextWidth!;
+    }
+
     final textPainter = TextPainter(
       text: TextSpan(text: widget.text, style: widget.style),
       textDirection: widget.textDirection,
@@ -696,6 +715,12 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
     )..layout();
     final width = textPainter.width;
     textPainter.dispose();
+
+    _cachedText = widget.text;
+    _cachedStyle = widget.style;
+    _cachedStrutStyle = widget.strutStyle;
+    _cachedTextWidth = width;
+
     return width;
   }
 
