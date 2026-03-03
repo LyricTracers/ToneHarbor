@@ -232,18 +232,15 @@ class RecommendPageDailySongs extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(config.borderRadius),
-                child: SongCoverImage(
-                  songId: song.id,
-                  albumName: albumName,
-                  artistName: artistName,
-                  authHeaders: authHeaders,
-                  colorScheme: colorScheme,
-                  config: SongCoverImageConfig(
-                    size: config.coverSize,
-                    borderRadius: config.borderRadius,
-                  ),
+              SongCoverImage(
+                songId: song.id,
+                albumName: albumName,
+                artistName: artistName,
+                authHeaders: authHeaders,
+                colorScheme: colorScheme,
+                config: SongCoverImageConfig(
+                  size: config.coverSize,
+                  borderRadius: config.borderRadius,
                 ),
               ),
               Expanded(
@@ -264,6 +261,7 @@ class RecommendPageDailySongs extends ConsumerWidget {
                           fontWeight: FontWeight.w500,
                         ),
                         pauseOnHover: true,
+                        alignment: Alignment.centerLeft,
                       ),
                       SizedBox(height: config.marqueeSpacing),
                       SmartMarquee(
@@ -273,6 +271,7 @@ class RecommendPageDailySongs extends ConsumerWidget {
                           color: colorScheme.onSurfaceVariant,
                         ),
                         pauseOnHover: true,
+                        alignment: Alignment.centerLeft,
                       ),
                     ],
                   ),

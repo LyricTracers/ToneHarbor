@@ -27,51 +27,64 @@ class SongCoverImage extends ConsumerWidget {
       coverUrlProvider(albumName: albumName, albumArtistName: artistName),
     );
 
-    return coverUrl.when(
-      data: (url) {
-        if (url.isEmpty) {
-          return CoverPlaceholder(colorScheme: colorScheme, size: config.size);
-        }
-        return ExtendedImage.network(
-          url,
-          width: config.size,
-          height: config.size,
-          fit: BoxFit.cover,
-          headers: authHeaders,
-          cache: true,
-          cacheKey: songId,
-          clearMemoryCacheIfFailed: true,
-          loadStateChanged: (state) {
-            switch (state.extendedImageLoadState) {
-              case LoadState.loading:
-                return CoverPlaceholder(
-                  colorScheme: colorScheme,
-                  size: config.size,
-                  isLoading: true,
-                );
-              case LoadState.completed:
-                return ExtendedRawImage(
-                  image: state.extendedImageInfo?.image,
-                  width: config.size,
-                  height: config.size,
-                  fit: BoxFit.cover,
-                );
-              case LoadState.failed:
-                return CoverPlaceholder(
-                  colorScheme: colorScheme,
-                  size: config.size,
-                );
-            }
-          },
-        );
-      },
-      loading: () => CoverPlaceholder(
-        colorScheme: colorScheme,
-        size: config.size,
-        isLoading: true,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(config.borderRadius),
+      child: coverUrl.when(
+        data: (url) {
+          if (url.isEmpty) {
+            return CoverPlaceholder(
+              colorScheme: colorScheme,
+              size: config.size,
+              borderRadius: config.borderRadius,
+            );
+          }
+          return ExtendedImage.network(
+            url,
+            width: config.size,
+            height: config.size,
+            fit: BoxFit.cover,
+            headers: authHeaders,
+            cache: true,
+            cacheKey: songId,
+            clearMemoryCacheIfFailed: true,
+            loadStateChanged: (state) {
+              switch (state.extendedImageLoadState) {
+                case LoadState.loading:
+                  return CoverPlaceholder(
+                    colorScheme: colorScheme,
+                    size: config.size,
+                    borderRadius: config.borderRadius,
+                    isLoading: true,
+                  );
+                case LoadState.completed:
+                  return ExtendedRawImage(
+                    image: state.extendedImageInfo?.image,
+                    width: config.size,
+                    height: config.size,
+                    fit: BoxFit.cover,
+                  );
+                case LoadState.failed:
+                  return CoverPlaceholder(
+                    colorScheme: colorScheme,
+                    size: config.size,
+                    borderRadius: config.borderRadius,
+                  );
+              }
+            },
+          );
+        },
+        loading: () => CoverPlaceholder(
+          colorScheme: colorScheme,
+          size: config.size,
+          borderRadius: config.borderRadius,
+          isLoading: true,
+        ),
+        error: (_, __) => CoverPlaceholder(
+          colorScheme: colorScheme,
+          size: config.size,
+          borderRadius: config.borderRadius,
+        ),
       ),
-      error: (_, __) =>
-          CoverPlaceholder(colorScheme: colorScheme, size: config.size),
     );
   }
 }
@@ -93,11 +106,13 @@ class CoverPlaceholder extends StatelessWidget {
     super.key,
     required this.colorScheme,
     required this.size,
+    this.borderRadius = 8,
     this.isLoading = false,
   });
 
   final ColorScheme colorScheme;
   final double size;
+  final double borderRadius;
   final bool isLoading;
 
   @override
@@ -107,7 +122,7 @@ class CoverPlaceholder extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         color: colorScheme.onSurface.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(borderRadius),
       ),
       child: isLoading
           ? Center(

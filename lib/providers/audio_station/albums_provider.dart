@@ -21,7 +21,7 @@ Future<AlbumResponse> albums(
   String sortDirection = 'asc',
   String additional = 'avg_rating',
   String? artist,
-  Duration? cacheDuration = const Duration(minutes: 5),
+  Duration? cacheDuration,
   Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
@@ -45,11 +45,33 @@ Future<AlbumResponse> albums(
 }
 
 @riverpod
+Future<AlbumResponse> randomAlbums(
+  Ref ref, {
+  int limit = 20,
+  Duration? cacheDuration,
+  Duration? keepAliveDuration,
+}) async {
+  final link = ref.keepAliveFor(keepAliveDuration);
+  try {
+    return await _getAlbums(
+      ref: ref,
+      limit: limit,
+      sortBy: 'random',
+      cacheDuration: cacheDuration,
+    );
+  } finally {
+    if (keepAliveDuration != null) {
+      link.close();
+    }
+  }
+}
+
+@riverpod
 Future<AlbumResponse> recentAlbums(
   Ref ref, {
-  int limit = 50,
-  Duration? cacheDuration = const Duration(minutes: 5),
-  Duration? keepAliveDuration = const Duration(minutes: 5),
+  int limit = 20,
+  Duration? cacheDuration = const Duration(days: 1),
+  Duration? keepAliveDuration = const Duration(minutes: 20),
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
   try {
@@ -72,7 +94,7 @@ Future<AlbumResponse> artistAlbums(
   Ref ref, {
   required String artist,
   int limit = 100,
-  Duration? cacheDuration = const Duration(minutes: 5),
+  Duration? cacheDuration,
   Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);

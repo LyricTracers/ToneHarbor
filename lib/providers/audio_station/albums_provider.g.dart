@@ -98,7 +98,7 @@ final class AlbumsProvider
   }
 }
 
-String _$albumsHash() => r'f8d34b62130554d44145c120e42a0bae80bfe440';
+String _$albumsHash() => r'0e0ce8959e167030fdf5e649bc9f792c5af4c3c6';
 
 final class AlbumsFamily extends $Family
     with
@@ -133,7 +133,7 @@ final class AlbumsFamily extends $Family
     String sortDirection = 'asc',
     String additional = 'avg_rating',
     String? artist,
-    Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? cacheDuration,
     Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => AlbumsProvider._(
     argument: (
@@ -152,6 +152,107 @@ final class AlbumsFamily extends $Family
 
   @override
   String toString() => r'albumsProvider';
+}
+
+@ProviderFor(randomAlbums)
+final randomAlbumsProvider = RandomAlbumsFamily._();
+
+final class RandomAlbumsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<AlbumResponse>,
+          AlbumResponse,
+          FutureOr<AlbumResponse>
+        >
+    with $FutureModifier<AlbumResponse>, $FutureProvider<AlbumResponse> {
+  RandomAlbumsProvider._({
+    required RandomAlbumsFamily super.from,
+    required ({int limit, Duration? cacheDuration, Duration? keepAliveDuration})
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'randomAlbumsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$randomAlbumsHash();
+
+  @override
+  String toString() {
+    return r'randomAlbumsProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<AlbumResponse> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<AlbumResponse> create(Ref ref) {
+    final argument =
+        this.argument
+            as ({
+              int limit,
+              Duration? cacheDuration,
+              Duration? keepAliveDuration,
+            });
+    return randomAlbums(
+      ref,
+      limit: argument.limit,
+      cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is RandomAlbumsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$randomAlbumsHash() => r'94b0ec99646703c36a5a9dd989c313d6a62119d7';
+
+final class RandomAlbumsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<AlbumResponse>,
+          ({int limit, Duration? cacheDuration, Duration? keepAliveDuration})
+        > {
+  RandomAlbumsFamily._()
+    : super(
+        retry: null,
+        name: r'randomAlbumsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  RandomAlbumsProvider call({
+    int limit = 20,
+    Duration? cacheDuration,
+    Duration? keepAliveDuration,
+  }) => RandomAlbumsProvider._(
+    argument: (
+      limit: limit,
+      cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'randomAlbumsProvider';
 }
 
 @ProviderFor(recentAlbums)
@@ -221,7 +322,7 @@ final class RecentAlbumsProvider
   }
 }
 
-String _$recentAlbumsHash() => r'231231afc689701754edec4d67a5dd9c9eea6604';
+String _$recentAlbumsHash() => r'3e5bdc576359727b52aed0935771a1cf413e6528';
 
 final class RecentAlbumsFamily extends $Family
     with
@@ -239,9 +340,9 @@ final class RecentAlbumsFamily extends $Family
       );
 
   RecentAlbumsProvider call({
-    int limit = 50,
-    Duration? cacheDuration = const Duration(minutes: 5),
-    Duration? keepAliveDuration = const Duration(minutes: 5),
+    int limit = 20,
+    Duration? cacheDuration = const Duration(days: 1),
+    Duration? keepAliveDuration = const Duration(minutes: 20),
   }) => RecentAlbumsProvider._(
     argument: (
       limit: limit,
@@ -329,7 +430,7 @@ final class ArtistAlbumsProvider
   }
 }
 
-String _$artistAlbumsHash() => r'69cf8a5bf0c0701ec8cfc9b94feced34fda3af97';
+String _$artistAlbumsHash() => r'c0f206cdb7505bbaafe675998f343ffb414b9fb1';
 
 final class ArtistAlbumsFamily extends $Family
     with
@@ -354,7 +455,7 @@ final class ArtistAlbumsFamily extends $Family
   ArtistAlbumsProvider call({
     required String artist,
     int limit = 100,
-    Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? cacheDuration,
     Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => ArtistAlbumsProvider._(
     argument: (

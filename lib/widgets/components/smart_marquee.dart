@@ -91,6 +91,7 @@ class SmartMarquee extends StatefulWidget {
   final Duration startAfter;
   final bool pauseOnHover;
   final SmartMarqueeController? controller;
+  final AlignmentGeometry alignment;
 
   const SmartMarquee({
     super.key,
@@ -102,6 +103,7 @@ class SmartMarquee extends StatefulWidget {
     this.startAfter = const Duration(seconds: 1),
     this.pauseOnHover = false,
     this.controller,
+    this.alignment = Alignment.center,
   });
 
   @override
@@ -250,97 +252,116 @@ class _SmartMarqueeState extends State<SmartMarquee>
           final shouldScroll = metrics.width > availableWidth - padding;
 
           if (!shouldScroll) {
-            return Text(
-              widget.text,
-              style: widget.style,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            return SizedBox(
+              height: metrics.height + 4,
+              child: Align(
+                alignment: widget.alignment,
+                child: Text(
+                  widget.text,
+                  style: widget.style,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: widget.alignment == Alignment.center
+                      ? TextAlign.center
+                      : TextAlign.left,
+                ),
+              ),
             );
           }
 
           Widget child = ClipRect(
             child: SizedBox(
               height: metrics.height + 4,
-              child: isPaused
-                  ? GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onHorizontalDragStart: (details) {
-                        _stopInertia();
-                        setState(() {
-                          _isDragging = true;
-                          _lastDragX = details.globalPosition.dx;
-                          _lastDragTime = DateTime.now().millisecondsSinceEpoch
-                              .toDouble();
-                          _dragVelocity = 0.0;
-                        });
-                      },
-                      onHorizontalDragUpdate: (details) {
-                        final currentTime = DateTime.now()
-                            .millisecondsSinceEpoch
-                            .toDouble();
-                        final deltaTime = currentTime - _lastDragTime;
-                        final deltaX = details.globalPosition.dx - _lastDragX;
-                        final maxScrollDistance =
-                            metrics.width - availableWidth + padding;
-                        setState(() {
-                          _manualScrollOffset -= deltaX;
-                          if (maxScrollDistance > 0) {
-                            _manualScrollOffset = _manualScrollOffset.clamp(
-                              -maxScrollDistance,
-                              0.0,
-                            );
-                          } else {
-                            _manualScrollOffset = 0.0;
-                          }
-                          if (deltaTime > 0) {
-                            _dragVelocity = -deltaX / deltaTime * 1000.0;
-                          }
-                          _lastDragX = details.globalPosition.dx;
-                          _lastDragTime = currentTime;
-                        });
-                      },
-                      onHorizontalDragEnd: (details) {
-                        final maxScrollDistance =
-                            metrics.width - availableWidth + padding;
-                        setState(() {
-                          _isDragging = false;
-                          if (_mouseExitedWhileDragging) {
-                            _isHovering = false;
-                            _mouseExitedWhileDragging = false;
-                          }
-                        });
-                        if (maxScrollDistance > 0 &&
-                            _dragVelocity.abs() >= 100) {
-                          _startInertia(_dragVelocity, maxScrollDistance);
-                        } else {
+              child: Align(
+                alignment: widget.alignment,
+                child: isPaused
+                    ? Listener(
+                        onPointerDown: (event) {
+                          _stopInertia();
                           setState(() {
-                            _manualScrollOffset = 0.0;
+                            _isDragging = true;
+                            _lastDragX = event.position.dx;
+                            _lastDragTime = DateTime.now()
+                                .millisecondsSinceEpoch
+                                .toDouble();
+                            _dragVelocity = 0.0;
                           });
-                        }
-                      },
-                      child: Transform.translate(
-                        offset: Offset(_manualScrollOffset, 0),
-                        child: Text(
-                          widget.text,
-                          style: widget.style,
-                          maxLines: 1,
-                          overflow: TextOverflow.visible,
-                          softWrap: false,
+                        },
+                        onPointerMove: (event) {
+                          if (!_isDragging) return;
+
+                          final currentTime = DateTime.now()
+                              .millisecondsSinceEpoch
+                              .toDouble();
+                          final deltaTime = currentTime - _lastDragTime;
+                          final deltaX = event.position.dx - _lastDragX;
+                          final maxScrollDistance =
+                              metrics.width - availableWidth + padding;
+                          setState(() {
+                            _manualScrollOffset -= deltaX;
+                            if (maxScrollDistance > 0) {
+                              _manualScrollOffset = _manualScrollOffset.clamp(
+                                -maxScrollDistance,
+                                0.0,
+                              );
+                            } else {
+                              _manualScrollOffset = 0.0;
+                            }
+                            if (deltaTime > 0) {
+                              _dragVelocity = -deltaX / deltaTime * 1000.0;
+                            }
+                            _lastDragX = event.position.dx;
+                            _lastDragTime = currentTime;
+                          });
+                        },
+                        onPointerUp: (event) {
+                          if (!_isDragging) return;
+
+                          final maxScrollDistance =
+                              metrics.width - availableWidth + padding;
+                          setState(() {
+                            _isDragging = false;
+                            if (_mouseExitedWhileDragging) {
+                              _isHovering = false;
+                              _mouseExitedWhileDragging = false;
+                            }
+                          });
+                          if (maxScrollDistance > 0 &&
+                              _dragVelocity.abs() >= 100) {
+                            _startInertia(_dragVelocity, maxScrollDistance);
+                          } else {
+                            setState(() {
+                              _manualScrollOffset = 0.0;
+                            });
+                          }
+                        },
+                        child: Transform.translate(
+                          offset: Offset(_manualScrollOffset, 0),
+                          child: Text(
+                            widget.text,
+                            style: widget.style,
+                            maxLines: 1,
+                            overflow: TextOverflow.visible,
+                            softWrap: false,
+                            textAlign: widget.alignment == Alignment.center
+                                ? TextAlign.center
+                                : TextAlign.left,
+                          ),
                         ),
+                      )
+                    : Marquee(
+                        text: widget.text,
+                        style: widget.style,
+                        scrollAxis: Axis.horizontal,
+                        pauseAfterRound: widget.pauseAfterRound,
+                        velocity: widget.velocity,
+                        blankSpace: widget.blankSpace,
+                        startAfter: widget.startAfter,
+                        startPadding: 0.0,
+                        accelerationDuration: Duration.zero,
+                        decelerationDuration: Duration.zero,
                       ),
-                    )
-                  : Marquee(
-                      text: widget.text,
-                      style: widget.style,
-                      scrollAxis: Axis.horizontal,
-                      pauseAfterRound: widget.pauseAfterRound,
-                      velocity: widget.velocity,
-                      blankSpace: widget.blankSpace,
-                      startAfter: widget.startAfter,
-                      startPadding: 0.0,
-                      accelerationDuration: Duration.zero,
-                      decelerationDuration: Duration.zero,
-                    ),
+              ),
             ),
           );
 

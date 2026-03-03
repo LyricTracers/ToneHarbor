@@ -29,6 +29,7 @@ class RecommendPage extends BaseContentPage {
           ),
           onPressed: () {
             ref.invalidate(randomSongsProvider);
+            ref.invalidate(recentAlbumsProvider);
           },
         ),
       ],
@@ -94,6 +95,13 @@ class RecommendPage extends BaseContentPage {
               ),
               SizedBox(height: 8),
               const RecommendPageDailySongs(),
+              SizedBox(height: 16),
+              CommonAlbums(
+                albums: ref.watch(recentAlbumsProvider()),
+                onErrorTap: () {
+                  ref.invalidate(recentAlbumsProvider());
+                },
+              ),
             ],
           ),
         ),
