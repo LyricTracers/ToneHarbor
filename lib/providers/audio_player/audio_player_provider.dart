@@ -3,9 +3,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
-import 'package:toneharbor/providers/audio_station/auth_provider.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
-import 'package:toneharbor/providers/audio_station/download_provider.dart';
+import 'package:toneharbor/providers/server/server_provider.dart';
 
 part 'audio_player_provider.g.dart';
 
@@ -35,25 +34,19 @@ class PlaylistNotifier extends _$PlaylistNotifier {
     _tracks = songs;
     state = _tracks;
 
-    final authHeaders = await ref.read(authHeadersProvider.future);
-    final medias = songs.map((song) async {
-      final streamUrl = await ref.read(streamUrlProvider(id: song.id).future);
+    final medias = songs.map((song) {
       return Media(
-        streamUrl,
+        ToneHarborMedia.getStreamUrl(song.id),
         extras: {
           'id': song.id,
           'title': song.title,
           'album': song.additional?.songTag?.album,
           'artist': song.additional?.songTag?.artist,
         },
-        httpHeaders: authHeaders,
       );
     }).toList();
 
-    await _player.openPlaylist(
-      await Future.wait(medias),
-      initialIndex: initialIndex,
-    );
+    await _player.openPlaylist(medias, initialIndex: initialIndex);
   }
 
   Future<void> play() async {
@@ -103,7 +96,7 @@ class PlaylistNotifier extends _$PlaylistNotifier {
     state = _tracks;
 
     final media = Media(
-      song.path,
+      ToneHarborMedia.getStreamUrl(song.id),
       extras: {
         'id': song.id,
         'title': song.title,
