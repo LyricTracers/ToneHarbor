@@ -544,6 +544,28 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
   TextStyle? _cachedStyle;
   StrutStyle? _cachedStrutStyle;
 
+  bool _hasSameTextStyle(TextStyle? a, TextStyle? b) {
+    if (a == b) return true;
+    if (a == null || b == null) return false;
+    return a.fontSize == b.fontSize &&
+        a.fontFamily == b.fontFamily &&
+        a.fontStyle == b.fontStyle &&
+        a.fontWeight == b.fontWeight &&
+        a.letterSpacing == b.letterSpacing &&
+        a.wordSpacing == b.wordSpacing &&
+        a.height == b.height;
+  }
+
+  bool _hasSameStrutStyle(StrutStyle? a, StrutStyle? b) {
+    if (a == b) return true;
+    if (a == null || b == null) return false;
+    return a.fontSize == b.fontSize &&
+        a.fontFamily == b.fontFamily &&
+        a.height == b.height &&
+        a.forceStrutHeight == b.forceStrutHeight &&
+        a.leading == b.leading;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -571,10 +593,10 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
   void didUpdateWidget(Widget oldWidget) {
     super.didUpdateWidget(oldWidget as Marquee);
 
-    final oldMarquee = oldWidget;
+    final oldMarquee = oldWidget as Marquee;
     if (oldMarquee.text != widget.text ||
-        oldMarquee.style != widget.style ||
-        oldMarquee.strutStyle != widget.strutStyle) {
+        !_hasSameTextStyle(oldMarquee.style, widget.style) ||
+        !_hasSameStrutStyle(oldMarquee.strutStyle, widget.strutStyle)) {
       _cachedTextWidth = null;
     }
   }
@@ -702,8 +724,8 @@ class _MarqueeState extends State<Marquee> with SingleTickerProviderStateMixin {
   double _getTextWidth(BuildContext context) {
     if (_cachedTextWidth != null &&
         _cachedText == widget.text &&
-        _cachedStyle == widget.style &&
-        _cachedStrutStyle == widget.strutStyle) {
+        _hasSameTextStyle(_cachedStyle, widget.style) &&
+        _hasSameStrutStyle(_cachedStrutStyle, widget.strutStyle)) {
       return _cachedTextWidth!;
     }
 
