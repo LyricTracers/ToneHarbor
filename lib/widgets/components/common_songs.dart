@@ -47,11 +47,7 @@ class _LayoutConfig {
 }
 
 class CommonSongs extends ConsumerWidget {
-  const CommonSongs({
-    super.key,
-    required this.songs,
-    required this.onErrorTap,
-  });
+  const CommonSongs({super.key, required this.songs, required this.onErrorTap});
 
   final AsyncValue<SongListResponse> songs;
   final Function() onErrorTap;
@@ -128,10 +124,7 @@ class CommonSongs extends ConsumerWidget {
           itemBuilder: (context, index) {
             return Padding(
               padding: EdgeInsets.only(right: config.itemSpacing),
-              child: _SongItemShimmer(
-                colorScheme: colorScheme,
-                config: config,
-              ),
+              child: _SongItemShimmer(colorScheme: colorScheme, config: config),
             );
           },
         ),
@@ -159,8 +152,8 @@ class _SongItem extends StatelessWidget {
     final artistName = song.additional?.songTag?.artist?.isNotEmpty == true
         ? song.additional!.songTag!.artist!
         : (song.additional?.songTag?.albumArtist?.isNotEmpty == true)
-            ? song.additional!.songTag!.albumArtist!
-            : 'Unknown Artist';
+        ? song.additional!.songTag!.albumArtist!
+        : 'Unknown Artist';
     final albumName = song.additional?.songTag?.album?.isNotEmpty == true
         ? song.additional!.songTag!.album!
         : 'Unknown Album';
@@ -256,27 +249,21 @@ class _SongItemShimmer extends StatelessWidget {
           ),
         ),
         SizedBox(height: config.textSpacing),
-        SizedBox(
+        Container(
           width: config.itemWidth,
-          height: config.titleFontSize + 4,
-          child: Container(
-            height: config.titleFontSize,
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(4),
-            ),
+          height: config.titleFontSize,
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(4),
           ),
         ),
         SizedBox(height: config.textSpacing),
-        SizedBox(
+        Container(
           width: config.itemWidth,
-          height: config.subtitleFontSize + 4,
-          child: Container(
-            height: config.subtitleFontSize,
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(4),
-            ),
+          height: config.subtitleFontSize,
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(4),
           ),
         ),
       ],

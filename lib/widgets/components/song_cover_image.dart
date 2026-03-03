@@ -12,6 +12,7 @@ class SongCoverImage extends ConsumerWidget {
     required this.authHeaders,
     required this.colorScheme,
     required this.config,
+    this.onLongPress,
   });
 
   final String songId;
@@ -20,6 +21,7 @@ class SongCoverImage extends ConsumerWidget {
   final Map<String, String> authHeaders;
   final ColorScheme colorScheme;
   final SongCoverImageConfig config;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,7 +29,7 @@ class SongCoverImage extends ConsumerWidget {
       coverUrlProvider(albumName: albumName, albumArtistName: artistName),
     );
 
-    return ClipRRect(
+    Widget child = ClipRRect(
       borderRadius: BorderRadius.circular(config.borderRadius),
       child: coverUrl.when(
         data: (url) {
@@ -86,6 +88,46 @@ class SongCoverImage extends ConsumerWidget {
         ),
       ),
     );
+
+    return Builder(
+      builder: (context) {
+        return GestureDetector(
+          onLongPress: () {
+            if (onLongPress != null) {
+              onLongPress?.call();
+            } else {
+              _showSetBackgroundDialog(context);
+            }
+          },
+          child: child,
+        );
+      },
+    );
+  }
+
+  static void _showSetBackgroundDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          '设置主题背景',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        content: Text('是否将此封面设置为主题背景？', style: TextStyle(fontSize: 16)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('确定'),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -125,20 +167,21 @@ class CoverPlaceholder extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
       ),
       child: isLoading
-          ? Center(
-              child: SizedBox(
-                width: size * 0.4,
-                height: size * 0.4,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: colorScheme.onSurface,
+          ? RepaintBoundary(
+              child: Center(
+                child: SizedBox(
+                  width: size * 0.4,
+                  height: size * 0.4,
+                  child: const CircularProgressIndicator(strokeWidth: 2),
                 ),
               ),
             )
-          : Icon(
-              Icons.music_note,
-              size: size * 0.4,
-              color: colorScheme.onSurface,
+          : RepaintBoundary(
+              child: Icon(
+                Icons.music_note,
+                size: size * 0.4,
+                color: colorScheme.onSurface,
+              ),
             ),
     );
   }

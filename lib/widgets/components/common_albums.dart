@@ -256,27 +256,21 @@ class _AlbumItemShimmer extends StatelessWidget {
           ),
         ),
         SizedBox(height: config.textSpacing),
-        SizedBox(
+        Container(
           width: config.itemWidth,
-          height: config.albumNameFontSize + 4,
-          child: Container(
-            height: config.albumNameFontSize,
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(4),
-            ),
+          height: config.albumNameFontSize,
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(4),
           ),
         ),
         SizedBox(height: config.textSpacing),
-        SizedBox(
+        Container(
           width: config.itemWidth,
-          height: config.artistNameFontSize + 4,
-          child: Container(
-            height: config.artistNameFontSize,
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(4),
-            ),
+          height: config.artistNameFontSize,
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(4),
           ),
         ),
       ],
