@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_station/album.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class _LayoutConfig {
@@ -163,40 +165,46 @@ class _AlbumItem extends StatelessWidget {
         ? album.artist!
         : 'Unknown Artist';
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SongCoverImage(
-          songId: albumName,
-          albumName: albumName,
-          artistName: artistName,
-          authHeaders: authHeaders,
-          colorScheme: colorScheme,
-          config: SongCoverImageConfig(
-            size: config.coverSize,
-            borderRadius: config.coverBorderRadius,
+    return InkWell(
+      onTap: () {
+        logger.d('点击专辑: $albumName, 艺术家: $artistName');
+      },
+      borderRadius: BorderRadius.circular(config.coverBorderRadius),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SongCoverImage(
+            songId: albumName,
+            albumName: albumName,
+            artistName: artistName,
+            authHeaders: authHeaders,
+            colorScheme: colorScheme,
+            config: SongCoverImageConfig(
+              size: config.coverSize,
+              borderRadius: config.coverBorderRadius,
+            ),
           ),
-        ),
-        SizedBox(height: config.textSpacing),
-        _AlbumText(
-          text: albumName,
-          width: config.itemWidth,
-          style: TextStyle(
-            fontSize: config.albumNameFontSize,
-            fontWeight: config.albumNameFontWeight,
-            color: colorScheme.onSurface,
+          SizedBox(height: config.textSpacing),
+          _AlbumText(
+            text: albumName,
+            width: config.itemWidth,
+            style: TextStyle(
+              fontSize: config.albumNameFontSize,
+              fontWeight: config.albumNameFontWeight,
+              color: colorScheme.onSurface,
+            ),
           ),
-        ),
-        SizedBox(height: config.textSpacing),
-        _AlbumText(
-          text: artistName,
-          width: config.itemWidth,
-          style: TextStyle(
-            fontSize: config.artistNameFontSize,
-            color: colorScheme.onSurfaceVariant,
+          SizedBox(height: config.textSpacing),
+          _AlbumText(
+            text: artistName,
+            width: config.itemWidth,
+            style: TextStyle(
+              fontSize: config.artistNameFontSize,
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
