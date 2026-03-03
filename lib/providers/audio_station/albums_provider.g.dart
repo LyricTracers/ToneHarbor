@@ -221,7 +221,7 @@ final class RandomAlbumsProvider
   }
 }
 
-String _$randomAlbumsHash() => r'94b0ec99646703c36a5a9dd989c313d6a62119d7';
+String _$randomAlbumsHash() => r'ccd4baf129aa19d94681f50b1385c4e249cfa3dc';
 
 final class RandomAlbumsFamily extends $Family
     with

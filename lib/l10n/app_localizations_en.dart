@@ -265,5 +265,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get daily_recommend => 'Daily Recommend';
 
   @override
+  String get recent_albums => 'Recent Albums';
+
+  @override
+  String get recommend_albums => 'Recommend Albums';
+
+  @override
   String get more => 'Load More';
 }

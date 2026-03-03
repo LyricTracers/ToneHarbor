@@ -78,7 +78,7 @@ Future<AlbumResponse> _sendAlbumRequest<T>({
 /// [limit] 返回的专辑数量，默认 100
 /// [offset] 偏移量，默认 0
 /// [library] 库类型，默认 'shared'，可选 'all','personal'
-/// [sortBy] 排序字段，默认 'name','time','random'
+/// [sortBy] 排序字段，默认 'name','time','random','year','display_artist','avg_rating'
 /// [sortDirection] 排序方向，默认 'asc'，可选 'desc'
 /// [additional] 额外信息，默认 'avg_rating'
 /// [artist] 艺术家名称，可选

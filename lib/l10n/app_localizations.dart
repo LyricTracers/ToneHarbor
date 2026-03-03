@@ -584,6 +584,18 @@ abstract class AppLocalizations {
   /// **'Daily Recommend'**
   String get daily_recommend;
 
+  /// No description provided for @recent_albums.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Albums'**
+  String get recent_albums;
+
+  /// No description provided for @recommend_albums.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommend Albums'**
+  String get recommend_albums;
+
   /// No description provided for @more.
   ///
   /// In en, this message translates to:

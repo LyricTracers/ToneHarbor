@@ -30,6 +30,9 @@ class RecommendPage extends BaseContentPage {
           onPressed: () {
             ref.invalidate(randomSongsProvider);
             ref.invalidate(recentAlbumsProvider);
+            ref.invalidate(
+              albumsProvider(limit: 20, sortBy: 'year', sortDirection: 'desc'),
+            );
           },
         ),
       ],
@@ -67,7 +70,7 @@ class RecommendPage extends BaseContentPage {
                   children: [
                     Text(
                       i10n.daily_recommend,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -96,6 +99,69 @@ class RecommendPage extends BaseContentPage {
               SizedBox(height: 8),
               const RecommendPageDailySongs(),
               SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 8,
+                  bottom: 8,
+                ),
+                child: Text(
+                  i10n.recommend_albums,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Divider(
+                height: 2,
+                indent: 16,
+                endIndent: 16,
+                color: colorScheme.onSurface.withValues(alpha: 0.5),
+              ),
+              SizedBox(height: 8),
+              CommonAlbums(
+                albums: ref.watch(
+                  albumsProvider(
+                    limit: 20,
+                    sortBy: 'year',
+                    sortDirection: 'desc',
+                  ),
+                ),
+                onErrorTap: () {
+                  ref.invalidate(
+                    albumsProvider(
+                      limit: 20,
+                      sortBy: 'year',
+                      sortDirection: 'desc',
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 8,
+                  bottom: 8,
+                ),
+                child: Text(
+                  i10n.recent_albums,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Divider(
+                height: 2,
+                indent: 16,
+                endIndent: 16,
+                color: colorScheme.onSurface.withValues(alpha: 0.5),
+              ),
+              SizedBox(height: 8),
               CommonAlbums(
                 albums: ref.watch(recentAlbumsProvider()),
                 onErrorTap: () {

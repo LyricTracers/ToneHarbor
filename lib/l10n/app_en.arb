@@ -81,5 +81,7 @@
   "searchingFor": "Searching:",
   "recommend": "Recommend",
   "daily_recommend": "Daily Recommend",
+  "recent_albums": "Recent Albums",
+  "recommend_albums": "Recommend Albums",
   "more": "Load More"
 }

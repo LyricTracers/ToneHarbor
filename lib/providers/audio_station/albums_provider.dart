@@ -57,6 +57,7 @@ Future<AlbumResponse> randomAlbums(
       ref: ref,
       limit: limit,
       sortBy: 'random',
+      sortDirection: 'desc',
       cacheDuration: cacheDuration,
     );
   } finally {

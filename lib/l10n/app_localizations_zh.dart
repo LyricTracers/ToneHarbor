@@ -252,5 +252,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get daily_recommend => '每日推荐';
 
   @override
+  String get recent_albums => '最近专辑';
+
+  @override
+  String get recommend_albums => '推荐专辑';
+
+  @override
   String get more => '查看更多';
 }
