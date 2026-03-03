@@ -56,8 +56,9 @@ class PlaybackRoutes {
             'content-range': headers['content-range']!,
         },
       );
-    } catch (e) {
-      return Response.internalServerError();
+    } catch (e, stack) {
+      logger.e('HEAD stream error', error: e, stackTrace: stack);
+      return Response.internalServerError(body: 'Internal server error');
     }
   }
 
@@ -101,8 +102,9 @@ class PlaybackRoutes {
             'content-range': headers['content-range']!,
         },
       );
-    } catch (e) {
-      return Response.internalServerError();
+    } catch (e, stack) {
+      logger.e('GET stream error', error: e, stackTrace: stack);
+      return Response.internalServerError(body: 'Internal server error');
     }
   }
 

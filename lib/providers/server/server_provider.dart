@@ -9,7 +9,6 @@ import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/server/playback_routes.dart';
-import 'package:toneharbor/utils/base_utils.dart';
 
 part 'server_provider.g.dart';
 
@@ -25,9 +24,9 @@ class ToneHarborMedia {
 }
 
 final pipelineProvider = Provider((ref) {
-  const pipeline = Pipeline();
+  Pipeline pipeline = const Pipeline();
   if (kDebugMode) {
-    pipeline.addMiddleware(logRequests());
+    pipeline = pipeline.addMiddleware(logRequests());
   }
   return pipeline;
 });
@@ -50,19 +49,39 @@ Future<HttpServer> server(Ref ref) async {
   final pipeline = ref.watch(pipelineProvider);
   final router = ref.watch(serverRouterProvider);
 
-  final port = Random().nextInt(17500) + 5000;
-  ToneHarborMedia.serverPort = port;
+  HttpServer? server;
+  int attempts = 0;
+  const maxAttempts = 10;
 
-  final server = await serve(
-    pipeline.addHandler(router.call),
-    InternetAddress.loopbackIPv4,
-    port,
-  );
+  while (server == null && attempts < maxAttempts) {
+    try {
+      final port = Random().nextInt(17500) + 5000;
+      ToneHarborMedia.serverPort = port;
 
-  logger.i('Playback server at http://${server.address.host}:${server.port}');
+      server = await serve(
+        pipeline.addHandler(router.call),
+        InternetAddress.loopbackIPv4,
+        port,
+      );
+
+      logger.i(
+        'Playback server at http://${server.address.host}:${server.port}',
+      );
+    } catch (e) {
+      attempts++;
+      logger.w('Failed to start server on port, attempt $attempts');
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+  }
+
+  if (server == null) {
+    throw Exception(
+      'Failed to start playback server after $maxAttempts attempts',
+    );
+  }
 
   ref.onDispose(() {
-    server.close();
+    server?.close();
   });
 
   return server;
