@@ -75,12 +75,14 @@ Future<HttpServer> server(Ref ref) async {
   }
 
   if (server == null) {
+    ToneHarborMedia.serverPort = 0;
     throw Exception(
       'Failed to start playback server after $maxAttempts attempts',
     );
   }
 
   ref.onDispose(() {
+    ToneHarborMedia.serverPort = 0;
     server?.close();
   });
 

@@ -77,21 +77,23 @@ class CustomPlayer extends Player {
   NativePlayer get nativePlayer => platform as NativePlayer;
 
   Future<void> insert(int index, Media media) async {
-    final addedMediaCompleter = Completer<int>();
-    final playlistStream = stream.playlist.listen((event) {
-      final mediaAddedIndex = event.medias.indexWhere(
-        (m) => m.uri == media.uri,
-      );
-      if (mediaAddedIndex != -1 && !addedMediaCompleter.isCompleted) {
-        addedMediaCompleter.complete(mediaAddedIndex);
-      }
-    });
+    StreamSubscription<Playlist>? playlistStream;
     try {
+      final addedMediaCompleter = Completer<int>();
+      playlistStream = stream.playlist.listen((event) {
+        final mediaAddedIndex = event.medias.indexWhere(
+          (m) => m.uri == media.uri,
+        );
+        if (mediaAddedIndex != -1 && !addedMediaCompleter.isCompleted) {
+          addedMediaCompleter.complete(mediaAddedIndex);
+        }
+      });
+
       await add(media);
       final mediaAddedIndex = await addedMediaCompleter.future;
       await move(mediaAddedIndex, index);
     } finally {
-      playlistStream.cancel();
+      await playlistStream?.cancel();
     }
   }
 

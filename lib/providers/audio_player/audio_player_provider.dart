@@ -54,7 +54,6 @@ class PlaylistNotifier extends _$PlaylistNotifier {
     await _player.openPlaylist(medias, initialIndex: initial);
 
     _tracks = songs;
-    state = _tracks;
   }
 
   Future<void> play() async {
@@ -68,7 +67,6 @@ class PlaylistNotifier extends _$PlaylistNotifier {
   Future<void> stop() async {
     await _player.clearPlaylist();
     _tracks = [];
-    state = _tracks;
   }
 
   Future<void> seek(Duration position) async {
@@ -127,7 +125,6 @@ class PlaylistNotifier extends _$PlaylistNotifier {
     await _player.addTrack(media);
 
     _tracks = [..._tracks, song];
-    state = _tracks;
   }
 
   Future<void> addTrackAt(Song song, int index) async {
@@ -144,8 +141,9 @@ class PlaylistNotifier extends _$PlaylistNotifier {
     );
     await _player.addTrackAt(media, insertIndex);
 
-    _tracks = [..._tracks]..insert(insertIndex, song);
-    state = _tracks;
+    final newTracks = [..._tracks];
+    newTracks.insert(insertIndex, song);
+    _tracks = newTracks;
   }
 
   Future<void> addTracks(List<Song> songs) async {
@@ -165,7 +163,6 @@ class PlaylistNotifier extends _$PlaylistNotifier {
     }
 
     _tracks = [..._tracks, ...songs];
-    state = _tracks;
   }
 
   Future<void> removeTrack(int index) async {
@@ -173,8 +170,9 @@ class PlaylistNotifier extends _$PlaylistNotifier {
 
     await _player.removeTrack(index);
 
-    _tracks = [..._tracks]..removeAt(index);
-    state = _tracks;
+    final newTracks = [..._tracks];
+    newTracks.removeAt(index);
+    _tracks = newTracks;
   }
 
   Future<void> removeTracks(List<int> indexes) async {
@@ -198,7 +196,6 @@ class PlaylistNotifier extends _$PlaylistNotifier {
         .where((e) => !indexSet.contains(e.key))
         .map((e) => e.value)
         .toList();
-    state = _tracks;
   }
 
   Future<void> moveTrack(int oldIndex, int newIndex) async {
@@ -209,16 +206,15 @@ class PlaylistNotifier extends _$PlaylistNotifier {
     await _player.moveTrack(oldIndex, newIndex);
 
     final track = _tracks[oldIndex];
-    _tracks = [..._tracks]
-      ..removeAt(oldIndex)
-      ..insert(newIndex, track);
-    state = _tracks;
+    final newTracks = [..._tracks];
+    newTracks.removeAt(oldIndex);
+    newTracks.insert(newIndex, track);
+    _tracks = newTracks;
   }
 
   Future<void> clearPlaylist() async {
     await _player.clearPlaylist();
     _tracks = [];
-    state = _tracks;
   }
 }
 
