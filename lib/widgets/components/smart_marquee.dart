@@ -302,7 +302,7 @@ class _SmartMarqueeState extends State<SmartMarquee>
                           final maxScrollDistance =
                               metrics.width - availableWidth + padding;
                           setState(() {
-                            _manualScrollOffset -= deltaX;
+                            _manualScrollOffset += deltaX;
                             if (maxScrollDistance > 0) {
                               _manualScrollOffset = _manualScrollOffset.clamp(
                                 -maxScrollDistance,
@@ -312,7 +312,7 @@ class _SmartMarqueeState extends State<SmartMarquee>
                               _manualScrollOffset = 0.0;
                             }
                             if (deltaTime > 0) {
-                              _dragVelocity = -deltaX / deltaTime * 1000.0;
+                              _dragVelocity = deltaX / deltaTime * 1000.0;
                             }
                             _lastDragX = event.position.dx;
                             _lastDragTime = currentTime;
