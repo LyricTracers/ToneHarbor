@@ -56,6 +56,45 @@ final class AudioPlayerProvider
 
 String _$audioPlayerHash() => r'21fd7ee4ef101920ee390c87f83c4515d9be2dd2';
 
+@ProviderFor(audioServices)
+final audioServicesProvider = AudioServicesProvider._();
+
+final class AudioServicesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<AudioServices>,
+          AudioServices,
+          FutureOr<AudioServices>
+        >
+    with $FutureModifier<AudioServices>, $FutureProvider<AudioServices> {
+  AudioServicesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'audioServicesProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$audioServicesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<AudioServices> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<AudioServices> create(Ref ref) {
+    return audioServices(ref);
+  }
+}
+
+String _$audioServicesHash() => r'40ef60a04c259674aae6bdc459263a03adbf40bf';
+
 @ProviderFor(PlaylistNotifier)
 final playlistProvider = PlaylistNotifierProvider._();
 
@@ -88,7 +127,7 @@ final class PlaylistNotifierProvider
   }
 }
 
-String _$playlistNotifierHash() => r'349518850d9781c7d395ca531159d02d44b5e5b4';
+String _$playlistNotifierHash() => r'3ed988acefba3bf58445cd895cbdccb841685be3';
 
 abstract class _$PlaylistNotifier extends $Notifier<List<Song>> {
   List<Song> build();
@@ -308,6 +347,47 @@ final class ActiveTrackProvider extends $FunctionalProvider<Song?, Song?, Song?>
 }
 
 String _$activeTrackHash() => r'6b6975e7fe44c039bc61ce5cc6a578a8494c8407';
+
+@ProviderFor(collections)
+final collectionsProvider = CollectionsProvider._();
+
+final class CollectionsProvider
+    extends $FunctionalProvider<List<String>, List<String>, List<String>>
+    with $Provider<List<String>> {
+  CollectionsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'collectionsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$collectionsHash();
+
+  @$internal
+  @override
+  $ProviderElement<List<String>> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  List<String> create(Ref ref) {
+    return collections(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<String> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<String>>(value),
+    );
+  }
+}
+
+String _$collectionsHash() => r'2bb6c99e7388ec6b249c6563c7e2089b28f5e639';
 
 @ProviderFor(positionStream)
 final positionStreamProvider = PositionStreamProvider._();
