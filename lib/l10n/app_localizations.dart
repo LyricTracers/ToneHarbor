@@ -607,6 +607,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Load More'**
   String get more;
+
+  /// No description provided for @setThemeBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Theme Background'**
+  String get setThemeBackground;
+
+  /// No description provided for @setThemeBackgroundConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Set this cover as theme background?'**
+  String get setThemeBackgroundConfirm;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
 }
 
 class _AppLocalizationsDelegate

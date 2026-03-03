@@ -84,5 +84,9 @@
   "recent_albums": "Recent Albums",
   "recommend_albums": "Recommend Albums",
   "my_favorite": "My Favorite",
-  "more": "Load More"
+  "more": "Load More",
+  "setThemeBackground": "Set Theme Background",
+  "setThemeBackgroundConfirm": "Set this cover as theme background?",
+  "cancel": "Cancel",
+  "confirm": "Confirm"
 }

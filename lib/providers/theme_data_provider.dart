@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -37,11 +38,7 @@ class ContrastLevel extends _$ContrastLevel {
 
 @riverpod
 Future<ColorScheme> getColorScheme(Ref ref) async {
-  final syncSongIcon = getValueWhenReadyWithRef(
-    ref,
-    syncSongIconProvider,
-    true,
-  );
+  final syncSongIcon = await ref.watch(syncSongIconProvider.future);
   final schemeVariant = await ref.watch(dynamicSchemeProvider.future);
   final contrastLevel = await ref.watch(contrastLevelProvider.future);
   return await FrostedColorSchemeGenerator.generate(
@@ -110,5 +107,27 @@ class SongIcon extends _$SongIcon {
 
 @riverpod
 Future<ImageProvider?> loadDefaultThemeIcon(Ref ref) async {
-  return loadDefaultThemeIconWithCache();
+  final prefs = await getSharedPreferences();
+  final savedPath = prefs.getString(defaultThemeIconKey);
+
+  if (savedPath == null || savedPath.isEmpty) {
+    logger.i('loadDefaultThemeIcon: no saved path');
+    return null;
+  }
+
+  try {
+    final file = File(savedPath);
+    logger.i('Loading default theme icon from: ${file.path}');
+    if (!await file.exists()) {
+      logger.i('loadDefaultThemeIcon: file does not exist');
+      return null;
+    }
+
+    final bytes = await file.readAsBytes();
+    logger.i('loadDefaultThemeIcon: loaded ${bytes.length} bytes');
+    return MemoryImage(bytes);
+  } catch (e) {
+    logger.e('loadDefaultThemeIcon: error - $e');
+    return null;
+  }
 }

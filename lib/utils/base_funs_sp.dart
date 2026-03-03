@@ -34,7 +34,7 @@ Future<double> getContrastLevel() async {
 Future<bool> getSyncSongIcon() async {
   final prefs = await getSharedPreferences();
   final savedValue = prefs.getBool(syncSongIconKey);
-  return savedValue ?? true;
+  return savedValue ?? false;
 }
 
 Future<bool> getUseHttp() async {

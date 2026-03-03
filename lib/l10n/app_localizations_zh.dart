@@ -262,4 +262,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get more => '查看更多';
+
+  @override
+  String get setThemeBackground => '设置主题背景';
+
+  @override
+  String get setThemeBackgroundConfirm => '是否将此封面设置为主题背景？';
+
+  @override
+  String get cancel => '取消';
+
+  @override
+  String get confirm => '确定';
 }

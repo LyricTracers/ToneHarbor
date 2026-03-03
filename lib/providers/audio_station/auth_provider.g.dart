@@ -32,7 +32,7 @@ final class UseHttpProvider extends $AsyncNotifierProvider<UseHttp, bool> {
   UseHttp create() => UseHttp();
 }
 
-String _$useHttpHash() => r'5a8af9503d6726715bef148212e3ef35c1b2ecd3';
+String _$useHttpHash() => r'96dac09aa1562d4140576474fc8e11b31552ac73';
 
 abstract class _$UseHttp extends $AsyncNotifier<bool> {
   FutureOr<bool> build();
@@ -76,7 +76,7 @@ final class ServerUrlProvider
   ServerUrl create() => ServerUrl();
 }
 
-String _$serverUrlHash() => r'7fe209fd0931762ef5f770232c4f9a28b70a00a8';
+String _$serverUrlHash() => r'527b1f9acbc1675d19137ea226b2357eb2fa9f7f';
 
 abstract class _$ServerUrl extends $AsyncNotifier<String> {
   FutureOr<String> build();
@@ -120,7 +120,7 @@ final class AccountInfoProvider
   AccountInfo create() => AccountInfo();
 }
 
-String _$accountInfoHash() => r'a936422207f3bf1189a29d1e9eb0744f11e1474f';
+String _$accountInfoHash() => r'9226017988afd6fe42bc07a51fbfcda40fb860eb';
 
 abstract class _$AccountInfo extends $AsyncNotifier<Account?> {
   FutureOr<Account?> build();
@@ -166,7 +166,7 @@ final class AudioStationCookiesInfoProvider
 }
 
 String _$audioStationCookiesInfoHash() =>
-    r'98e512741aacae214e025ec628caae6952f2156b';
+    r'efeb8b060743654e5ab3628a6ffdddbfb341f799';
 
 abstract class _$AudioStationCookiesInfo
     extends $AsyncNotifier<AudioStationCookies?> {

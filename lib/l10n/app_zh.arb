@@ -84,5 +84,9 @@
   "recent_albums": "最近专辑",
   "recommend_albums": "推荐专辑",
   "my_favorite": "我的收藏",
-  "more": "查看更多"
+  "more": "查看更多",
+  "setThemeBackground": "设置主题背景",
+  "setThemeBackgroundConfirm": "是否将此封面设置为主题背景？",
+  "cancel": "取消",
+  "confirm": "确定"
 }

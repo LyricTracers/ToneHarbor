@@ -275,4 +275,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get more => 'Load More';
+
+  @override
+  String get setThemeBackground => 'Set Theme Background';
+
+  @override
+  String get setThemeBackgroundConfirm => 'Set this cover as theme background?';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get confirm => 'Confirm';
 }

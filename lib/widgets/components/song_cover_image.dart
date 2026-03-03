@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/utils/base_funs.dart';
 
 class SongCoverImage extends ConsumerWidget {
   const SongCoverImage({
@@ -92,11 +96,14 @@ class SongCoverImage extends ConsumerWidget {
     return Builder(
       builder: (context) {
         return GestureDetector(
-          onLongPress: () {
+          onLongPress: () async {
             if (onLongPress != null) {
               onLongPress?.call();
             } else {
-              _showSetBackgroundDialog(context);
+              final syncSongIcon = await ref.watch(syncSongIconProvider.future);
+              if (syncSongIcon == false && context.mounted) {
+                _showSetBackgroundDialog(context, ref, albumName, artistName);
+              }
             }
           },
           child: child,
@@ -105,25 +112,51 @@ class SongCoverImage extends ConsumerWidget {
     );
   }
 
-  static void _showSetBackgroundDialog(BuildContext context) {
+  static void _showSetBackgroundDialog(
+    BuildContext context,
+    WidgetRef ref,
+    String albumName,
+    String artistName,
+  ) async {
+    final l10n = await ref.read(l10nProvider.future);
+    if (context.mounted == false) {
+      return;
+    }
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          '设置主题背景',
+          l10n.setThemeBackground,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        content: Text('是否将此封面设置为主题背景？', style: TextStyle(fontSize: 16)),
+        content: Text(
+          l10n.setThemeBackgroundConfirm,
+          style: TextStyle(fontSize: 16),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('取消'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
+              try {
+                final bytes = await downloadCover(
+                  ref: ref,
+                  albumName: albumName,
+                  albumArtistName: artistName,
+                );
+                if (bytes.isEmpty) {
+                  return;
+                }
+                logger.i('Downloaded image: ${bytes.length} bytes');
+                saveDefaultThemeIcon(ref, bytes.toList());
+              } catch (e) {
+                logger.e('Failed to save theme icon: $e');
+              }
             },
-            child: Text('确定'),
+            child: Text(l10n.confirm),
           ),
         ],
       ),
