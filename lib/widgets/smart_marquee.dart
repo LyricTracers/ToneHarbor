@@ -228,7 +228,7 @@ class _SmartMarqueeState extends State<SmartMarquee>
       milliseconds: duration.clamp(100, 1000),
     );
     _inertiaController.forward(from: 0.0).then((_) {
-      if (mounted) {
+      if (mounted && !_isDragging) {
         setState(() {
           _isInertiaRunning = false;
           _manualScrollOffset = 0.0;
