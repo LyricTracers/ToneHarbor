@@ -62,7 +62,7 @@ abstract class AudioPlayerInterface {
     return !hasSource;
   }
 
-  Future<bool> get isCompleted async {
+  bool get isCompleted {
     return _mkPlayer.state.completed;
   }
 

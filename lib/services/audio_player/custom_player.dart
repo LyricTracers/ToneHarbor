@@ -90,7 +90,16 @@ class CustomPlayer extends Player {
       });
 
       await add(media);
-      final mediaAddedIndex = await addedMediaCompleter.future;
+
+      final mediaAddedIndex = await addedMediaCompleter.future.timeout(
+        const Duration(seconds: 5),
+        onTimeout: () => -1,
+      );
+
+      if (mediaAddedIndex == -1) {
+        throw TimeoutException('Failed to find added media in playlist');
+      }
+
       await move(mediaAddedIndex, index);
     } finally {
       await playlistStream?.cancel();

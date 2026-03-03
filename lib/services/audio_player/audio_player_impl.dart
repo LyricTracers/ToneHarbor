@@ -49,7 +49,9 @@ class ToneHarborAudioPlayer extends AudioPlayerInterface
   }
 
   List<String> get sources {
-    return _mkPlayer.state.playlist.medias.map((e) => e.uri).toList();
+    return _mkPlayer.state.playlist.medias
+        .map((e) => e.uri)
+        .toList(growable: false);
   }
 
   String? get currentSource {
@@ -60,6 +62,8 @@ class ToneHarborAudioPlayer extends AudioPlayerInterface
   }
 
   String? get nextSource {
+    if (_mkPlayer.state.playlist.medias.isEmpty) return null;
+
     if (loopMode == PlaylistMode.loop &&
         _mkPlayer.state.playlist.index ==
             _mkPlayer.state.playlist.medias.length - 1) {
@@ -72,6 +76,8 @@ class ToneHarborAudioPlayer extends AudioPlayerInterface
   }
 
   String? get previousSource {
+    if (_mkPlayer.state.playlist.medias.isEmpty) return null;
+
     if (loopMode == PlaylistMode.loop && _mkPlayer.state.playlist.index == 0) {
       return sources.last;
     }
