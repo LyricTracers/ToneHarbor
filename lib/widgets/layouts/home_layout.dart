@@ -5,7 +5,7 @@ import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
-import 'package:toneharbor/widgets/base_bg_layout.dart';
+import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 part 'home_layout_logic.dart';
 

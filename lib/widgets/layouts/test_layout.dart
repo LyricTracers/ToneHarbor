@@ -6,7 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
-import 'package:toneharbor/widgets/base_bg_layout.dart';
+import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
 
 class TestLayout extends BaseBgLayout {
   const TestLayout({super.key, super.showLoading = true});

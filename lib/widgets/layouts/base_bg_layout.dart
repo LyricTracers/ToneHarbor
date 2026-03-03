@@ -5,7 +5,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'dart:ui' as ui;
 
-import 'package:toneharbor/widgets/audio_equalizer_loader.dart';
+import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 
 abstract class BaseBgLayout extends HookConsumerWidget {
   const BaseBgLayout({super.key, this.showLoading = true});

@@ -8,7 +8,7 @@ import 'package:toneharbor/models/audio_station/auth.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/excetions.dart';
-import 'package:toneharbor/widgets/base_bg_layout.dart';
+import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
 
 class LoginLayout extends BaseBgLayout {
   const LoginLayout({super.key, super.showLoading = true});
