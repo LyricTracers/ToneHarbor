@@ -251,11 +251,15 @@ class _SmartMarqueeState extends State<SmartMarquee>
 
           final shouldScroll = metrics.width > availableWidth - padding;
 
+          final horizontalAlignment = widget.alignment == Alignment.center
+              ? 0.0
+              : -1.0;
+
           if (!shouldScroll) {
             return SizedBox(
               height: metrics.height + 4,
               child: Align(
-                alignment: widget.alignment,
+                alignment: Alignment(horizontalAlignment, 0.0),
                 child: Text(
                   widget.text,
                   style: widget.style,
@@ -273,7 +277,7 @@ class _SmartMarqueeState extends State<SmartMarquee>
             child: SizedBox(
               height: metrics.height + 4,
               child: Align(
-                alignment: widget.alignment,
+                alignment: Alignment(horizontalAlignment, 0.0),
                 child: isPaused
                     ? Listener(
                         onPointerDown: (event) {
