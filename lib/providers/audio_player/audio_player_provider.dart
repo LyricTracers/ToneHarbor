@@ -28,7 +28,13 @@ ToneHarborAudioPlayer audioPlayer(Ref ref) {
 
 @keepAlive
 Future<AudioServices> audioServices(Ref ref) async {
-  return AudioServices.create(ref);
+  final services = await AudioServices.create(ref);
+
+  ref.onDispose(() {
+    services.dispose();
+  });
+
+  return services;
 }
 
 @keepAlive

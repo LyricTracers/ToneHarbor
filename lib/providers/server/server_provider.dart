@@ -83,9 +83,13 @@ Future<HttpServer> server(Ref ref) async {
     );
   }
 
-  ref.onDispose(() {
-    ToneHarborMedia.serverPort = 0;
-    server?.close();
+  ref.onDispose(() async {
+    try {
+      ToneHarborMedia.serverPort = 0;
+      await server?.close();
+    } catch (e) {
+      // Ignore errors during dispose
+    }
   });
 
   return server;

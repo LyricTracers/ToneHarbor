@@ -54,7 +54,7 @@ final class AudioPlayerProvider
   }
 }
 
-String _$audioPlayerHash() => r'21fd7ee4ef101920ee390c87f83c4515d9be2dd2';
+String _$audioPlayerHash() => r'00247c75d05aef2752c3216c1c63f6734c9fadf5';
 
 @ProviderFor(audioServices)
 final audioServicesProvider = AudioServicesProvider._();
@@ -93,7 +93,7 @@ final class AudioServicesProvider
   }
 }
 
-String _$audioServicesHash() => r'40ef60a04c259674aae6bdc459263a03adbf40bf';
+String _$audioServicesHash() => r'6d5a91a3bd2efde5753658c908147941782ecec1';
 
 @ProviderFor(PlaylistNotifier)
 final playlistProvider = PlaylistNotifierProvider._();
