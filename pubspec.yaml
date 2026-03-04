@@ -44,6 +44,11 @@ dependencies:
   file_picker: ^10.3.10
   shelf: ^1.4.1
   shelf_router: ^1.1.4
+  flutter_broadcasts:
+    git:
+      url: https://github.com/KRTirtho/flutter_broadcasts.git
+      ref: 63931dfe06733d4fb7452e9981e1f0b23414d97a
+  package_info_plus: ^9.0.0
   archive_gbk:
     git:
       url: https://git.nxcloud.club:12750/LyricTracers/archive_gbk.git

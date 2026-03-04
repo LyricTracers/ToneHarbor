@@ -67,47 +67,30 @@ class CustomPlayer extends Player {
 
   @override
   Future<void> dispose() async {
-    try {
-      for (final subscription in _subscriptions) {
-        await subscription.cancel();
-      }
-      await _playerStateStream.close();
-      await super.dispose();
-      await Future.delayed(const Duration(milliseconds: 100));
-    } catch (e) {
-      // Ignore errors during dispose
+    for (var element in _subscriptions) {
+      element.cancel();
     }
+    return super.dispose();
   }
 
   NativePlayer get nativePlayer => platform as NativePlayer;
 
   Future<void> insert(int index, Media media) async {
-    StreamSubscription<Playlist>? playlistStream;
-    try {
-      final addedMediaCompleter = Completer<int>();
-      playlistStream = stream.playlist.listen((event) {
-        final mediaAddedIndex = event.medias.indexWhere(
-          (m) => m.uri == media.uri,
-        );
-        if (mediaAddedIndex != -1 && !addedMediaCompleter.isCompleted) {
-          addedMediaCompleter.complete(mediaAddedIndex);
-        }
-      });
-
-      await add(media);
-
-      final mediaAddedIndex = await addedMediaCompleter.future.timeout(
-        const Duration(seconds: 5),
-        onTimeout: () => -1,
+    final addedMediaCompleter = Completer<int>();
+    final playlistStream = stream.playlist.listen((event) {
+      final mediaAddedIndex = event.medias.indexWhere(
+        (m) => m.uri == media.uri,
       );
-
-      if (mediaAddedIndex == -1) {
-        throw TimeoutException('Failed to find added media in playlist');
+      if (mediaAddedIndex != -1 && !addedMediaCompleter.isCompleted) {
+        addedMediaCompleter.complete(mediaAddedIndex);
       }
-
+    });
+    try {
+      await add(media);
+      final mediaAddedIndex = await addedMediaCompleter.future;
       await move(mediaAddedIndex, index);
     } finally {
-      await playlistStream?.cancel();
+      playlistStream.cancel();
     }
   }
 

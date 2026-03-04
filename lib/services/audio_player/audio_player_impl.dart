@@ -35,14 +35,7 @@ class ToneHarborAudioPlayer extends AudioPlayerInterface
   }
 
   Future<void> dispose() async {
-    try {
-      await _mkPlayer.stop();
-      await Future.delayed(const Duration(milliseconds: 500));
-      await _mkPlayer.dispose();
-      await Future.delayed(const Duration(milliseconds: 200));
-    } catch (e) {
-      // Ignore errors during dispose
-    }
+    await _mkPlayer.dispose();
   }
 
   Future<void> openPlaylist(
@@ -128,8 +121,7 @@ class ToneHarborAudioPlayer extends AudioPlayerInterface
   }
 
   Future<void> clearPlaylist() async {
-    await _mkPlayer.stop();
-    await _mkPlayer.open(mk.Playlist([]));
+    _mkPlayer.stop();
   }
 
   Future<void> setShuffle(bool shuffle) async {

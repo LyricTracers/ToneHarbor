@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:media_kit/media_kit.dart' as mk;
 
 import 'playback_state.dart';
+import 'package:toneharbor/init/initialized.dart';
 
 part 'audio_players_streams_mixin.dart';
 part 'audio_player_impl.dart';
@@ -14,13 +15,17 @@ abstract class AudioPlayerInterface {
   final CustomPlayer _mkPlayer;
 
   AudioPlayerInterface()
-      : _mkPlayer = CustomPlayer(
-          configuration: const mk.PlayerConfiguration(
-            title: "ToneHarbor",
-            logLevel: kDebugMode ? mk.MPVLogLevel.info : mk.MPVLogLevel.error,
-            async: true,
-          ),
-        );
+    : _mkPlayer = CustomPlayer(
+        configuration: const mk.PlayerConfiguration(
+          title: "ToneHarbor",
+          logLevel: kDebugMode ? mk.MPVLogLevel.info : mk.MPVLogLevel.error,
+          async: true,
+        ),
+      ) {
+    _mkPlayer.stream.error.listen((event) {
+      logger.e('[MediaKitError] $event');
+    });
+  }
 
   Duration get duration {
     return _mkPlayer.state.duration;

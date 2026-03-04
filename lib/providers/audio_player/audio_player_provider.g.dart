@@ -9,45 +9,6 @@ part of 'audio_player_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(audioServices)
-final audioServicesProvider = AudioServicesProvider._();
-
-final class AudioServicesProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<AudioServices>,
-          AudioServices,
-          FutureOr<AudioServices>
-        >
-    with $FutureModifier<AudioServices>, $FutureProvider<AudioServices> {
-  AudioServicesProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'audioServicesProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$audioServicesHash();
-
-  @$internal
-  @override
-  $FutureProviderElement<AudioServices> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<AudioServices> create(Ref ref) {
-    return audioServices(ref);
-  }
-}
-
-String _$audioServicesHash() => r'6d5a91a3bd2efde5753658c908147941782ecec1';
-
 @ProviderFor(PlaylistNotifier)
 final playlistProvider = PlaylistNotifierProvider._();
 
@@ -80,7 +41,7 @@ final class PlaylistNotifierProvider
   }
 }
 
-String _$playlistNotifierHash() => r'32c0c18407f3692eb2033ca1c2d684fe62e7ca4d';
+String _$playlistNotifierHash() => r'afa474059fcfb13b7815cbbb656792c5987aa597';
 
 abstract class _$PlaylistNotifier extends $Notifier<List<Song>> {
   List<Song> build();

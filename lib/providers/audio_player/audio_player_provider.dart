@@ -7,21 +7,8 @@ import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/providers/server/server_provider.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_state_persistence.dart';
 import 'package:toneharbor/providers/audio_player/playback_history_provider.dart';
-import 'package:toneharbor/services/audio_services/audio_services.dart';
 
 part 'audio_player_provider.g.dart';
-
-@keepAlive
-Future<AudioServices> audioServices(Ref ref) async {
-  final playlistNotifier = ref.watch(playlistProvider.notifier);
-  final services = await AudioServices.create(ref, playlistNotifier);
-
-  ref.onDispose(() {
-    services.dispose();
-  });
-
-  return services;
-}
 
 @keepAlive
 class PlaylistNotifier extends _$PlaylistNotifier {
@@ -128,14 +115,6 @@ class PlaylistNotifier extends _$PlaylistNotifier {
             await ref
                 .read(audioPlayerStatePersistenceProvider.notifier)
                 .saveTracks(_tracks, playlist.index);
-
-            final activeTrack = _tracks.elementAtOrNull(playlist.index);
-            if (activeTrack != null) {
-              final audioServicesAsync = ref.read(audioServicesProvider);
-              if (audioServicesAsync.hasValue) {
-                await audioServicesAsync.value?.addTrack(activeTrack);
-              }
-            }
           }
         } catch (e, stack) {
           logger.e('Failed to save tracks', error: e, stackTrace: stack);

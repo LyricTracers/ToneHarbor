@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:media_kit/media_kit.dart' hide Track;
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
@@ -18,47 +17,44 @@ class MobileAudioService extends BaseAudioHandler {
   // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
   List<Song> get playlist => playlistNotifier.state;
 
-  MobileAudioService(this.playlistNotifier);
+  MobileAudioService(this.playlistNotifier) {
+    AudioSession.instance.then((s) {
+      session = s;
+      session?.configure(const AudioSessionConfiguration.music());
 
-  ToneHarborAudioPlayer get _player => audioPlayer;
+      bool wasPausedByBeginEvent = false;
 
-  Future<void> init() async {
-    final s = await AudioSession.instance;
-    session = s;
-    await session?.configure(const AudioSessionConfiguration.music());
-
-    bool wasPausedByBeginEvent = false;
-
-    s.interruptionEventStream.listen((event) async {
-      if (event.begin) {
-        switch (event.type) {
-          case AudioInterruptionType.duck:
-            await _player.setVolume(0.5);
-            break;
-          case AudioInterruptionType.pause:
-          case AudioInterruptionType.unknown:
-            wasPausedByBeginEvent = _player.isPlaying;
-            await _player.pause();
-            break;
+      s.interruptionEventStream.listen((event) async {
+        if (event.begin) {
+          switch (event.type) {
+            case AudioInterruptionType.duck:
+              await _player.setVolume(0.5);
+              break;
+            case AudioInterruptionType.pause:
+            case AudioInterruptionType.unknown:
+              wasPausedByBeginEvent = _player.isPlaying;
+              await _player.pause();
+              break;
+          }
+        } else {
+          switch (event.type) {
+            case AudioInterruptionType.duck:
+              await _player.setVolume(1.0);
+              break;
+            case AudioInterruptionType.pause when wasPausedByBeginEvent:
+            case AudioInterruptionType.unknown when wasPausedByBeginEvent:
+              await _player.resume();
+              wasPausedByBeginEvent = false;
+              break;
+            default:
+              break;
+          }
         }
-      } else {
-        switch (event.type) {
-          case AudioInterruptionType.duck:
-            await _player.setVolume(1.0);
-            break;
-          case AudioInterruptionType.pause when wasPausedByBeginEvent:
-          case AudioInterruptionType.unknown when wasPausedByBeginEvent:
-            await _player.resume();
-            wasPausedByBeginEvent = false;
-            break;
-          default:
-            break;
-        }
-      }
-    });
+      });
 
-    s.becomingNoisyEventStream.listen((_) {
-      _player.pause();
+      s.becomingNoisyEventStream.listen((_) {
+        _player.pause();
+      });
     });
 
     _player.playerStateStream.listen((state) async {
@@ -76,6 +72,8 @@ class MobileAudioService extends BaseAudioHandler {
       playbackState.add(await _transformEvent());
     });
   }
+
+  ToneHarborAudioPlayer get _player => audioPlayer;
 
   void addItem(MediaItem item) {
     session?.setActive(true);
