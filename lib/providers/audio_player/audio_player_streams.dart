@@ -20,11 +20,7 @@ class AudioPlayerStreamListeners {
 
     subscriptions.add(subscribeToPlaylist());
 
-    ref.onDispose(() {
-      for (final subscription in subscriptions) {
-        subscription.cancel();
-      }
-    });
+    ref.onDispose(dispose);
   }
 
   List<Song> get _tracks => ref.read(playlistProvider);
@@ -44,6 +40,15 @@ class AudioPlayerStreamListeners {
         );
       }
     });
+  }
+
+  void dispose() {
+    for (final subscription in subscriptions) {
+      subscription.cancel();
+    }
+    subscriptions.clear();
+    notificationService?.dispose();
+    notificationService = null;
   }
 }
 

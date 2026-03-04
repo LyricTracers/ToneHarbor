@@ -75,6 +75,7 @@ class MyApp extends HookConsumerWidget {
     useEffect(() {
       return () {
         if (!kDebugMode) return;
+        ref.read(audioPlayerStreamListenersProvider).dispose();
         audioPlayer.dispose();
       };
     }, []);
