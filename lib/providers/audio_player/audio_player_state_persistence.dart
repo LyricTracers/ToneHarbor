@@ -149,7 +149,9 @@ class AudioPlayerStatePersistence extends _$AudioPlayerStatePersistence {
     try {
       final box = HiveService.getPlayerStateBox();
       await box.delete(_stateKey);
-      state = const AsyncData(AudioPlayerPersistedState());
+      if (ref.mounted) {
+        state = const AsyncData(AudioPlayerPersistedState());
+      }
     } catch (e) {
       rethrow;
     }

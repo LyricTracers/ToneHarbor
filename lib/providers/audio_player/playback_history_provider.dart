@@ -66,7 +66,9 @@ class PlaybackHistory extends _$PlaybackHistory {
         }
       }
 
-      state = AsyncData(await _loadHistory());
+      if (ref.mounted) {
+        state = AsyncData(await _loadHistory());
+      }
     } catch (e) {
       rethrow;
     }
@@ -83,7 +85,9 @@ class PlaybackHistory extends _$PlaybackHistory {
         }
       }
 
-      state = AsyncData(await _loadHistory());
+      if (ref.mounted) {
+        state = AsyncData(await _loadHistory());
+      }
     } catch (e) {
       rethrow;
     }
@@ -93,7 +97,9 @@ class PlaybackHistory extends _$PlaybackHistory {
     try {
       final box = HiveService.getPlaybackHistoryBox();
       await box.clear();
-      state = const AsyncData([]);
+      if (ref.mounted) {
+        state = const AsyncData([]);
+      }
     } catch (e) {
       rethrow;
     }

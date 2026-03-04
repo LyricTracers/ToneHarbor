@@ -13,6 +13,7 @@ import 'package:toneharbor/init/initialized.dart';
 class MobileAudioService extends BaseAudioHandler {
   AudioSession? session;
   final PlaylistNotifier playlistNotifier;
+  final _subscriptions = <StreamSubscription>[];
 
   // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
   List<Song> get playlist => playlistNotifier.state;
@@ -24,53 +25,63 @@ class MobileAudioService extends BaseAudioHandler {
 
       bool wasPausedByBeginEvent = false;
 
-      s.interruptionEventStream.listen((event) async {
-        if (event.begin) {
-          switch (event.type) {
-            case AudioInterruptionType.duck:
-              await _player.setVolume(0.5);
-              break;
-            case AudioInterruptionType.pause:
-            case AudioInterruptionType.unknown:
-              wasPausedByBeginEvent = _player.isPlaying;
-              await _player.pause();
-              break;
+      _subscriptions.add(
+        s.interruptionEventStream.listen((event) async {
+          if (event.begin) {
+            switch (event.type) {
+              case AudioInterruptionType.duck:
+                await _player.setVolume(0.5);
+                break;
+              case AudioInterruptionType.pause:
+              case AudioInterruptionType.unknown:
+                wasPausedByBeginEvent = _player.isPlaying;
+                await _player.pause();
+                break;
+            }
+          } else {
+            switch (event.type) {
+              case AudioInterruptionType.duck:
+                await _player.setVolume(1.0);
+                break;
+              case AudioInterruptionType.pause when wasPausedByBeginEvent:
+              case AudioInterruptionType.unknown when wasPausedByBeginEvent:
+                await _player.resume();
+                wasPausedByBeginEvent = false;
+                break;
+              default:
+                break;
+            }
           }
-        } else {
-          switch (event.type) {
-            case AudioInterruptionType.duck:
-              await _player.setVolume(1.0);
-              break;
-            case AudioInterruptionType.pause when wasPausedByBeginEvent:
-            case AudioInterruptionType.unknown when wasPausedByBeginEvent:
-              await _player.resume();
-              wasPausedByBeginEvent = false;
-              break;
-            default:
-              break;
-          }
+        }),
+      );
+
+      _subscriptions.add(
+        s.becomingNoisyEventStream.listen((_) {
+          _player.pause();
+        }),
+      );
+    });
+
+    _subscriptions.add(
+      _player.playerStateStream.listen((state) async {
+        if (state == AudioPlaybackState.playing) {
+          await session?.setActive(true);
         }
-      });
+        playbackState.add(await _transformEvent());
+      }),
+    );
 
-      s.becomingNoisyEventStream.listen((_) {
-        _player.pause();
-      });
-    });
+    _subscriptions.add(
+      _player.positionStream.listen((pos) async {
+        playbackState.add(await _transformEvent());
+      }),
+    );
 
-    _player.playerStateStream.listen((state) async {
-      if (state == AudioPlaybackState.playing) {
-        await session?.setActive(true);
-      }
-      playbackState.add(await _transformEvent());
-    });
-
-    _player.positionStream.listen((pos) async {
-      playbackState.add(await _transformEvent());
-    });
-
-    _player.bufferedPositionStream.listen((pos) async {
-      playbackState.add(await _transformEvent());
-    });
+    _subscriptions.add(
+      _player.bufferedPositionStream.listen((pos) async {
+        playbackState.add(await _transformEvent());
+      }),
+    );
   }
 
   ToneHarborAudioPlayer get _player => audioPlayer;
@@ -127,6 +138,12 @@ class MobileAudioService extends BaseAudioHandler {
   Future<void> onTaskRemoved() async {
     await _player.pause();
     if (Platform.isAndroid) exit(0);
+  }
+
+  void dispose() {
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
+    }
   }
 
   Future<PlaybackState> _transformEvent() async {

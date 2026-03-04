@@ -121,7 +121,7 @@ class ToneHarborAudioPlayer extends AudioPlayerInterface
   }
 
   Future<void> clearPlaylist() async {
-    _mkPlayer.stop();
+    await _mkPlayer.stop();
   }
 
   Future<void> setShuffle(bool shuffle) async {

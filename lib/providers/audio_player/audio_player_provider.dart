@@ -302,11 +302,13 @@ class PlaylistNotifier extends _$PlaylistNotifier {
     );
     await _player.addTrack(media);
 
-    _tracks = [..._tracks, song];
+    if (ref.mounted) {
+      _tracks = [..._tracks, song];
 
-    await ref
-        .read(audioPlayerStatePersistenceProvider.notifier)
-        .saveTracks(_tracks, _player.currentIndex);
+      await ref
+          .read(audioPlayerStatePersistenceProvider.notifier)
+          .saveTracks(_tracks, _player.currentIndex);
+    }
   }
 
   Future<void> addTrackAt(Song song, int index) async {
