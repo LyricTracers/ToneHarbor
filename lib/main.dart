@@ -6,10 +6,12 @@ import 'package:lyricskit/lyricskit.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/providers/server/server_provider.dart';
 import 'package:toneharbor/widgets/widgets.dart';
+import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'init/initialized.dart';
 import 'utils/base_utils.dart';
 import 'l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter/foundation.dart';
 
 class SlideTransitionPage extends CustomTransitionPage<void> {
   const SlideTransitionPage({
@@ -67,6 +69,13 @@ class MyApp extends HookConsumerWidget {
     final colorScheme = getColorSchemeWhenReady(ref);
     final localeAsync = ref.watch(localeProvider);
     final synotokenAsync = ref.watch(authTokenProvider);
+
+    useEffect(() {
+      return () {
+        if (!kDebugMode) return;
+        audioPlayer.dispose();
+      };
+    }, []);
 
     final router = useMemoized(() {
       return GoRouter(

@@ -13,12 +13,14 @@ import 'package:toneharbor/init/initialized.dart';
 
 class MobileAudioService extends BaseAudioHandler {
   AudioSession? session;
-  final Ref ref;
-  final List<StreamSubscription> _subscriptions = [];
+  final PlaylistNotifier playlistNotifier;
 
-  MobileAudioService(this.ref);
+  // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
+  List<Song> get playlist => playlistNotifier.state;
 
-  ToneHarborAudioPlayer get _player => ref.read(audioPlayerProvider);
+  MobileAudioService(this.playlistNotifier);
+
+  ToneHarborAudioPlayer get _player => audioPlayer;
 
   Future<void> init() async {
     final s = await AudioSession.instance;
@@ -27,62 +29,52 @@ class MobileAudioService extends BaseAudioHandler {
 
     bool wasPausedByBeginEvent = false;
 
-    _subscriptions.add(
-      s.interruptionEventStream.listen((event) async {
-        if (event.begin) {
-          switch (event.type) {
-            case AudioInterruptionType.duck:
-              await _player.setVolume(0.5);
-              break;
-            case AudioInterruptionType.pause:
-            case AudioInterruptionType.unknown:
-              wasPausedByBeginEvent = _player.isPlaying;
-              await _player.pause();
-              break;
-          }
-        } else {
-          switch (event.type) {
-            case AudioInterruptionType.duck:
-              await _player.setVolume(1.0);
-              break;
-            case AudioInterruptionType.pause when wasPausedByBeginEvent:
-            case AudioInterruptionType.unknown when wasPausedByBeginEvent:
-              await _player.resume();
-              wasPausedByBeginEvent = false;
-              break;
-            default:
-              break;
-          }
+    s.interruptionEventStream.listen((event) async {
+      if (event.begin) {
+        switch (event.type) {
+          case AudioInterruptionType.duck:
+            await _player.setVolume(0.5);
+            break;
+          case AudioInterruptionType.pause:
+          case AudioInterruptionType.unknown:
+            wasPausedByBeginEvent = _player.isPlaying;
+            await _player.pause();
+            break;
         }
-      }),
-    );
-
-    _subscriptions.add(
-      s.becomingNoisyEventStream.listen((_) {
-        _player.pause();
-      }),
-    );
-
-    _subscriptions.add(
-      _player.playerStateStream.listen((state) async {
-        if (state == AudioPlaybackState.playing) {
-          await session?.setActive(true);
+      } else {
+        switch (event.type) {
+          case AudioInterruptionType.duck:
+            await _player.setVolume(1.0);
+            break;
+          case AudioInterruptionType.pause when wasPausedByBeginEvent:
+          case AudioInterruptionType.unknown when wasPausedByBeginEvent:
+            await _player.resume();
+            wasPausedByBeginEvent = false;
+            break;
+          default:
+            break;
         }
-        playbackState.add(await _transformEvent());
-      }),
-    );
+      }
+    });
 
-    _subscriptions.add(
-      _player.positionStream.listen((pos) async {
-        playbackState.add(await _transformEvent());
-      }),
-    );
+    s.becomingNoisyEventStream.listen((_) {
+      _player.pause();
+    });
 
-    _subscriptions.add(
-      _player.bufferedPositionStream.listen((pos) async {
-        playbackState.add(await _transformEvent());
-      }),
-    );
+    _player.playerStateStream.listen((state) async {
+      if (state == AudioPlaybackState.playing) {
+        await session?.setActive(true);
+      }
+      playbackState.add(await _transformEvent());
+    });
+
+    _player.positionStream.listen((pos) async {
+      playbackState.add(await _transformEvent());
+    });
+
+    _player.bufferedPositionStream.listen((pos) async {
+      playbackState.add(await _transformEvent());
+    });
   }
 
   void addItem(MediaItem item) {
@@ -109,8 +101,8 @@ class MobileAudioService extends BaseAudioHandler {
   Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) async {
     await super.setRepeatMode(repeatMode);
     await _player.setLoopMode(switch (repeatMode) {
-      AudioServiceRepeatMode.all || AudioServiceRepeatMode.group =>
-        PlaylistMode.loop,
+      AudioServiceRepeatMode.all ||
+      AudioServiceRepeatMode.group => PlaylistMode.loop,
       AudioServiceRepeatMode.one => PlaylistMode.single,
       _ => PlaylistMode.none,
     });
@@ -118,7 +110,7 @@ class MobileAudioService extends BaseAudioHandler {
 
   @override
   Future<void> stop() async {
-    await ref.read(playlistProvider.notifier).stop();
+    await playlistNotifier.stop();
   }
 
   @override
@@ -148,9 +140,7 @@ class MobileAudioService extends BaseAudioHandler {
           MediaControl.skipToNext,
           MediaControl.stop,
         ],
-        systemActions: {
-          MediaAction.seek,
-        },
+        systemActions: {MediaAction.seek},
         androidCompactActionIndices: const [0, 1, 2],
         playing: _player.isPlaying,
         updatePosition: _player.position,
@@ -171,13 +161,5 @@ class MobileAudioService extends BaseAudioHandler {
       logger.e('Transform event error', error: e, stackTrace: stack);
       rethrow;
     }
-  }
-
-  Future<void> dispose() async {
-    for (final subscription in _subscriptions) {
-      await subscription.cancel();
-    }
-    _subscriptions.clear();
-    await session?.setActive(false);
   }
 }

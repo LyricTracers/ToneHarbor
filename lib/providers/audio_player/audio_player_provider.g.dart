@@ -9,53 +9,6 @@ part of 'audio_player_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(audioPlayer)
-final audioPlayerProvider = AudioPlayerProvider._();
-
-final class AudioPlayerProvider
-    extends
-        $FunctionalProvider<
-          ToneHarborAudioPlayer,
-          ToneHarborAudioPlayer,
-          ToneHarborAudioPlayer
-        >
-    with $Provider<ToneHarborAudioPlayer> {
-  AudioPlayerProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'audioPlayerProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$audioPlayerHash();
-
-  @$internal
-  @override
-  $ProviderElement<ToneHarborAudioPlayer> $createElement(
-    $ProviderPointer pointer,
-  ) => $ProviderElement(pointer);
-
-  @override
-  ToneHarborAudioPlayer create(Ref ref) {
-    return audioPlayer(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ToneHarborAudioPlayer value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<ToneHarborAudioPlayer>(value),
-    );
-  }
-}
-
-String _$audioPlayerHash() => r'00247c75d05aef2752c3216c1c63f6734c9fadf5';
-
 @ProviderFor(audioServices)
 final audioServicesProvider = AudioServicesProvider._();
 
@@ -127,7 +80,7 @@ final class PlaylistNotifierProvider
   }
 }
 
-String _$playlistNotifierHash() => r'988008bd1633ba3743c3af67f415009a346d8a51';
+String _$playlistNotifierHash() => r'32c0c18407f3692eb2033ca1c2d684fe62e7ca4d';
 
 abstract class _$PlaylistNotifier extends $Notifier<List<Song>> {
   List<Song> build();
@@ -185,7 +138,7 @@ final class IsPlayingProvider extends $FunctionalProvider<bool, bool, bool>
   }
 }
 
-String _$isPlayingHash() => r'2eb6b2f31a49267d108830f30bc31bc6029c5873';
+String _$isPlayingHash() => r'968cf57ff2275097ca46ea11309f091c5b683358';
 
 @ProviderFor(loopMode)
 final loopModeProvider = LoopModeProvider._();
@@ -226,7 +179,7 @@ final class LoopModeProvider
   }
 }
 
-String _$loopModeHash() => r'beb2926607f9ef8ccbe4fc7fd299ddf5753c5c52';
+String _$loopModeHash() => r'a3f3ede5da53630087edd147aa7d14265b5ef409';
 
 @ProviderFor(isShuffled)
 final isShuffledProvider = IsShuffledProvider._();
@@ -266,7 +219,7 @@ final class IsShuffledProvider extends $FunctionalProvider<bool, bool, bool>
   }
 }
 
-String _$isShuffledHash() => r'1e58cff410eaf96ad50278bfc96cf3dcd5ffe794';
+String _$isShuffledHash() => r'5dfc707113a9c96f93ad58b21dfbeef8958bc255';
 
 @ProviderFor(currentIndex)
 final currentIndexProvider = CurrentIndexProvider._();
@@ -306,7 +259,7 @@ final class CurrentIndexProvider extends $FunctionalProvider<int, int, int>
   }
 }
 
-String _$currentIndexHash() => r'1bcbd11528781398af7f663096de59b8b07bfdf2';
+String _$currentIndexHash() => r'8e45ea86ce6d84dff40b42898d915baa0eadc0db';
 
 @ProviderFor(activeTrack)
 final activeTrackProvider = ActiveTrackProvider._();
@@ -346,7 +299,7 @@ final class ActiveTrackProvider extends $FunctionalProvider<Song?, Song?, Song?>
   }
 }
 
-String _$activeTrackHash() => r'6b6975e7fe44c039bc61ce5cc6a578a8494c8407';
+String _$activeTrackHash() => r'9a7978a91dbacaa7eb9c933c6de9242c99bdcb43';
 
 @ProviderFor(collections)
 final collectionsProvider = CollectionsProvider._();
@@ -421,7 +374,7 @@ final class PositionStreamProvider
   }
 }
 
-String _$positionStreamHash() => r'037a7918a281af309d4aa0c7305393bce49a890e';
+String _$positionStreamHash() => r'445bc16bb021193aafc213bfc007b3d83f8c6e55';
 
 @ProviderFor(durationStream)
 final durationStreamProvider = DurationStreamProvider._();
@@ -455,7 +408,7 @@ final class DurationStreamProvider
   }
 }
 
-String _$durationStreamHash() => r'fba046fad63d95fae0cfcf3226d341d0d202ef10';
+String _$durationStreamHash() => r'460e236b8f5625e3c0263b8e2fe9a96821c8121f';
 
 @ProviderFor(bufferedPositionStream)
 final bufferedPositionStreamProvider = BufferedPositionStreamProvider._();
@@ -490,7 +443,7 @@ final class BufferedPositionStreamProvider
 }
 
 String _$bufferedPositionStreamHash() =>
-    r'56ef4043ba5c404ea53604fe9c5b942cf8141578';
+    r'6e377ea261e2398b090e8a327c1f7f981c13c771';
 
 @ProviderFor(playingStream)
 final playingStreamProvider = PlayingStreamProvider._();
@@ -523,7 +476,7 @@ final class PlayingStreamProvider
   }
 }
 
-String _$playingStreamHash() => r'7f56d8a74a60da5b6057360c3fa479030b3e3eba';
+String _$playingStreamHash() => r'a95a15057c5f0b53b4c88c90c885917c5d031347';
 
 @ProviderFor(loopModeStream)
 final loopModeStreamProvider = LoopModeStreamProvider._();
@@ -562,7 +515,7 @@ final class LoopModeStreamProvider
   }
 }
 
-String _$loopModeStreamHash() => r'62d858330e562ea1502df4e0373cff6ae273fb91';
+String _$loopModeStreamHash() => r'cea39ace361da12e46147fd6d01193c50014fcdc';
 
 @ProviderFor(indexChangeStream)
 final indexChangeStreamProvider = IndexChangeStreamProvider._();
@@ -595,4 +548,4 @@ final class IndexChangeStreamProvider
   }
 }
 
-String _$indexChangeStreamHash() => r'55e9cc47a7f7696ed8c0d8dc3b6639ef6165bbe5';
+String _$indexChangeStreamHash() => r'0a402309bc383accf2d5fe917eb2afb52a1ae8b8';

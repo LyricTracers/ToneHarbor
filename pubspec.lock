@@ -1159,6 +1159,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  smtc_windows:
+    dependency: "direct main"
+    description:
+      name: smtc_windows
+      sha256: dee279b0ddf663c4c729a88bca4e57fb4861aa1b3d01e230bdbf1277b8bfe664
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "1.1.0"
   source_gen:
     dependency: transitive
     description:

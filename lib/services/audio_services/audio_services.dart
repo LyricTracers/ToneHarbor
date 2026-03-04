@@ -2,37 +2,49 @@ import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
-import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
-import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/services/audio_services/mobile_audio_service.dart';
-import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/services/audio_services/windows_audio_service.dart';
+import 'package:toneharbor/services/audio_player/audio_player.dart';
+import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
+import 'dart:io';
 
 class AudioServices with WidgetsBindingObserver {
   final MobileAudioService? mobile;
-  final Ref ref;
+  final WindowsAudioService? smtc;
 
-  AudioServices(this.mobile, this.ref) {
+  AudioServices(this.mobile, this.smtc) {
     WidgetsBinding.instance.addObserver(this);
   }
 
-  static Future<AudioServices> create(Ref ref) async {
-    final mobile = await AudioService.init(
-      builder: () => MobileAudioService(ref),
-      config: AudioServiceConfig(
-        androidNotificationChannelId: 'com.toneharbor.app',
-        androidNotificationChannelName: 'ToneHarbor',
-        androidNotificationOngoing: false,
-        androidStopForegroundOnPause: false,
-        androidNotificationChannelDescription: 'ToneHarbor Media Controls',
-      ),
-    );
+  static Future<AudioServices> create(
+    Ref ref,
+    PlaylistNotifier playback,
+  ) async {
+    final mobile =
+        Platform.isAndroid ||
+            Platform.isIOS ||
+            Platform.isMacOS ||
+            Platform.isLinux
+        ? await AudioService.init(
+            builder: () => MobileAudioService(playback),
+            config: AudioServiceConfig(
+              androidNotificationChannelId: 'com.toneharbor.app',
+              androidNotificationChannelName: 'ToneHarbor',
+              androidNotificationOngoing: false,
+              androidStopForegroundOnPause: false,
+              androidNotificationChannelDescription:
+                  'ToneHarbor Media Controls',
+            ),
+          )
+        : null;
 
-    await mobile.init();
+    final smtc = Platform.isWindows ? WindowsAudioService(ref, playback) : null;
 
-    return AudioServices(mobile, ref);
+    return AudioServices(mobile, smtc);
   }
 
   Future<void> addTrack(Song track) async {
+    await smtc?.addTrack(track);
     mobile?.addItem(
       MediaItem(
         id: track.id,
@@ -61,7 +73,7 @@ class AudioServices with WidgetsBindingObserver {
     switch (state) {
       case AppLifecycleState.detached:
         deactivateSession();
-        ref.read(audioPlayerProvider).pause();
+        audioPlayer.pause();
         break;
       default:
         break;
@@ -69,7 +81,7 @@ class AudioServices with WidgetsBindingObserver {
   }
 
   void dispose() {
+    smtc?.dispose();
     WidgetsBinding.instance.removeObserver(this);
-    mobile?.dispose();
   }
 }

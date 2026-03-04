@@ -12,23 +12,9 @@ import 'package:toneharbor/services/audio_services/audio_services.dart';
 part 'audio_player_provider.g.dart';
 
 @keepAlive
-ToneHarborAudioPlayer audioPlayer(Ref ref) {
-  final player = ToneHarborAudioPlayer();
-
-  ref.onDispose(() async {
-    try {
-      await player.dispose();
-    } catch (e) {
-      // Ignore errors during dispose
-    }
-  });
-
-  return player;
-}
-
-@keepAlive
 Future<AudioServices> audioServices(Ref ref) async {
-  final services = await AudioServices.create(ref);
+  final playlistNotifier = ref.watch(playlistProvider.notifier);
+  final services = await AudioServices.create(ref, playlistNotifier);
 
   ref.onDispose(() {
     services.dispose();
@@ -49,7 +35,7 @@ class PlaylistNotifier extends _$PlaylistNotifier {
     return [];
   }
 
-  ToneHarborAudioPlayer get _player => ref.read(audioPlayerProvider);
+  ToneHarborAudioPlayer get _player => audioPlayer;
 
   List<Song> get _tracks => state;
 
@@ -545,33 +531,28 @@ class PlaylistNotifier extends _$PlaylistNotifier {
 
 @riverpod
 bool isPlaying(Ref ref) {
-  final player = ref.watch(audioPlayerProvider);
-  return player.isPlaying;
+  return audioPlayer.isPlaying;
 }
 
 @riverpod
 PlaylistMode loopMode(Ref ref) {
-  final player = ref.watch(audioPlayerProvider);
-  return player.loopMode;
+  return audioPlayer.loopMode;
 }
 
 @riverpod
 bool isShuffled(Ref ref) {
-  final player = ref.watch(audioPlayerProvider);
-  return player.isShuffled;
+  return audioPlayer.isShuffled;
 }
 
 @riverpod
 int currentIndex(Ref ref) {
-  final player = ref.watch(audioPlayerProvider);
-  return player.currentIndex;
+  return audioPlayer.currentIndex;
 }
 
 @riverpod
 Song? activeTrack(Ref ref) {
   final tracks = ref.watch(playlistProvider);
-  final player = ref.watch(audioPlayerProvider);
-  final index = player.currentIndex;
+  final index = audioPlayer.currentIndex;
   if (index < 0 || index >= tracks.length) return null;
   return tracks[index];
 }
@@ -583,36 +564,30 @@ List<String> collections(Ref ref) {
 
 @riverpod
 Stream<Duration> positionStream(Ref ref) {
-  final player = ref.watch(audioPlayerProvider);
-  return player.positionStream;
+  return audioPlayer.positionStream;
 }
 
 @riverpod
 Stream<Duration> durationStream(Ref ref) {
-  final player = ref.watch(audioPlayerProvider);
-  return player.durationStream;
+  return audioPlayer.durationStream;
 }
 
 @riverpod
 Stream<Duration> bufferedPositionStream(Ref ref) {
-  final player = ref.watch(audioPlayerProvider);
-  return player.bufferedPositionStream;
+  return audioPlayer.bufferedPositionStream;
 }
 
 @riverpod
 Stream<bool> playingStream(Ref ref) {
-  final player = ref.watch(audioPlayerProvider);
-  return player.playingStream;
+  return audioPlayer.playingStream;
 }
 
 @riverpod
 Stream<PlaylistMode> loopModeStream(Ref ref) {
-  final player = ref.watch(audioPlayerProvider);
-  return player.loopModeStream;
+  return audioPlayer.loopModeStream;
 }
 
 @riverpod
 Stream<int> indexChangeStream(Ref ref) {
-  final player = ref.watch(audioPlayerProvider);
-  return player.currentIndexChangedStream;
+  return audioPlayer.currentIndexChangedStream;
 }

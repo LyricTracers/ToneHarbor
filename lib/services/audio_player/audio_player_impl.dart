@@ -1,5 +1,7 @@
 part of 'audio_player.dart';
 
+final audioPlayer = ToneHarborAudioPlayer();
+
 class ToneHarborAudioPlayer extends AudioPlayerInterface
     with ToneHarborAudioPlayersStreams {
   Future<void> pause() async {
@@ -35,9 +37,9 @@ class ToneHarborAudioPlayer extends AudioPlayerInterface
   Future<void> dispose() async {
     try {
       await _mkPlayer.stop();
-      await Future.delayed(const Duration(milliseconds: 200));
+      await Future.delayed(const Duration(milliseconds: 500));
       await _mkPlayer.dispose();
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 200));
     } catch (e) {
       // Ignore errors during dispose
     }
