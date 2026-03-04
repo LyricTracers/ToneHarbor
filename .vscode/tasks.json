@@ -1,0 +1,108 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Flutter: Get Packages",
+      "type": "shell",
+      "command": "flutter",
+      "args": [
+        "pub",
+        "get"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Flutter: Clean",
+      "type": "shell",
+      "command": "flutter",
+      "args": [
+        "clean"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Flutter: Run (macOS)",
+      "type": "shell",
+      "command": "flutter",
+      "args": [
+        "run",
+        "-d",
+        "macos"
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Flutter: Run (Chrome)",
+      "type": "shell",
+      "command": "flutter",
+      "args": [
+        "run",
+        "-d",
+        "chrome"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Flutter: Run (iOS)",
+      "type": "shell",
+      "command": "flutter",
+      "args": [
+        "run",
+        "-d",
+        "ios"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Flutter: Run (Android)",
+      "type": "shell",
+      "command": "flutter",
+      "args": [
+        "run",
+        "-d",
+        "android"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Flutter: Build macOS",
+      "type": "shell",
+      "command": "flutter",
+      "args": [
+        "build",
+        "macos"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Flutter: Analyze",
+      "type": "shell",
+      "command": "flutter",
+      "args": [
+        "analyze"
+      ],
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Flutter: Test",
+      "type": "shell",
+      "command": "flutter",
+      "args": [
+        "test"
+      ],
+      "problemMatcher": [],
+      "group": "test"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug (macOS)",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "-d",
+        "macos"
+      ],
+      "flutterMode": "debug"
+    },
+    {
+      "name": "Profile (macOS)",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "-d",
+        "macos"
+      ],
+      "flutterMode": "profile"
+    },
+    {
+      "name": "Release (macOS)",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "-d",
+        "macos"
+      ],
+      "flutterMode": "release"
+    },
+    {
+      "name": "Debug (Chrome)",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "-d",
+        "chrome"
+      ],
+      "flutterMode": "debug"
+    },
+    {
+      "name": "Debug (iOS Simulator)",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "-d",
+        "ios"
+      ],
+      "flutterMode": "debug"
+    },
+    {
+      "name": "Debug (Android Emulator)",
+      "request": "launch",
+      "type": "dart",
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "-d",
+        "android"
+      ],
+      "flutterMode": "debug"
+    }
+  ]
+}

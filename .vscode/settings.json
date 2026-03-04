@@ -1,0 +1,84 @@
+{
+  "dart.lineLength": 100,
+  "editor.rulers": [
+    100
+  ],
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.organizeImports": true
+  },
+  "dart.debugExternalPackageLibraries": true,
+  "dart.debugSdkLibraries": true,
+  "dart.enableCompletionCommitCharacters": true,
+  "dart.enableSnippets": true,
+  "dart.previewLsp": true,
+  "dart.analyzeAdditionalFiles": [
+    "**/*.dart"
+  ],
+  "files.exclude": {
+    "**/.dart_tool": true,
+    "**/.flutter-plugins": true,
+    "**/.flutter-plugins-dependencies": true,
+    "**/.packages": true,
+    "**/build": true,
+    "**/.pub-cache": true,
+    "**/.pub": true,
+    "**/ios/Pods": true,
+    "**/ios/.symlinks": true,
+    "**/ios/Flutter/Flutter.framework": true,
+    "**/ios/Flutter/Flutter.podspec": true,
+    "**/ios/Flutter/Generated.xcconfig": true,
+    "**/ios/Flutter/ephemeral": true,
+    "**/macos/Pods": true,
+    "**/macos/.symlinks": true,
+    "**/macos/Flutter/Flutter.framework": true,
+    "**/macos/Flutter/Flutter.podspec": true,
+    "**/macos/Flutter/Generated.xcconfig": true,
+    "**/macos/Flutter/ephemeral": true,
+    "**/android/.gradle": true,
+    "**/android/captures": true,
+    "**/android/gradlew": true,
+    "**/android/gradlew.bat": true,
+    "**/android/local.properties": true,
+    "**/android/**/GeneratedPluginRegistrant.java": true,
+    "**/android/**/GeneratedPluginRegistrant.kt": true
+  },
+  "search.exclude": {
+    "**/.dart_tool": true,
+    "**/.flutter-plugins": true,
+    "**/.flutter-plugins-dependencies": true,
+    "**/.packages": true,
+    "**/build": true,
+    "**/.pub-cache": true,
+    "**/.pub": true,
+    "**/ios/Pods": true,
+    "**/ios/.symlinks": true,
+    "**/ios/Flutter/Flutter.framework": true,
+    "**/ios/Flutter/Flutter.podspec": true,
+    "**/ios/Flutter/Generated.xcconfig": true,
+    "**/ios/Flutter/ephemeral": true,
+    "**/macos/Pods": true,
+    "**/macos/.symlinks": true,
+    "**/macos/Flutter/Flutter.framework": true,
+    "**/macos/Flutter/Flutter.podspec": true,
+    "**/macos/Flutter/Generated.xcconfig": true,
+    "**/macos/Flutter/ephemeral": true,
+    "**/android/.gradle": true,
+    "**/android/captures": true,
+    "**/android/gradlew": true,
+    "**/android/gradlew.bat": true,
+    "**/android/local.properties": true,
+    "**/android/**/GeneratedPluginRegistrant.java": true,
+    "**/android/**/GeneratedPluginRegistrant.kt": true
+  },
+  "[dart]": {
+    "editor.formatOnSave": true,
+    "editor.rulers": [
+      100
+    ],
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.suggest.snippetsPreventQuickSuggestions": false
+  }
+}
