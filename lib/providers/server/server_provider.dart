@@ -44,7 +44,7 @@ final serverRouterProvider = Provider((ref) {
   return router;
 });
 
-@riverpod
+@keepAlive
 Future<HttpServer> server(Ref ref) async {
   final pipeline = ref.watch(pipelineProvider);
   final router = ref.watch(serverRouterProvider);

@@ -49,9 +49,9 @@ class PlaylistNotifier extends _$PlaylistNotifier {
 
   Future<void> _syncSavedState() async {
     try {
-      final persistedState = await ref
-          .read(audioPlayerStatePersistenceProvider.notifier)
-          .build();
+      final persistedState = await ref.read(
+        audioPlayerStatePersistenceProvider.future,
+      );
 
       if (persistedState.tracks.isNotEmpty) {
         _collections = persistedState.collections;

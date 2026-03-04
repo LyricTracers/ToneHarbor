@@ -26,7 +26,7 @@ final class ServerProvider
         argument: null,
         retry: null,
         name: r'serverProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -45,4 +45,4 @@ final class ServerProvider
   }
 }
 
-String _$serverHash() => r'bb965c36e36f8b7cad85089153b7740466ee87f5';
+String _$serverHash() => r'0cd8b287a9afe33be856823c4ed5e6e853418041';
