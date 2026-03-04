@@ -15,8 +15,12 @@ part 'audio_player_provider.g.dart';
 ToneHarborAudioPlayer audioPlayer(Ref ref) {
   final player = ToneHarborAudioPlayer();
 
-  ref.onDispose(() {
-    player.dispose();
+  ref.onDispose(() async {
+    try {
+      await player.dispose();
+    } catch (e) {
+      // Ignore errors during dispose
+    }
   });
 
   return player;

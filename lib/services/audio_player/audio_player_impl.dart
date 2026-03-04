@@ -33,7 +33,14 @@ class ToneHarborAudioPlayer extends AudioPlayerInterface
   }
 
   Future<void> dispose() async {
-    await _mkPlayer.dispose();
+    try {
+      await _mkPlayer.stop();
+      await Future.delayed(const Duration(milliseconds: 200));
+      await _mkPlayer.dispose();
+      await Future.delayed(const Duration(milliseconds: 100));
+    } catch (e) {
+      // Ignore errors during dispose
+    }
   }
 
   Future<void> openPlaylist(
