@@ -9,7 +9,7 @@ import 'package:toneharbor/init/initialized.dart';
 
 class AudioPlayerStreamListeners {
   final Ref ref;
-  late final AudioServices notificationService;
+  AudioServices? notificationService;
   final subscriptions = <StreamSubscription>[];
 
   AudioPlayerStreamListeners(this.ref) {
@@ -24,7 +24,6 @@ class AudioPlayerStreamListeners {
       for (final subscription in subscriptions) {
         subscription.cancel();
       }
-      notificationService.dispose();
     });
   }
 
@@ -34,8 +33,8 @@ class AudioPlayerStreamListeners {
     return audioPlayer.playlistStream.listen((playlist) async {
       try {
         final activeTrack = _tracks.elementAtOrNull(playlist.index);
-        if (activeTrack != null) {
-          await notificationService.addTrack(activeTrack);
+        if (activeTrack != null && notificationService != null) {
+          await notificationService!.addTrack(activeTrack);
         }
       } catch (e, stack) {
         logger.e(
