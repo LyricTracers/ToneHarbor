@@ -113,7 +113,7 @@ Future<AlbumResponse> artistAlbums(
   }
 }
 
-@keepAlive
+@riverpod
 Future<AlbumResponse> searchAlbums(
   Ref ref, {
   required String filter,

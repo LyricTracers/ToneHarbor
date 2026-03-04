@@ -19,7 +19,7 @@ final class RequestFlagProvider extends $NotifierProvider<RequestFlag, bool> {
         argument: null,
         retry: null,
         name: r'requestFlagProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -40,7 +40,7 @@ final class RequestFlagProvider extends $NotifierProvider<RequestFlag, bool> {
   }
 }
 
-String _$requestFlagHash() => r'e2dbd48ea8bbe2c0f9098f62a1301d06aba6e723';
+String _$requestFlagHash() => r'48979857bd3627fa81f0747f453efb30ad525a1c';
 
 abstract class _$RequestFlag extends $Notifier<bool> {
   bool build();
@@ -115,7 +115,7 @@ final class SearchHistoryNotifierProvider
         argument: null,
         retry: null,
         name: r'searchHistoryProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -129,7 +129,7 @@ final class SearchHistoryNotifierProvider
 }
 
 String _$searchHistoryNotifierHash() =>
-    r'8dbb96200539f73af82e5f797ab3d074bb9393fd';
+    r'ddc9191c05a96f840c5c79ec87b39b9117134ebf';
 
 abstract class _$SearchHistoryNotifier extends $AsyncNotifier<List<String>> {
   FutureOr<List<String>> build();

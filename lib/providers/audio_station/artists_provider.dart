@@ -42,7 +42,7 @@ Future<ArtistResponse> artists(
   }
 }
 
-@keepAlive
+@riverpod
 Future<ArtistResponse> searchArtists(
   Ref ref, {
   required String filter,

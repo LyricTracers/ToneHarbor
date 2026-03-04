@@ -175,10 +175,7 @@ Future<T?> getFromCache<T>({
   required T Function(Map<String, dynamic> json) fromJson,
 }) async {
   try {
-    final cachedJson = await audioStationRequestCache.get(
-      cacheKey,
-      group: group,
-    );
+    final cachedJson = await audioStationRequestCache.get(cacheKey);
     if (cachedJson != null) {
       logger.i('cacheKey: $cacheKey 从缓存读取数据');
       return fromJson(cachedJson);

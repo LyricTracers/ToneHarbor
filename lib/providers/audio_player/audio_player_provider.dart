@@ -27,7 +27,7 @@ Future<AudioServices> audioServices(Ref ref) async {
   return AudioServices.create(ref);
 }
 
-@riverpod
+@keepAlive
 class PlaylistNotifier extends _$PlaylistNotifier {
   List<String> _collections = [];
   List<String> get collections => _collections;
@@ -53,7 +53,7 @@ class PlaylistNotifier extends _$PlaylistNotifier {
         audioPlayerStatePersistenceProvider.future,
       );
 
-      if (persistedState.tracks.isNotEmpty) {
+      if (persistedState.tracks.isNotEmpty && ref.mounted) {
         _collections = persistedState.collections;
         await _player.setLoopMode(persistedState.loopMode);
         await _player.setShuffle(persistedState.shuffled);
@@ -91,27 +91,33 @@ class PlaylistNotifier extends _$PlaylistNotifier {
     final subscriptions = [
       _player.playingStream.listen((playing) async {
         try {
-          await ref
-              .read(audioPlayerStatePersistenceProvider.notifier)
-              .savePlaying(playing);
+          if (ref.mounted) {
+            await ref
+                .read(audioPlayerStatePersistenceProvider.notifier)
+                .savePlaying(playing);
+          }
         } catch (e, stack) {
           logger.e('Failed to save playing state', error: e, stackTrace: stack);
         }
       }),
       _player.loopModeStream.listen((loopMode) async {
         try {
-          await ref
-              .read(audioPlayerStatePersistenceProvider.notifier)
-              .saveLoopMode(loopMode);
+          if (ref.mounted) {
+            await ref
+                .read(audioPlayerStatePersistenceProvider.notifier)
+                .saveLoopMode(loopMode);
+          }
         } catch (e, stack) {
           logger.e('Failed to save loop mode', error: e, stackTrace: stack);
         }
       }),
       _player.shuffledStream.listen((shuffled) async {
         try {
-          await ref
-              .read(audioPlayerStatePersistenceProvider.notifier)
-              .saveShuffled(shuffled);
+          if (ref.mounted) {
+            await ref
+                .read(audioPlayerStatePersistenceProvider.notifier)
+                .saveShuffled(shuffled);
+          }
         } catch (e, stack) {
           logger.e(
             'Failed to save shuffled state',
@@ -122,15 +128,17 @@ class PlaylistNotifier extends _$PlaylistNotifier {
       }),
       _player.playlistStream.listen((playlist) async {
         try {
-          await ref
-              .read(audioPlayerStatePersistenceProvider.notifier)
-              .saveTracks(_tracks, playlist.index);
+          if (ref.mounted) {
+            await ref
+                .read(audioPlayerStatePersistenceProvider.notifier)
+                .saveTracks(_tracks, playlist.index);
 
-          final activeTrack = _tracks.elementAtOrNull(playlist.index);
-          if (activeTrack != null) {
-            final audioServicesAsync = ref.read(audioServicesProvider);
-            if (audioServicesAsync.hasValue) {
-              await audioServicesAsync.value?.addTrack(activeTrack);
+            final activeTrack = _tracks.elementAtOrNull(playlist.index);
+            if (activeTrack != null) {
+              final audioServicesAsync = ref.read(audioServicesProvider);
+              if (audioServicesAsync.hasValue) {
+                await audioServicesAsync.value?.addTrack(activeTrack);
+              }
             }
           }
         } catch (e, stack) {
@@ -139,10 +147,12 @@ class PlaylistNotifier extends _$PlaylistNotifier {
       }),
       _player.positionStream.listen((position) async {
         try {
-          await _preloadNextTrack(position);
-          await _handleScrobble(position, lastScrobbledId, (id) {
-            lastScrobbledId = id;
-          });
+          if (ref.mounted) {
+            await _preloadNextTrack(position);
+            await _handleScrobble(position, lastScrobbledId, (id) {
+              lastScrobbledId = id;
+            });
+          }
         } catch (e, stack) {
           logger.e(
             'Failed to preload/handle scrobble',
@@ -229,12 +239,14 @@ class PlaylistNotifier extends _$PlaylistNotifier {
       autoPlay: autoPlay,
     );
 
-    _tracks = songs;
-    _collections = [];
+    if (ref.mounted) {
+      _tracks = songs;
+      _collections = [];
 
-    await ref
-        .read(audioPlayerStatePersistenceProvider.notifier)
-        .saveTracks(songs, initial);
+      await ref
+          .read(audioPlayerStatePersistenceProvider.notifier)
+          .saveTracks(songs, initial);
+    }
   }
 
   Future<void> play() async {
@@ -247,9 +259,11 @@ class PlaylistNotifier extends _$PlaylistNotifier {
 
   Future<void> stop() async {
     await _player.clearPlaylist();
-    _tracks = [];
-    _collections = [];
-    await ref.read(audioPlayerStatePersistenceProvider.notifier).clearState();
+    if (ref.mounted) {
+      _tracks = [];
+      _collections = [];
+      await ref.read(audioPlayerStatePersistenceProvider.notifier).clearState();
+    }
   }
 
   Future<void> seek(Duration position) async {
@@ -334,13 +348,15 @@ class PlaylistNotifier extends _$PlaylistNotifier {
     );
     await _player.addTrackAt(media, insertIndex);
 
-    final newTracks = [..._tracks];
-    newTracks.insert(insertIndex, song);
-    _tracks = newTracks;
+    if (ref.mounted) {
+      final newTracks = [..._tracks];
+      newTracks.insert(insertIndex, song);
+      _tracks = newTracks;
 
-    await ref
-        .read(audioPlayerStatePersistenceProvider.notifier)
-        .saveTracks(_tracks, _player.currentIndex);
+      await ref
+          .read(audioPlayerStatePersistenceProvider.notifier)
+          .saveTracks(_tracks, _player.currentIndex);
+    }
   }
 
   Future<void> addTracks(List<Song> songs) async {
@@ -359,11 +375,13 @@ class PlaylistNotifier extends _$PlaylistNotifier {
       await _player.addTrack(media);
     }
 
-    _tracks = [..._tracks, ...songs];
+    if (ref.mounted) {
+      _tracks = [..._tracks, ...songs];
 
-    await ref
-        .read(audioPlayerStatePersistenceProvider.notifier)
-        .saveTracks(_tracks, _player.currentIndex);
+      await ref
+          .read(audioPlayerStatePersistenceProvider.notifier)
+          .saveTracks(_tracks, _player.currentIndex);
+    }
   }
 
   Future<void> addTracksAtFirst(List<Song> songs) async {
@@ -392,13 +410,15 @@ class PlaylistNotifier extends _$PlaylistNotifier {
       await _player.addTrackAt(media, insertStartIndex + i);
     }
 
-    final newTracks = [..._tracks];
-    newTracks.insertAll(insertStartIndex, songs);
-    _tracks = newTracks;
+    if (ref.mounted) {
+      final newTracks = [..._tracks];
+      newTracks.insertAll(insertStartIndex, songs);
+      _tracks = newTracks;
 
-    await ref
-        .read(audioPlayerStatePersistenceProvider.notifier)
-        .saveTracks(_tracks, _player.currentIndex);
+      await ref
+          .read(audioPlayerStatePersistenceProvider.notifier)
+          .saveTracks(_tracks, _player.currentIndex);
+    }
   }
 
   Future<void> removeTrack(int index) async {
@@ -406,13 +426,15 @@ class PlaylistNotifier extends _$PlaylistNotifier {
 
     await _player.removeTrack(index);
 
-    final newTracks = [..._tracks];
-    newTracks.removeAt(index);
-    _tracks = newTracks;
+    if (ref.mounted) {
+      final newTracks = [..._tracks];
+      newTracks.removeAt(index);
+      _tracks = newTracks;
 
-    await ref
-        .read(audioPlayerStatePersistenceProvider.notifier)
-        .saveTracks(_tracks, _player.currentIndex);
+      await ref
+          .read(audioPlayerStatePersistenceProvider.notifier)
+          .saveTracks(_tracks, _player.currentIndex);
+    }
   }
 
   Future<void> removeTracks(List<int> indexes) async {
@@ -429,17 +451,19 @@ class PlaylistNotifier extends _$PlaylistNotifier {
       await _player.removeTrack(index);
     }
 
-    final indexSet = validIndexes.toSet();
-    _tracks = _tracks
-        .asMap()
-        .entries
-        .where((e) => !indexSet.contains(e.key))
-        .map((e) => e.value)
-        .toList();
+    if (ref.mounted) {
+      final indexSet = validIndexes.toSet();
+      _tracks = _tracks
+          .asMap()
+          .entries
+          .where((e) => !indexSet.contains(e.key))
+          .map((e) => e.value)
+          .toList();
 
-    await ref
-        .read(audioPlayerStatePersistenceProvider.notifier)
-        .saveTracks(_tracks, _player.currentIndex);
+      await ref
+          .read(audioPlayerStatePersistenceProvider.notifier)
+          .saveTracks(_tracks, _player.currentIndex);
+    }
   }
 
   Future<void> moveTrack(int oldIndex, int newIndex) async {
@@ -449,30 +473,36 @@ class PlaylistNotifier extends _$PlaylistNotifier {
 
     await _player.moveTrack(oldIndex, newIndex);
 
-    final track = _tracks[oldIndex];
-    final newTracks = [..._tracks];
-    newTracks.removeAt(oldIndex);
-    newTracks.insert(newIndex, track);
-    _tracks = newTracks;
+    if (ref.mounted) {
+      final track = _tracks[oldIndex];
+      final newTracks = [..._tracks];
+      newTracks.removeAt(oldIndex);
+      newTracks.insert(newIndex, track);
+      _tracks = newTracks;
 
-    await ref
-        .read(audioPlayerStatePersistenceProvider.notifier)
-        .saveTracks(_tracks, _player.currentIndex);
+      await ref
+          .read(audioPlayerStatePersistenceProvider.notifier)
+          .saveTracks(_tracks, _player.currentIndex);
+    }
   }
 
   Future<void> clearPlaylist() async {
     await _player.clearPlaylist();
-    _tracks = [];
-    _collections = [];
-    await ref.read(audioPlayerStatePersistenceProvider.notifier).clearState();
+    if (ref.mounted) {
+      _tracks = [];
+      _collections = [];
+      await ref.read(audioPlayerStatePersistenceProvider.notifier).clearState();
+    }
   }
 
   // Collection management
   Future<void> addCollections(List<String> collectionIds) async {
-    _collections = [..._collections, ...collectionIds];
-    await ref
-        .read(audioPlayerStatePersistenceProvider.notifier)
-        .saveCollections(_collections);
+    if (ref.mounted) {
+      _collections = [..._collections, ...collectionIds];
+      await ref
+          .read(audioPlayerStatePersistenceProvider.notifier)
+          .saveCollections(_collections);
+    }
   }
 
   Future<void> addCollection(String collectionId) async {
@@ -480,12 +510,14 @@ class PlaylistNotifier extends _$PlaylistNotifier {
   }
 
   Future<void> removeCollections(List<String> collectionIds) async {
-    _collections = _collections
-        .where((id) => !collectionIds.contains(id))
-        .toList();
-    await ref
-        .read(audioPlayerStatePersistenceProvider.notifier)
-        .saveCollections(_collections);
+    if (ref.mounted) {
+      _collections = _collections
+          .where((id) => !collectionIds.contains(id))
+          .toList();
+      await ref
+          .read(audioPlayerStatePersistenceProvider.notifier)
+          .saveCollections(_collections);
+    }
   }
 
   Future<void> removeCollection(String collectionId) async {

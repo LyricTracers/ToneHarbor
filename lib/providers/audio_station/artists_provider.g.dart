@@ -175,7 +175,7 @@ final class SearchArtistsProvider
   }) : super(
          retry: null,
          name: r'searchArtistsProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -234,7 +234,7 @@ final class SearchArtistsProvider
   }
 }
 
-String _$searchArtistsHash() => r'ed925cb9e7d02a884bb5ee56202b9724847fee80';
+String _$searchArtistsHash() => r'3ea8f087b9cdc43a860315d1ee0796e2ed78d16e';
 
 final class SearchArtistsFamily extends $Family
     with
@@ -257,7 +257,7 @@ final class SearchArtistsFamily extends $Family
         name: r'searchArtistsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
 
   SearchArtistsProvider call({

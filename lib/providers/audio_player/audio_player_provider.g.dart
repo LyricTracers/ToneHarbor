@@ -106,7 +106,7 @@ final class PlaylistNotifierProvider
         argument: null,
         retry: null,
         name: r'playlistProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -127,7 +127,7 @@ final class PlaylistNotifierProvider
   }
 }
 
-String _$playlistNotifierHash() => r'4d691837cdb7c4d07f8aff6eb56f4acb57a5340b';
+String _$playlistNotifierHash() => r'988008bd1633ba3743c3af67f415009a346d8a51';
 
 abstract class _$PlaylistNotifier extends $Notifier<List<Song>> {
   List<Song> build();

@@ -6,7 +6,7 @@ import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 part 'common_provider.g.dart';
 
-@keepAlive
+@riverpod
 class RequestFlag extends _$RequestFlag {
   @override
   bool build() => false;
@@ -40,7 +40,7 @@ class LocaleNotifier extends _$LocaleNotifier {
   }
 }
 
-@keepAlive
+@riverpod
 class SearchHistoryNotifier extends _$SearchHistoryNotifier {
   @override
   Future<List<String>> build() async {

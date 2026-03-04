@@ -67,7 +67,9 @@ class AudioPlayerStatePersistence extends _$AudioPlayerStatePersistence {
         tracks: state.tracks,
       );
       await box.put(_stateKey, hiveState);
-      this.state = AsyncData(state);
+      if (ref.mounted) {
+        this.state = AsyncData(state);
+      }
     } catch (e) {
       rethrow;
     }
