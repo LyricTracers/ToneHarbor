@@ -40,6 +40,7 @@ final serverRouterProvider = Provider((ref) {
 
   router.head("/stream/<songId>", playbackRoutes.headStreamSongId);
   router.get("/stream/<songId>", playbackRoutes.getStreamSongId);
+  router.get("/cover/<albumName>/<artistName>", playbackRoutes.getCover);
 
   return router;
 });

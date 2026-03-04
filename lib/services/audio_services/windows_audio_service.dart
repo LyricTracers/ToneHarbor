@@ -76,7 +76,7 @@ class WindowsAudioService {
     ]);
   }
 
-  Future<void> addTrack(Song track) async {
+  Future<void> addTrack(Song track, {String? artUri}) async {
     if (!smtc.enabled) {
       await smtc.enableSmtc();
     }
@@ -86,7 +86,7 @@ class WindowsAudioService {
         albumArtist: track.additional?.songTag?.artist ?? "Unknown",
         artist: track.additional?.songTag?.artist ?? "Unknown",
         album: track.additional?.songTag?.album ?? "Unknown",
-        thumbnail: null,
+        thumbnail: artUri,
       ),
     );
   }
