@@ -76,16 +76,22 @@ class WindowsAudioService {
     ]);
   }
 
-  Future<void> addTrack(Song track, {String? artUri}) async {
+  Future<void> addTrackMedia(
+    String title,
+    String? album,
+    String? artist,
+    int? duration,
+    String? artUri,
+  ) async {
     if (!smtc.enabled) {
       await smtc.enableSmtc();
     }
     await smtc.updateMetadata(
       MusicMetadata(
-        title: track.title,
-        albumArtist: track.additional?.songTag?.artist ?? "Unknown",
-        artist: track.additional?.songTag?.artist ?? "Unknown",
-        album: track.additional?.songTag?.album ?? "Unknown",
+        title: title,
+        albumArtist: artist ?? "Unknown",
+        artist: artist ?? "Unknown",
+        album: album ?? "Unknown",
         thumbnail: artUri,
       ),
     );

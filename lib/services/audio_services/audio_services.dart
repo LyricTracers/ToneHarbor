@@ -43,17 +43,22 @@ class AudioServices with WidgetsBindingObserver {
     return AudioServices(mobile, smtc);
   }
 
-  Future<void> addTrack(Song track, {String? artUri}) async {
-    await smtc?.addTrack(track, artUri: artUri);
+  Future<void> addTrackMedia(
+    String id,
+    String title,
+    String? album,
+    String? artist,
+    int? duration,
+    String? artUri,
+  ) async {
+    await smtc?.addTrackMedia(title, album, artist, duration, artUri);
     mobile?.addItem(
       MediaItem(
-        id: track.id,
-        album: track.additional?.songTag?.album ?? '',
-        title: track.title,
-        artist: track.additional?.songTag?.artist ?? '',
-        duration: Duration(
-          milliseconds: track.additional?.songAudio?.duration ?? 0,
-        ),
+        id: id,
+        album: album ?? '',
+        title: title,
+        artist: artist ?? '',
+        duration: Duration(milliseconds: duration ?? 0),
         artUri: artUri != null ? Uri.parse(artUri) : null,
         playable: true,
       ),

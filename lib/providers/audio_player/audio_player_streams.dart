@@ -37,6 +37,9 @@ class AudioPlayerStreamListeners {
           if (extras != null) {
             final album = extras['album'] as String?;
             final artist = extras['artist'] as String?;
+            final duration = extras['duration'] as int?;
+            final id = extras['id'] as String? ?? '';
+            final title = extras['title'] as String? ?? '';
 
             String? artUri;
             if (album != null &&
@@ -46,24 +49,16 @@ class AudioPlayerStreamListeners {
                   'http://${ToneHarborMedia.host}:${ToneHarborMedia.serverPort}/cover/${Uri.encodeComponent(album)}/${Uri.encodeComponent(artist)}';
             }
 
-            final activeTrack = Song(
-              id: extras['id'] as String? ?? '',
-              path: '',
-              title: extras['title'] as String? ?? '',
-              type: '',
-              additional: SongAdditional(
-                songTag: SongTag(
-                  album: album,
-                  artist: artist,
-                  disc: 1,
-                  track: 1,
-                  year: DateTime.now().year,
-                ),
-              ),
+            await notificationService!.addTrackMedia(
+              id,
+              title,
+              album,
+              artist,
+              duration,
+              artUri,
             );
-            await notificationService!.addTrack(activeTrack, artUri: artUri);
             logger.i(
-              '[AudioPlayerStreamListeners] track added to notification: ${activeTrack.title}, ${activeTrack.id}, artUri: ${artUri ?? "null"}',
+              '[AudioPlayerStreamListeners] track added to notification: $title, $id, artUri: ${artUri ?? "null"}',
             );
           }
         }
