@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/services/audio_services/mobile_audio_service.dart';
 import 'package:toneharbor/services/audio_services/windows_audio_service.dart';
@@ -58,7 +59,7 @@ class AudioServices with WidgetsBindingObserver {
         album: album ?? '',
         title: title,
         artist: artist ?? '',
-        duration: Duration(milliseconds: duration ?? 0),
+        duration: Duration(seconds: duration ?? 0),
         artUri: artUri != null ? Uri.parse(artUri) : null,
         playable: true,
       ),

@@ -205,6 +205,7 @@ class PlaylistNotifier extends _$PlaylistNotifier {
           'title': song.title,
           'album': song.additional?.songTag?.album,
           'artist': song.additional?.songTag?.artist,
+          'duration': song.additional?.songAudio?.duration,
         },
       );
     }).toList();
@@ -299,6 +300,7 @@ class PlaylistNotifier extends _$PlaylistNotifier {
         'title': song.title,
         'album': song.additional?.songTag?.album,
         'artist': song.additional?.songTag?.artist,
+        'duration': song.additional?.songAudio?.duration,
       },
     );
     await _player.addTrack(media);
@@ -322,6 +324,7 @@ class PlaylistNotifier extends _$PlaylistNotifier {
         'title': song.title,
         'album': song.additional?.songTag?.album,
         'artist': song.additional?.songTag?.artist,
+        'duration': song.additional?.songAudio?.duration,
       },
     );
     await _player.addTrackAt(media, insertIndex);
@@ -348,6 +351,7 @@ class PlaylistNotifier extends _$PlaylistNotifier {
           'title': song.title,
           'album': song.additional?.songTag?.album,
           'artist': song.additional?.songTag?.artist,
+          'duration': song.additional?.songAudio?.duration,
         },
       );
       await _player.addTrack(media);
@@ -383,6 +387,7 @@ class PlaylistNotifier extends _$PlaylistNotifier {
           'title': song.title,
           'album': song.additional?.songTag?.album,
           'artist': song.additional?.songTag?.artist,
+          'duration': song.additional?.songAudio?.duration,
         },
       );
       await _player.addTrackAt(media, insertStartIndex + i);

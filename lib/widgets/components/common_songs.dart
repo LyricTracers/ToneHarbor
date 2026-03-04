@@ -160,7 +160,9 @@ class _SongItem extends ConsumerWidget {
 
     return InkWell(
       onTap: () {
-        logger.d('点击歌曲: $songTitle, 艺术家: $artistName, 专辑: $albumName');
+        logger.d(
+          '点击歌曲: $songTitle, 艺术家: $artistName, 专辑: $albumName,info:${song}',
+        );
         ref
             .read(playlistProvider.notifier)
             .loadPlaylist([song], initialIndex: 0, autoPlay: true);

@@ -7,7 +7,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0
 
 environment:
-  sdk: ^3.10.7
+  sdk: ^3.9.2
 
 dependencies:
   flutter:
@@ -40,9 +40,9 @@ dependencies:
   hive_flutter: ^1.1.0
   sqflite: ^2.4.2
   freezed_annotation: ^3.0.0
-  json_annotation: ^4.11.0
-  riverpod_annotation: ^4.0.2
-  material_color_utilities: ^0.13.0
+  json_annotation: 4.9.0
+  riverpod_annotation: ^4.0.0
+  material_color_utilities: ^0.11.1
   logger: ^2.6.2
   synchronized: ^3.1.0
   file_picker: ^10.3.10
@@ -85,11 +85,11 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0
-  riverpod_generator: ^4.0.3
-  build_runner: ^2.11.1
-  freezed: ^3.2.5
-  json_serializable: ^6.12.0
+  flutter_lints: ^5.0.0
+  riverpod_generator: ^4.0.0+1
+  build_runner: 2.7.1
+  freezed: ^3.2.3
+  json_serializable: 6.11.2
 
 flutter:
   generate: true
