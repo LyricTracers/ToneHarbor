@@ -9,6 +9,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:synchronized/synchronized.dart';
+import 'package:toneharbor/services/hive/hive_service.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
@@ -28,6 +29,7 @@ Future<void> initialized() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
   await Rhttp.init();
+  await HiveService.initialize();
   initLogger();
   initHttpClientWrapper();
   await initAudioStationRequestCache();

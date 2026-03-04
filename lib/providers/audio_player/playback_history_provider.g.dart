@@ -34,7 +34,7 @@ final class PlaybackHistoryProvider
   PlaybackHistory create() => PlaybackHistory();
 }
 
-String _$playbackHistoryHash() => r'537436704fe9aa56f1b1bb8a8542c1542e245e8a';
+String _$playbackHistoryHash() => r'17679510521cb2e197b3e8f572d29400de5b8097';
 
 abstract class _$PlaybackHistory
     extends $AsyncNotifier<List<PlaybackHistoryEntry>> {

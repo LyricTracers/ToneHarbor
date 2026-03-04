@@ -1,13 +1,11 @@
-import 'dart:convert';
-
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/services/hive/hive_adapters.dart';
+import 'package:toneharbor/services/hive/hive_service.dart';
 
 part 'playback_history_provider.g.dart';
 
-const _playbackHistoryKey = 'playback_history';
-const _maxHistorySize = 100;
+const int _maxHistorySize = 100;
 
 class PlaybackHistoryEntry {
   final Song track;
@@ -19,22 +17,6 @@ class PlaybackHistoryEntry {
     required this.playedAt,
     required this.playDurationMs,
   });
-
-  factory PlaybackHistoryEntry.fromJson(Map<String, dynamic> json) {
-    return PlaybackHistoryEntry(
-      track: Song.fromJson(json['track'] as Map<String, dynamic>),
-      playedAt: DateTime.parse(json['playedAt'] as String),
-      playDurationMs: json['playDurationMs'] as int? ?? 0,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'track': track.toJson(),
-      'playedAt': playedAt.toIso8601String(),
-      'playDurationMs': playDurationMs,
-    };
-  }
 }
 
 @riverpod
@@ -46,14 +28,17 @@ class PlaybackHistory extends _$PlaybackHistory {
 
   Future<List<PlaybackHistoryEntry>> _loadHistory() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final jsonString = prefs.getString(_playbackHistoryKey);
-      if (jsonString == null) {
-        return [];
-      }
-      final jsonList = jsonDecode(jsonString) as List<dynamic>;
-      return jsonList
-          .map((e) => PlaybackHistoryEntry.fromJson(e as Map<String, dynamic>))
+      final box = HiveService.getPlaybackHistoryBox();
+      final entries = box.values.toList();
+
+      entries.sort((a, b) => b.playedAt.compareTo(a.playedAt));
+
+      return entries
+          .map((e) => PlaybackHistoryEntry(
+                track: e.track.toSong(),
+                playedAt: e.playedAt,
+                playDurationMs: e.playDurationMs,
+              ))
           .toList();
     } catch (e) {
       return [];
@@ -61,46 +46,54 @@ class PlaybackHistory extends _$PlaybackHistory {
   }
 
   Future<void> addTrack(Song track, {int playDurationMs = 0}) async {
-    final current = state.value ?? [];
-
-    final entry = PlaybackHistoryEntry(
-      track: track,
-      playedAt: DateTime.now(),
-      playDurationMs: playDurationMs,
-    );
-
-    final updated = [entry, ...current];
-
-    if (updated.length > _maxHistorySize) {
-      updated.removeRange(_maxHistorySize, updated.length);
-    }
-
-    await _saveHistory(updated);
-    state = AsyncData(updated);
-  }
-
-  Future<void> removeTrack(String trackId) async {
-    final current = state.value ?? [];
-    final updated = current.where((e) => e.track.id != trackId).toList();
-    await _saveHistory(updated);
-    state = AsyncData(updated);
-  }
-
-  Future<void> clearHistory() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(_playbackHistoryKey);
-      state = const AsyncData([]);
+      final box = HiveService.getPlaybackHistoryBox();
+
+      final entry = PlaybackHistoryEntryHive(
+        track: SongHive.fromSong(track),
+        playedAt: DateTime.now(),
+        playDurationMs: playDurationMs,
+      );
+
+      await box.add(entry);
+
+      final allEntries = box.values.toList();
+      if (allEntries.length > _maxHistorySize) {
+        allEntries.sort((a, b) => b.playedAt.compareTo(a.playedAt));
+        final toDelete = allEntries.sublist(_maxHistorySize);
+        for (final e in toDelete) {
+          await e.delete();
+        }
+      }
+
+      state = AsyncData(await _loadHistory());
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> _saveHistory(List<PlaybackHistoryEntry> history) async {
+  Future<void> removeTrack(String trackId) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final jsonList = history.map((e) => e.toJson()).toList();
-      await prefs.setString(_playbackHistoryKey, jsonEncode(jsonList));
+      final box = HiveService.getPlaybackHistoryBox();
+      final entries = box.values.toList();
+
+      for (final entry in entries) {
+        if (entry.track.id == trackId) {
+          await entry.delete();
+        }
+      }
+
+      state = AsyncData(await _loadHistory());
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> clearHistory() async {
+    try {
+      final box = HiveService.getPlaybackHistoryBox();
+      await box.clear();
+      state = const AsyncData([]);
     } catch (e) {
       rethrow;
     }

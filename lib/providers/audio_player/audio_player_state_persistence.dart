@@ -1,13 +1,10 @@
-import 'dart:convert';
-
 import 'package:media_kit/media_kit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/services/hive/hive_adapters.dart';
+import 'package:toneharbor/services/hive/hive_service.dart';
 
 part 'audio_player_state_persistence.g.dart';
-
-const _audioPlayerStateKey = 'audio_player_state';
 
 class AudioPlayerPersistedState {
   final bool playing;
@@ -25,43 +22,12 @@ class AudioPlayerPersistedState {
     this.currentIndex = 0,
     this.tracks = const [],
   });
-
-  factory AudioPlayerPersistedState.fromJson(Map<String, dynamic> json) {
-    return AudioPlayerPersistedState(
-      playing: json['playing'] as bool? ?? false,
-      loopMode: PlaylistMode.values.firstWhere(
-        (e) => e.name == json['loopMode'],
-        orElse: () => PlaylistMode.none,
-      ),
-      shuffled: json['shuffled'] as bool? ?? false,
-      collections:
-          (json['collections'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          [],
-      currentIndex: json['currentIndex'] as int? ?? 0,
-      tracks:
-          (json['tracks'] as List<dynamic>?)
-              ?.map((e) => Song.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'playing': playing,
-      'loopMode': loopMode.name,
-      'shuffled': shuffled,
-      'collections': collections,
-      'currentIndex': currentIndex,
-      'tracks': tracks.map((e) => e.toJson()).toList(),
-    };
-  }
 }
 
 @riverpod
 class AudioPlayerStatePersistence extends _$AudioPlayerStatePersistence {
+  static const String _stateKey = 'player_state';
+
   @override
   Future<AudioPlayerPersistedState> build() async {
     return _loadState();
@@ -69,13 +35,21 @@ class AudioPlayerStatePersistence extends _$AudioPlayerStatePersistence {
 
   Future<AudioPlayerPersistedState> _loadState() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final jsonString = prefs.getString(_audioPlayerStateKey);
-      if (jsonString == null) {
+      final box = HiveService.getPlayerStateBox();
+      final hiveState = box.get(_stateKey);
+
+      if (hiveState == null) {
         return const AudioPlayerPersistedState();
       }
-      final json = jsonDecode(jsonString) as Map<String, dynamic>;
-      return AudioPlayerPersistedState.fromJson(json);
+
+      return AudioPlayerPersistedState(
+        playing: hiveState.playing,
+        loopMode: hiveState.playlistMode,
+        shuffled: hiveState.shuffled,
+        collections: hiveState.collections,
+        currentIndex: hiveState.currentIndex,
+        tracks: hiveState.tracks.map((t) => t.toSong()).toList(),
+      );
     } catch (e) {
       return const AudioPlayerPersistedState();
     }
@@ -83,8 +57,16 @@ class AudioPlayerStatePersistence extends _$AudioPlayerStatePersistence {
 
   Future<void> saveState(AudioPlayerPersistedState state) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_audioPlayerStateKey, jsonEncode(state.toJson()));
+      final box = HiveService.getPlayerStateBox();
+      final hiveState = AudioPlayerPersistedStateHive.fromDomain(
+        playing: state.playing,
+        loopMode: state.loopMode,
+        shuffled: state.shuffled,
+        collections: state.collections,
+        currentIndex: state.currentIndex,
+        tracks: state.tracks,
+      );
+      await box.put(_stateKey, hiveState);
       this.state = AsyncData(state);
     } catch (e) {
       rethrow;
@@ -163,8 +145,8 @@ class AudioPlayerStatePersistence extends _$AudioPlayerStatePersistence {
 
   Future<void> clearState() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(_audioPlayerStateKey);
+      final box = HiveService.getPlayerStateBox();
+      await box.delete(_stateKey);
       state = const AsyncData(AudioPlayerPersistedState());
     } catch (e) {
       rethrow;

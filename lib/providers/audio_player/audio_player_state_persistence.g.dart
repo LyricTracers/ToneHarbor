@@ -39,7 +39,7 @@ final class AudioPlayerStatePersistenceProvider
 }
 
 String _$audioPlayerStatePersistenceHash() =>
-    r'd86ea2d1bd675297f14f861a332827584a10d9a4';
+    r'78729f6f2b2490ece80177fdb9ed46c79af8fb0c';
 
 abstract class _$AudioPlayerStatePersistence
     extends $AsyncNotifier<AudioPlayerPersistedState> {
