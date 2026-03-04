@@ -198,7 +198,6 @@ class PlaylistNotifier extends _$PlaylistNotifier {
     final nextTrack = _tracks.elementAtOrNull(currentIndex + 1);
     if (nextTrack == null) return;
 
-    // Preload next track by requesting stream URL early
     final streamUrl = ToneHarborMedia.getStreamUrl(nextTrack.id);
     logger.d('Preloading next track: ${nextTrack.title} - $streamUrl');
   }

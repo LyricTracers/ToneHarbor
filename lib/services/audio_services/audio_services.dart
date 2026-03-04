@@ -70,5 +70,6 @@ class AudioServices with WidgetsBindingObserver {
 
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    mobile?.dispose();
   }
 }

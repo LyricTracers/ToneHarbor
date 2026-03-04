@@ -56,7 +56,6 @@ Future<HttpServer> server(Ref ref) async {
   while (server == null && attempts < maxAttempts) {
     try {
       final port = Random().nextInt(17500) + 5000;
-      ToneHarborMedia.serverPort = port;
 
       server = await serve(
         pipeline.addHandler(router.call),
@@ -64,10 +63,13 @@ Future<HttpServer> server(Ref ref) async {
         port,
       );
 
+      ToneHarborMedia.serverPort = port;
+
       logger.i(
         'Playback server at http://${server.address.host}:${server.port}',
       );
     } catch (e) {
+      ToneHarborMedia.serverPort = 0;
       attempts++;
       logger.w('Failed to start server on port, attempt $attempts');
       await Future.delayed(const Duration(milliseconds: 100));

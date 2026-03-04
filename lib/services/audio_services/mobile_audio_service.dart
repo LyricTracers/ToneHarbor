@@ -14,6 +14,7 @@ import 'package:toneharbor/init/initialized.dart';
 class MobileAudioService extends BaseAudioHandler {
   AudioSession? session;
   final Ref ref;
+  final List<StreamSubscription> _subscriptions = [];
 
   MobileAudioService(this.ref);
 
@@ -26,52 +27,62 @@ class MobileAudioService extends BaseAudioHandler {
 
     bool wasPausedByBeginEvent = false;
 
-    s.interruptionEventStream.listen((event) async {
-      if (event.begin) {
-        switch (event.type) {
-          case AudioInterruptionType.duck:
-            await _player.setVolume(0.5);
-            break;
-          case AudioInterruptionType.pause:
-          case AudioInterruptionType.unknown:
-            wasPausedByBeginEvent = _player.isPlaying;
-            await _player.pause();
-            break;
+    _subscriptions.add(
+      s.interruptionEventStream.listen((event) async {
+        if (event.begin) {
+          switch (event.type) {
+            case AudioInterruptionType.duck:
+              await _player.setVolume(0.5);
+              break;
+            case AudioInterruptionType.pause:
+            case AudioInterruptionType.unknown:
+              wasPausedByBeginEvent = _player.isPlaying;
+              await _player.pause();
+              break;
+          }
+        } else {
+          switch (event.type) {
+            case AudioInterruptionType.duck:
+              await _player.setVolume(1.0);
+              break;
+            case AudioInterruptionType.pause when wasPausedByBeginEvent:
+            case AudioInterruptionType.unknown when wasPausedByBeginEvent:
+              await _player.resume();
+              wasPausedByBeginEvent = false;
+              break;
+            default:
+              break;
+          }
         }
-      } else {
-        switch (event.type) {
-          case AudioInterruptionType.duck:
-            await _player.setVolume(1.0);
-            break;
-          case AudioInterruptionType.pause when wasPausedByBeginEvent:
-          case AudioInterruptionType.unknown when wasPausedByBeginEvent:
-            await _player.resume();
-            wasPausedByBeginEvent = false;
-            break;
-          default:
-            break;
+      }),
+    );
+
+    _subscriptions.add(
+      s.becomingNoisyEventStream.listen((_) {
+        _player.pause();
+      }),
+    );
+
+    _subscriptions.add(
+      _player.playerStateStream.listen((state) async {
+        if (state == AudioPlaybackState.playing) {
+          await session?.setActive(true);
         }
-      }
-    });
+        playbackState.add(await _transformEvent());
+      }),
+    );
 
-    s.becomingNoisyEventStream.listen((_) {
-      _player.pause();
-    });
+    _subscriptions.add(
+      _player.positionStream.listen((pos) async {
+        playbackState.add(await _transformEvent());
+      }),
+    );
 
-    _player.playerStateStream.listen((state) async {
-      if (state == AudioPlaybackState.playing) {
-        await session?.setActive(true);
-      }
-      playbackState.add(await _transformEvent());
-    });
-
-    _player.positionStream.listen((pos) async {
-      playbackState.add(await _transformEvent());
-    });
-
-    _player.bufferedPositionStream.listen((pos) async {
-      playbackState.add(await _transformEvent());
-    });
+    _subscriptions.add(
+      _player.bufferedPositionStream.listen((pos) async {
+        playbackState.add(await _transformEvent());
+      }),
+    );
   }
 
   void addItem(MediaItem item) {
@@ -160,5 +171,13 @@ class MobileAudioService extends BaseAudioHandler {
       logger.e('Transform event error', error: e, stackTrace: stack);
       rethrow;
     }
+  }
+
+  Future<void> dispose() async {
+    for (final subscription in _subscriptions) {
+      await subscription.cancel();
+    }
+    _subscriptions.clear();
+    await session?.setActive(false);
   }
 }
