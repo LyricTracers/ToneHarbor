@@ -26,9 +26,9 @@ class AudioPlayerStreamListeners {
   List<Song> get _tracks => ref.read(playlistProvider);
 
   StreamSubscription subscribeToPlaylist() {
-    return audioPlayer.playlistStream.listen((playlist) async {
+    return audioPlayer.currentIndexChangedStream.listen((index) async {
       try {
-        final activeTrack = _tracks.elementAtOrNull(playlist.index);
+        final activeTrack = _tracks.elementAtOrNull(index);
         if (activeTrack != null && notificationService != null) {
           await notificationService!.addTrack(activeTrack);
         }
