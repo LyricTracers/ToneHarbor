@@ -23,7 +23,7 @@ class _LayoutConfig {
   final int rows;
 
   static const _LayoutConfig defaultConfig = _LayoutConfig(
-    sidebarWidth: 230.0,
+    sidebarWidth: 200.0,
     horizontalPadding: 32.0,
     itemSpacing: 12.0,
     minItemWidth: 280.0,

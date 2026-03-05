@@ -13,6 +13,10 @@ mixin ToneHarborAudioPlayersStreams on AudioPlayerInterface {
     return _mkPlayer.stream.buffer;
   }
 
+  Stream<double> get bufferingPercentageStream {
+    return _mkPlayer.stream.bufferingPercentage;
+  }
+
   Stream<void> get completedStream {
     return _mkPlayer.stream.completed;
   }

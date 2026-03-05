@@ -38,11 +38,10 @@ class HomeLayout extends BaseBgLayout {
         ],
       ),
     );
-
     return Row(
       children: [
         SizedBox(
-          width: 230,
+          width: 200,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 2000),
             curve: Curves.easeInOutSine,
@@ -123,7 +122,14 @@ class HomeLayout extends BaseBgLayout {
             ),
           ),
         ),
-        Expanded(child: child),
+        Expanded(
+          child: Column(
+            children: [
+              Expanded(child: child),
+              const BottomPlayer(),
+            ],
+          ),
+        ),
       ],
     );
   }
