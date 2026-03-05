@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
-import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/hooks/use_progress.dart';
 import 'package:toneharbor/providers/audio_player/lyrics_cache_provider.dart';
 import 'package:toneharbor/providers/audio_station/auth_provider.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -28,38 +28,23 @@ class BottomPlayer extends HookConsumerWidget {
       authHeadersProvider,
       null,
     );
-    final isPlaying = useStream(audioPlayer.playingStream).data ?? false;
-    final playingPosition =
-        useStream(audioPlayer.positionStream).data ?? Duration.zero;
-    final bufferingPosition =
-        useStream(audioPlayer.bufferedPositionStream).data ?? Duration.zero;
-    final isBuffering = useStream(audioPlayer.bufferingStream).data ?? false;
-
-    final durationStream = Duration(
-      seconds: activeTrack.additional?.songAudio?.duration ?? 0,
-    );
-    final duration = durationStream;
-    final progress = duration.inMilliseconds > 0
-        ? (playingPosition.inMilliseconds / duration.inMilliseconds).clamp(
-            0.0,
-            1.0,
-          )
-        : 0.0;
+    final isPlaying =
+        useStream(audioPlayer.playingStream).data ?? audioPlayer.isPlaying;
+    final progressData = useProgress(ref);
+    final progress = progressData.progressStatic;
+    final position = progressData.position;
+    final duration = progressData.duration;
     final draggingProgress = useState<double?>(null);
     final displayProgress = draggingProgress.value ?? progress;
-    final bufferingPercentage = duration.inMilliseconds > 0
-        ? (bufferingPosition.inMilliseconds / duration.inMilliseconds).clamp(
-            0.0,
-            1.0,
-          )
-        : 0.0;
+    final bufferingPercentage = progressData.bufferProgress;
+    final isBuffering = useStream(audioPlayer.bufferingStream).data ?? false;
     final currentLyrics = ref.watch(currentLyricsProvider).value;
     var currentLineLyrics = useState<String>("");
 
     LyricsLine? currentLine;
     if (currentLyrics != null) {
       final lineIndex = currentLyrics.lineIndexAt(
-        playingPosition.inSeconds.toDouble(),
+        position.inSeconds.toDouble(),
       );
       if (lineIndex != null &&
           lineIndex >= 0 &&
@@ -156,7 +141,7 @@ class BottomPlayer extends HookConsumerWidget {
                           child: SizedBox(
                             width: double.infinity,
                             child: Text(
-                              _formatDuration(duration, playingPosition),
+                              _formatDuration(duration, position),
                               style: textStyle11,
                               maxLines: 1,
                             ),
