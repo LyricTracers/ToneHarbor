@@ -570,6 +570,11 @@ Stream<double> bufferingPercentageStream(Ref ref) {
 }
 
 @riverpod
+Stream<bool> bufferingStream(Ref ref) {
+  return audioPlayer.bufferingStream;
+}
+
+@riverpod
 Stream<bool> playingStream(Ref ref) {
   return audioPlayer.playingStream;
 }

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/audio_player/lyrics_cache_provider.dart';
 import 'package:toneharbor/providers/audio_station/auth_provider.dart';
+import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
 import 'package:toneharbor/widgets/widgets.dart';
@@ -26,13 +28,16 @@ class BottomPlayer extends HookConsumerWidget {
       authHeadersProvider,
       null,
     );
-    final isPlaying = ref.watch(playingStreamProvider).value ?? false;
-    final bufferingPercentage =
-        ref.watch(bufferingPercentageStreamProvider).value ?? 0.0;
+    final isPlaying = useStream(audioPlayer.playingStream).data ?? false;
     final playingPosition =
-        ref.watch(positionStreamProvider).value ?? Duration.zero;
-    final durationStream =
-        ref.watch(durationStreamProvider).value ?? Duration.zero;
+        useStream(audioPlayer.positionStream).data ?? Duration.zero;
+    final bufferingPosition =
+        useStream(audioPlayer.bufferedPositionStream).data ?? Duration.zero;
+    final isBuffering = useStream(audioPlayer.bufferingStream).data ?? false;
+
+    final durationStream = Duration(
+      seconds: activeTrack.additional?.songAudio?.duration ?? 0,
+    );
     final duration = durationStream;
     final progress = duration.inMilliseconds > 0
         ? (playingPosition.inMilliseconds / duration.inMilliseconds).clamp(
@@ -42,9 +47,14 @@ class BottomPlayer extends HookConsumerWidget {
         : 0.0;
     final draggingProgress = useState<double?>(null);
     final displayProgress = draggingProgress.value ?? progress;
-
-    final isBuffering = bufferingPercentage < displayProgress && isPlaying;
+    final bufferingPercentage = duration.inMilliseconds > 0
+        ? (bufferingPosition.inMilliseconds / duration.inMilliseconds).clamp(
+            0.0,
+            1.0,
+          )
+        : 0.0;
     final currentLyrics = ref.watch(currentLyricsProvider).value;
+    var currentLineLyrics = useState<String>("");
 
     LyricsLine? currentLine;
     if (currentLyrics != null) {
@@ -57,10 +67,19 @@ class BottomPlayer extends HookConsumerWidget {
         currentLine = currentLyrics.lines[lineIndex];
       }
     }
+    if (currentLine != null && currentLine.content.isNotEmpty) {
+      currentLineLyrics.value = currentLine.content;
+    }
+    if (currentLineLyrics.value.isEmpty) {
+      currentLineLyrics.value = activeTrack.title;
+    }
 
     final artist = activeTrack.additional?.songTag?.artist ?? "Unknown Artist";
     final album = activeTrack.additional?.songTag?.album ?? "Unknown Album";
-
+    final textStyle11 = TextStyle(
+      color: colorScheme.onSurface.withValues(alpha: 0.7),
+      fontSize: 11,
+    );
     return Container(
       color: colorScheme.surface.withValues(alpha: 0.2),
       height: 70,
@@ -70,7 +89,7 @@ class BottomPlayer extends HookConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(
               top: 10,
-              bottom: 10,
+              bottom: 5,
               left: 10,
               right: 10,
             ),
@@ -87,7 +106,7 @@ class BottomPlayer extends HookConsumerWidget {
                 ),
                 const SizedBox(width: 10),
                 Flexible(
-                  flex: 2,
+                  flex: 1,
                   child: MouseRegion(
                     onEnter: (_) => isHovered.value = true,
                     onExit: (_) => isHovered.value = false,
@@ -103,10 +122,10 @@ class BottomPlayer extends HookConsumerWidget {
                             child: Text(
                               isHovered.value
                                   ? activeTrack.title
-                                  : (currentLine?.content ?? activeTrack.title),
+                                  : currentLineLyrics.value,
                               style: TextStyle(
                                 color: colorScheme.onSurface,
-                                fontSize: 15,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                               ),
                               overflow: TextOverflow.ellipsis,
@@ -125,13 +144,20 @@ class BottomPlayer extends HookConsumerWidget {
                                   : (currentLine != null
                                         ? "$artist - $album"
                                         : ""),
-                              style: TextStyle(
-                                color: colorScheme.onSurface.withValues(
-                                  alpha: 0.7,
-                                ),
-                                fontSize: 11,
-                              ),
+                              style: textStyle11,
                               overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ),
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeInOut,
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: Text(
+                              _formatDuration(duration, playingPosition),
+                              style: textStyle11,
                               maxLines: 1,
                             ),
                           ),
@@ -147,7 +173,7 @@ class BottomPlayer extends HookConsumerWidget {
                     IconButton(
                       icon: const Icon(Icons.skip_previous),
                       onPressed: () {
-                        ref.read(playlistProvider.notifier).skipToPrevious();
+                        audioPlayer.skipToPrevious();
                       },
                     ),
                     const SizedBox(width: 10),
@@ -155,18 +181,18 @@ class BottomPlayer extends HookConsumerWidget {
                       icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
                       onPressed: () {
                         if (isPlaying) {
-                          ref.read(playlistProvider.notifier).pause();
+                          audioPlayer.pause();
                         } else {
-                          ref.read(playlistProvider.notifier).play();
+                          audioPlayer.resume();
                         }
                       },
                     ),
                     const SizedBox(width: 10),
                     IconButton(
                       icon: const Icon(Icons.skip_next),
-                      onPressed: () =>
-                          ref.read(playlistProvider.notifier).skipToNext(),
+                      onPressed: () => audioPlayer.skipToNext(),
                     ),
+                    const SizedBox(width: 10),
                   ],
                 ),
               ],
@@ -228,7 +254,7 @@ class BottomPlayer extends HookConsumerWidget {
                       final newPosition = Duration(
                         milliseconds: (value * duration.inMilliseconds).toInt(),
                       );
-                      ref.read(playlistProvider.notifier).seek(newPosition);
+                      audioPlayer.seek(newPosition);
                       draggingProgress.value = null;
                     },
                   ),
@@ -239,5 +265,19 @@ class BottomPlayer extends HookConsumerWidget {
         ],
       ),
     );
+  }
+
+  String _twoDigits(int n) => n.toString().padLeft(2, '0');
+
+  String _formatDuration(Duration duration, Duration playingDuration) {
+    final minutesDuration = _twoDigits(duration.inMinutes.remainder(60));
+    final secondsDuration = _twoDigits(duration.inSeconds.remainder(60));
+    final minutesPlayingDuration = _twoDigits(
+      playingDuration.inMinutes.remainder(60),
+    );
+    final secondsPlayingDuration = _twoDigits(
+      playingDuration.inSeconds.remainder(60),
+    );
+    return '$minutesPlayingDuration:$secondsPlayingDuration/$minutesDuration:$secondsDuration';
   }
 }

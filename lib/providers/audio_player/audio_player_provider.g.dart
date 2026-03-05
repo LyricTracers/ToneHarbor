@@ -440,6 +440,39 @@ final class BufferingPercentageStreamProvider
 String _$bufferingPercentageStreamHash() =>
     r'44257b6707577b90da7fd8b389c4a5caf82667c7';
 
+@ProviderFor(bufferingStream)
+final bufferingStreamProvider = BufferingStreamProvider._();
+
+final class BufferingStreamProvider
+    extends $FunctionalProvider<AsyncValue<bool>, bool, Stream<bool>>
+    with $FutureModifier<bool>, $StreamProvider<bool> {
+  BufferingStreamProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'bufferingStreamProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$bufferingStreamHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<bool> create(Ref ref) {
+    return bufferingStream(ref);
+  }
+}
+
+String _$bufferingStreamHash() => r'0aac882ffcb7a8d53b31dfffdfc2bed9e809d4e2';
+
 @ProviderFor(playingStream)
 final playingStreamProvider = PlayingStreamProvider._();
 
