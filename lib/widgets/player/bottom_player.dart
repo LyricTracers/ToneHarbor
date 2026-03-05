@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:toneharbor/hooks/use_progress.dart';
 import 'package:toneharbor/providers/audio_player/lyrics_cache_provider.dart';
 import 'package:toneharbor/providers/audio_station/auth_provider.dart';
+import 'package:toneharbor/providers/audio_station/songs_provider.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
@@ -59,12 +61,19 @@ class BottomPlayer extends HookConsumerWidget {
       currentLineLyrics.value = activeTrack.title;
     }
 
+    final rating = activeTrack.additional?.songRating?.rating ?? 0;
+
     final artist = activeTrack.additional?.songTag?.artist ?? "Unknown Artist";
     final album = activeTrack.additional?.songTag?.album ?? "Unknown Album";
     final textStyle11 = TextStyle(
       color: colorScheme.onSurface.withValues(alpha: 0.7),
       fontSize: 11,
     );
+    final loopMode =
+        useStream(audioPlayer.loopModeStream).data ?? audioPlayer.loopMode;
+
+    final shuffled =
+        useStream(audioPlayer.shuffledStream).data ?? audioPlayer.isShuffled;
     return Container(
       color: colorScheme.surface.withValues(alpha: 0.2),
       height: 70,
@@ -74,7 +83,7 @@ class BottomPlayer extends HookConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(
               top: 10,
-              bottom: 5,
+              bottom: 10,
               left: 10,
               right: 10,
             ),
@@ -135,18 +144,6 @@ class BottomPlayer extends HookConsumerWidget {
                             ),
                           ),
                         ),
-                        AnimatedSize(
-                          duration: const Duration(milliseconds: 200),
-                          curve: Curves.easeInOut,
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: Text(
-                              _formatDuration(duration, position),
-                              style: textStyle11,
-                              maxLines: 1,
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -156,29 +153,111 @@ class BottomPlayer extends HookConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.skip_previous),
-                      onPressed: () {
-                        audioPlayer.skipToPrevious();
-                      },
+                      icon: const Icon(Icons.skip_previous_rounded),
+                      onPressed: isBuffering
+                          ? null
+                          : () {
+                              audioPlayer.skipToPrevious();
+                            },
                     ),
                     const SizedBox(width: 10),
                     IconButton(
-                      icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-                      onPressed: () {
-                        if (isPlaying) {
-                          audioPlayer.pause();
-                        } else {
-                          audioPlayer.resume();
-                        }
-                      },
+                      icon: Icon(
+                        isPlaying
+                            ? Icons.pause_rounded
+                            : Icons.play_arrow_rounded,
+                      ),
+                      onPressed: isBuffering
+                          ? null
+                          : () {
+                              if (isPlaying) {
+                                audioPlayer.pause();
+                              } else {
+                                audioPlayer.resume();
+                              }
+                            },
                     ),
                     const SizedBox(width: 10),
                     IconButton(
-                      icon: const Icon(Icons.skip_next),
-                      onPressed: () => audioPlayer.skipToNext(),
+                      icon: const Icon(Icons.skip_next_rounded),
+                      onPressed: isBuffering
+                          ? null
+                          : () {
+                              audioPlayer.skipToNext();
+                            },
                     ),
-                    const SizedBox(width: 10),
                   ],
+                ),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        _formatDuration(duration, position),
+                        style: textStyle11,
+                      ),
+                      const SizedBox(width: 2),
+                      IconButton(
+                        icon: Icon(
+                          rating >= 5
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_border_rounded,
+                          size: 18,
+                        ),
+                        onPressed: () async {
+                          // ref.read(
+                          //   setRatingProvider(
+                          //     id: activeTrack.id,
+                          //     rating: rating >= 5 ? 0 : 5,
+                          //   ).future,
+                          // );
+                        },
+                      ),
+                      const SizedBox(width: 2),
+                      IconButton(
+                        icon: Icon(
+                          _getLoopIcon(loopMode),
+                          size: 18,
+                          color: loopMode != PlaylistMode.none
+                              ? colorScheme.primary
+                              : null,
+                        ),
+                        onPressed: () {
+                          _toggleLoopMode(loopMode);
+                        },
+                      ),
+                      const SizedBox(width: 2),
+                      IconButton(
+                        onPressed: () {
+                          if (shuffled) {
+                            audioPlayer.setShuffle(false);
+                          } else {
+                            audioPlayer.setShuffle(true);
+                          }
+                        },
+                        icon: Icon(
+                          Icons.shuffle_rounded,
+                          color: shuffled ? colorScheme.primary : null,
+                          size: 18,
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      IconButton(
+                        icon: const Icon(Icons.playlist_play_rounded, size: 18),
+                        onPressed: () {},
+                      ),
+                      const SizedBox(width: 2),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.keyboard_arrow_up_rounded,
+                          size: 18,
+                        ),
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -250,6 +329,33 @@ class BottomPlayer extends HookConsumerWidget {
         ],
       ),
     );
+  }
+
+  void _toggleLoopMode(PlaylistMode currentMode) {
+    PlaylistMode newMode;
+    switch (currentMode) {
+      case PlaylistMode.none:
+        newMode = PlaylistMode.loop;
+        break;
+      case PlaylistMode.loop:
+        newMode = PlaylistMode.single;
+        break;
+      case PlaylistMode.single:
+        newMode = PlaylistMode.none;
+        break;
+    }
+    audioPlayer.setLoopMode(newMode);
+  }
+
+  IconData _getLoopIcon(PlaylistMode mode) {
+    switch (mode) {
+      case PlaylistMode.single:
+        return Icons.repeat_one;
+      case PlaylistMode.loop:
+        return Icons.repeat;
+      case PlaylistMode.none:
+        return Icons.repeat;
+    }
   }
 
   String _twoDigits(int n) => n.toString().padLeft(2, '0');
