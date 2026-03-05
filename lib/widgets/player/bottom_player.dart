@@ -27,8 +27,8 @@ class BottomPlayer extends HookConsumerWidget {
       null,
     );
     final isPlaying = ref.watch(playingStreamProvider).value ?? false;
-    final bufferedPosition =
-        ref.watch(bufferedPositionStreamProvider).value ?? Duration.zero;
+    final bufferingPercentage =
+        ref.watch(bufferingPercentageStreamProvider).value ?? 0.0;
     final playingPosition =
         ref.watch(positionStreamProvider).value ?? Duration.zero;
     final durationStream =
@@ -42,6 +42,8 @@ class BottomPlayer extends HookConsumerWidget {
         : 0.0;
     final draggingProgress = useState<double?>(null);
     final displayProgress = draggingProgress.value ?? progress;
+
+    final isBuffering = bufferingPercentage < displayProgress && isPlaying;
 
     return Container(
       color: colorScheme.surface.withValues(alpha: 0.2),
@@ -71,30 +73,66 @@ class BottomPlayer extends HookConsumerWidget {
           ),
           Positioned(
             top: -20,
-            left: -20,
-            right: 20,
-            child: SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                trackHeight: 2,
-                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5),
-                overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
-                activeTrackColor: colorScheme.primary,
-                inactiveTrackColor: Colors.transparent,
-                trackShape: const RectangularSliderTrackShape(),
-              ),
-              child: Slider(
-                value: displayProgress,
-                onChanged: (value) {
-                  draggingProgress.value = value;
-                },
-                onChangeEnd: (value) {
-                  final newPosition = Duration(
-                    milliseconds: (value * duration.inMilliseconds).toInt(),
-                  );
-                  ref.read(playlistProvider.notifier).seek(newPosition);
-                  draggingProgress.value = null;
-                },
-              ),
+            left: -10,
+            right: -10,
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 2,
+                        horizontal: 20,
+                      ),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: LinearProgressIndicator(
+                          value: bufferingPercentage,
+                          minHeight: 2,
+                          backgroundColor: Colors.transparent,
+                          valueColor: AlwaysStoppedAnimation(
+                            colorScheme.onSurface.withValues(alpha: 0.3),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    trackHeight: 2,
+                    thumbShape: const RoundSliderThumbShape(
+                      enabledThumbRadius: 5,
+                    ),
+                    overlayShape: const RoundSliderOverlayShape(
+                      overlayRadius: 20,
+                    ),
+                    activeTrackColor: colorScheme.primary,
+                    inactiveTrackColor: Colors.transparent,
+                    trackShape: const RectangularSliderTrackShape(),
+                  ),
+                  child: Slider(
+                    value: displayProgress,
+                    onChanged: isBuffering
+                        ? null
+                        : (value) {
+                            draggingProgress.value = value;
+                          },
+                    onChangeEnd: (value) {
+                      final newPosition = Duration(
+                        milliseconds: (value * duration.inMilliseconds).toInt(),
+                      );
+                      ref.read(playlistProvider.notifier).seek(newPosition);
+                      draggingProgress.value = null;
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         ],

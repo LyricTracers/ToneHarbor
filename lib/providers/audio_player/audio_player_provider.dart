@@ -565,6 +565,11 @@ Stream<Duration> bufferedPositionStream(Ref ref) {
 }
 
 @riverpod
+Stream<double> bufferingPercentageStream(Ref ref) {
+  return audioPlayer.bufferingPercentageStream;
+}
+
+@riverpod
 Stream<bool> playingStream(Ref ref) {
   return audioPlayer.playingStream;
 }
