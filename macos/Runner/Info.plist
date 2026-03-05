@@ -31,9 +31,9 @@
 		<key>LSUIElement</key>
 		<string>0</string>
 		<key>NSWindowWidth</key>
-		<real>1024.0</real>
+		<real>1230.0</real>
 		<key>NSWindowHeight</key>
-		<real>760.0</real>
+		<real>780.0</real>
 		<key>NSWindowButtonVisibility</key>
 		<string>1</string>
 		<key>NSCenterWindow</key>
@@ -53,8 +53,8 @@
 		<key>NSDarkBackgroundColor</key>
 		<string>0f0f1a</string>
 		<key>NSWindowMinWidth</key>
-		<real>1024.0</real>
+		<real>1230.0</real>
 		<key>NSWindowMinHeight</key>
-		<real>760.0</real>
+		<real>780.0</real>
 	</dict>
 </plist>
