@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lyricskit/lyricskit.dart';
+import 'package:toneharbor/providers/audio_player/lyrics_cache_provider.dart';
 import 'package:toneharbor/providers/audio_station/auth_provider.dart';
 import 'package:toneharbor/utils/base_funs.dart';
-import 'package:toneharbor/widgets/player/player_track_details.dart';
-import 'package:toneharbor/widgets/player/player_controls.dart';
-import 'package:toneharbor/widgets/player/player_actions.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
@@ -14,6 +13,7 @@ class BottomPlayer extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isHovered = useState(false);
     final activeTrack = ref.watch(activeTrackProvider);
     final colorScheme = getColorSchemeWhenReady(ref);
 
@@ -44,6 +44,22 @@ class BottomPlayer extends HookConsumerWidget {
     final displayProgress = draggingProgress.value ?? progress;
 
     final isBuffering = bufferingPercentage < displayProgress && isPlaying;
+    final currentLyrics = ref.watch(currentLyricsProvider).value;
+
+    LyricsLine? currentLine;
+    if (currentLyrics != null) {
+      final lineIndex = currentLyrics.lineIndexAt(
+        playingPosition.inSeconds.toDouble(),
+      );
+      if (lineIndex != null &&
+          lineIndex >= 0 &&
+          lineIndex < currentLyrics.lines.length) {
+        currentLine = currentLyrics.lines[lineIndex];
+      }
+    }
+
+    final artist = activeTrack.additional?.songTag?.artist ?? "Unknown Artist";
+    final album = activeTrack.additional?.songTag?.album ?? "Unknown Album";
 
     return Container(
       color: colorScheme.surface.withValues(alpha: 0.2),
@@ -59,6 +75,7 @@ class BottomPlayer extends HookConsumerWidget {
               right: 10,
             ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SongCoverImage(
                   songId: activeTrack.id,
@@ -67,6 +84,90 @@ class BottomPlayer extends HookConsumerWidget {
                   colorScheme: colorScheme,
                   config: const SongCoverImageConfig(size: 50, borderRadius: 5),
                   authHeaders: authHeaders ?? <String, String>{},
+                ),
+                const SizedBox(width: 10),
+                Flexible(
+                  flex: 2,
+                  child: MouseRegion(
+                    onEnter: (_) => isHovered.value = true,
+                    onExit: (_) => isHovered.value = false,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeInOut,
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: Text(
+                              isHovered.value
+                                  ? activeTrack.title
+                                  : (currentLine?.content ?? activeTrack.title),
+                              style: TextStyle(
+                                color: colorScheme.onSurface,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ),
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeInOut,
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: Text(
+                              isHovered.value
+                                  ? "$artist - $album"
+                                  : (currentLine != null
+                                        ? "$artist - $album"
+                                        : ""),
+                              style: TextStyle(
+                                color: colorScheme.onSurface.withValues(
+                                  alpha: 0.7,
+                                ),
+                                fontSize: 11,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.skip_previous),
+                      onPressed: () {
+                        ref.read(playlistProvider.notifier).skipToPrevious();
+                      },
+                    ),
+                    const SizedBox(width: 10),
+                    IconButton(
+                      icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+                      onPressed: () {
+                        if (isPlaying) {
+                          ref.read(playlistProvider.notifier).pause();
+                        } else {
+                          ref.read(playlistProvider.notifier).play();
+                        }
+                      },
+                    ),
+                    const SizedBox(width: 10),
+                    IconButton(
+                      icon: const Icon(Icons.skip_next),
+                      onPressed: () =>
+                          ref.read(playlistProvider.notifier).skipToNext(),
+                    ),
+                  ],
                 ),
               ],
             ),

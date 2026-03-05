@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_lyric/core/lyric_model.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:media_kit/media_kit.dart';
@@ -22,6 +23,7 @@ late final ImageProvider defaultSongIconProvider;
 late final HttpClientWrapper httpClientWrapper;
 late final HttpClientWrapper downloadHttpClientWrapper;
 late final PersistentApiCache<Map<String, dynamic>> audioStationRequestCache;
+late final PersistentApiCache<Map<String, dynamic>> lyricCache;
 
 const keepAlive = Riverpod(keepAlive: true);
 
@@ -32,8 +34,7 @@ Future<void> initialized() async {
   await HiveService.initialize();
   initLogger();
   initHttpClientWrapper();
-  await initAudioStationRequestCache();
-  await CacheManager.instance.init();
+  await initPersistentApiCache();
   // await LyricsCacheKeyManager().initDatabase();
   defaultSongIconProvider = const AssetImage(iconPlaceholder);
   defaultColorScheme = await FrostedColorSchemeGenerator.generate(
@@ -91,7 +92,7 @@ void initHttpClientWrapper() {
   );
 }
 
-Future<void> initAudioStationRequestCache() async {
+Future<void> initPersistentApiCache() async {
   audioStationRequestCache = PersistentApiCache<Map<String, dynamic>>(
     'audio_station_api',
     options: const CacheOptions(
@@ -99,5 +100,17 @@ Future<void> initAudioStationRequestCache() async {
       defaultDuration: Duration(minutes: 30),
     ),
   );
+  lyricCache = PersistentApiCache<Map<String, dynamic>>(
+    'lyrics_cache',
+    options: const CacheOptions(
+      enabled: true,
+      defaultDuration: Duration(days: 365),
+    ),
+    backend: CacheStorageBackend.file,
+  );
   await audioStationRequestCache.init();
+  //群晖歌词缓存
+  await lyricCache.init();
+  //第三方歌词缓存
+  await CacheManager.instance.init();
 }
