@@ -158,11 +158,9 @@ class BottomPlayer extends HookConsumerWidget {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.skip_previous_rounded),
-                      onPressed: isBuffering
-                          ? null
-                          : () {
-                              audioPlayer.skipToPrevious();
-                            },
+                      onPressed: () {
+                        audioPlayer.skipToPrevious();
+                      },
                     ),
                     const SizedBox(width: 10),
                     IconButton(
@@ -184,11 +182,9 @@ class BottomPlayer extends HookConsumerWidget {
                     const SizedBox(width: 10),
                     IconButton(
                       icon: const Icon(Icons.skip_next_rounded),
-                      onPressed: isBuffering
-                          ? null
-                          : () {
-                              audioPlayer.skipToNext();
-                            },
+                      onPressed: () {
+                        audioPlayer.skipToNext();
+                      },
                     ),
                   ],
                 ),
