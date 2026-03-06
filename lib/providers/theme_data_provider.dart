@@ -10,37 +10,35 @@ part 'theme_data_provider.g.dart';
 @riverpod
 class DynamicScheme extends _$DynamicScheme {
   @override
-  Future<DynamicSchemeVariant> build() async {
-    return await getDynamicSchemeVariant();
+  DynamicSchemeVariant build() {
+    return SharedPreferencesUtils.getDynamicSchemeVariant();
   }
 
   Future<void> setSchemeVariant(DynamicSchemeVariant value) async {
-    state = AsyncValue.data(value);
-    final prefs = await getSharedPreferences();
-    await prefs.setInt(dynamicSchemeKey, value.index);
+    state = value;
+    await SharedPreferencesUtils.setDynamicSchemeVariant(value);
   }
 }
 
 @riverpod
 class ContrastLevel extends _$ContrastLevel {
   @override
-  Future<double> build() async {
-    return await getContrastLevel();
+  double build() {
+    return SharedPreferencesUtils.getContrastLevel();
   }
 
   Future<void> setContrastLevel(double value) async {
     final clampedValue = value.clamp(-1.0, 1.0);
-    state = AsyncValue.data(clampedValue);
-    final prefs = await getSharedPreferences();
-    await prefs.setDouble(contrastLevelKey, clampedValue);
+    state = clampedValue;
+    await SharedPreferencesUtils.setContrastLevel(clampedValue);
   }
 }
 
 @riverpod
 Future<ColorScheme> getColorScheme(Ref ref) async {
-  final syncSongIcon = await ref.watch(syncSongIconProvider.future);
-  final schemeVariant = await ref.watch(dynamicSchemeProvider.future);
-  final contrastLevel = await ref.watch(contrastLevelProvider.future);
+  final syncSongIcon = ref.watch(syncSongIconProvider);
+  final schemeVariant = ref.watch(dynamicSchemeProvider);
+  final contrastLevel = ref.watch(contrastLevelProvider);
   return await FrostedColorSchemeGenerator.generate(
     imageProvider: syncSongIcon
         ? await ref.watch(songIconProvider.future)
@@ -54,14 +52,13 @@ Future<ColorScheme> getColorScheme(Ref ref) async {
 @riverpod
 class SyncSongIcon extends _$SyncSongIcon {
   @override
-  Future<bool> build() async {
-    return await getSyncSongIcon();
+  bool build() {
+    return SharedPreferencesUtils.getSyncSongIcon();
   }
 
   Future<void> setSyncSongIcon(bool value) async {
-    final prefs = await getSharedPreferences();
-    await prefs.setBool(syncSongIconKey, value);
-    state = AsyncData(value);
+    state = value;
+    await SharedPreferencesUtils.setSyncSongIcon(value);
   }
 }
 
@@ -107,10 +104,9 @@ class SongIcon extends _$SongIcon {
 
 @keepAlive
 Future<ImageProvider?> loadDefaultThemeIcon(Ref ref) async {
-  final prefs = await getSharedPreferences();
-  final savedPath = prefs.getString(defaultThemeIconKey);
+  final savedPath = SharedPreferencesUtils.getDefaultThemeIcon();
 
-  if (savedPath == null || savedPath.isEmpty) {
+  if (savedPath.isEmpty) {
     logger.i('loadDefaultThemeIcon: no saved path');
     return null;
   }

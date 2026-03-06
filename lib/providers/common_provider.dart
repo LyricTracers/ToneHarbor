@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 part 'common_provider.g.dart';
@@ -19,20 +20,17 @@ class RequestFlag extends _$RequestFlag {
 @keepAlive
 class LocaleNotifier extends _$LocaleNotifier {
   @override
-  Future<Locale> build() async {
-    final prefs = await getSharedPreferences();
-    final localeCode = prefs.getString(localeKey) ?? 'zh';
-    return Locale(localeCode);
+  Locale build() {
+    return SharedPreferencesUtils.getLocale();
   }
 
   Future<void> setLocale(Locale locale) async {
-    state = AsyncValue.data(locale);
-    final prefs = await getSharedPreferences();
-    await prefs.setString(localeKey, locale.languageCode);
+    state = locale;
+    await SharedPreferencesUtils.setLocale(locale);
   }
 
   Future<void> toggleLanguage() async {
-    final currentLanguageCode = state.value?.languageCode ?? 'zh';
+    final currentLanguageCode = state.languageCode;
     final newLocale = currentLanguageCode == 'zh'
         ? const Locale('en')
         : const Locale('zh');
@@ -43,16 +41,14 @@ class LocaleNotifier extends _$LocaleNotifier {
 @riverpod
 class SearchHistoryNotifier extends _$SearchHistoryNotifier {
   @override
-  Future<List<String>> build() async {
-    final prefs = await getSharedPreferences();
-    final history = prefs.getStringList(searchHistoryKey) ?? [];
-    return history;
+  List<String> build() {
+    return SharedPreferencesUtils.getSearchHistory();
   }
 
   Future<void> addSearch(String query) async {
     if (query.trim().isEmpty) return;
 
-    final currentHistory = state.value ?? [];
+    final currentHistory = state;
     final updatedHistory = List<String>.from(currentHistory);
     updatedHistory.remove(query);
     updatedHistory.insert(0, query);
@@ -61,33 +57,46 @@ class SearchHistoryNotifier extends _$SearchHistoryNotifier {
       updatedHistory.removeRange(10, updatedHistory.length);
     }
 
-    state = AsyncValue.data(updatedHistory);
+    state = updatedHistory;
 
-    final prefs = await getSharedPreferences();
-    await prefs.setStringList(searchHistoryKey, updatedHistory);
+    await SharedPreferencesUtils.setSearchHistory(updatedHistory);
   }
 
   Future<void> removeSearch(String query) async {
-    final currentHistory = state.value ?? [];
+    final currentHistory = state;
     final updatedHistory = List<String>.from(currentHistory);
     updatedHistory.remove(query);
 
-    state = AsyncValue.data(updatedHistory);
+    state = updatedHistory;
 
-    final prefs = await getSharedPreferences();
-    await prefs.setStringList(searchHistoryKey, updatedHistory);
+    await SharedPreferencesUtils.setSearchHistory(updatedHistory);
   }
 
   Future<void> clearHistory() async {
-    state = AsyncValue.data([]);
+    state = [];
 
-    final prefs = await getSharedPreferences();
-    await prefs.setStringList(searchHistoryKey, []);
+    await SharedPreferencesUtils.setSearchHistory([]);
   }
 }
 
 @keepAlive
-Future<AppLocalizations> l10n(Ref ref) async {
-  final locale = await ref.watch(localeProvider.future);
+AppLocalizations l10n(Ref ref) {
+  final locale = ref.watch(localeProvider);
   return lookupAppLocalizations(locale);
+}
+
+@riverpod
+class VolumeNotifier extends _$VolumeNotifier {
+  @override
+  double build() {
+    var volume = SharedPreferencesUtils.getVolume();
+    audioPlayer.setVolume(volume);
+    return volume;
+  }
+
+  Future<void> setVolume(double value) async {
+    state = value;
+    await audioPlayer.setVolume(value);
+    await SharedPreferencesUtils.setVolume(value);
+  }
 }

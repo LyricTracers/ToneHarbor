@@ -345,7 +345,7 @@ Future<SongListResponse> _getSongs({
     songRatingMeq: songRatingMeq,
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final result = await _sendSongRequest(
     ref: ref,
@@ -397,7 +397,7 @@ Future<SetRatingResponse> _setRating({
     version: 3,
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);
@@ -491,7 +491,7 @@ Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
 
   final request = GetNumberOfPlugInsRequest(action: 'getNumberOfPlugIns');
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);
@@ -602,7 +602,7 @@ Future<SongListResponse> _getAlbumSongs({
     artist: artist,
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final result = await _sendSongRequest(
     ref: ref,
@@ -669,7 +669,7 @@ Future<SongListResponse> _searchSongs({
     title: title,
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final result = await _sendSongRequest(
     ref: ref,
@@ -720,7 +720,7 @@ Future<LyricsResponse> _getLyrics({
     version: 2,
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final result = await _sendLyricsRequest(
     ref: ref,
@@ -780,7 +780,7 @@ Future<SearchLyricsResponse> _searchLyrics({
     additional: additional,
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final result = await _sendSearchLyricsRequest(
     ref: ref,
@@ -834,7 +834,7 @@ Future<SongInfoResponse> _getSongInfo({
     additional: additional,
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final result = await _sendSongInfoRequest(
     ref: ref,

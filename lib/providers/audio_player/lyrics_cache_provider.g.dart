@@ -40,4 +40,4 @@ final class CurrentLyricsProvider
   }
 }
 
-String _$currentLyricsHash() => r'98783a385a9e4bdac18e07431189c7cddf2fe342';
+String _$currentLyricsHash() => r'059a6136011c21b3494b5ca5164db60332baecc2';

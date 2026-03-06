@@ -3,14 +3,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_lyric/core/lyric_model.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:synchronized/synchronized.dart';
-import 'package:toneharbor/services/hive/hive_service.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
@@ -30,8 +28,8 @@ const keepAlive = Riverpod(keepAlive: true);
 Future<void> initialized() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
+  await SharedPreferencesUtils.initialize();
   await Rhttp.init();
-  await HiveService.initialize();
   initLogger();
   initHttpClientWrapper();
   await initPersistentApiCache();
@@ -53,7 +51,7 @@ Future<void> initialized() async {
 }
 
 Future<void> _initTray() async {
-  await trayManager.setFontSize(await getTrayFontSize());
+  await trayManager.setFontSize(SharedPreferencesUtils.getTrayFontSize());
   await trayManager.setIcon(statusBarIcon);
   if (Platform.isMacOS) {
     final ByteData imageData = await rootBundle.load(iconPlaceholder);

@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:flutter_lyric/core/lyric_model.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -11,7 +8,7 @@ part 'lyrics_cache_provider.g.dart';
 
 @keepAlive
 Future<Lyrics?> currentLyrics(Ref ref) async {
-  final activeTrack = ref.watch(activeTrackProvider);
+  final activeTrack = ref.watch(audioPlayerStateProvider).activeTrack;
 
   if (activeTrack == null) {
     return null;

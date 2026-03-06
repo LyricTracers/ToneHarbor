@@ -60,7 +60,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
     final currentText = useState(controller.text);
 
     final displayList = useMemoized(() {
-      final historyData = historyList.value ?? [];
+      final historyData = historyList;
       final searchText = currentText.value.toLowerCase();
       final filteredList = enableFilterHistory && currentText.value.isNotEmpty
           ? historyData
@@ -68,7 +68,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
                 .toList()
           : historyData;
       return <String>[...(lockItems ?? []), ...filteredList];
-    }, [historyList.value, currentText.value, enableFilterHistory, lockItems]);
+    }, [historyList, currentText.value, enableFilterHistory, lockItems]);
 
     useEffect(() {
       void onFocusChanged() {

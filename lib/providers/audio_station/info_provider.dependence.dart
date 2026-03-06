@@ -1,9 +1,9 @@
 part of 'info_provider.dart';
 
 Future<Map<String, dynamic>> _testConnection({required Ref ref}) async {
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   late final HttpTextResponse response;
   try {
@@ -51,7 +51,7 @@ Future<SynoAPIInfoResponse> _queryAPI({
   String query = 'all',
   Duration? cacheDuration,
 }) async {
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final cacheKey = 'queryAPI:$query';
 
@@ -294,7 +294,7 @@ Future<AudioStationInfoResponse> _getAudioStationInfo({
     version: '6',
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final result = await _sendAudioStationInfoRequest(
     ref: ref,
@@ -341,7 +341,7 @@ Future<DSMInfoResponse> _getDSMInfo({
     version: '2',
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final result = await _sendDSMInfoRequest(
     ref: ref,

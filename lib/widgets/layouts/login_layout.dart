@@ -15,11 +15,7 @@ class LoginLayout extends BaseBgLayout {
 
   @override
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
-    final l10n = getValueWhenReadyWithWidgetRef(
-      ref,
-      l10nProvider,
-      AppLocalizations.of(context),
-    )!;
+    final l10n = ref.watch(l10nProvider);
 
     final colorScheme = getColorSchemeWhenReady(ref);
     final serverUrlAsync = ref.watch(serverUrlProvider);
@@ -27,8 +23,8 @@ class LoginLayout extends BaseBgLayout {
     final serverUrlController = useTextEditingController();
 
     useEffect(() {
-      if (serverUrlAsync.hasValue && serverUrlAsync.value != null) {
-        serverUrlController.text = serverUrlAsync.value!;
+      if (serverUrlAsync.isNotEmpty) {
+        serverUrlController.text = serverUrlAsync;
       }
       return null;
     }, [serverUrlAsync]);
@@ -37,14 +33,14 @@ class LoginLayout extends BaseBgLayout {
     final passwordController = useTextEditingController();
 
     useEffect(() {
-      if (accountInfo.hasValue && accountInfo.value != null) {
-        usernameController.text = accountInfo.value!.account;
-        passwordController.text = accountInfo.value!.passwd;
+      if (accountInfo != null) {
+        usernameController.text = accountInfo.account;
+        passwordController.text = accountInfo.passwd;
       }
       return null;
     }, [accountInfo]);
 
-    final useHttps = getValueWhenReadyWithWidgetRef(ref, useHttpProvider, true);
+    final useHttps = ref.watch(useHttpProvider);
     final obscurePassword = useState(true);
     final serverUrlError = useState<String?>(null);
     final usernameError = useState<String?>(null);

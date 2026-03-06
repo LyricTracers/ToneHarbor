@@ -13,7 +13,7 @@ part of 'theme_data_provider.dart';
 final dynamicSchemeProvider = DynamicSchemeProvider._();
 
 final class DynamicSchemeProvider
-    extends $AsyncNotifierProvider<DynamicScheme, DynamicSchemeVariant> {
+    extends $NotifierProvider<DynamicScheme, DynamicSchemeVariant> {
   DynamicSchemeProvider._()
     : super(
         from: null,
@@ -31,26 +31,29 @@ final class DynamicSchemeProvider
   @$internal
   @override
   DynamicScheme create() => DynamicScheme();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DynamicSchemeVariant value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DynamicSchemeVariant>(value),
+    );
+  }
 }
 
-String _$dynamicSchemeHash() => r'41472a4f7eb828e83c8ed10becfa3dc244b1fdac';
+String _$dynamicSchemeHash() => r'ceb6fbe4ef31d6f9432f33cbf98277b4757162e0';
 
-abstract class _$DynamicScheme extends $AsyncNotifier<DynamicSchemeVariant> {
-  FutureOr<DynamicSchemeVariant> build();
+abstract class _$DynamicScheme extends $Notifier<DynamicSchemeVariant> {
+  DynamicSchemeVariant build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref =
-        this.ref
-            as $Ref<AsyncValue<DynamicSchemeVariant>, DynamicSchemeVariant>;
+    final ref = this.ref as $Ref<DynamicSchemeVariant, DynamicSchemeVariant>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<
-                AsyncValue<DynamicSchemeVariant>,
-                DynamicSchemeVariant
-              >,
-              AsyncValue<DynamicSchemeVariant>,
+              AnyNotifier<DynamicSchemeVariant, DynamicSchemeVariant>,
+              DynamicSchemeVariant,
               Object?,
               Object?
             >;
@@ -62,7 +65,7 @@ abstract class _$DynamicScheme extends $AsyncNotifier<DynamicSchemeVariant> {
 final contrastLevelProvider = ContrastLevelProvider._();
 
 final class ContrastLevelProvider
-    extends $AsyncNotifierProvider<ContrastLevel, double> {
+    extends $NotifierProvider<ContrastLevel, double> {
   ContrastLevelProvider._()
     : super(
         from: null,
@@ -80,21 +83,29 @@ final class ContrastLevelProvider
   @$internal
   @override
   ContrastLevel create() => ContrastLevel();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(double value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<double>(value),
+    );
+  }
 }
 
-String _$contrastLevelHash() => r'b60c726abb39f7fac848d298ac5ae08ad917e88d';
+String _$contrastLevelHash() => r'c628da4041fd737f11f30b86633d3b0d62359ab8';
 
-abstract class _$ContrastLevel extends $AsyncNotifier<double> {
-  FutureOr<double> build();
+abstract class _$ContrastLevel extends $Notifier<double> {
+  double build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<double>, double>;
+    final ref = this.ref as $Ref<double, double>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<double>, double>,
-              AsyncValue<double>,
+              AnyNotifier<double, double>,
+              double,
               Object?,
               Object?
             >;
@@ -139,13 +150,12 @@ final class GetColorSchemeProvider
   }
 }
 
-String _$getColorSchemeHash() => r'f100b01d88d7f286dcdf101b4b4de22d9b4d2577';
+String _$getColorSchemeHash() => r'b76a6db3303acd298a9f19525d626c4b8dc9f9e6';
 
 @ProviderFor(SyncSongIcon)
 final syncSongIconProvider = SyncSongIconProvider._();
 
-final class SyncSongIconProvider
-    extends $AsyncNotifierProvider<SyncSongIcon, bool> {
+final class SyncSongIconProvider extends $NotifierProvider<SyncSongIcon, bool> {
   SyncSongIconProvider._()
     : super(
         from: null,
@@ -163,21 +173,29 @@ final class SyncSongIconProvider
   @$internal
   @override
   SyncSongIcon create() => SyncSongIcon();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
 }
 
-String _$syncSongIconHash() => r'3f33e126474bcd6417294c878ecafd11d9700d45';
+String _$syncSongIconHash() => r'cd7e801d54fb47b73bd233069ae0de38a6868586';
 
-abstract class _$SyncSongIcon extends $AsyncNotifier<bool> {
-  FutureOr<bool> build();
+abstract class _$SyncSongIcon extends $Notifier<bool> {
+  bool build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<bool>, bool>;
+    final ref = this.ref as $Ref<bool, bool>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<bool>, bool>,
-              AsyncValue<bool>,
+              AnyNotifier<bool, bool>,
+              bool,
               Object?,
               Object?
             >;
@@ -326,4 +344,4 @@ final class LoadDefaultThemeIconProvider
 }
 
 String _$loadDefaultThemeIconHash() =>
-    r'b11d31846034818324d6fa466e7fd9943fb08b45';
+    r'826a2121acf3654ea9ec0787755f3a91537012e5';

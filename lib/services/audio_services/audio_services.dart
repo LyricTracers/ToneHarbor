@@ -1,8 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:toneharbor/init/initialized.dart';
-import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/services/audio_services/mobile_audio_service.dart';
 import 'package:toneharbor/services/audio_services/windows_audio_service.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -19,7 +17,7 @@ class AudioServices with WidgetsBindingObserver {
 
   static Future<AudioServices> create(
     Ref ref,
-    PlaylistNotifier playback,
+    AudioPlayerStateNotifier playback,
   ) async {
     final mobile =
         Platform.isAndroid ||
@@ -44,23 +42,16 @@ class AudioServices with WidgetsBindingObserver {
     return AudioServices(mobile, smtc);
   }
 
-  Future<void> addTrackMedia(
-    String id,
-    String title,
-    String? album,
-    String? artist,
-    int? duration,
-    String? artUri,
-  ) async {
-    await smtc?.addTrackMedia(title, album, artist, duration, artUri);
+  Future<void> addMedia(ToneHarborMedia media) async {
+    await smtc?.addMedia(media);
     mobile?.addItem(
       MediaItem(
-        id: id,
-        album: album ?? '',
-        title: title,
-        artist: artist ?? '',
-        duration: Duration(seconds: duration ?? 0),
-        artUri: artUri != null ? Uri.parse(artUri) : null,
+        id: media.track.id,
+        album: media.track.album,
+        title: media.track.title,
+        artist: media.track.artist,
+        duration: Duration(milliseconds: media.track.durationMs),
+        artUri: Uri.parse(media.getCoverUrl()),
         playable: true,
       ),
     );

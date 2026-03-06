@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -103,6 +104,15 @@ class CommonSongs extends ConsumerWidget {
               authHeaders: authHeaders,
               colorScheme: colorScheme,
               config: config,
+              onTap: (ref) {
+                ref
+                    .read(audioPlayerStateProvider.notifier)
+                    .load(
+                      songs.asTrackList(),
+                      initialIndex: index,
+                      autoPlay: true,
+                    );
+              },
             ),
           );
         },
@@ -139,12 +149,14 @@ class _SongItem extends ConsumerWidget {
     required this.authHeaders,
     required this.colorScheme,
     required this.config,
+    required this.onTap,
   });
 
   final Song song;
   final Map<String, String> authHeaders;
   final ColorScheme colorScheme;
   final _LayoutConfig config;
+  final Function(WidgetRef ref) onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -159,14 +171,7 @@ class _SongItem extends ConsumerWidget {
         : 'Unknown Album';
 
     return InkWell(
-      onTap: () {
-        logger.d(
-          '点击歌曲: $songTitle, 艺术家: $artistName, 专辑: $albumName,info:${song}',
-        );
-        ref
-            .read(playlistProvider.notifier)
-            .loadPlaylist([song], initialIndex: 0, autoPlay: true);
-      },
+      onTap: () => onTap(ref),
       borderRadius: BorderRadius.circular(config.coverBorderRadius),
       child: Column(
         mainAxisSize: MainAxisSize.min,

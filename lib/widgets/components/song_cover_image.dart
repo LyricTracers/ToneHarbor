@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -100,7 +98,7 @@ class SongCoverImage extends ConsumerWidget {
             if (onLongPress != null) {
               onLongPress?.call();
             } else {
-              final syncSongIcon = await ref.watch(syncSongIconProvider.future);
+              final syncSongIcon = ref.read(syncSongIconProvider);
               if (syncSongIcon == false && context.mounted) {
                 _showSetBackgroundDialog(context, ref, albumName, artistName);
               }
@@ -118,7 +116,7 @@ class SongCoverImage extends ConsumerWidget {
     String albumName,
     String artistName,
   ) async {
-    final l10n = await ref.read(l10nProvider.future);
+    final l10n = ref.read(l10nProvider);
     if (context.mounted == false) {
       return;
     }

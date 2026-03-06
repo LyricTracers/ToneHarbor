@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:media_kit/media_kit.dart' hide Track;
 import 'package:flutter/foundation.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'custom_player.dart';
 import 'dart:async';
 
@@ -10,6 +13,36 @@ import 'package:toneharbor/init/initialized.dart';
 
 part 'audio_players_streams_mixin.dart';
 part 'audio_player_impl.dart';
+
+class ToneHarborMedia extends mk.Media {
+  static int serverPort = 0;
+
+  static String get host =>
+      Platform.isWindows ? "localhost" : InternetAddress.loopbackIPv4.address;
+  final ToneHarborTrackObject track;
+
+  ToneHarborMedia(this.track)
+    : super(
+        track is ToneHarborTrackObjectLocal
+            ? track.path
+            : getStreamUrl(track.id),
+        extras: track.toJson(),
+      );
+
+  String getCoverUrl() {
+    return 'http://$host:$serverPort/cover/${Uri.encodeComponent(track.album)}/${Uri.encodeComponent(track.artist)}';
+  }
+
+  static String getStreamUrl(String songId) {
+    return "http://$host:$serverPort/stream/$songId";
+  }
+
+  factory ToneHarborMedia.media(Media media) {
+    assert(media.extras != null, "[Media] must have extra metadata set");
+    logger.i('[Media] $media');
+    return ToneHarborMedia(ToneHarborTrackObject.fromJson(media.extras!));
+  }
+}
 
 abstract class AudioPlayerInterface {
   final CustomPlayer _mkPlayer;

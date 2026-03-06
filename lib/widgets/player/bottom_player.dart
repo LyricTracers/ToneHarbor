@@ -7,6 +7,7 @@ import 'package:toneharbor/hooks/use_progress.dart';
 import 'package:toneharbor/providers/audio_player/lyrics_cache_provider.dart';
 import 'package:toneharbor/providers/audio_station/auth_provider.dart';
 import 'package:toneharbor/providers/audio_station/songs_provider.dart';
+import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
@@ -17,13 +18,15 @@ class BottomPlayer extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isHovered = useState(false);
-    final activeTrack = ref.watch(activeTrackProvider);
-    final colorScheme = getColorSchemeWhenReady(ref);
+    final playlist = ref.watch(audioPlayerStateProvider);
+    final activeTrack = playlist.activeTrack;
 
     if (activeTrack == null) {
       return const SizedBox.shrink();
     }
+
+    final isHovered = useState(false);
+    final colorScheme = getColorSchemeWhenReady(ref);
 
     final authHeaders = getValueWhenReadyWithWidgetRef(
       ref,
@@ -61,10 +64,10 @@ class BottomPlayer extends HookConsumerWidget {
       currentLineLyrics.value = activeTrack.title;
     }
 
-    final rating = activeTrack.additional?.songRating?.rating ?? 0;
+    final rating = activeTrack.rating;
 
-    final artist = activeTrack.additional?.songTag?.artist ?? "Unknown Artist";
-    final album = activeTrack.additional?.songTag?.album ?? "Unknown Album";
+    final artist = activeTrack.artist;
+    final album = activeTrack.album;
     final textStyle11 = TextStyle(
       color: colorScheme.onSurface.withValues(alpha: 0.7),
       fontSize: 11,
@@ -97,8 +100,8 @@ class BottomPlayer extends HookConsumerWidget {
               children: [
                 SongCoverImage(
                   songId: activeTrack.id,
-                  albumName: activeTrack.additional?.songTag?.album ?? "",
-                  artistName: activeTrack.additional?.songTag?.artist ?? "",
+                  albumName: activeTrack.album,
+                  artistName: activeTrack.artist,
                   colorScheme: colorScheme,
                   config: const SongCoverImageConfig(size: 50, borderRadius: 5),
                   authHeaders: authHeaders ?? <String, String>{},
@@ -216,11 +219,11 @@ class BottomPlayer extends HookConsumerWidget {
                         ),
                         onPressed: () {
                           if (volume > 0.5) {
-                            audioPlayer.setVolume(0.5);
+                            ref.read(volumeProvider.notifier).setVolume(0.5);
                           } else if (volume > 0) {
-                            audioPlayer.setVolume(0);
+                            ref.read(volumeProvider.notifier).setVolume(0);
                           } else {
-                            audioPlayer.setVolume(1);
+                            ref.read(volumeProvider.notifier).setVolume(1);
                           }
                         },
                       ),
@@ -243,7 +246,9 @@ class BottomPlayer extends HookConsumerWidget {
                               min: 0,
                               max: 1,
                               onChanged: (value) {
-                                audioPlayer.setVolume(value);
+                                ref
+                                    .read(volumeProvider.notifier)
+                                    .setVolume(value);
                               },
                             ),
                           ),

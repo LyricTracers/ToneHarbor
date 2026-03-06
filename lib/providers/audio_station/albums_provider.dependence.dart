@@ -121,7 +121,7 @@ Future<AlbumResponse> _getAlbums({
     artist: artist,
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final result = await _sendAlbumRequest(
     ref: ref,
@@ -184,7 +184,7 @@ Future<AlbumResponse> _searchAlbums({
     sortBy: sortBy,
     sortDirection: sortDirection,
   );
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
   final result = await _sendAlbumRequest(
     ref: ref,
     request: request,

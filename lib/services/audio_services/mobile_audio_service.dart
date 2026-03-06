@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:media_kit/media_kit.dart' hide Track;
-import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/models/audio_player/audio_player_state.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/services/audio_player/playback_state.dart';
@@ -12,13 +12,13 @@ import 'package:toneharbor/init/initialized.dart';
 
 class MobileAudioService extends BaseAudioHandler {
   AudioSession? session;
-  final PlaylistNotifier playlistNotifier;
+  final AudioPlayerStateNotifier playback;
   final _subscriptions = <StreamSubscription>[];
 
   // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
-  List<Song> get playlist => playlistNotifier.state;
+  AudioPlayerState get playlist => playback.state;
 
-  MobileAudioService(this.playlistNotifier) {
+  MobileAudioService(this.playback) {
     AudioSession.instance.then((s) {
       session = s;
       session?.configure(const AudioSessionConfiguration.music());
@@ -119,7 +119,7 @@ class MobileAudioService extends BaseAudioHandler {
 
   @override
   Future<void> stop() async {
-    await playlistNotifier.stop();
+    await playback.stop();
   }
 
   @override

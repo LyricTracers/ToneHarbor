@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/models/audio_player/audio_player_state.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
-import 'package:toneharbor/providers/server/server_provider.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/services/audio_services/audio_services.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -12,63 +13,76 @@ class AudioPlayerStreamListeners {
   final Ref ref;
   AudioServices? notificationService;
   final subscriptions = <StreamSubscription>[];
-
+  AudioPlayerState get audioPlayerState => ref.read(audioPlayerStateProvider);
   AudioPlayerStreamListeners(this.ref) {
     AudioServices.create(
       ref,
-      ref.read(playlistProvider.notifier),
+      ref.read(audioPlayerStateProvider.notifier),
     ).then((value) => notificationService = value);
 
     subscriptions.add(subscribeToPlaylist());
+    subscriptions.add(subscribeToPosition());
+    subscriptions.add(subscribeToPlayerError());
 
     ref.onDispose(dispose);
   }
 
   StreamSubscription subscribeToPlaylist() {
-    return audioPlayer.playlistStream.listen((playlist) async {
+    return audioPlayer.playlistStream.listen((mpvPlaylist) {
       try {
-        final activeMedia = playlist.medias.elementAtOrNull(playlist.index);
+        final activeMedia = mpvPlaylist.medias.elementAtOrNull(
+          mpvPlaylist.index,
+        );
         logger.i(
-          '[AudioPlayerStreamListeners] playlistStream received: ${playlist.index}, medias count: ${playlist.medias.length}',
+          '[AudioPlayerStreamListeners] playlistStream received: ${mpvPlaylist.index}, medias count: ${mpvPlaylist.medias.length}',
+        );
+        if (activeMedia == null) return;
+        notificationService?.addMedia(activeMedia as ToneHarborMedia);
+      } catch (e, stack) {
+        logger.e('Failed to add track', error: e, stackTrace: stack);
+      }
+    });
+  }
+
+  StreamSubscription subscribeToPosition() {
+    String lastTrack = "";
+    return audioPlayer.positionStream.listen((event) async {
+      final percentProgress =
+          (event.inSeconds / max(audioPlayer.duration.inSeconds, 1)) * 100;
+      try {
+        if (percentProgress < 80 ||
+            audioPlayerState.currentIndex == -1 ||
+            audioPlayerState.currentIndex ==
+                audioPlayerState.tracks.length - 1) {
+          return;
+        }
+
+        final nextTrack = audioPlayerState.tracks.elementAtOrNull(
+          audioPlayerState.currentIndex + 1,
         );
 
-        if (activeMedia != null && notificationService != null) {
-          final extras = activeMedia.extras;
-          if (extras != null) {
-            final album = extras['album'] as String?;
-            final artist = extras['artist'] as String?;
-            final duration = extras['duration'] as int?;
-            final id = extras['id'] as String? ?? '';
-            final title = extras['title'] as String? ?? '';
+        if (nextTrack == null ||
+            lastTrack == nextTrack.id ||
+            nextTrack is ToneHarborTrackObjectLocal) {
+          return;
+        }
 
-            String? artUri;
-            if (album != null &&
-                artist != null &&
-                ToneHarborMedia.serverPort > 0) {
-              artUri =
-                  'http://${ToneHarborMedia.host}:${ToneHarborMedia.serverPort}/cover/${Uri.encodeComponent(album)}/${Uri.encodeComponent(artist)}';
-            }
-
-            await notificationService!.addTrackMedia(
-              id,
-              title,
-              album,
-              artist,
-              duration,
-              artUri,
-            );
-            logger.i(
-              '[AudioPlayerStreamListeners] track added to notification: $title, $id, artUri: ${artUri ?? "null"}',
-            );
-          }
+        try {
+          // await ref.read(
+          //   sourcedTrackProvider(nextTrack as SpotubeFullTrackObject).future,
+          // );
+        } finally {
+          lastTrack = nextTrack.id;
         }
       } catch (e, stack) {
-        logger.e(
-          'Failed to add track to notification',
-          error: e,
-          stackTrace: stack,
-        );
+        logger.e('Failed to preload next track', error: e, stackTrace: stack);
       }
+    });
+  }
+
+  StreamSubscription subscribeToPlayerError() {
+    return audioPlayer.errorStream.listen((event) {
+      logger.e('[AudioPlayerStreamListeners] Player error: $event');
     });
   }
 

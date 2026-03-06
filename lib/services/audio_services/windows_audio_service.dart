@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:smtc_windows/smtc_windows.dart';
-import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/services/audio_player/playback_state.dart';
@@ -10,11 +10,11 @@ import 'package:toneharbor/services/audio_player/playback_state.dart';
 class WindowsAudioService {
   final SMTCWindows smtc;
   final Ref ref;
-  final PlaylistNotifier playlistNotifier;
+  final AudioPlayerStateNotifier playback;
 
   final subscriptions = <StreamSubscription>[];
 
-  WindowsAudioService(this.ref, this.playlistNotifier)
+  WindowsAudioService(this.ref, this.playback)
     : smtc = SMTCWindows(enabled: false) {
     smtc.setPlaybackStatus(PlaybackStatus.stopped);
     final buttonStream = smtc.buttonPressStream.listen((event) {
@@ -32,7 +32,7 @@ class WindowsAudioService {
           audioPlayer.skipToPrevious();
           break;
         case PressedButton.stop:
-          playlistNotifier.stop();
+          playback.stop();
           break;
         default:
           break;
@@ -76,23 +76,16 @@ class WindowsAudioService {
     ]);
   }
 
-  Future<void> addTrackMedia(
-    String title,
-    String? album,
-    String? artist,
-    int? duration,
-    String? artUri,
-  ) async {
+  Future<void> addMedia(ToneHarborMedia media) async {
     if (!smtc.enabled) {
       await smtc.enableSmtc();
     }
     await smtc.updateMetadata(
       MusicMetadata(
-        title: title,
-        albumArtist: artist ?? "Unknown",
-        artist: artist ?? "Unknown",
-        album: album ?? "Unknown",
-        thumbnail: artUri,
+        title: media.track.title,
+        albumArtist: media.track.artist,
+        artist: media.track.artist,
+        thumbnail: media.getCoverUrl(),
       ),
     );
   }

@@ -16,8 +16,10 @@ class FrostedColorSchemeGenerator {
     final blendedLuminance = luminance * (1 - blackOpacity);
     final isDarkBackground = blendedLuminance < 0.5;
     final brightness = isDarkBackground ? Brightness.dark : Brightness.light;
-    final finalContrastLevel = contrastLevel ?? await getContrastLevel();
-    final finalSchemeVariant = schemeVariant ?? await getDynamicSchemeVariant();
+    final finalContrastLevel =
+        contrastLevel ?? SharedPreferencesUtils.getContrastLevel();
+    final finalSchemeVariant =
+        schemeVariant ?? SharedPreferencesUtils.getDynamicSchemeVariant();
     return _createColorScheme(
       sourceColorArgb: sourceColorArgb,
       brightness: brightness,

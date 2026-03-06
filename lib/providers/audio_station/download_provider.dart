@@ -18,7 +18,7 @@ Future<String> streamUrl(
   required String id,
   String format = 'mp3',
 }) async {
-  final cookiesInfo = await ref.read(audioStationCookiesInfoProvider.future);
+  final cookiesInfo = ref.read(audioStationCookiesInfoProvider);
   if (cookiesInfo == null || !cookiesInfo.isValid) {
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
@@ -117,7 +117,7 @@ Future<int> downloadSong({
   required String filePath,
   bool resume = true,
 }) async {
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final streamUrl = await ref.read(
     streamUrlProvider(id: id, format: format).future,
@@ -185,7 +185,7 @@ Future<Uint8List> downloadCover({
   bool isHr = true,
   String library = 'shared',
 }) async {
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final coverUrl = await ref.read(
     coverUrlProvider(
@@ -243,7 +243,7 @@ Future<List<String>> batchDownloadSongs({
   required String directoryPath,
   bool autoExtract = true,
 }) async {
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   if (songIds.isEmpty) {
     throw AudioStationException(message: l10n.error_songListEmpty);

@@ -178,7 +178,7 @@ Future<PlaylistListResponse> _getPlaylists({
     sortDirection: sortDirection,
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final result = await _sendPlaylistRequest(
     ref: ref,
@@ -238,7 +238,7 @@ Future<PlaylistDetailResponse> _getPlaylistDetail({
     sortDirection: sortDirection,
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final result = await _sendPlaylistDetailRequest(
     ref: ref,
@@ -292,7 +292,7 @@ Future<PlaylistDetailResponse> _getPlaylistInfo({
     sortDirection: 'ASC',
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final result = await _sendPlaylistDetailRequest(
     ref: ref,
@@ -338,7 +338,7 @@ Future<CreatePlaylistResponse> _createPlaylist({
     library: 'personal',
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);
@@ -422,7 +422,7 @@ Future<RenamePlaylistResponse> _renamePlaylist({
     newName: newName,
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);
@@ -504,7 +504,7 @@ Future<DeletePlaylistResponse> _deletePlaylist({
     id: id,
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);
@@ -594,7 +594,7 @@ Future<AddPlaylistSongsResponse> _addSongToPlaylist({
     skipDuplicate: skipDuplicate,
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);
@@ -676,7 +676,7 @@ Future<RemoveMissingSongsResponse> _removeMissingSongs({
     id: id,
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);

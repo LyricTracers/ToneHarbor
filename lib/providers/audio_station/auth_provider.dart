@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:ui';
+
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:rhttp/rhttp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/auth.dart';
@@ -19,39 +19,35 @@ part 'auth_provider.dependence.dart';
 @keepAlive
 class UseHttp extends _$UseHttp {
   @override
-  Future<bool> build() async {
-    return await getUseHttp();
+  bool build() {
+    return SharedPreferencesUtils.getUseHttp();
   }
 
   Future<void> toggle() async {
-    final useHttp = await getUseHttp();
-    final sp = await getSharedPreferences();
-    await sp.setBool(useHttpKey, !useHttp);
-    state = AsyncData(!useHttp);
+    final useHttp = SharedPreferencesUtils.getUseHttp();
+    state = !useHttp;
+    await SharedPreferencesUtils.setUseHttp(!useHttp);
   }
 }
 
 @keepAlive
 class ServerUrl extends _$ServerUrl {
   @override
-  Future<String> build() async {
-    final sp = await getSharedPreferences();
-    return sp.getString(serverUrlKey) ?? '';
+  String build() {
+    return SharedPreferencesUtils.getServerUrl();
   }
 
   Future<void> setServerUrl(String serverUrl) async {
-    final sp = await getSharedPreferences();
-    await sp.setString(serverUrlKey, serverUrl);
-    state = AsyncData(serverUrl);
+    await SharedPreferencesUtils.setServerUrl(serverUrl);
+    state = serverUrl;
   }
 }
 
 @keepAlive
 class AccountInfo extends _$AccountInfo {
   @override
-  Future<Account?> build() async {
-    final sp = await getSharedPreferences();
-    final accountJson = sp.getString(accountKey);
+  Account? build() {
+    final accountJson = SharedPreferencesUtils.getAccount();
     if (accountJson != null && accountJson.isNotEmpty) {
       return Account.fromJson(jsonDecode(accountJson));
     }
@@ -59,18 +55,16 @@ class AccountInfo extends _$AccountInfo {
   }
 
   Future<void> setAccount(Account account) async {
-    final sp = await getSharedPreferences();
-    await sp.setString(accountKey, jsonEncode(account.toJson()));
-    state = AsyncData(account);
+    await SharedPreferencesUtils.setAccount(jsonEncode(account.toJson()));
+    state = account;
   }
 }
 
 @keepAlive
 class AudioStationCookiesInfo extends _$AudioStationCookiesInfo {
   @override
-  Future<AudioStationCookies?> build() async {
-    final sp = await getSharedPreferences();
-    final cookies = sp.getString(cookieKey);
+  AudioStationCookies? build() {
+    final cookies = SharedPreferencesUtils.getCookie();
     if (cookies != null && cookies.isNotEmpty) {
       final cookie = AudioStationCookies.fromJson(jsonDecode(cookies));
       if (cookie.isValid) {
@@ -81,33 +75,31 @@ class AudioStationCookiesInfo extends _$AudioStationCookiesInfo {
   }
 
   Future<void> setCookies(AudioStationCookies cookies) async {
-    final sp = await getSharedPreferences();
     if (!cookies.isValid) {
-      await sp.remove(cookieKey);
+      await SharedPreferencesUtils.setCookie('');
       ref.read(synoTokenProvider.notifier).clear();
-      state = const AsyncData(null);
+      state = null;
       return;
     } else {
-      await sp.setString(cookieKey, jsonEncode(cookies.toJson()));
-      state = AsyncData(cookies);
+      await SharedPreferencesUtils.setCookie(jsonEncode(cookies.toJson()));
+      state = cookies;
     }
   }
 
   Future<void> clearCookie() async {
-    final sp = await getSharedPreferences();
-    await sp.remove(cookieKey);
+    await SharedPreferencesUtils.setCookie('');
     ref.read(synoTokenProvider.notifier).clear();
-    state = const AsyncData(null);
+    state = null;
   }
 }
 
 @keepAlive
 Future<String> baseUrl(Ref ref) async {
-  final serverUrl = await ref.watch(serverUrlProvider.future);
+  final serverUrl = ref.watch(serverUrlProvider);
   if (serverUrl.isEmpty) {
     throw AudioStationException(message: '服务器地址不能为空');
   }
-  final useHttp = await ref.watch(useHttpProvider.future);
+  final useHttp = ref.watch(useHttpProvider);
   final scheme = useHttp ? 'https' : 'http';
   return '$scheme://$serverUrl';
 }
@@ -137,12 +129,12 @@ Future<String?> authToken(Ref ref) async {
     return synotoken;
   }
 
-  final cookiesInfo = await ref.watch(audioStationCookiesInfoProvider.future);
+  final cookiesInfo = ref.watch(audioStationCookiesInfoProvider);
 
   if (cookiesInfo != null && cookiesInfo.isValid) {
     logger.d('Cookie 有效，尝试获取 synotoken');
     try {
-      final l10n = await ref.read(l10nProvider.future);
+      final l10n = ref.read(l10nProvider);
       logger.d('开始刷新 token');
       final response = await _refreshToken(ref, cookiesInfo, l10n);
       logger.d('刷新 token 完成: ${response.data?.synotoken}');
@@ -187,7 +179,7 @@ Future<Map<String, String>?> authHeaders(Ref ref) async {
     return null;
   }
 
-  final serverUrl = await ref.watch(serverUrlProvider.future);
+  final serverUrl = ref.watch(serverUrlProvider);
   if (serverUrl.isEmpty) {
     logger.w('serverUrl 为空，返回 null');
     return null;
@@ -203,7 +195,7 @@ Future<Map<String, String>?> authHeaders(Ref ref) async {
     'referer': '$baseUrl/music/',
   };
 
-  final cookiesInfo = await ref.watch(audioStationCookiesInfoProvider.future);
+  final cookiesInfo = ref.watch(audioStationCookiesInfoProvider);
 
   if (cookiesInfo == null || !cookiesInfo.isValid) {
     logger.d('Cookie 无效，返回 null');
@@ -221,22 +213,14 @@ Future<Map<String, String>?> authHeaders(Ref ref) async {
 }
 
 Future<AuthResponse> login(WidgetRef ref) async {
-  var l10n = await ref.read(l10nProvider.future);
+  var l10n = ref.read(l10nProvider);
 
-  final accountInfo = getValueWhenReadyWithWidgetRef(
-    ref,
-    accountInfoProvider,
-    null,
-  );
+  final accountInfo = ref.watch(accountInfoProvider);
   if (accountInfo == null) {
     throw AudioStationException(message: l10n.error_account_info_invalid);
   }
 
-  final cookiesInfo = getValueWhenReadyWithWidgetRef(
-    ref,
-    audioStationCookiesInfoProvider,
-    null,
-  );
+  final cookiesInfo = ref.watch(audioStationCookiesInfoProvider);
   final hasValidCookies = cookiesInfo != null && cookiesInfo.isValid;
 
   if (hasValidCookies) {
@@ -254,7 +238,7 @@ Future<AuthResponse> login(WidgetRef ref) async {
 }
 
 Future<LogoutResponse> logout(WidgetRef ref) async {
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {

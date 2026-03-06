@@ -64,6 +64,7 @@ class PlaybackRoutes {
 
   Future<Response> _getStreamSongId(Request request, String songId) async {
     try {
+      logger.i("request:${request.url.path},songid:${songId}");
       final streamUrl = await ref.read(streamUrlProvider(id: songId).future);
 
       if (streamUrl.isEmpty) {

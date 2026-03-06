@@ -45,11 +45,7 @@ class RecommendPage extends BaseContentPage {
   @override
   Widget buildContent(BuildContext context, WidgetRef ref) {
     var colorScheme = getColorSchemeWhenReady(ref);
-    final i10n = getValueWhenReadyWithWidgetRef(
-      ref,
-      l10nProvider,
-      AppLocalizations.of(context),
-    )!;
+    final i10n = ref.watch(l10nProvider);
 
     return SingleChildScrollView(
       child: SizedBox(

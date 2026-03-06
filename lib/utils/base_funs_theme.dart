@@ -14,8 +14,7 @@ Future<bool> saveDefaultThemeIcon(WidgetRef ref, List<int> bytes) async {
     await file.writeAsBytes(bytes);
     logger.i('Saved default theme icon to: ${file.path}');
 
-    final prefs = await getSharedPreferences();
-    await prefs.setString(defaultThemeIconKey, file.path);
+    await SharedPreferencesUtils.setDefaultThemeIcon(file.path);
 
     ref.invalidate(loadDefaultThemeIconProvider);
     return true;

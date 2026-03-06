@@ -132,7 +132,7 @@ class MyApp extends HookConsumerWidget {
       title: 'ToneHarbor',
       theme: ThemeData(colorScheme: colorScheme, useMaterial3: true),
       debugShowCheckedModeBanner: false,
-      locale: localeAsync.value ?? const Locale('zh'),
+      locale: localeAsync,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

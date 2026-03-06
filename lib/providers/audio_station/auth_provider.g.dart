@@ -12,7 +12,7 @@ part of 'auth_provider.dart';
 @ProviderFor(UseHttp)
 final useHttpProvider = UseHttpProvider._();
 
-final class UseHttpProvider extends $AsyncNotifierProvider<UseHttp, bool> {
+final class UseHttpProvider extends $NotifierProvider<UseHttp, bool> {
   UseHttpProvider._()
     : super(
         from: null,
@@ -30,21 +30,29 @@ final class UseHttpProvider extends $AsyncNotifierProvider<UseHttp, bool> {
   @$internal
   @override
   UseHttp create() => UseHttp();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
 }
 
-String _$useHttpHash() => r'96dac09aa1562d4140576474fc8e11b31552ac73';
+String _$useHttpHash() => r'a92f2538f2181e12b98fbe37df11564936bbd896';
 
-abstract class _$UseHttp extends $AsyncNotifier<bool> {
-  FutureOr<bool> build();
+abstract class _$UseHttp extends $Notifier<bool> {
+  bool build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<bool>, bool>;
+    final ref = this.ref as $Ref<bool, bool>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<bool>, bool>,
-              AsyncValue<bool>,
+              AnyNotifier<bool, bool>,
+              bool,
               Object?,
               Object?
             >;
@@ -55,8 +63,7 @@ abstract class _$UseHttp extends $AsyncNotifier<bool> {
 @ProviderFor(ServerUrl)
 final serverUrlProvider = ServerUrlProvider._();
 
-final class ServerUrlProvider
-    extends $AsyncNotifierProvider<ServerUrl, String> {
+final class ServerUrlProvider extends $NotifierProvider<ServerUrl, String> {
   ServerUrlProvider._()
     : super(
         from: null,
@@ -74,21 +81,29 @@ final class ServerUrlProvider
   @$internal
   @override
   ServerUrl create() => ServerUrl();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String>(value),
+    );
+  }
 }
 
-String _$serverUrlHash() => r'527b1f9acbc1675d19137ea226b2357eb2fa9f7f';
+String _$serverUrlHash() => r'4f76d26d8207caa56cafa6dc8d6a06e614d8dc6b';
 
-abstract class _$ServerUrl extends $AsyncNotifier<String> {
-  FutureOr<String> build();
+abstract class _$ServerUrl extends $Notifier<String> {
+  String build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<String>, String>;
+    final ref = this.ref as $Ref<String, String>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<String>, String>,
-              AsyncValue<String>,
+              AnyNotifier<String, String>,
+              String,
               Object?,
               Object?
             >;
@@ -100,7 +115,7 @@ abstract class _$ServerUrl extends $AsyncNotifier<String> {
 final accountInfoProvider = AccountInfoProvider._();
 
 final class AccountInfoProvider
-    extends $AsyncNotifierProvider<AccountInfo, Account?> {
+    extends $NotifierProvider<AccountInfo, Account?> {
   AccountInfoProvider._()
     : super(
         from: null,
@@ -118,21 +133,29 @@ final class AccountInfoProvider
   @$internal
   @override
   AccountInfo create() => AccountInfo();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Account? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Account?>(value),
+    );
+  }
 }
 
-String _$accountInfoHash() => r'9226017988afd6fe42bc07a51fbfcda40fb860eb';
+String _$accountInfoHash() => r'2c514707141e81cd294b5c1855e30afa4c053542';
 
-abstract class _$AccountInfo extends $AsyncNotifier<Account?> {
-  FutureOr<Account?> build();
+abstract class _$AccountInfo extends $Notifier<Account?> {
+  Account? build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<Account?>, Account?>;
+    final ref = this.ref as $Ref<Account?, Account?>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<Account?>, Account?>,
-              AsyncValue<Account?>,
+              AnyNotifier<Account?, Account?>,
+              Account?,
               Object?,
               Object?
             >;
@@ -144,8 +167,7 @@ abstract class _$AccountInfo extends $AsyncNotifier<Account?> {
 final audioStationCookiesInfoProvider = AudioStationCookiesInfoProvider._();
 
 final class AudioStationCookiesInfoProvider
-    extends
-        $AsyncNotifierProvider<AudioStationCookiesInfo, AudioStationCookies?> {
+    extends $NotifierProvider<AudioStationCookiesInfo, AudioStationCookies?> {
   AudioStationCookiesInfoProvider._()
     : super(
         from: null,
@@ -163,28 +185,31 @@ final class AudioStationCookiesInfoProvider
   @$internal
   @override
   AudioStationCookiesInfo create() => AudioStationCookiesInfo();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AudioStationCookies? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AudioStationCookies?>(value),
+    );
+  }
 }
 
 String _$audioStationCookiesInfoHash() =>
-    r'efeb8b060743654e5ab3628a6ffdddbfb341f799';
+    r'f38ed523f87416f9627983d387dcd51ea165ad4c';
 
 abstract class _$AudioStationCookiesInfo
-    extends $AsyncNotifier<AudioStationCookies?> {
-  FutureOr<AudioStationCookies?> build();
+    extends $Notifier<AudioStationCookies?> {
+  AudioStationCookies? build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref =
-        this.ref
-            as $Ref<AsyncValue<AudioStationCookies?>, AudioStationCookies?>;
+    final ref = this.ref as $Ref<AudioStationCookies?, AudioStationCookies?>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<
-                AsyncValue<AudioStationCookies?>,
-                AudioStationCookies?
-              >,
-              AsyncValue<AudioStationCookies?>,
+              AnyNotifier<AudioStationCookies?, AudioStationCookies?>,
+              AudioStationCookies?,
               Object?,
               Object?
             >;
@@ -223,7 +248,7 @@ final class BaseUrlProvider
   }
 }
 
-String _$baseUrlHash() => r'd86f1f259031daaa950aa8d9b2c68dab62ff8d27';
+String _$baseUrlHash() => r'9cfa5682d103aba97321df85fa6a2c41300fcb61';
 
 @ProviderFor(SynoToken)
 final synoTokenProvider = SynoTokenProvider._();
@@ -307,7 +332,7 @@ final class AuthTokenProvider
   }
 }
 
-String _$authTokenHash() => r'9eb8154a907e1a19c12959f6fd59b5cdee3d28e3';
+String _$authTokenHash() => r'97f0a20e4a7e2564427cb79efb838eb0d1285460';
 
 @ProviderFor(authHeaders)
 final authHeadersProvider = AuthHeadersProvider._();
@@ -348,4 +373,4 @@ final class AuthHeadersProvider
   }
 }
 
-String _$authHeadersHash() => r'1607f8eed45ea79a6231173d8c2e2d1a66affc0b';
+String _$authHeadersHash() => r'af10e87e79b453dc6d192e8f97835d2296d99652';

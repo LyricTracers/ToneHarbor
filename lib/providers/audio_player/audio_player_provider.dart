@@ -1,491 +1,180 @@
 import 'dart:async';
+import 'dart:math';
+import 'package:collection/collection.dart';
+import 'package:drift/drift.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:toneharbor/init/initialized.dart';
-import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/models/audio_player/audio_player_state.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
+import 'package:toneharbor/models/database/database.dart';
+import 'package:toneharbor/providers/database/database.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
-import 'package:toneharbor/providers/server/server_provider.dart';
-import 'package:toneharbor/providers/audio_player/audio_player_state_persistence.dart';
-import 'package:toneharbor/providers/audio_player/playback_history_provider.dart';
+import 'package:toneharbor/utils/base_utils.dart';
 
 part 'audio_player_provider.g.dart';
 
 @keepAlive
-class PlaylistNotifier extends _$PlaylistNotifier {
-  List<String> _collections = [];
-  List<String> get collections => _collections;
-
+class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
   @override
-  List<Song> build() {
-    _syncSavedState();
-    _subscribeToStreams();
-    return [];
-  }
-
-  ToneHarborAudioPlayer get _player => audioPlayer;
-
-  List<Song> get _tracks => state;
-
-  set _tracks(List<Song> value) {
-    state = List.unmodifiable(value);
-  }
-
-  Future<void> _syncSavedState() async {
-    try {
-      final persistedState = await ref.read(
-        audioPlayerStatePersistenceProvider.future,
-      );
-
-      if (persistedState.tracks.isNotEmpty && ref.mounted) {
-        _collections = persistedState.collections;
-        await _player.setLoopMode(persistedState.loopMode);
-        await _player.setShuffle(persistedState.shuffled);
-
-        final medias = persistedState.tracks.map((song) {
-          return Media(
-            ToneHarborMedia.getStreamUrl(song.id),
-            extras: {
-              'id': song.id,
-              'title': song.title,
-              'album': song.additional?.songTag?.album,
-              'artist': song.additional?.songTag?.artist,
-              'duration': song.additional?.songAudio?.duration,
-            },
-          );
-        }).toList();
-
-        await _player.openPlaylist(
-          medias,
-          initialIndex: persistedState.currentIndex.clamp(
-            0,
-            persistedState.tracks.length - 1,
-          ),
-          autoPlay: false,
-        );
-
-        _tracks = persistedState.tracks;
-      }
-    } catch (e, stack) {
-      logger.e('Failed to sync saved state', error: e, stackTrace: stack);
-    }
-  }
-
-  void _subscribeToStreams() {
-    String? lastScrobbledId;
+  AudioPlayerState build() {
     final subscriptions = [
-      _player.playingStream.listen((playing) async {
+      audioPlayer.playingStream.listen((playing) async {
         try {
-          if (ref.mounted) {
-            await ref
-                .read(audioPlayerStatePersistenceProvider.notifier)
-                .savePlaying(playing);
-          }
-        } catch (e, stack) {
-          logger.e('Failed to save playing state', error: e, stackTrace: stack);
-        }
-      }),
-      _player.loopModeStream.listen((loopMode) async {
-        try {
-          if (ref.mounted) {
-            await ref
-                .read(audioPlayerStatePersistenceProvider.notifier)
-                .saveLoopMode(loopMode);
-          }
-        } catch (e, stack) {
-          logger.e('Failed to save loop mode', error: e, stackTrace: stack);
-        }
-      }),
-      _player.shuffledStream.listen((shuffled) async {
-        try {
-          if (ref.mounted) {
-            await ref
-                .read(audioPlayerStatePersistenceProvider.notifier)
-                .saveShuffled(shuffled);
-          }
+          state = state.copyWith(playing: playing);
+          await _updatePlayerState(
+            AudioPlayerStateTableCompanion(playing: Value(playing)),
+          );
         } catch (e, stack) {
           logger.e(
-            'Failed to save shuffled state',
+            'Failed to update playing state',
             error: e,
             stackTrace: stack,
           );
         }
       }),
-      _player.playlistStream.listen((playlist) async {
+
+      audioPlayer.loopModeStream.listen((loopMode) async {
         try {
-          if (ref.mounted) {
-            await ref
-                .read(audioPlayerStatePersistenceProvider.notifier)
-                .saveTracks(_tracks, playlist.index);
-          }
-        } catch (e, stack) {
-          logger.e('Failed to save tracks', error: e, stackTrace: stack);
-        }
-      }),
-      _player.positionStream.listen((position) async {
-        try {
-          if (ref.mounted) {
-            await _preloadNextTrack(position);
-            await _handleScrobble(position, lastScrobbledId, (id) {
-              lastScrobbledId = id;
-            });
-          }
+          state = state.copyWith(loopMode: loopMode);
+          await _updatePlayerState(
+            AudioPlayerStateTableCompanion(loopMode: Value(loopMode)),
+          );
         } catch (e, stack) {
           logger.e(
-            'Failed to preload/handle scrobble',
+            'Failed to update loop mode state',
+            error: e,
+            stackTrace: stack,
+          );
+        }
+      }),
+
+      audioPlayer.shuffledStream.listen((shuffled) async {
+        try {
+          state = state.copyWith(shuffled: shuffled);
+
+          await _updatePlayerState(
+            AudioPlayerStateTableCompanion(shuffled: Value(shuffled)),
+          );
+        } catch (e, stack) {
+          logger.e(
+            'Failed to update shuffled state',
+            error: e,
+            stackTrace: stack,
+          );
+        }
+      }),
+
+      audioPlayer.playlistStream.listen((playlist) async {
+        try {
+          final tracks = playlist.medias
+              .map((e) => ToneHarborMedia.media(e).track)
+              .toList();
+
+          state = state.copyWith(tracks: tracks, currentIndex: playlist.index);
+          await _updatePlayerState(
+            AudioPlayerStateTableCompanion(
+              currentIndex: Value(state.currentIndex),
+              tracks: Value(state.tracks),
+            ),
+          );
+        } catch (e, stack) {
+          logger.e(
+            'Failed to update playlist state',
             error: e,
             stackTrace: stack,
           );
         }
       }),
     ];
-
+    _syncSavedState();
     ref.onDispose(() {
       for (final subscription in subscriptions) {
         subscription.cancel();
       }
     });
+
+    return AudioPlayerState(
+      loopMode: audioPlayer.loopMode,
+      playing: audioPlayer.isPlaying,
+      shuffled: audioPlayer.isShuffled,
+      tracks: [],
+      collections: [],
+    );
   }
 
-  Future<void> _handleScrobble(
-    Duration position,
-    String? lastScrobbledId,
-    void Function(String?) setLastScrobbledId,
+  Future<void> _syncSavedState() async {
+    final database = ref.read(appDatabaseProvider);
+
+    var playerState = await database
+        .select(database.audioPlayerStateTable)
+        .getSingleOrNull();
+
+    if (playerState == null) {
+      await database
+          .into(database.audioPlayerStateTable)
+          .insert(
+            AudioPlayerStateTableCompanion.insert(
+              playing: audioPlayer.isPlaying,
+              loopMode: audioPlayer.loopMode,
+              shuffled: audioPlayer.isShuffled,
+              collections: <String>[],
+              tracks: const Value(<ToneHarborTrackObject>[]),
+              currentIndex: const Value(0),
+              id: const Value(0),
+            ),
+          );
+
+      playerState = await database
+          .select(database.audioPlayerStateTable)
+          .getSingle();
+    } else {
+      await audioPlayer.setLoopMode(playerState.loopMode);
+      await audioPlayer.setShuffle(playerState.shuffled);
+    }
+
+    final tracks = playerState.tracks;
+    final currentIndex = playerState.currentIndex;
+
+    if (tracks.isEmpty && state.tracks.isNotEmpty) {
+      await _updatePlayerState(
+        AudioPlayerStateTableCompanion(
+          tracks: Value(state.tracks),
+          currentIndex: Value(currentIndex),
+        ),
+      );
+    } else if (tracks.isNotEmpty) {
+      state = state.copyWith(tracks: tracks, currentIndex: currentIndex);
+      await audioPlayer.openPlaylist(
+        tracks.asMediaList(),
+        initialIndex: currentIndex,
+        autoPlay: false,
+      );
+    }
+
+    if (playerState.collections.isNotEmpty) {
+      state = state.copyWith(collections: playerState.collections);
+    }
+  }
+
+  Future<void> _updatePlayerState(
+    AudioPlayerStateTableCompanion companion,
   ) async {
-    final duration = _player.duration;
-    if (duration == Duration.zero || position == Duration.zero) return;
+    final database = ref.read(appDatabaseProvider);
 
-    final activeTrack = _tracks.elementAtOrNull(_player.currentIndex);
-    if (activeTrack == null) return;
-
-    if (lastScrobbledId == activeTrack.id) return;
-
-    final minimumListenTime = (duration.inSeconds / 2).clamp(0, 240);
-    if (position.inSeconds < minimumListenTime) return;
-
-    await ref
-        .read(playbackHistoryProvider.notifier)
-        .addTrack(activeTrack, playDurationMs: position.inMilliseconds);
-
-    setLastScrobbledId(activeTrack.id);
+    await (database.update(
+      database.audioPlayerStateTable,
+    )..where((tb) => tb.id.equals(0))).write(companion);
   }
 
-  Future<void> _preloadNextTrack(Duration position) async {
-    final duration = _player.duration;
-    if (duration == Duration.zero) return;
-
-    final percentProgress =
-        (position.inMilliseconds / duration.inMilliseconds) * 100;
-
-    if (percentProgress < 80) return;
-
-    final currentIndex = _player.currentIndex;
-    if (currentIndex == -1 || currentIndex >= _tracks.length - 1) return;
-
-    final nextTrack = _tracks.elementAtOrNull(currentIndex + 1);
-    if (nextTrack == null) return;
-
-    final streamUrl = ToneHarborMedia.getStreamUrl(nextTrack.id);
-    logger.d('Preloading next track: ${nextTrack.title} - $streamUrl');
-  }
-
-  Future<void> loadPlaylist(
-    List<Song> songs, {
-    int initialIndex = 0,
-    bool autoPlay = false,
-  }) async {
-    if (songs.isEmpty) return;
-
-    final initial = initialIndex.clamp(0, songs.length - 1);
-
-    final medias = songs.map((song) {
-      return Media(
-        ToneHarborMedia.getStreamUrl(song.id),
-        extras: {
-          'id': song.id,
-          'title': song.title,
-          'album': song.additional?.songTag?.album,
-          'artist': song.additional?.songTag?.artist,
-          'duration': song.additional?.songAudio?.duration,
-        },
-      );
-    }).toList();
-
-    await _player.openPlaylist(
-      medias,
-      initialIndex: initial,
-      autoPlay: autoPlay,
-    );
-
-    if (ref.mounted) {
-      _tracks = songs;
-      _collections = [];
-
-      await ref
-          .read(audioPlayerStatePersistenceProvider.notifier)
-          .saveTracks(songs, initial);
-    }
-  }
-
-  Future<void> play() async {
-    await _player.resume();
-  }
-
-  Future<void> pause() async {
-    await _player.pause();
-  }
-
-  Future<void> stop() async {
-    await _player.clearPlaylist();
-    if (ref.mounted) {
-      _tracks = [];
-      _collections = [];
-      await ref.read(audioPlayerStatePersistenceProvider.notifier).clearState();
-    }
-  }
-
-  Future<void> seek(Duration position) async {
-    await _player.seek(position);
-  }
-
-  Future<void> skipToNext() async {
-    await _player.skipToNext();
-  }
-
-  Future<void> skipToPrevious() async {
-    await _player.skipToPrevious();
-  }
-
-  Future<void> jumpTo(int index) async {
-    await _player.jumpTo(index);
-  }
-
-  Future<void> jumpToTrack(Song track) async {
-    final index = _tracks.indexWhere((t) => t.id == track.id);
-    if (index == -1) return;
-    await _player.jumpTo(index);
-  }
-
-  Future<void> setShuffle(bool shuffle) async {
-    await _player.setShuffle(shuffle);
-  }
-
-  Future<void> toggleShuffle() async {
-    final currentShuffle = _player.isShuffled;
-    await _player.setShuffle(!currentShuffle);
-  }
-
-  Future<void> setLoopMode(PlaylistMode loopMode) async {
-    await _player.setLoopMode(loopMode);
-  }
-
-  Future<void> toggleLoopMode() async {
-    final currentMode = _player.loopMode;
-    final nextMode = switch (currentMode) {
-      PlaylistMode.none => PlaylistMode.loop,
-      PlaylistMode.loop => PlaylistMode.single,
-      PlaylistMode.single => PlaylistMode.none,
-    };
-    await _player.setLoopMode(nextMode);
-  }
-
-  Future<void> setVolume(double volume) async {
-    await _player.setVolume(volume);
-  }
-
-  Future<void> addTrack(Song song) async {
-    final media = Media(
-      ToneHarborMedia.getStreamUrl(song.id),
-      extras: {
-        'id': song.id,
-        'title': song.title,
-        'album': song.additional?.songTag?.album,
-        'artist': song.additional?.songTag?.artist,
-        'duration': song.additional?.songAudio?.duration,
-      },
-    );
-    await _player.addTrack(media);
-
-    if (ref.mounted) {
-      _tracks = [..._tracks, song];
-
-      await ref
-          .read(audioPlayerStatePersistenceProvider.notifier)
-          .saveTracks(_tracks, _player.currentIndex);
-    }
-  }
-
-  Future<void> addTrackAt(Song song, int index) async {
-    final insertIndex = index.clamp(0, _tracks.length);
-
-    final media = Media(
-      ToneHarborMedia.getStreamUrl(song.id),
-      extras: {
-        'id': song.id,
-        'title': song.title,
-        'album': song.additional?.songTag?.album,
-        'artist': song.additional?.songTag?.artist,
-        'duration': song.additional?.songAudio?.duration,
-      },
-    );
-    await _player.addTrackAt(media, insertIndex);
-
-    if (ref.mounted) {
-      final newTracks = [..._tracks];
-      newTracks.insert(insertIndex, song);
-      _tracks = newTracks;
-
-      await ref
-          .read(audioPlayerStatePersistenceProvider.notifier)
-          .saveTracks(_tracks, _player.currentIndex);
-    }
-  }
-
-  Future<void> addTracks(List<Song> songs) async {
-    if (songs.isEmpty) return;
-
-    for (final song in songs) {
-      final media = Media(
-        ToneHarborMedia.getStreamUrl(song.id),
-        extras: {
-          'id': song.id,
-          'title': song.title,
-          'album': song.additional?.songTag?.album,
-          'artist': song.additional?.songTag?.artist,
-          'duration': song.additional?.songAudio?.duration,
-        },
-      );
-      await _player.addTrack(media);
-    }
-
-    if (ref.mounted) {
-      _tracks = [..._tracks, ...songs];
-
-      await ref
-          .read(audioPlayerStatePersistenceProvider.notifier)
-          .saveTracks(_tracks, _player.currentIndex);
-    }
-  }
-
-  Future<void> addTracksAtFirst(List<Song> songs) async {
-    if (songs.isEmpty) return;
-    if (_tracks.length <= 1) {
-      await addTracks(songs);
-      return;
-    }
-
-    final insertStartIndex = (_player.currentIndex + 1).clamp(
-      0,
-      _tracks.length,
-    );
-
-    for (var i = 0; i < songs.length; i++) {
-      final song = songs[i];
-      final media = Media(
-        ToneHarborMedia.getStreamUrl(song.id),
-        extras: {
-          'id': song.id,
-          'title': song.title,
-          'album': song.additional?.songTag?.album,
-          'artist': song.additional?.songTag?.artist,
-          'duration': song.additional?.songAudio?.duration,
-        },
-      );
-      await _player.addTrackAt(media, insertStartIndex + i);
-    }
-
-    if (ref.mounted) {
-      final newTracks = [..._tracks];
-      newTracks.insertAll(insertStartIndex, songs);
-      _tracks = newTracks;
-
-      await ref
-          .read(audioPlayerStatePersistenceProvider.notifier)
-          .saveTracks(_tracks, _player.currentIndex);
-    }
-  }
-
-  Future<void> removeTrack(int index) async {
-    if (index < 0 || index >= _tracks.length) return;
-
-    await _player.removeTrack(index);
-
-    if (ref.mounted) {
-      final newTracks = [..._tracks];
-      newTracks.removeAt(index);
-      _tracks = newTracks;
-
-      await ref
-          .read(audioPlayerStatePersistenceProvider.notifier)
-          .saveTracks(_tracks, _player.currentIndex);
-    }
-  }
-
-  Future<void> removeTracks(List<int> indexes) async {
-    if (indexes.isEmpty) return;
-
-    final validIndexes = indexes
-        .where((i) => i >= 0 && i < _tracks.length)
-        .toList();
-    if (validIndexes.isEmpty) return;
-
-    final sortedIndexes = validIndexes.toList()..sort((a, b) => b.compareTo(a));
-
-    for (final index in sortedIndexes) {
-      await _player.removeTrack(index);
-    }
-
-    if (ref.mounted) {
-      final indexSet = validIndexes.toSet();
-      _tracks = _tracks
-          .asMap()
-          .entries
-          .where((e) => !indexSet.contains(e.key))
-          .map((e) => e.value)
-          .toList();
-
-      await ref
-          .read(audioPlayerStatePersistenceProvider.notifier)
-          .saveTracks(_tracks, _player.currentIndex);
-    }
-  }
-
-  Future<void> moveTrack(int oldIndex, int newIndex) async {
-    if (oldIndex < 0 || oldIndex >= _tracks.length) return;
-    if (newIndex < 0 || newIndex >= _tracks.length) return;
-    if (oldIndex == newIndex) return;
-
-    await _player.moveTrack(oldIndex, newIndex);
-
-    if (ref.mounted) {
-      final track = _tracks[oldIndex];
-      final newTracks = [..._tracks];
-      newTracks.removeAt(oldIndex);
-      newTracks.insert(newIndex, track);
-      _tracks = newTracks;
-
-      await ref
-          .read(audioPlayerStatePersistenceProvider.notifier)
-          .saveTracks(_tracks, _player.currentIndex);
-    }
-  }
-
-  Future<void> clearPlaylist() async {
-    await _player.clearPlaylist();
-    if (ref.mounted) {
-      _tracks = [];
-      _collections = [];
-      await ref.read(audioPlayerStatePersistenceProvider.notifier).clearState();
-    }
-  }
-
-  // Collection management
   Future<void> addCollections(List<String> collectionIds) async {
-    if (ref.mounted) {
-      _collections = [..._collections, ...collectionIds];
-      await ref
-          .read(audioPlayerStatePersistenceProvider.notifier)
-          .saveCollections(_collections);
-    }
+    state = state.copyWith(
+      collections: [...state.collections, ...collectionIds],
+    );
+
+    await _updatePlayerState(
+      AudioPlayerStateTableCompanion(collections: Value(state.collections)),
+    );
   }
 
   Future<void> addCollection(String collectionId) async {
@@ -493,98 +182,233 @@ class PlaylistNotifier extends _$PlaylistNotifier {
   }
 
   Future<void> removeCollections(List<String> collectionIds) async {
-    if (ref.mounted) {
-      _collections = _collections
-          .where((id) => !collectionIds.contains(id))
-          .toList();
-      await ref
-          .read(audioPlayerStatePersistenceProvider.notifier)
-          .saveCollections(_collections);
-    }
+    state = state.copyWith(
+      collections: state.collections
+          .where((element) => !collectionIds.contains(element))
+          .toList(),
+    );
+
+    await _updatePlayerState(
+      AudioPlayerStateTableCompanion(collections: Value(state.collections)),
+    );
   }
 
   Future<void> removeCollection(String collectionId) async {
     await removeCollections([collectionId]);
   }
 
-  bool containsCollection(String collectionId) {
-    return _collections.contains(collectionId);
+  Future<void> addTracksAtFirst(
+    Iterable<ToneHarborTrackObject> tracks, {
+    bool allowDuplicates = false,
+  }) async {
+    if (state.tracks.length == 1) {
+      return addTracks(tracks);
+    }
+
+    final addableTracks = tracks
+        .where(
+          (track) =>
+              allowDuplicates ||
+              !state.tracks.any((element) => _compareTracks(element, track)),
+        )
+        .toList();
+
+    state = state.copyWith(tracks: [...addableTracks, ...state.tracks]);
+
+    for (int i = 0; i < addableTracks.length; i++) {
+      final track = addableTracks.elementAt(i);
+
+      await audioPlayer.addTrackAt(
+        ToneHarborMedia(track),
+        max(state.currentIndex, 0) + i + 1,
+      );
+    }
+
+    await _updatePlayerState(
+      AudioPlayerStateTableCompanion(
+        tracks: Value(state.tracks),
+        currentIndex: Value(max(state.currentIndex, 0)),
+      ),
+    );
   }
 
-  bool containsTrack(Song track) {
-    return _tracks.any((t) => t.id == track.id);
+  Future<void> addTracks(Iterable<ToneHarborTrackObject> tracks) async {
+    state = state.copyWith(tracks: [...state.tracks, ...tracks]);
+
+    for (final track in tracks) {
+      await audioPlayer.addTrack(ToneHarborMedia(track));
+    }
+
+    await _updatePlayerState(
+      AudioPlayerStateTableCompanion(
+        tracks: Value(state.tracks),
+        currentIndex: Value(max(state.currentIndex, 0)),
+      ),
+    );
   }
-}
 
-@riverpod
-bool isPlaying(Ref ref) {
-  return audioPlayer.isPlaying;
-}
+  Future<void> removeTrack(String trackId) async {
+    final index = state.tracks.indexWhere((element) => element.id == trackId);
 
-@riverpod
-PlaylistMode loopMode(Ref ref) {
-  return audioPlayer.loopMode;
-}
+    if (index == -1) return;
 
-@riverpod
-bool isShuffled(Ref ref) {
-  return audioPlayer.isShuffled;
-}
+    state = state.copyWith(tracks: List.of(state.tracks)..removeAt(index));
 
-@riverpod
-int currentIndex(Ref ref) {
-  return audioPlayer.currentIndex;
-}
+    await audioPlayer.removeTrack(index);
 
-@riverpod
-Song? activeTrack(Ref ref) {
-  final tracks = ref.watch(playlistProvider);
-  final index = audioPlayer.currentIndex;
-  if (index < 0 || index >= tracks.length) return null;
-  return tracks[index];
-}
+    await _updatePlayerState(
+      AudioPlayerStateTableCompanion(
+        tracks: Value(state.tracks),
+        currentIndex: Value(max(state.currentIndex, 0)),
+      ),
+    );
+  }
 
-@riverpod
-List<String> collections(Ref ref) {
-  return ref.watch(playlistProvider.notifier).collections;
-}
+  Future<void> removeTracks(Iterable<String> trackIds) async {
+    final trackIndexes = state.tracks
+        .where((element) => trackIds.any((trackId) => trackId == element.id))
+        .mapIndexed((index, element) => index);
 
-@riverpod
-Stream<Duration> positionStream(Ref ref) {
-  return audioPlayer.positionStream;
-}
+    final tracks = state.tracks.where(
+      (element) => !trackIds.contains(element.id),
+    );
 
-@riverpod
-Stream<Duration> durationStream(Ref ref) {
-  return audioPlayer.durationStream;
-}
+    state = state.copyWith(tracks: tracks.toList());
 
-@riverpod
-Stream<Duration> bufferedPositionStream(Ref ref) {
-  return audioPlayer.bufferedPositionStream;
-}
+    for (final index in trackIndexes) {
+      await audioPlayer.removeTrack(index);
+    }
 
-@riverpod
-Stream<double> bufferingPercentageStream(Ref ref) {
-  return audioPlayer.bufferingPercentageStream;
-}
+    await _updatePlayerState(
+      AudioPlayerStateTableCompanion(
+        tracks: Value(state.tracks),
+        currentIndex: Value(max(state.currentIndex, 0)),
+      ),
+    );
+  }
 
-@riverpod
-Stream<bool> bufferingStream(Ref ref) {
-  return audioPlayer.bufferingStream;
-}
+  bool _compareTracks(ToneHarborTrackObject a, ToneHarborTrackObject b) {
+    if (a.runtimeType != b.runtimeType) {
+      return false;
+    }
 
-@riverpod
-Stream<bool> playingStream(Ref ref) {
-  return audioPlayer.playingStream;
-}
+    return a is ToneHarborTrackObjectLocal && b is ToneHarborTrackObjectLocal
+        ? a.path == b.path
+        : a.id == b.id;
+  }
 
-@riverpod
-Stream<PlaylistMode> loopModeStream(Ref ref) {
-  return audioPlayer.loopModeStream;
-}
+  Future<void> load(
+    List<ToneHarborTrackObject> tracks, {
+    int initialIndex = 0,
+    bool autoPlay = false,
+  }) async {
+    final medias = tracks.asMediaList().unique((a, b) => a.uri == b.uri);
 
-@riverpod
-Stream<int> indexChangeStream(Ref ref) {
-  return audioPlayer.currentIndexChangedStream;
+    // Giving the initial track a boost so MediaKit won't skip
+    // because of timeout
+    final intendedActiveTrack = medias.elementAt(initialIndex);
+    if (intendedActiveTrack.track is! ToneHarborTrackObjectLocal) {
+      // ref.read(
+      //   sourcedTrackProvider(
+      //     intendedActiveTrack.track as ToneHarborTrackObject,
+      //   ).future,
+      // );
+    }
+
+    if (medias.isEmpty) return;
+
+    state = state.copyWith(
+      // These are filtered tracks as well
+      tracks: medias.map((media) => media.track).toList(),
+      currentIndex: initialIndex,
+      collections: [],
+    );
+
+    await audioPlayer.openPlaylist(
+      medias,
+      initialIndex: initialIndex,
+      autoPlay: autoPlay,
+    );
+
+    await _updatePlayerState(
+      AudioPlayerStateTableCompanion(
+        tracks: Value(state.tracks),
+        currentIndex: Value(max(state.currentIndex, 0)),
+      ),
+    );
+  }
+
+  Future<void> swapActiveSource() async {
+    if (state.tracks.isEmpty) {
+      return;
+    }
+
+    final oldState = state;
+    await audioPlayer.stop();
+
+    await load(
+      oldState.tracks,
+      initialIndex: oldState.currentIndex,
+      autoPlay: true,
+    );
+    state = state.copyWith(
+      collections: oldState.collections,
+      loopMode: oldState.loopMode,
+      playing: oldState.playing,
+      shuffled: false,
+    );
+    await audioPlayer.setLoopMode(oldState.loopMode);
+    await _updatePlayerState(
+      AudioPlayerStateTableCompanion(
+        tracks: Value(state.tracks),
+        currentIndex: Value(state.currentIndex),
+        collections: Value(state.collections),
+        loopMode: Value(state.loopMode),
+        playing: Value(state.playing),
+        shuffled: Value(state.shuffled),
+      ),
+    );
+  }
+
+  Future<void> jumpToTrack(ToneHarborTrackObject track) async {
+    final index = state.tracks.toList().indexWhere(
+      (element) => element.id == track.id,
+    );
+    if (index == -1) return;
+    await audioPlayer.jumpTo(index);
+  }
+
+  Future<void> moveTrack(int oldIndex, int newIndex) async {
+    if (oldIndex == newIndex ||
+        newIndex < 0 ||
+        oldIndex < 0 ||
+        newIndex > state.tracks.length - 1 ||
+        oldIndex > state.tracks.length - 1) {
+      return;
+    }
+
+    await audioPlayer.moveTrack(oldIndex, newIndex);
+  }
+
+  Future<void> stop() async {
+    state = state.copyWith(
+      tracks: [],
+      currentIndex: 0,
+      collections: [],
+      loopMode: PlaylistMode.none,
+      playing: false,
+      shuffled: false,
+    );
+    await audioPlayer.stop();
+    await _updatePlayerState(
+      AudioPlayerStateTableCompanion(
+        tracks: Value(state.tracks),
+        currentIndex: const Value(0),
+        collections: const Value(<String>[]),
+        loopMode: const Value(PlaylistMode.none),
+        playing: const Value(false),
+        shuffled: const Value(false),
+      ),
+    );
+  }
 }

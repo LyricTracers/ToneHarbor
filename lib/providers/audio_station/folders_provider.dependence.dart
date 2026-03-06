@@ -121,7 +121,7 @@ Future<FolderResponse> _getFolders({
     sortDirection: sortDirection,
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final result = await _sendFolderRequest(
     ref: ref,

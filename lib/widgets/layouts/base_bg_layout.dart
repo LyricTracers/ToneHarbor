@@ -14,11 +14,7 @@ abstract class BaseBgLayout extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = getColorSchemeWhenReady(ref);
-    var syncSongIcon = getValueWhenReadyWithWidgetRef(
-      ref,
-      syncSongIconProvider,
-      true,
-    );
+    var syncSongIcon = ref.watch(syncSongIconProvider);
     final songIcon = getValueWhenReadyWithWidgetRef(
       ref,
       songIconProvider,

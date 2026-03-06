@@ -64,7 +64,7 @@ abstract class _$RequestFlag extends $Notifier<bool> {
 final localeProvider = LocaleNotifierProvider._();
 
 final class LocaleNotifierProvider
-    extends $AsyncNotifierProvider<LocaleNotifier, Locale> {
+    extends $NotifierProvider<LocaleNotifier, Locale> {
   LocaleNotifierProvider._()
     : super(
         from: null,
@@ -82,21 +82,29 @@ final class LocaleNotifierProvider
   @$internal
   @override
   LocaleNotifier create() => LocaleNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Locale value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Locale>(value),
+    );
+  }
 }
 
-String _$localeNotifierHash() => r'96da082f32c4cc9861bacaa037c46ff039a6738f';
+String _$localeNotifierHash() => r'4a3b2a6f3928bf80bd29a81ffb96c6c56f5be8d0';
 
-abstract class _$LocaleNotifier extends $AsyncNotifier<Locale> {
-  FutureOr<Locale> build();
+abstract class _$LocaleNotifier extends $Notifier<Locale> {
+  Locale build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<Locale>, Locale>;
+    final ref = this.ref as $Ref<Locale, Locale>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<Locale>, Locale>,
-              AsyncValue<Locale>,
+              AnyNotifier<Locale, Locale>,
+              Locale,
               Object?,
               Object?
             >;
@@ -108,7 +116,7 @@ abstract class _$LocaleNotifier extends $AsyncNotifier<Locale> {
 final searchHistoryProvider = SearchHistoryNotifierProvider._();
 
 final class SearchHistoryNotifierProvider
-    extends $AsyncNotifierProvider<SearchHistoryNotifier, List<String>> {
+    extends $NotifierProvider<SearchHistoryNotifier, List<String>> {
   SearchHistoryNotifierProvider._()
     : super(
         from: null,
@@ -126,22 +134,30 @@ final class SearchHistoryNotifierProvider
   @$internal
   @override
   SearchHistoryNotifier create() => SearchHistoryNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<String> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<String>>(value),
+    );
+  }
 }
 
 String _$searchHistoryNotifierHash() =>
-    r'ddc9191c05a96f840c5c79ec87b39b9117134ebf';
+    r'f464b85b4e16cfb557b55894bf0d18b75462b66a';
 
-abstract class _$SearchHistoryNotifier extends $AsyncNotifier<List<String>> {
-  FutureOr<List<String>> build();
+abstract class _$SearchHistoryNotifier extends $Notifier<List<String>> {
+  List<String> build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<List<String>>, List<String>>;
+    final ref = this.ref as $Ref<List<String>, List<String>>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<List<String>>, List<String>>,
-              AsyncValue<List<String>>,
+              AnyNotifier<List<String>, List<String>>,
+              List<String>,
               Object?,
               Object?
             >;
@@ -155,11 +171,11 @@ final l10nProvider = L10nProvider._();
 final class L10nProvider
     extends
         $FunctionalProvider<
-          AsyncValue<AppLocalizations>,
           AppLocalizations,
-          FutureOr<AppLocalizations>
+          AppLocalizations,
+          AppLocalizations
         >
-    with $FutureModifier<AppLocalizations>, $FutureProvider<AppLocalizations> {
+    with $Provider<AppLocalizations> {
   L10nProvider._()
     : super(
         from: null,
@@ -176,14 +192,73 @@ final class L10nProvider
 
   @$internal
   @override
-  $FutureProviderElement<AppLocalizations> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  $ProviderElement<AppLocalizations> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
-  FutureOr<AppLocalizations> create(Ref ref) {
+  AppLocalizations create(Ref ref) {
     return l10n(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AppLocalizations value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AppLocalizations>(value),
+    );
   }
 }
 
-String _$l10nHash() => r'35621e807409bd495177e23680254c38dffef3e4';
+String _$l10nHash() => r'c9a40ac4f6cc3b76e8a2c47c6b75db724026e3b9';
+
+@ProviderFor(VolumeNotifier)
+final volumeProvider = VolumeNotifierProvider._();
+
+final class VolumeNotifierProvider
+    extends $NotifierProvider<VolumeNotifier, double> {
+  VolumeNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'volumeProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$volumeNotifierHash();
+
+  @$internal
+  @override
+  VolumeNotifier create() => VolumeNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(double value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<double>(value),
+    );
+  }
+}
+
+String _$volumeNotifierHash() => r'280a0130e433d512ba89825679ba8af7225cef12';
+
+abstract class _$VolumeNotifier extends $Notifier<double> {
+  double build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<double, double>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<double, double>,
+              double,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

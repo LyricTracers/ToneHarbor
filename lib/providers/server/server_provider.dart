@@ -9,19 +9,9 @@ import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/server/playback_routes.dart';
+import 'package:toneharbor/services/audio_player/audio_player.dart';
 
 part 'server_provider.g.dart';
-
-class ToneHarborMedia {
-  static int serverPort = 0;
-
-  static String get host =>
-      Platform.isWindows ? "localhost" : InternetAddress.loopbackIPv4.address;
-
-  static String getStreamUrl(String songId) {
-    return "http://$host:$serverPort/stream/$songId";
-  }
-}
 
 final pipelineProvider = Provider((ref) {
   Pipeline pipeline = const Pipeline();

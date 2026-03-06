@@ -118,7 +118,7 @@ Future<ArtistResponse> _getArtists({
     sortDirection: sortDirection,
   );
 
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
 
   final result = await _sendArtistRequest(
     ref: ref,
@@ -184,7 +184,7 @@ Future<ArtistResponse> _searchArtists({
     sortBy: sortBy,
     sortDirection: sortDirection,
   );
-  final l10n = await ref.read(l10nProvider.future);
+  final l10n = ref.read(l10nProvider);
   final result = await _sendArtistRequest(
     ref: ref,
     request: request,
