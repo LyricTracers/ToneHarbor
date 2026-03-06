@@ -743,7 +743,7 @@ packages:
     description:
       path: media_kit
       ref: main
-      resolved-ref: "4d4348bdfd4c8670666912ad5994c1418a7796f5"
+      resolved-ref: a065183c2bbde36c920a29a7fb3cddd525f6ab64
       url: "https://git.nxcloud.club:12750/LyricTracers/media-kit.git"
     source: git
     version: "1.2.6"

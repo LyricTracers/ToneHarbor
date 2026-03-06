@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:toneharbor/services/audio_services/mobile_audio_service.dart';
 import 'package:toneharbor/services/audio_services/windows_audio_service.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -42,15 +43,15 @@ class AudioServices with WidgetsBindingObserver {
     return AudioServices(mobile, smtc);
   }
 
-  Future<void> addMedia(ToneHarborMedia media) async {
+  Future<void> addMedia(Media media) async {
     await smtc?.addMedia(media);
     mobile?.addItem(
       MediaItem(
-        id: media.track.id,
-        album: media.track.album,
-        title: media.track.title,
-        artist: media.track.artist,
-        duration: Duration(milliseconds: media.track.durationMs),
+        id: media.id,
+        album: media.album,
+        title: media.title,
+        artist: media.artist,
+        duration: Duration(milliseconds: media.durationMs),
         artUri: Uri.parse(media.getCoverUrl()),
         playable: true,
       ),

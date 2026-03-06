@@ -29,10 +29,6 @@ class ToneHarborMedia extends mk.Media {
         extras: track.toJson(),
       );
 
-  String getCoverUrl() {
-    return 'http://$host:$serverPort/cover/${Uri.encodeComponent(track.album)}/${Uri.encodeComponent(track.artist)}';
-  }
-
   static String getStreamUrl(String songId) {
     return "http://$host:$serverPort/stream/$songId";
   }
@@ -40,6 +36,35 @@ class ToneHarborMedia extends mk.Media {
   factory ToneHarborMedia.media(Media media) {
     assert(media.extras != null, "[Media] must have extra metadata set");
     return ToneHarborMedia(ToneHarborTrackObject.fromJson(media.extras!));
+  }
+}
+
+extension MediaCoverExtension on Media {
+  String getCoverUrl() {
+    var album = extras?["album"] as String? ?? "";
+    var artist = extras?["artist"] as String? ?? "";
+
+    return 'http://${ToneHarborMedia.host}:${ToneHarborMedia.serverPort}/cover/${Uri.encodeComponent(album)}/${Uri.encodeComponent(artist)}';
+  }
+
+  String get id {
+    return extras?["id"] as String? ?? "";
+  }
+
+  String get title {
+    return extras?["title"] as String? ?? "";
+  }
+
+  String get artist {
+    return extras?["artist"] as String? ?? "";
+  }
+
+  String get album {
+    return extras?["album"] as String? ?? "";
+  }
+
+  int get durationMs {
+    return extras?["duration"] as int? ?? 0;
   }
 }
 

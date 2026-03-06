@@ -30,14 +30,21 @@ class AudioPlayerStreamListeners {
   StreamSubscription subscribeToPlaylist() {
     return audioPlayer.playlistStream.listen((mpvPlaylist) {
       try {
+        if (mpvPlaylist.index < 0 ||
+            mpvPlaylist.index >= mpvPlaylist.medias.length) {
+          logger.e(
+            "Invalid index: ${mpvPlaylist.index}, medias count: ${mpvPlaylist.medias.length}",
+          );
+          return;
+        }
         final activeMedia = mpvPlaylist.medias.elementAtOrNull(
           mpvPlaylist.index,
         );
-        logger.i(
-          '[AudioPlayerStreamListeners] playlistStream received: ${mpvPlaylist.index}, medias count: ${mpvPlaylist.medias.length}',
-        );
-        if (activeMedia == null) return;
-        notificationService?.addMedia(activeMedia as ToneHarborMedia);
+        if (activeMedia == null) {
+          logger.e("Invalid media at index ${mpvPlaylist.index}");
+          return;
+        }
+        notificationService?.addMedia(activeMedia);
       } catch (e, stack) {
         logger.e('Failed to add track', error: e, stackTrace: stack);
       }
