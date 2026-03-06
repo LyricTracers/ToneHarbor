@@ -48,10 +48,16 @@ class _LayoutConfig {
 }
 
 class CommonSongs extends ConsumerWidget {
-  const CommonSongs({super.key, required this.songs, required this.onErrorTap});
+  const CommonSongs({
+    super.key,
+    required this.songs,
+    required this.onErrorTap,
+    required this.limit,
+  });
 
   final AsyncValue<SongListResponse> songs;
   final Function() onErrorTap;
+  final int limit;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -89,12 +95,13 @@ class CommonSongs extends ConsumerWidget {
     ColorScheme colorScheme,
   ) {
     final config = _LayoutConfig.defaultConfig;
+    var length = songs.length > limit ? limit : songs.length;
     return SizedBox(
       height: config.height,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: config.horizontalPadding),
-        itemCount: songs.length,
+        itemCount: length,
         itemBuilder: (context, index) {
           final song = songs[index];
           return Padding(

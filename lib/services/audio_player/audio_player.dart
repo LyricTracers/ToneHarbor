@@ -39,7 +39,6 @@ class ToneHarborMedia extends mk.Media {
 
   factory ToneHarborMedia.media(Media media) {
     assert(media.extras != null, "[Media] must have extra metadata set");
-    logger.i('[Media] $media');
     return ToneHarborMedia(ToneHarborTrackObject.fromJson(media.extras!));
   }
 }

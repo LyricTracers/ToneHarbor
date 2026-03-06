@@ -33,7 +33,7 @@ class RecommendPage extends BaseContentPage {
             ref.invalidate(
               albumsProvider(limit: 20, sortBy: 'year', sortDirection: 'desc'),
             );
-            ref.invalidate(favoriteSongsProvider(limit: 20));
+            ref.invalidate(favoriteSongsProvider(limit: 50));
           },
         ),
       ],
@@ -95,10 +95,11 @@ class RecommendPage extends BaseContentPage {
               ),
               SizedBox(height: 8),
               CommonSongs(
-                songs: ref.watch(favoriteSongsProvider(limit: 20)),
+                songs: ref.watch(favoriteSongsProvider(limit: 50)),
                 onErrorTap: () {
-                  ref.invalidate(favoriteSongsProvider(limit: 20));
+                  ref.invalidate(favoriteSongsProvider(limit: 50));
                 },
+                limit: 20,
               ),
               Padding(
                 padding: const EdgeInsets.only(
