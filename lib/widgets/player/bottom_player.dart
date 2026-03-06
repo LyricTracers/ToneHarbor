@@ -5,12 +5,9 @@ import 'package:lyricskit/lyricskit.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:toneharbor/hooks/use_progress.dart';
 import 'package:toneharbor/providers/audio_player/lyrics_cache_provider.dart';
-import 'package:toneharbor/providers/audio_station/auth_provider.dart';
-import 'package:toneharbor/providers/audio_station/songs_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
-import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class BottomPlayer extends HookConsumerWidget {
