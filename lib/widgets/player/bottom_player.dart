@@ -78,8 +78,7 @@ class BottomPlayer extends HookConsumerWidget {
     final shuffled =
         useStream(audioPlayer.shuffledStream).data ?? audioPlayer.isShuffled;
 
-    final volume =
-        useStream(audioPlayer.volumeStream).data ?? audioPlayer.volume;
+    final volume = ref.watch(volumeProvider);
 
     final width = MediaQuery.of(context).size.width;
     return Container(
