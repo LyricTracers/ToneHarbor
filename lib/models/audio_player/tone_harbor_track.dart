@@ -23,7 +23,7 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
     required String artist,
     required String album,
     required String externalUri,
-    required int durationMs,
+    required Duration duration,
     required int rating,
     required ToneHarborTrackPlatform platform,
   }) = _$ToneHarborTrackObjectFull;
@@ -41,7 +41,7 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
     required String album,
     required String externalUri,
     required int rating,
-    required int durationMs,
+    required Duration duration,
     required String path,
   }) = ToneHarborTrackObjectLocal;
 
@@ -56,7 +56,7 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
       artist: metadata?.artist ?? '',
       album: metadata?.album ?? '',
       externalUri: "file://${file.absolute.path}",
-      durationMs: metadata?.durationMs?.toInt() ?? 0,
+      duration: Duration(milliseconds: metadata?.durationMs?.toInt() ?? 0),
       rating: 0,
       path: file.path,
     );
@@ -73,7 +73,7 @@ extension ToMetaDataToneHarborTrackObject on ToneHarborTrackObject {
       title: title,
       artist: artist,
       album: album,
-      durationMs: durationMs.toDouble(),
+      durationMs: duration.inMicroseconds.toDouble(),
       fileSize: BigInt.from(fileLength),
       picture: imageBytes != null
           ? Picture(
@@ -97,18 +97,15 @@ extension AsMediaListToneHarborTrackObject on Iterable<ToneHarborTrackObject> {
 extension AsToneHarborTrackObject on Iterable<Song> {
   List<ToneHarborTrackObject> asTrackList() {
     return map((song) {
-      var douration = song.additional?.songAudio?.duration.toInt();
-      var dourationMs = 0;
-      if (douration != null) {
-        dourationMs = douration * 1000;
-      }
       return ToneHarborTrackObject.full(
         id: song.id,
         title: song.title,
         artist: song.additional?.songTag?.artist ?? 'None Artist',
         album: song.additional?.songTag?.album ?? 'None Album',
         externalUri: "",
-        durationMs: dourationMs,
+        duration: Duration(
+          seconds: song.additional?.songAudio?.duration.toInt() ?? 0,
+        ),
         rating: song.additional?.songRating?.rating ?? 0,
         platform: ToneHarborTrackPlatform.synology,
       );

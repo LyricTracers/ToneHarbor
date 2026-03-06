@@ -51,7 +51,7 @@ class AudioServices with WidgetsBindingObserver {
         album: media.album,
         title: media.title,
         artist: media.artist,
-        duration: Duration(milliseconds: media.durationMs),
+        duration: Duration(microseconds: media.durationMs),
         artUri: Uri.parse(media.getCoverUrl()),
         playable: true,
       ),

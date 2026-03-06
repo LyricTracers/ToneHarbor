@@ -64,7 +64,13 @@ extension MediaCoverExtension on Media {
   }
 
   int get durationMs {
-    return extras?["duration"] as int? ?? 0;
+    final durationValue = extras?["duration"];
+    if (durationValue is int) {
+      return durationValue;
+    } else if (durationValue is Duration) {
+      return durationValue.inMicroseconds;
+    }
+    return 0;
   }
 }
 
