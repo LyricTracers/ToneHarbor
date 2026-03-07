@@ -34,6 +34,7 @@ class CachedNetworkImage extends ConsumerWidget {
   final int? memCacheWidth;
   final int? memCacheHeight;
   final ValueChanged<Object>? errorListener;
+  final Duration? keepLiveDuration;
 
   const CachedNetworkImage({
     super.key,
@@ -57,12 +58,17 @@ class CachedNetworkImage extends ConsumerWidget {
     this.memCacheWidth,
     this.memCacheHeight,
     this.errorListener,
+    this.keepLiveDuration,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncValue = ref.watch(
-      fetchCoverBytesProvider(url: imageUrl, key: cacheKey ?? imageUrl),
+      fetchCoverBytesProvider(
+        url: imageUrl,
+        key: cacheKey ?? imageUrl,
+        liveKeepDuration: keepLiveDuration,
+      ),
     );
 
     return asyncValue.when(

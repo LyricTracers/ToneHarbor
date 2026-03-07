@@ -22,7 +22,8 @@ final class FetchCoverBytesProvider
     with $FutureModifier<Uint8List?>, $FutureProvider<Uint8List?> {
   FetchCoverBytesProvider._({
     required FetchCoverBytesFamily super.from,
-    required ({String url, String key}) super.argument,
+    required ({String url, String key, Duration? liveKeepDuration})
+    super.argument,
   }) : super(
          retry: null,
          name: r'fetchCoverBytesProvider',
@@ -48,8 +49,14 @@ final class FetchCoverBytesProvider
 
   @override
   FutureOr<Uint8List?> create(Ref ref) {
-    final argument = this.argument as ({String url, String key});
-    return fetchCoverBytes(ref, url: argument.url, key: argument.key);
+    final argument =
+        this.argument as ({String url, String key, Duration? liveKeepDuration});
+    return fetchCoverBytes(
+      ref,
+      url: argument.url,
+      key: argument.key,
+      liveKeepDuration: argument.liveKeepDuration,
+    );
   }
 
   @override
@@ -63,13 +70,13 @@ final class FetchCoverBytesProvider
   }
 }
 
-String _$fetchCoverBytesHash() => r'1aba7db26f77e8e3e95ddcd22590d027bcb59c34';
+String _$fetchCoverBytesHash() => r'68a3ab26e5e352ed3a1e7a888d83d1d466088485';
 
 final class FetchCoverBytesFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<Uint8List?>,
-          ({String url, String key})
+          ({String url, String key, Duration? liveKeepDuration})
         > {
   FetchCoverBytesFamily._()
     : super(
@@ -80,8 +87,14 @@ final class FetchCoverBytesFamily extends $Family
         isAutoDispose: true,
       );
 
-  FetchCoverBytesProvider call({required String url, required String key}) =>
-      FetchCoverBytesProvider._(argument: (url: url, key: key), from: this);
+  FetchCoverBytesProvider call({
+    required String url,
+    required String key,
+    Duration? liveKeepDuration,
+  }) => FetchCoverBytesProvider._(
+    argument: (url: url, key: key, liveKeepDuration: liveKeepDuration),
+    from: this,
+  );
 
   @override
   String toString() => r'fetchCoverBytesProvider';

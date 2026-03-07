@@ -12,7 +12,9 @@ Future<Uint8List?> fetchCoverBytes(
   Ref ref, {
   required String url,
   required String key,
+  Duration? liveKeepDuration,
 }) async {
+  final link = ref.keepAliveFor(liveKeepDuration);
   try {
     final coverCacheDir = await getCoverCacheDir();
     final coverDir = Directory(coverCacheDir);
@@ -30,7 +32,10 @@ Future<Uint8List?> fetchCoverBytes(
     final bytes = response.body;
     return bytes;
   } catch (e) {
-    logger.w('[CoverCache] Failed to get cover bytes: url:$url');
     return null;
+  } finally {
+    if (liveKeepDuration == null) {
+      link.close();
+    }
   }
 }

@@ -34,6 +34,7 @@ class SongCoverImage extends ConsumerWidget {
     Widget child = ClipRRect(
       borderRadius: BorderRadius.circular(config.borderRadius),
       child: CachedNetworkImage(
+        keepLiveDuration: const Duration(minutes: 10),
         imageUrl: coverUrl,
         cacheKey: cacheKey,
         width: config.size,
