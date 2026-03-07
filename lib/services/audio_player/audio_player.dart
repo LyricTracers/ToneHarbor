@@ -40,14 +40,17 @@ class ToneHarborMedia extends mk.Media {
     assert(media.extras != null, "[Media] must have extra metadata set");
     return ToneHarborMedia(ToneHarborTrackObject.fromJson(media.extras!));
   }
+
+  static String getCoverUrl(String album, String artist) {
+    return 'http://$host:$serverPort/cover/${Uri.encodeComponent(album)}/${Uri.encodeComponent(artist)}';
+  }
 }
 
 extension MediaCoverExtension on Media {
   String getCoverUrl() {
     var album = extras?["album"] as String? ?? "";
     var artist = extras?["artist"] as String? ?? "";
-
-    return 'http://${ToneHarborMedia.host}:${ToneHarborMedia.serverPort}/cover/${Uri.encodeComponent(album)}/${Uri.encodeComponent(artist)}';
+    return ToneHarborMedia.getCoverUrl(album, artist);
   }
 
   String get id {

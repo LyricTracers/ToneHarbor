@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 
 class SongCoverImage extends ConsumerWidget {
@@ -27,67 +28,43 @@ class SongCoverImage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final coverUrl = ref.watch(
-      coverUrlProvider(albumName: albumName, albumArtistName: artistName),
-    );
+    final coverUrl = ToneHarborMedia.getCoverUrl(albumName, artistName);
 
     Widget child = ClipRRect(
       borderRadius: BorderRadius.circular(config.borderRadius),
-      child: coverUrl.when(
-        data: (url) {
-          if (url.isEmpty) {
-            return CoverPlaceholder(
-              colorScheme: colorScheme,
-              size: config.size,
-              borderRadius: config.borderRadius,
-            );
+      child: ExtendedImage.network(
+        coverUrl,
+        width: config.size,
+        height: config.size,
+        fit: BoxFit.cover,
+        headers: authHeaders,
+        cache: true,
+        cacheKey: songId,
+        clearMemoryCacheIfFailed: true,
+        loadStateChanged: (state) {
+          switch (state.extendedImageLoadState) {
+            case LoadState.loading:
+              return CoverPlaceholder(
+                colorScheme: colorScheme,
+                size: config.size,
+                borderRadius: config.borderRadius,
+                isLoading: true,
+              );
+            case LoadState.completed:
+              return ExtendedRawImage(
+                image: state.extendedImageInfo?.image,
+                width: config.size,
+                height: config.size,
+                fit: BoxFit.cover,
+              );
+            case LoadState.failed:
+              return CoverPlaceholder(
+                colorScheme: colorScheme,
+                size: config.size,
+                borderRadius: config.borderRadius,
+              );
           }
-          return ExtendedImage.network(
-            url,
-            width: config.size,
-            height: config.size,
-            fit: BoxFit.cover,
-            headers: authHeaders,
-            cache: true,
-            cacheKey: songId,
-            clearMemoryCacheIfFailed: true,
-            loadStateChanged: (state) {
-              switch (state.extendedImageLoadState) {
-                case LoadState.loading:
-                  return CoverPlaceholder(
-                    colorScheme: colorScheme,
-                    size: config.size,
-                    borderRadius: config.borderRadius,
-                    isLoading: true,
-                  );
-                case LoadState.completed:
-                  return ExtendedRawImage(
-                    image: state.extendedImageInfo?.image,
-                    width: config.size,
-                    height: config.size,
-                    fit: BoxFit.cover,
-                  );
-                case LoadState.failed:
-                  return CoverPlaceholder(
-                    colorScheme: colorScheme,
-                    size: config.size,
-                    borderRadius: config.borderRadius,
-                  );
-              }
-            },
-          );
         },
-        loading: () => CoverPlaceholder(
-          colorScheme: colorScheme,
-          size: config.size,
-          borderRadius: config.borderRadius,
-          isLoading: true,
-        ),
-        error: (_, __) => CoverPlaceholder(
-          colorScheme: colorScheme,
-          size: config.size,
-          borderRadius: config.borderRadius,
-        ),
       ),
     );
 
