@@ -49,6 +49,7 @@ class ContentRangeHeader {
 
 class PlaybackRoutes {
   final Ref ref;
+  final _cachingLocks = <String, bool>{};
 
   PlaybackRoutes(this.ref);
 
@@ -326,15 +327,48 @@ class PlaybackRoutes {
     final resStream = response.body.asBroadcastStream();
 
     final trackPartialCacheFile = File('$cachePath.part');
+    final cacheKey = songId;
 
     final rangeStart = _parseRangeStart(rangeHeader);
     final isFromStart = rangeStart == 0;
 
-    if (isFromStart && await trackPartialCacheFile.exists()) {
-      await trackPartialCacheFile.delete();
+    final isAlreadyCaching = _cachingLocks[cacheKey] == true;
+    if (isAlreadyCaching && isFromStart) {
+      logger.i('[PlaybackRoutes] Already caching $cacheKey, skip caching');
+      return Response(
+        response.statusCode,
+        body: resStream,
+        headers: {
+          'content-type':
+              headers['content-type'] ?? _getMimeType(track.container),
+          'content-length': headers['content-length'] ?? '',
+          'accept-ranges': 'bytes',
+          if (headers['content-range'] != null)
+            'content-range': headers['content-range']!,
+        },
+      );
     }
-    if (!await trackPartialCacheFile.exists()) {
+
+    _cachingLocks[cacheKey] = true;
+
+    if (isFromStart) {
+      if (await trackPartialCacheFile.exists()) {
+        await trackPartialCacheFile.delete();
+      }
       await trackPartialCacheFile.create(recursive: true);
+    } else {
+      if (await trackPartialCacheFile.exists()) {
+        final existingLength = await trackPartialCacheFile.length();
+        if (existingLength != rangeStart) {
+          logger.w(
+            '[PlaybackRoutes] Partial file size $existingLength != range start $rangeStart, deleting',
+          );
+          await trackPartialCacheFile.delete();
+          await trackPartialCacheFile.create(recursive: true);
+        }
+      } else {
+        await trackPartialCacheFile.create(recursive: true);
+      }
     }
 
     final writeMode = isFromStart
@@ -360,6 +394,7 @@ class PlaybackRoutes {
           stackTrace: stack,
         );
         partialCacheFileSink.close();
+        _cachingLocks.remove(cacheKey);
       },
       onDone: () async {
         await partialCacheFileSink.close();
@@ -369,6 +404,7 @@ class PlaybackRoutes {
           logger.w(
             '[CacheStream] Incomplete download: $fileLength != ${contentRange.total}',
           );
+          _cachingLocks.remove(cacheKey);
           return;
         }
 
@@ -380,6 +416,7 @@ class PlaybackRoutes {
         logger.i('[CacheStream] Cache complete: $cachePath');
 
         await _writeMetadata(track, cachePath, fileLength);
+        _cachingLocks.remove(cacheKey);
       },
       cancelOnError: true,
     );
