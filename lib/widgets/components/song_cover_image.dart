@@ -67,7 +67,7 @@ class SongCoverImage extends ConsumerWidget {
             } else {
               final syncSongIcon = ref.read(syncSongIconProvider);
               if (syncSongIcon == false && context.mounted) {
-                _showSetBackgroundDialog(context, ref, albumName, artistName);
+                _showSetBackgroundDialog(context, ref, coverUrl, cacheKey);
               }
             }
           },
@@ -80,8 +80,8 @@ class SongCoverImage extends ConsumerWidget {
   static void _showSetBackgroundDialog(
     BuildContext context,
     WidgetRef ref,
-    String albumName,
-    String artistName,
+    String coverUrl,
+    String cacheKey,
   ) async {
     final l10n = ref.read(l10nProvider);
     if (context.mounted == false) {
@@ -107,16 +107,20 @@ class SongCoverImage extends ConsumerWidget {
             onPressed: () async {
               Navigator.pop(context);
               try {
-                final bytes = await downloadCover(
-                  ref: ref,
-                  albumName: albumName,
-                  albumArtistName: artistName,
+                final bytes = await ref.watch(
+                  fetchCoverBytesProvider(
+                    url: coverUrl,
+                    key: cacheKey,
+                    liveKeepDuration: const Duration(minutes: 10),
+                  ).future,
                 );
-                if (bytes.isEmpty) {
+                if (bytes == null) {
                   return;
                 }
-                logger.i('Downloaded image: ${bytes.length} bytes');
-                saveDefaultThemeIcon(ref, bytes.toList());
+                logger.i(
+                  'Setting theme icon from image: ${bytes.length} bytes',
+                );
+                saveDefaultThemeIcon(ref, bytes);
               } catch (e) {
                 logger.e('Failed to save theme icon: $e');
               }
