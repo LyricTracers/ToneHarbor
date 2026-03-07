@@ -215,7 +215,11 @@ class PlaybackRoutes {
 
       return await _serveRemoteStream(request, songId, track, cachePath);
     } catch (e, stack) {
-      logger.e('GET stream error', error: e, stackTrace: stack);
+      logger.e(
+        '[PlaybackRoutes] GET: stream error',
+        error: e,
+        stackTrace: stack,
+      );
       return Response.internalServerError(body: 'Internal server error: $e');
     }
   }
@@ -473,6 +477,9 @@ class PlaybackRoutes {
       );
 
       await MetadataGod.writeMetadata(file: cachePath, metadata: metadata);
+      logger.i(
+        '[Metadata] Wrote metadata to $cachePath,title:${track.title},artist:${track.artist},album:${track.album}',
+      );
     } catch (e, stack) {
       logger.e(
         '[Metadata] Failed to write metadata',

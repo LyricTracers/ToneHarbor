@@ -17,9 +17,9 @@ final pipelineProvider = Provider((ref) {
     logRequests(
       logger: (message, isError) {
         if (isError) {
-          logger.e('[Server] $message');
+          logger.e('[Server Error] $message');
         } else {
-          logger.i('[Server] $message');
+          logger.i('[Server Info] $message');
         }
       },
     ),

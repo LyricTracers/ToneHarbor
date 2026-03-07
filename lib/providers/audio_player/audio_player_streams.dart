@@ -35,8 +35,8 @@ class AudioPlayerStreamListeners {
       try {
         if (mpvPlaylist.index < 0 ||
             mpvPlaylist.index >= mpvPlaylist.medias.length) {
-          logger.e(
-            "Invalid index: ${mpvPlaylist.index}, medias count: ${mpvPlaylist.medias.length}",
+          logger.i(
+            '[AudioPlayer] Invalid index: ${mpvPlaylist.index}, medias count: ${mpvPlaylist.medias.length}',
           );
           return;
         }
@@ -44,7 +44,9 @@ class AudioPlayerStreamListeners {
           mpvPlaylist.index,
         );
         if (activeMedia == null) {
-          logger.e("Invalid media at index ${mpvPlaylist.index}");
+          logger.i(
+            '[AudioPlayer] Invalid media at index: ${mpvPlaylist.index}',
+          );
           return;
         }
         notificationService?.addMedia(activeMedia);
