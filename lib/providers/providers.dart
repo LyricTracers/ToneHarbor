@@ -8,6 +8,7 @@ export 'audio_station/playlist_provider.dart';
 export 'audio_station/download_provider.dart';
 export 'audio_station/search_provider.dart';
 export 'audio_player/audio_player_provider.dart';
+export 'audio_player/cover_cache_provider.dart';
 export 'theme_data_provider.dart';
 export 'common_provider.dart';
 export 'database/database.dart';

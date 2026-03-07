@@ -4,6 +4,7 @@ import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/widgets/components/cached_network_image.dart';
 
 class SongCoverImage extends ConsumerWidget {
   const SongCoverImage({
@@ -26,21 +27,19 @@ class SongCoverImage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final coverUrl = ToneHarborMedia.getCoverUrl(songId, albumName, artistName);
-
+    String cacheKey = songId;
+    if (cacheKey.isEmpty) {
+      cacheKey = sanitizeCacheKey("$artistName-$albumName");
+    }
     Widget child = ClipRRect(
       borderRadius: BorderRadius.circular(config.borderRadius),
-      child: Image.network(
-        coverUrl,
+      child: CachedNetworkImage(
+        imageUrl: coverUrl,
+        cacheKey: cacheKey,
         width: config.size,
         height: config.size,
         fit: BoxFit.cover,
-        gaplessPlayback: true,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) {
-            logger.i('url:$coverUrl loadingProgress is null');
-            return child;
-          }
-          logger.i('url:$coverUrl loadingProgress: $loadingProgress');
+        placeholder: (context, url) {
           return CoverPlaceholder(
             colorScheme: colorScheme,
             size: config.size,
@@ -48,7 +47,7 @@ class SongCoverImage extends ConsumerWidget {
             isLoading: true,
           );
         },
-        errorBuilder: (context, error, stackTrace) {
+        errorWidget: (context, url, error) {
           return CoverPlaceholder(
             colorScheme: colorScheme,
             size: config.size,
