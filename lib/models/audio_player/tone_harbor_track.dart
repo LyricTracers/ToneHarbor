@@ -62,21 +62,22 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
     Metadata? metadata,
     String? art,
   }) {
+    var id = basenameWithoutExtension(file.path);
     return ToneHarborTrackObject.local(
-      id: file.absolute.path,
-      title: metadata?.title ?? basenameWithoutExtension(file.path),
+      id: id,
+      title: metadata?.title ?? id,
       artist: metadata?.artist ?? '',
       album: metadata?.album ?? '',
-      externalUri: "file://${file.absolute.path}",
+      externalUri: "",
       duration: Duration(milliseconds: metadata?.durationMs?.toInt() ?? 0),
       rating: 0,
       filesize: file.lengthSync(),
       bitrate: 0,
       channel: 0,
       codec: '',
-      container: file.path.split('.').last,
+      container: extension(file.path).replaceFirst('.', ''),
       frequency: 0,
-      path: file.path,
+      path: file.absolute.path,
     );
   }
 }
@@ -91,7 +92,7 @@ extension ToMetaDataToneHarborTrackObject on ToneHarborTrackObject {
       title: title,
       artist: artist,
       album: album,
-      durationMs: duration.inMicroseconds.toDouble(),
+      durationMs: duration.inMilliseconds.toDouble(),
       fileSize: BigInt.from(fileLength),
       picture: imageBytes != null
           ? Picture(
