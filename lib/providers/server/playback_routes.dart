@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:metadata_god/metadata_god.dart';
 import 'package:rhttp/rhttp.dart' as rhttp;
 import 'package:shelf/shelf.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -11,6 +10,7 @@ import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/metadata_utils.dart';
 
 class ContentRangeHeader {
   final int start;
@@ -421,7 +421,12 @@ class PlaybackRoutes {
         }
         await trackPartialCacheFile.rename(cachePath);
 
-        await _writeMetadata(track, cachePath, fileLength);
+        await writeTrackMetadata(
+          ref: ref,
+          track: track,
+          cachePath: cachePath,
+          fileLength: fileLength,
+        );
         _cachingLocks.remove(cacheKey);
       },
       cancelOnError: true,
@@ -448,86 +453,6 @@ class PlaybackRoutes {
     });
   }
 
-  Future<void> _writeMetadata(
-    ToneHarborTrackObject track,
-    String cachePath,
-    int fileLength,
-  ) async {
-    try {
-      if (track.container.toLowerCase() == 'weba' ||
-          track.container.toLowerCase() == 'webm') {
-        return;
-      }
-
-      final coverUrl = await ref.read(
-        coverUrlProvider(
-          albumName: track.album,
-          albumArtistName: track.artist,
-        ).future,
-      );
-
-      Uint8List? imageBytes;
-      if (coverUrl.isNotEmpty) {
-        imageBytes = await _getCoverBytes(coverUrl);
-      }
-
-      final metadata = track.toMetadata(
-        fileLength: fileLength,
-        imageBytes: imageBytes,
-      );
-
-      await MetadataGod.writeMetadata(file: cachePath, metadata: metadata);
-      logger.i(
-        '[Metadata] Wrote metadata to $cachePath,title:${track.title},artist:${track.artist},album:${track.album}',
-      );
-    } catch (e, stack) {
-      logger.e(
-        '[Metadata] Failed to write metadata',
-        error: e,
-        stackTrace: stack,
-      );
-    }
-  }
-
-  Future<Uint8List?> _getCoverBytes(String coverUrl) async {
-    try {
-      final coverCacheDir = await getMusicCacheDir();
-      final coverCachePath = '$coverCacheDir/covers';
-      final coverCacheDir2 = Directory(coverCachePath);
-      if (!await coverCacheDir2.exists()) {
-        await coverCacheDir2.create(recursive: true);
-      }
-
-      final cacheKey = coverUrl.hashCode.toString();
-      final cacheFile = File('$coverCachePath/$cacheKey');
-
-      if (await cacheFile.exists()) {
-        return await cacheFile.readAsBytes();
-      }
-
-      final authHeaders = await ref.read(authHeadersProvider.future);
-      if (authHeaders == null) {
-        logger.e('[Metadata] No auth headers');
-        _clearAuthOnFailure();
-        return null;
-      }
-
-      final response = await downloadHttpClientWrapper.getBytes(
-        coverUrl,
-        headers: rhttp.HttpHeaders.rawMap({
-          ...authHeaders,
-          'accept': 'image/*',
-        }),
-      );
-
-      final bytes = response.body;
-      await cacheFile.writeAsBytes(bytes);
-      return bytes;
-    } catch (e) {
-      return null;
-    }
-  }
-
   Future<Response> getCover(
     Request request,
     String albumName,
@@ -545,7 +470,7 @@ class PlaybackRoutes {
         return Response.notFound("Cover not found");
       }
 
-      final imageBytes = await _getCoverBytes(coverUrl);
+      final imageBytes = await getCoverBytes(ref, coverUrl);
       if (imageBytes == null) {
         return Response.notFound("Cover not found");
       }

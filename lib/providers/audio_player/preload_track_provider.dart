@@ -1,18 +1,20 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:rhttp/rhttp.dart';
+import 'package:rhttp/rhttp.dart' as rhttp;
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/metadata_utils.dart';
 
 part 'preload_track_provider.g.dart';
 
 @keepAlive
 class PreloadTrack extends _$PreloadTrack {
   final _preloadingTracks = <String, bool>{};
-  final _cancelTokens = <String, CancelToken>{};
+  final _cancelTokens = <String, rhttp.CancelToken>{};
 
   @override
   void build() {}
@@ -60,12 +62,15 @@ class PreloadTrack extends _$PreloadTrack {
 
       logger.i('[PreloadTrack] Preloading track: ${track.id}');
 
-      final cancelToken = CancelToken();
+      final cancelToken = rhttp.CancelToken();
       _cancelTokens[track.id] = cancelToken;
 
       final response = await downloadHttpClientWrapper.getStream(
         streamUrl,
-        headers: HttpHeaders.rawMap({...authHeaders, 'range': 'bytes=0-'}),
+        headers: rhttp.HttpHeaders.rawMap({
+          ...authHeaders,
+          'range': 'bytes=0-',
+        }),
         cancelToken: cancelToken,
       );
 
@@ -128,7 +133,16 @@ class PreloadTrack extends _$PreloadTrack {
           await finalCacheFile.delete();
         }
         await partialCacheFile.rename(cachePath);
-        logger.i('[PreloadTrack] Cache complete, renamed to: $cachePath');
+        logger.i(
+          '[PreloadTrack] Cache complete, renamed to: $cachePath,title:${track.title},artist:${track.artist}',
+        );
+
+        await writeTrackMetadata(
+          ref: ref,
+          track: track,
+          cachePath: cachePath,
+          fileLength: fileLength,
+        );
       }
     } catch (e, stack) {
       logger.e(
