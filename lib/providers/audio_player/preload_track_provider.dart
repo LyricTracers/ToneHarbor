@@ -92,8 +92,10 @@ class PreloadTrack extends _$PreloadTrack {
       final partialCachePath = '$cachePath.part';
       final partialCacheFile = File(partialCachePath);
 
-      await partialCacheFile.parent.create(recursive: true);
-      final sink = partialCacheFile.openWrite(mode: FileMode.writeOnly);
+      if (!await partialCacheFile.exists()) {
+        await partialCacheFile.create(recursive: true);
+      }
+      final sink = partialCacheFile.openWrite(mode: FileMode.writeOnlyAppend);
 
       var cancelled = false;
       try {

@@ -50,6 +50,15 @@ class PlaybackRoutes {
 
   PlaybackRoutes(this.ref);
 
+  int _parseRangeStart(String rangeHeader) {
+    if (rangeHeader.isEmpty) return 0;
+    final parts = rangeHeader.split('=');
+    if (parts.length != 2) return 0;
+    final range = parts[1].split('-');
+    if (range.isEmpty) return 0;
+    return int.tryParse(range[0]) ?? 0;
+  }
+
   String _getMimeType(String container) {
     return switch (container.toLowerCase()) {
       'mp3' => 'audio/mpeg',
@@ -158,17 +167,18 @@ class PlaybackRoutes {
         return Response.forbidden("Not authenticated");
       }
 
-      final rangeHeader = request.headers['range'] ?? 'bytes=0-';
-
-      final response = await downloadHttpClientWrapper.getStream(
+      final response = await downloadHttpClientWrapper.head(
         streamUrl,
         headers: rhttp.HttpHeaders.rawMap({
           ...authHeaders,
-          'range': rangeHeader,
+          'range': 'bytes=0-',
         }),
       );
 
-      final headers = _extractHeaders(response);
+      final headers = <String, String>{};
+      for (final header in response.headers) {
+        headers[header.$1.toLowerCase()] = header.$2;
+      }
 
       return Response(
         response.statusCode,
@@ -299,15 +309,38 @@ class PlaybackRoutes {
       return Response(response.statusCode, body: 'Remote server error');
     }
 
+    final contentType = headers['content-type'] ?? '';
+    if (contentType == 'application/vnd.apple.mpegurl') {
+      logger.i('[PlaybackRoutes] M3U8 stream detected, redirecting');
+      return Response(
+        301,
+        headers: {
+          'location': streamUrl,
+          'content-type': 'application/vnd.apple.mpegurl',
+        },
+      );
+    }
+
     final resStream = response.body.asBroadcastStream();
 
     final trackPartialCacheFile = File('$cachePath.part');
+
+    final rangeStart = _parseRangeStart(rangeHeader);
+    final isFromStart = rangeStart == 0;
+
+    if (isFromStart && await trackPartialCacheFile.exists()) {
+      await trackPartialCacheFile.delete();
+    }
     if (!await trackPartialCacheFile.exists()) {
-      await trackPartialCacheFile.parent.create(recursive: true);
+      await trackPartialCacheFile.create(recursive: true);
     }
 
+    final writeMode = isFromStart
+        ? FileMode.writeOnly
+        : FileMode.writeOnlyAppend;
+
     final partialCacheFileSink = trackPartialCacheFile.openWrite(
-      mode: FileMode.writeOnlyAppend,
+      mode: writeMode,
     );
 
     final contentRange = headers['content-range'] != null
