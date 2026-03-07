@@ -453,16 +453,19 @@ class PlaybackRoutes {
     });
   }
 
-  Future<Response> getCover(
+  Future<Response> getCoverAlbum(
     Request request,
     String albumName,
     String artistName,
   ) async {
     try {
+      var album = Uri.decodeComponent(albumName);
+      var artist = Uri.decodeComponent(artistName);
+
       final coverUrl = await ref.read(
-        coverUrlProvider(
-          albumName: Uri.decodeComponent(albumName),
-          albumArtistName: Uri.decodeComponent(artistName),
+        coverUrlByAlbumProvider(
+          albumName: album,
+          albumArtistName: artist,
         ).future,
       );
 
@@ -470,16 +473,19 @@ class PlaybackRoutes {
         return Response.notFound("Cover not found");
       }
 
-      final imageBytes = await getCoverBytes(ref, coverUrl);
+      final cacheKey = sanitizeCacheKey('$artist-$album');
+      final imageBytes = await getCoverBytes(ref, coverUrl, cacheKey);
       if (imageBytes == null) {
         return Response.notFound("Cover not found");
       }
+
+      final contentType = _detectImageContentType(imageBytes);
 
       return Response(
         200,
         body: imageBytes,
         headers: {
-          'content-type': 'image/jpeg',
+          'content-type': contentType,
           'content-length': '${imageBytes.length}',
           'cache-control': 'public, max-age=86400',
         },
@@ -488,6 +494,77 @@ class PlaybackRoutes {
       logger.e('GET cover error', error: e, stackTrace: stack);
       return Response.internalServerError(body: 'Internal server error');
     }
+  }
+
+  Future<Response> getCover(Request request, String songId) async {
+    try {
+      final coverUrl = await ref.read(
+        coverUrlBySongIdProvider(songId: songId).future,
+      );
+
+      if (coverUrl.isEmpty) {
+        return Response.notFound("Cover not found");
+      }
+
+      final imageBytes = await getCoverBytes(ref, coverUrl, songId);
+      if (imageBytes == null) {
+        return Response.notFound("Cover not found");
+      }
+
+      final contentType = _detectImageContentType(imageBytes);
+
+      return Response(
+        200,
+        body: imageBytes,
+        headers: {
+          'content-type': contentType,
+          'content-length': '${imageBytes.length}',
+          'cache-control': 'public, max-age=86400',
+        },
+      );
+    } catch (e, stack) {
+      logger.e('GET cover error', error: e, stackTrace: stack);
+      return Response.internalServerError(body: 'Internal server error');
+    }
+  }
+
+  String _detectImageContentType(Uint8List bytes) {
+    if (bytes.length < 8) return 'image/jpeg';
+
+    final header = bytes.sublist(0, 8);
+
+    if (header[0] == 0xFF && header[1] == 0xD8) {
+      return 'image/jpeg';
+    }
+    if (header[0] == 0x89 &&
+        header[1] == 0x50 &&
+        header[2] == 0x4E &&
+        header[3] == 0x47 &&
+        header[4] == 0x0D &&
+        header[5] == 0x0A &&
+        header[6] == 0x1A &&
+        header[7] == 0x0A) {
+      return 'image/png';
+    }
+    if (header[0] == 0x47 && header[1] == 0x49 && header[2] == 0x46) {
+      return 'image/gif';
+    }
+    if (header[0] == 0x52 &&
+        header[1] == 0x49 &&
+        header[2] == 0x46 &&
+        header[3] == 0x46 &&
+        bytes.length > 12 &&
+        bytes[8] == 0x57 &&
+        bytes[9] == 0x45 &&
+        bytes[10] == 0x42 &&
+        bytes[11] == 0x50) {
+      return 'image/webp';
+    }
+    if (header[0] == 0x42 && header[1] == 0x4D) {
+      return 'image/bmp';
+    }
+
+    return 'image/jpeg';
   }
 
   Future<Response> togglePlayback(Request request) async {

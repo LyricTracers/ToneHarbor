@@ -1,4 +1,3 @@
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -12,7 +11,6 @@ class SongCoverImage extends ConsumerWidget {
     required this.songId,
     required this.albumName,
     required this.artistName,
-    required this.authHeaders,
     required this.colorScheme,
     required this.config,
     this.onLongPress,
@@ -21,49 +19,41 @@ class SongCoverImage extends ConsumerWidget {
   final String songId;
   final String albumName;
   final String artistName;
-  final Map<String, String> authHeaders;
   final ColorScheme colorScheme;
   final SongCoverImageConfig config;
   final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final coverUrl = ToneHarborMedia.getCoverUrl(albumName, artistName);
+    final coverUrl = ToneHarborMedia.getCoverUrl(songId, albumName, artistName);
 
     Widget child = ClipRRect(
       borderRadius: BorderRadius.circular(config.borderRadius),
-      child: ExtendedImage.network(
+      child: Image.network(
         coverUrl,
         width: config.size,
         height: config.size,
         fit: BoxFit.cover,
-        headers: authHeaders,
-        cache: true,
-        cacheKey: songId,
-        clearMemoryCacheIfFailed: true,
-        loadStateChanged: (state) {
-          switch (state.extendedImageLoadState) {
-            case LoadState.loading:
-              return CoverPlaceholder(
-                colorScheme: colorScheme,
-                size: config.size,
-                borderRadius: config.borderRadius,
-                isLoading: true,
-              );
-            case LoadState.completed:
-              return ExtendedRawImage(
-                image: state.extendedImageInfo?.image,
-                width: config.size,
-                height: config.size,
-                fit: BoxFit.cover,
-              );
-            case LoadState.failed:
-              return CoverPlaceholder(
-                colorScheme: colorScheme,
-                size: config.size,
-                borderRadius: config.borderRadius,
-              );
+        gaplessPlayback: true,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) {
+            logger.i('url:$coverUrl loadingProgress is null');
+            return child;
           }
+          logger.i('url:$coverUrl loadingProgress: $loadingProgress');
+          return CoverPlaceholder(
+            colorScheme: colorScheme,
+            size: config.size,
+            borderRadius: config.borderRadius,
+            isLoading: true,
+          );
+        },
+        errorBuilder: (context, error, stackTrace) {
+          return CoverPlaceholder(
+            colorScheme: colorScheme,
+            size: config.size,
+            borderRadius: config.borderRadius,
+          );
         },
       ),
     );

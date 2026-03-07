@@ -62,18 +62,10 @@ class CommonSongs extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = getColorSchemeWhenReady(ref);
-    final authHeaders = getValueWhenReadyWithWidgetRef(
-      ref,
-      authHeadersProvider,
-      null,
-    );
+
     return songs.when(
-      data: (data) => _buildHorizontalList(
-        context,
-        data.data?.songs ?? [],
-        authHeaders ?? {},
-        colorScheme,
-      ),
+      data: (data) =>
+          _buildHorizontalList(context, data.data?.songs ?? [], colorScheme),
       loading: () => _buildShimmerLoading(context, colorScheme),
       error: (error, stackTrace) {
         final config = _LayoutConfig.defaultConfig;
@@ -91,7 +83,6 @@ class CommonSongs extends ConsumerWidget {
   Widget _buildHorizontalList(
     BuildContext context,
     List<Song> songs,
-    Map<String, String> authHeaders,
     ColorScheme colorScheme,
   ) {
     final config = _LayoutConfig.defaultConfig;
@@ -108,7 +99,6 @@ class CommonSongs extends ConsumerWidget {
             padding: EdgeInsets.only(right: config.itemSpacing),
             child: _SongItem(
               song: song,
-              authHeaders: authHeaders,
               colorScheme: colorScheme,
               config: config,
               onTap: (ref) {
@@ -153,14 +143,12 @@ class CommonSongs extends ConsumerWidget {
 class _SongItem extends ConsumerWidget {
   const _SongItem({
     required this.song,
-    required this.authHeaders,
     required this.colorScheme,
     required this.config,
     required this.onTap,
   });
 
   final Song song;
-  final Map<String, String> authHeaders;
   final ColorScheme colorScheme;
   final _LayoutConfig config;
   final Function(WidgetRef ref) onTap;
@@ -187,7 +175,6 @@ class _SongItem extends ConsumerWidget {
             songId: song.id,
             albumName: albumName,
             artistName: artistName,
-            authHeaders: authHeaders,
             colorScheme: colorScheme,
             config: SongCoverImageConfig(
               size: config.coverSize,

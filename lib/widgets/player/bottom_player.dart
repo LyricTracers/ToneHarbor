@@ -24,12 +24,6 @@ class BottomPlayer extends HookConsumerWidget {
 
     final isHovered = useState(false);
     final colorScheme = getColorSchemeWhenReady(ref);
-
-    final authHeaders = getValueWhenReadyWithWidgetRef(
-      ref,
-      authHeadersProvider,
-      null,
-    );
     final isPlaying =
         useStream(audioPlayer.playingStream).data ?? audioPlayer.isPlaying;
     final progressData = useProgress(ref);
@@ -100,7 +94,6 @@ class BottomPlayer extends HookConsumerWidget {
                   artistName: activeTrack.artist,
                   colorScheme: colorScheme,
                   config: const SongCoverImageConfig(size: 50, borderRadius: 5),
-                  authHeaders: authHeaders ?? <String, String>{},
                 ),
                 const SizedBox(width: 10),
                 Flexible(

@@ -41,16 +41,21 @@ class ToneHarborMedia extends mk.Media {
     return ToneHarborMedia(ToneHarborTrackObject.fromJson(media.extras!));
   }
 
-  static String getCoverUrl(String album, String artist) {
-    return 'http://$host:$serverPort/cover/${Uri.encodeComponent(album)}/${Uri.encodeComponent(artist)}';
+  static String getCoverUrl(
+    String songId,
+    String albumName,
+    String artistName,
+  ) {
+    if (songId.isEmpty) {
+      return 'http://$host:$serverPort/cover-album/${Uri.encodeComponent(albumName)}/${Uri.encodeComponent(artistName)}';
+    }
+    return 'http://$host:$serverPort/cover/$songId';
   }
 }
 
 extension MediaCoverExtension on Media {
   String getCoverUrl() {
-    var album = extras?["album"] as String? ?? "";
-    var artist = extras?["artist"] as String? ?? "";
-    return ToneHarborMedia.getCoverUrl(album, artist);
+    return ToneHarborMedia.getCoverUrl(id, album, artist);
   }
 
   String get id {

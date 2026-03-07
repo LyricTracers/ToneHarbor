@@ -105,18 +105,12 @@ class RecommendPageDailySongs extends ConsumerWidget {
     final config = _LayoutConfig.defaultConfig;
     final columns = _calculateColumns(context, config);
     final displaySongs = songs.take(_getDisplayCount(columns)).toList();
-    final authHeaders = getValueWhenReadyWithWidgetRef(
-      ref,
-      authHeadersProvider,
-      null,
-    );
 
     return _buildSongGrid(
       context,
       ref,
       displaySongs,
       colorScheme,
-      authHeaders ?? <String, String>{},
       config,
       columns,
     );
@@ -146,7 +140,6 @@ class RecommendPageDailySongs extends ConsumerWidget {
     WidgetRef ref,
     List<Song> songs,
     ColorScheme colorScheme,
-    Map<String, String> authHeaders,
     _LayoutConfig config,
     int columns,
   ) {
@@ -158,7 +151,7 @@ class RecommendPageDailySongs extends ConsumerWidget {
           padding: EdgeInsets.only(
             right: colIndex == columns - 1 ? 0 : config.itemSpacing,
           ),
-          child: _buildSongItem(context, ref, song, colorScheme, authHeaders),
+          child: _buildSongItem(context, ref, song, colorScheme),
         ),
       );
     }, songs.length);
@@ -211,7 +204,6 @@ class RecommendPageDailySongs extends ConsumerWidget {
     WidgetRef ref,
     Song song,
     ColorScheme colorScheme,
-    Map<String, String> authHeaders,
   ) {
     final albumName = song.additional?.songTag?.album ?? '';
     final artistName = song.additional?.songTag?.artist ?? '';
@@ -236,7 +228,6 @@ class RecommendPageDailySongs extends ConsumerWidget {
                 songId: song.id,
                 albumName: albumName,
                 artistName: artistName,
-                authHeaders: authHeaders,
                 colorScheme: colorScheme,
                 config: SongCoverImageConfig(
                   size: config.coverSize,

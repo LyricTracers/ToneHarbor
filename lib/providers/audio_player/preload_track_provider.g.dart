@@ -40,7 +40,7 @@ final class PreloadTrackProvider extends $NotifierProvider<PreloadTrack, void> {
   }
 }
 
-String _$preloadTrackHash() => r'df1b489e3f701f16e6afd3c748f0a7cc5c4097e8';
+String _$preloadTrackHash() => r'71ff74145589cf8178cb784bb8ec5281135fccdd';
 
 abstract class _$PreloadTrack extends $Notifier<void> {
   void build();

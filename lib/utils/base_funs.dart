@@ -254,6 +254,21 @@ Future<String> getMusicCacheDir() async {
   return join(dir.path, 'cached_tracks');
 }
 
+Future<String> getCoverCacheDir() async {
+  if (Platform.isAndroid) {
+    final dir = await paths.getExternalCacheDirectories().then(
+      (dirs) => dirs!.first,
+    );
+    if (!await dir.exists()) {
+      await dir.create(recursive: true);
+    }
+    return join(dir.path, 'Cached Covers');
+  }
+
+  final dir = await paths.getApplicationCacheDirectory();
+  return join(dir.path, 'cached_covers');
+}
+
 Future<void> openCacheFolder() async {
   try {
     final filePath = await getMusicCacheDir();
@@ -272,4 +287,8 @@ Future<String> getTrackCachePath(ToneHarborTrackObject track) async {
 Future<bool> isTrackCached(ToneHarborTrackObject track) async {
   final cachePath = await getTrackCachePath(track);
   return File(cachePath).exists();
+}
+
+String sanitizeCacheKey(String key) {
+  return key.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
 }

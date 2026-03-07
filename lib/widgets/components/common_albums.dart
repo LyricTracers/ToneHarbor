@@ -60,18 +60,9 @@ class CommonAlbums extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = getColorSchemeWhenReady(ref);
-    final authHeaders = getValueWhenReadyWithWidgetRef(
-      ref,
-      authHeadersProvider,
-      null,
-    );
     return albums.when(
-      data: (data) => _buildHorizontalList(
-        context,
-        data.data?.albums ?? [],
-        authHeaders ?? {},
-        colorScheme,
-      ),
+      data: (data) =>
+          _buildHorizontalList(context, data.data?.albums ?? [], colorScheme),
       loading: () => _buildShimmerLoading(context, colorScheme),
       error: (error, stackTrace) {
         final config = _LayoutConfig.defaultConfig;
@@ -89,7 +80,6 @@ class CommonAlbums extends ConsumerWidget {
   Widget _buildHorizontalList(
     BuildContext context,
     List<AlbumItem> albums,
-    Map<String, String> authHeaders,
     ColorScheme colorScheme,
   ) {
     final config = _LayoutConfig.defaultConfig;
@@ -105,7 +95,6 @@ class CommonAlbums extends ConsumerWidget {
             padding: EdgeInsets.only(right: config.itemSpacing),
             child: _AlbumItem(
               album: album,
-              authHeaders: authHeaders,
               colorScheme: colorScheme,
               config: config,
             ),
@@ -144,13 +133,11 @@ class CommonAlbums extends ConsumerWidget {
 class _AlbumItem extends StatelessWidget {
   const _AlbumItem({
     required this.album,
-    required this.authHeaders,
     required this.colorScheme,
     required this.config,
   });
 
   final AlbumItem album;
-  final Map<String, String> authHeaders;
   final ColorScheme colorScheme;
   final _LayoutConfig config;
 
@@ -174,10 +161,9 @@ class _AlbumItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           SongCoverImage(
-            songId: albumName,
+            songId: "",
             albumName: albumName,
             artistName: artistName,
-            authHeaders: authHeaders,
             colorScheme: colorScheme,
             config: SongCoverImageConfig(
               size: config.coverSize,

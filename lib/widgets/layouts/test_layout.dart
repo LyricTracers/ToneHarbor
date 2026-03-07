@@ -509,7 +509,7 @@ class TestLayout extends BaseBgLayout {
 
       try {
         final url = await ref.read(
-          coverUrlProvider(
+          coverUrlByAlbumProvider(
             albumName: 'Unknown Album',
             albumArtistName: 'Unknown Artist',
           ).future,

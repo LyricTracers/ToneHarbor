@@ -82,14 +82,83 @@ final class StreamUrlFamily extends $Family
   String toString() => r'streamUrlProvider';
 }
 
-@ProviderFor(coverUrl)
-final coverUrlProvider = CoverUrlFamily._();
+@ProviderFor(coverUrlBySongId)
+final coverUrlBySongIdProvider = CoverUrlBySongIdFamily._();
 
-final class CoverUrlProvider
+final class CoverUrlBySongIdProvider
     extends $FunctionalProvider<AsyncValue<String>, String, FutureOr<String>>
     with $FutureModifier<String>, $FutureProvider<String> {
-  CoverUrlProvider._({
-    required CoverUrlFamily super.from,
+  CoverUrlBySongIdProvider._({
+    required CoverUrlBySongIdFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'coverUrlBySongIdProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$coverUrlBySongIdHash();
+
+  @override
+  String toString() {
+    return r'coverUrlBySongIdProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<String> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<String> create(Ref ref) {
+    final argument = this.argument as String;
+    return coverUrlBySongId(ref, songId: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CoverUrlBySongIdProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$coverUrlBySongIdHash() => r'991c586aefb47e3190de916e838a74f7ae5a5d85';
+
+final class CoverUrlBySongIdFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<String>, String> {
+  CoverUrlBySongIdFamily._()
+    : super(
+        retry: null,
+        name: r'coverUrlBySongIdProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CoverUrlBySongIdProvider call({required String songId}) =>
+      CoverUrlBySongIdProvider._(argument: songId, from: this);
+
+  @override
+  String toString() => r'coverUrlBySongIdProvider';
+}
+
+@ProviderFor(coverUrlByAlbum)
+final coverUrlByAlbumProvider = CoverUrlByAlbumFamily._();
+
+final class CoverUrlByAlbumProvider
+    extends $FunctionalProvider<AsyncValue<String>, String, FutureOr<String>>
+    with $FutureModifier<String>, $FutureProvider<String> {
+  CoverUrlByAlbumProvider._({
+    required CoverUrlByAlbumFamily super.from,
     required ({
       String albumName,
       String albumArtistName,
@@ -101,18 +170,18 @@ final class CoverUrlProvider
     super.argument,
   }) : super(
          retry: null,
-         name: r'coverUrlProvider',
+         name: r'coverUrlByAlbumProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$coverUrlHash();
+  String debugGetCreateSourceHash() => _$coverUrlByAlbumHash();
 
   @override
   String toString() {
-    return r'coverUrlProvider'
+    return r'coverUrlByAlbumProvider'
         ''
         '$argument';
   }
@@ -134,7 +203,7 @@ final class CoverUrlProvider
               bool isHr,
               String library,
             });
-    return coverUrl(
+    return coverUrlByAlbum(
       ref,
       albumName: argument.albumName,
       albumArtistName: argument.albumArtistName,
@@ -147,7 +216,7 @@ final class CoverUrlProvider
 
   @override
   bool operator ==(Object other) {
-    return other is CoverUrlProvider && other.argument == argument;
+    return other is CoverUrlByAlbumProvider && other.argument == argument;
   }
 
   @override
@@ -156,9 +225,9 @@ final class CoverUrlProvider
   }
 }
 
-String _$coverUrlHash() => r'50b35c98ef877849651aad31dec72351728d8db2';
+String _$coverUrlByAlbumHash() => r'c5001a811b1108aa1c70d4aee39f36d2e4490d8f';
 
-final class CoverUrlFamily extends $Family
+final class CoverUrlByAlbumFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<String>,
@@ -171,23 +240,23 @@ final class CoverUrlFamily extends $Family
             String library,
           })
         > {
-  CoverUrlFamily._()
+  CoverUrlByAlbumFamily._()
     : super(
         retry: null,
-        name: r'coverUrlProvider',
+        name: r'coverUrlByAlbumProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  CoverUrlProvider call({
+  CoverUrlByAlbumProvider call({
     required String albumName,
     required String albumArtistName,
     String view = 'album',
     bool outputDefault = true,
     bool isHr = true,
     String library = 'shared',
-  }) => CoverUrlProvider._(
+  }) => CoverUrlByAlbumProvider._(
     argument: (
       albumName: albumName,
       albumArtistName: albumArtistName,
@@ -200,5 +269,5 @@ final class CoverUrlFamily extends $Family
   );
 
   @override
-  String toString() => r'coverUrlProvider';
+  String toString() => r'coverUrlByAlbumProvider';
 }

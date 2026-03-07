@@ -30,7 +30,6 @@ dependencies:
   hooks_riverpod: ^3.1.0
   flutter_hooks: ^0.21.3
   fading_edge_scrollview: ^4.1.1
-  extended_image: ^10.0.1
   shimmer: ^3.0.0
   flutter_svg: ^2.0.10
   path: ^1.9.0
@@ -49,6 +48,7 @@ dependencies:
   shelf: ^1.4.1
   shelf_router: ^1.1.4
   metadata_god: ^1.1.0
+  file: ^7.0.1
   drift: 2.29.0
   mime: ^2.0.0
   collection: any
