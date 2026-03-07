@@ -332,8 +332,40 @@ class PlaybackRoutes {
     final rangeStart = _parseRangeStart(rangeHeader);
     final isFromStart = rangeStart == 0;
 
+    final contentRange = headers['content-range'] != null
+        ? ContentRangeHeader.parse(headers['content-range']!)
+        : ContentRangeHeader(0, 0, 0);
+
+    if (!isFromStart) {
+      if (await trackPartialCacheFile.exists()) {
+        final partLength = await trackPartialCacheFile.length();
+        if (partLength == contentRange.total) {
+          final finalCacheFile = File(cachePath);
+          if (!await finalCacheFile.exists()) {
+            await trackPartialCacheFile.rename(cachePath);
+            logger.i('[CacheStream] Completed partial cache: $cachePath');
+          } else {
+            await trackPartialCacheFile.delete();
+          }
+        }
+      }
+      logger.i('[PlaybackRoutes] Non-start range request, skip caching');
+      return Response(
+        response.statusCode,
+        body: resStream,
+        headers: {
+          'content-type':
+              headers['content-type'] ?? _getMimeType(track.container),
+          'content-length': headers['content-length'] ?? '',
+          'accept-ranges': 'bytes',
+          if (headers['content-range'] != null)
+            'content-range': headers['content-range']!,
+        },
+      );
+    }
+
     final isAlreadyCaching = _cachingLocks[cacheKey] == true;
-    if (isAlreadyCaching && isFromStart) {
+    if (isAlreadyCaching) {
       logger.i('[PlaybackRoutes] Already caching $cacheKey, skip caching');
       return Response(
         response.statusCode,
@@ -351,37 +383,41 @@ class PlaybackRoutes {
 
     _cachingLocks[cacheKey] = true;
 
-    if (isFromStart) {
-      if (await trackPartialCacheFile.exists()) {
-        await trackPartialCacheFile.delete();
-      }
-      await trackPartialCacheFile.create(recursive: true);
-    } else {
-      if (await trackPartialCacheFile.exists()) {
-        final existingLength = await trackPartialCacheFile.length();
-        if (existingLength != rangeStart) {
-          logger.w(
-            '[PlaybackRoutes] Partial file size $existingLength != range start $rangeStart, deleting',
-          );
+    if (await trackPartialCacheFile.exists()) {
+      final partLength = await trackPartialCacheFile.length();
+      if (partLength == contentRange.total) {
+        final finalCacheFile = File(cachePath);
+        if (!await finalCacheFile.exists()) {
+          await trackPartialCacheFile.rename(cachePath);
+          logger.i('[CacheStream] Already complete: $cachePath');
+        } else {
           await trackPartialCacheFile.delete();
-          await trackPartialCacheFile.create(recursive: true);
         }
-      } else {
-        await trackPartialCacheFile.create(recursive: true);
+        _cachingLocks.remove(cacheKey);
+        return Response(
+          response.statusCode,
+          body: resStream,
+          headers: {
+            'content-type':
+                headers['content-type'] ?? _getMimeType(track.container),
+            'content-length': headers['content-length'] ?? '',
+            'accept-ranges': 'bytes',
+            if (headers['content-range'] != null)
+              'content-range': headers['content-range']!,
+          },
+        );
       }
+      await trackPartialCacheFile.delete();
     }
-
-    final writeMode = isFromStart
-        ? FileMode.writeOnly
-        : FileMode.writeOnlyAppend;
+    await trackPartialCacheFile.create(recursive: true);
 
     final partialCacheFileSink = trackPartialCacheFile.openWrite(
-      mode: writeMode,
+      mode: FileMode.writeOnly,
     );
 
-    final contentRange = headers['content-range'] != null
-        ? ContentRangeHeader.parse(headers['content-range']!)
-        : ContentRangeHeader(0, 0, 0);
+    logger.i(
+      '[CacheStream] Start caching: rangeHeader=$rangeHeader, contentRange=${contentRange.start}-${contentRange.end}/${contentRange.total}',
+    );
 
     resStream.listen(
       (data) {
