@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:metadata_god/metadata_god.dart';
 import 'package:rhttp/rhttp.dart' as rhttp;
 import 'package:shelf/shelf.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -376,6 +378,8 @@ class PlaybackRoutes {
         }
         await trackPartialCacheFile.rename(cachePath);
         logger.i('[CacheStream] Cache complete: $cachePath');
+
+        await _writeMetadata(track, cachePath, fileLength);
       },
       cancelOnError: true,
     );
@@ -401,6 +405,85 @@ class PlaybackRoutes {
     });
   }
 
+  Future<void> _writeMetadata(
+    ToneHarborTrackObject track,
+    String cachePath,
+    int fileLength,
+  ) async {
+    try {
+      if (track.container.toLowerCase() == 'weba' ||
+          track.container.toLowerCase() == 'webm') {
+        return;
+      }
+
+      final coverUrl = await ref.read(
+        coverUrlProvider(
+          albumName: track.album,
+          albumArtistName: track.artist,
+        ).future,
+      );
+
+      Uint8List? imageBytes;
+      if (coverUrl.isNotEmpty) {
+        imageBytes = await _getCoverBytes(coverUrl);
+      }
+
+      final metadata = track.toMetadata(
+        fileLength: fileLength,
+        imageBytes: imageBytes,
+      );
+
+      await MetadataGod.writeMetadata(file: cachePath, metadata: metadata);
+      logger.i('[Metadata] Written metadata for: $cachePath');
+    } catch (e, stack) {
+      logger.e(
+        '[Metadata] Failed to write metadata',
+        error: e,
+        stackTrace: stack,
+      );
+    }
+  }
+
+  Future<Uint8List?> _getCoverBytes(String coverUrl) async {
+    try {
+      final coverCacheDir = await getMusicCacheDir();
+      final coverCachePath = '$coverCacheDir/covers';
+      final coverCacheDir2 = Directory(coverCachePath);
+      if (!await coverCacheDir2.exists()) {
+        await coverCacheDir2.create(recursive: true);
+      }
+
+      final cacheKey = coverUrl.hashCode.toString();
+      final cacheFile = File('$coverCachePath/$cacheKey');
+
+      if (await cacheFile.exists()) {
+        logger.i('[Metadata] Using cached cover: $cacheKey');
+        return await cacheFile.readAsBytes();
+      }
+
+      final authHeaders = await ref.read(authHeadersProvider.future);
+      if (authHeaders == null) {
+        return null;
+      }
+
+      final response = await downloadHttpClientWrapper.getBytes(
+        coverUrl,
+        headers: rhttp.HttpHeaders.rawMap({
+          ...authHeaders,
+          'accept': 'image/*',
+        }),
+      );
+
+      final bytes = response.body;
+      await cacheFile.writeAsBytes(bytes);
+      logger.i('[Metadata] Cached cover: $cacheKey');
+      return bytes;
+    } catch (e) {
+      logger.w('[Metadata] Failed to get cover: $e');
+      return null;
+    }
+  }
+
   Future<Response> getCover(
     Request request,
     String albumName,
@@ -418,32 +501,17 @@ class PlaybackRoutes {
         return Response.notFound("Cover not found");
       }
 
-      final authHeaders = await ref.read(authHeadersProvider.future);
-      if (authHeaders == null) {
-        _clearAuthOnFailure();
-        return Response.forbidden("Not authenticated");
-      }
-
-      final response = await downloadHttpClientWrapper.getStream(
-        coverUrl,
-        headers: rhttp.HttpHeaders.rawMap({
-          ...authHeaders,
-          'accept': 'image/*',
-        }),
-      );
-
-      if (response.statusCode != 200 && response.statusCode != 206) {
+      final imageBytes = await _getCoverBytes(coverUrl);
+      if (imageBytes == null) {
         return Response.notFound("Cover not found");
       }
 
-      final headers = _extractHeaders(response);
-
       return Response(
-        response.statusCode,
-        body: response.body,
+        200,
+        body: imageBytes,
         headers: {
-          'content-type': headers['content-type'] ?? 'image/jpeg',
-          'content-length': headers['content-length'] ?? '',
+          'content-type': 'image/jpeg',
+          'content-length': '${imageBytes.length}',
           'cache-control': 'public, max-age=86400',
         },
       );
