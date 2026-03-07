@@ -51,7 +51,11 @@ class AudioPlayerStreamListeners {
         }
         notificationService?.addMedia(activeMedia);
       } catch (e, stack) {
-        logger.e('Failed to add track', error: e, stackTrace: stack);
+        logger.e(
+          '[AudioPlayer] Failed to add track',
+          error: e,
+          stackTrace: stack,
+        );
       }
     });
   }
@@ -79,14 +83,14 @@ class AudioPlayerStreamListeners {
 
         if (nextTrack is ToneHarborTrackObjectLocal) {
           lastPreloadedTrack = nextTrack.id;
-          logger.i('[Preload] Skip local track: ${nextTrack.title}');
+          logger.i('[AudioPlayer] Skip local track: ${nextTrack.title}');
           return;
         }
 
         final isCached = await isTrackCached(nextTrack);
         if (isCached) {
           lastPreloadedTrack = nextTrack.id;
-          logger.i('[Preload] Track already cached: ${nextTrack.title}');
+          logger.i('[AudioPlayer] Track already cached: ${nextTrack.title}');
           return;
         }
 
@@ -94,12 +98,14 @@ class AudioPlayerStreamListeners {
             .read(preloadTrackProvider.notifier)
             .isPreloading(nextTrack.id);
         if (isPreloading) {
-          logger.i('[Preload] Track already preloading: ${nextTrack.title}');
+          logger.i(
+            '[AudioPlayer] Track already preloading: ${nextTrack.title}',
+          );
           return;
         }
 
         logger.i(
-          '[Preload] Preloading next track: ${nextTrack.title} (${nextTrack.id})',
+          '[AudioPlayer] Preloading next track: ${nextTrack.title} (${nextTrack.id})',
         );
 
         await ref
