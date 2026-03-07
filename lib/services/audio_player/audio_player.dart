@@ -30,6 +30,9 @@ class ToneHarborMedia extends mk.Media {
       );
 
   static String getStreamUrl(String songId) {
+    if (serverPort == 0) {
+      logger.w('[ToneHarborMedia] Server port is 0, stream URL may not work!');
+    }
     return "http://$host:$serverPort/stream/$songId";
   }
 

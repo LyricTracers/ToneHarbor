@@ -65,7 +65,7 @@ class MyApp extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(serverProvider);
+    final serverAsync = ref.watch(serverProvider);
     ref.listen(audioPlayerStreamListenersProvider, (_, __) {});
 
     final colorScheme = getColorSchemeWhenReady(ref);
@@ -79,6 +79,16 @@ class MyApp extends HookConsumerWidget {
         audioPlayer.dispose();
       };
     }, []);
+
+    if (serverAsync.isLoading) {
+      return const MaterialApp(
+        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+      );
+    }
+
+    if (serverAsync.hasError) {
+      logger.e('Server failed to start: ${serverAsync.error}');
+    }
 
     final router = useMemoized(() {
       return GoRouter(

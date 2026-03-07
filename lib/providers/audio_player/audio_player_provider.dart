@@ -304,24 +304,23 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
   }) async {
     final medias = tracks.asMediaList().unique((a, b) => a.uri == b.uri);
 
-    // Giving the initial track a boost so MediaKit won't skip
-    // because of timeout
-    final intendedActiveTrack = medias.elementAt(initialIndex);
-    if (intendedActiveTrack.track is! ToneHarborTrackObjectLocal) {
-      // ref.read(
-      //   sourcedTrackProvider(
-      //     intendedActiveTrack.track as ToneHarborTrackObject,
-      //   ).future,
-      // );
-    }
-
     if (medias.isEmpty) return;
 
+    logger.i(
+      '[AudioPlayer] Loading ${medias.length} tracks, initialIndex: $initialIndex',
+    );
+    for (final media in medias) {
+      logger.d('[AudioPlayer] Track: ${media.track.id} -> ${media.uri}');
+    }
+
     state = state.copyWith(
-      // These are filtered tracks as well
       tracks: medias.map((media) => media.track).toList(),
       currentIndex: initialIndex,
       collections: [],
+    );
+
+    logger.i(
+      '[AudioPlayer] State updated, tracks count: ${state.tracks.length}',
     );
 
     await audioPlayer.openPlaylist(

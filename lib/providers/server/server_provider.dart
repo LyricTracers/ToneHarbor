@@ -8,6 +8,7 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
 import 'package:toneharbor/providers/server/playback_routes.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 
@@ -15,9 +16,17 @@ part 'server_provider.g.dart';
 
 final pipelineProvider = Provider((ref) {
   Pipeline pipeline = const Pipeline();
-  if (kDebugMode) {
-    pipeline = pipeline.addMiddleware(logRequests());
-  }
+  pipeline = pipeline.addMiddleware(
+    logRequests(
+      logger: (message, isError) {
+        if (isError) {
+          logger.e('[Server] $message');
+        } else {
+          logger.i('[Server] $message');
+        }
+      },
+    ),
+  );
   return pipeline;
 });
 
@@ -57,7 +66,7 @@ Future<HttpServer> server(Ref ref) async {
       ToneHarborMedia.serverPort = port;
 
       logger.i(
-        'Playback server at http://${server.address.host}:${server.port}',
+        'Playback server started at http://${server.address.host}:${server.port}',
       );
     } catch (e) {
       ToneHarborMedia.serverPort = 0;

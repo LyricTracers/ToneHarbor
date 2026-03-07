@@ -7,15 +7,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/misc.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path_provider/path_provider.dart' as paths;
 import 'package:rhttp/rhttp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/providers/theme_data_provider.dart';
 import 'package:toneharbor/utils/consts.dart';
+import 'package:open_file/open_file.dart';
 part 'base_funs_sp.dart';
 part 'base_funs_theme.dart';
 
@@ -233,4 +237,39 @@ Widget buildErrorView(
       ),
     ),
   );
+}
+
+Future<String> getMusicCacheDir() async {
+  if (Platform.isAndroid) {
+    final dir = await paths.getExternalCacheDirectories().then(
+      (dirs) => dirs!.first,
+    );
+    if (!await dir.exists()) {
+      await dir.create(recursive: true);
+    }
+    return join(dir.path, 'Cached Tracks');
+  }
+
+  final dir = await paths.getApplicationCacheDirectory();
+  return join(dir.path, 'cached_tracks');
+}
+
+Future<void> openCacheFolder() async {
+  try {
+    final filePath = await getMusicCacheDir();
+
+    await OpenFile.open(filePath);
+  } catch (e, stack) {
+    logger.e('打开缓存文件夹失败: $e, $stack');
+  }
+}
+
+Future<String> getTrackCachePath(ToneHarborTrackObject track) async {
+  final cacheDir = await getMusicCacheDir();
+  return '$cacheDir/${track.id}.${track.container}';
+}
+
+Future<bool> isTrackCached(ToneHarborTrackObject track) async {
+  final cachePath = await getTrackCachePath(track);
+  return File(cachePath).exists();
 }
