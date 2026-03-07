@@ -112,8 +112,6 @@ class PlaybackRoutes {
 
   Future<Response> headStreamSongId(Request request, String songId) async {
     try {
-      logger.i('[PlaybackRoutes] HEAD request for track: $songId');
-
       final track = _getTrackById(songId);
 
       if (track == null) {
@@ -143,9 +141,6 @@ class PlaybackRoutes {
 
       if (await cacheFile.exists()) {
         final fileLength = await cacheFile.length();
-        logger.i(
-          '[PlaybackRoutes] HEAD: Serving cached file: $songId, size: $fileLength',
-        );
         return Response(
           200,
           headers: {
@@ -156,8 +151,6 @@ class PlaybackRoutes {
           },
         );
       }
-
-      logger.i('[PlaybackRoutes] HEAD: Forwarding to remote stream: $songId');
 
       final streamUrl = await ref.read(streamUrlProvider(id: songId).future);
       if (streamUrl.isEmpty) {
@@ -202,18 +195,12 @@ class PlaybackRoutes {
 
   Future<Response> getStreamSongId(Request request, String songId) async {
     try {
-      logger.i('[PlaybackRoutes] GET request for track: $songId');
-
       final track = _getTrackById(songId);
 
       if (track == null) {
         logger.e('[PlaybackRoutes] GET: Track not found: $songId');
         return Response.notFound("Track not found in current queue");
       }
-
-      logger.i(
-        '[PlaybackRoutes] Found track: ${track.id}, container: ${track.container}',
-      );
 
       if (track is ToneHarborTrackObjectLocal) {
         return _serveLocalFile(track);
@@ -223,14 +210,9 @@ class PlaybackRoutes {
       final cacheFile = File(cachePath);
 
       if (await cacheFile.exists()) {
-        final fileLength = await cacheFile.length();
-        logger.i(
-          '[PlaybackRoutes] GET: Serving cached file: $songId, size: $fileLength',
-        );
         return _serveCachedFile(cacheFile, track);
       }
 
-      logger.i('[PlaybackRoutes] GET: Serving remote stream for: $songId');
       return await _serveRemoteStream(request, songId, track, cachePath);
     } catch (e, stack) {
       logger.e('GET stream error', error: e, stackTrace: stack);
@@ -293,8 +275,6 @@ class PlaybackRoutes {
       return Response.forbidden("Not authenticated");
     }
 
-    logger.i('[PlaybackRoutes] Requesting remote stream');
-
     final rangeHeader = request.headers['range'] ?? 'bytes=0-';
 
     final response = await downloadHttpClientWrapper.getStream(
@@ -304,17 +284,12 @@ class PlaybackRoutes {
 
     final headers = _extractHeaders(response);
 
-    logger.i(
-      '[PlaybackRoutes] Remote response status: ${response.statusCode}, headers: $headers',
-    );
-
     if (response.statusCode != 200 && response.statusCode != 206) {
       return Response(response.statusCode, body: 'Remote server error');
     }
 
     final contentType = headers['content-type'] ?? '';
     if (contentType == 'application/vnd.apple.mpegurl') {
-      logger.i('[PlaybackRoutes] M3U8 stream detected, redirecting');
       return Response(
         301,
         headers: {
@@ -343,13 +318,11 @@ class PlaybackRoutes {
           final finalCacheFile = File(cachePath);
           if (!await finalCacheFile.exists()) {
             await trackPartialCacheFile.rename(cachePath);
-            logger.i('[CacheStream] Completed partial cache: $cachePath');
           } else {
             await trackPartialCacheFile.delete();
           }
         }
       }
-      logger.i('[PlaybackRoutes] Non-start range request, skip caching');
       return Response(
         response.statusCode,
         body: resStream,
@@ -366,7 +339,6 @@ class PlaybackRoutes {
 
     final isAlreadyCaching = _cachingLocks[cacheKey] == true;
     if (isAlreadyCaching) {
-      logger.i('[PlaybackRoutes] Already caching $cacheKey, skip caching');
       return Response(
         response.statusCode,
         body: resStream,
@@ -389,7 +361,6 @@ class PlaybackRoutes {
         final finalCacheFile = File(cachePath);
         if (!await finalCacheFile.exists()) {
           await trackPartialCacheFile.rename(cachePath);
-          logger.i('[CacheStream] Already complete: $cachePath');
         } else {
           await trackPartialCacheFile.delete();
         }
@@ -413,10 +384,6 @@ class PlaybackRoutes {
 
     final partialCacheFileSink = trackPartialCacheFile.openWrite(
       mode: FileMode.writeOnly,
-    );
-
-    logger.i(
-      '[CacheStream] Start caching: rangeHeader=$rangeHeader, contentRange=${contentRange.start}-${contentRange.end}/${contentRange.total}',
     );
 
     resStream.listen(
@@ -449,7 +416,6 @@ class PlaybackRoutes {
           await finalCacheFile.delete();
         }
         await trackPartialCacheFile.rename(cachePath);
-        logger.i('[CacheStream] Cache complete: $cachePath');
 
         await _writeMetadata(track, cachePath, fileLength);
         _cachingLocks.remove(cacheKey);
@@ -507,7 +473,6 @@ class PlaybackRoutes {
       );
 
       await MetadataGod.writeMetadata(file: cachePath, metadata: metadata);
-      logger.i('[Metadata] Written metadata for: $cachePath');
     } catch (e, stack) {
       logger.e(
         '[Metadata] Failed to write metadata',
@@ -530,12 +495,13 @@ class PlaybackRoutes {
       final cacheFile = File('$coverCachePath/$cacheKey');
 
       if (await cacheFile.exists()) {
-        logger.i('[Metadata] Using cached cover: $cacheKey');
         return await cacheFile.readAsBytes();
       }
 
       final authHeaders = await ref.read(authHeadersProvider.future);
       if (authHeaders == null) {
+        logger.e('[Metadata] No auth headers');
+        _clearAuthOnFailure();
         return null;
       }
 
@@ -549,10 +515,8 @@ class PlaybackRoutes {
 
       final bytes = response.body;
       await cacheFile.writeAsBytes(bytes);
-      logger.i('[Metadata] Cached cover: $cacheKey');
       return bytes;
     } catch (e) {
-      logger.w('[Metadata] Failed to get cover: $e');
       return null;
     }
   }
