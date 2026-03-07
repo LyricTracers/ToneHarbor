@@ -27,7 +27,7 @@ Future<Uint8List?> fetchCoverBytes(
       return await cacheFile.readAsBytes();
     }
 
-    final response = await downloadHttpClientWrapper.getBytes(url);
+    final response = await coverDownloadHttpClientWrapper.getBytes(url);
 
     final bytes = response.body;
     return bytes;

@@ -87,7 +87,7 @@ Future<Uint8List?> getCoverBytes(
       return null;
     }
 
-    final response = await downloadHttpClientWrapper.getBytes(
+    final response = await coverDownloadHttpClientWrapper.getBytes(
       coverUrl,
       headers: rhttp.HttpHeaders.rawMap({...authHeaders, 'accept': 'image/*'}),
     );

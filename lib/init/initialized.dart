@@ -21,6 +21,7 @@ late final ColorScheme defaultColorScheme;
 late final ImageProvider defaultSongIconProvider;
 late final HttpClientWrapper httpClientWrapper;
 late final HttpClientWrapper downloadHttpClientWrapper;
+late final HttpClientWrapper coverDownloadHttpClientWrapper;
 late final PersistentApiCache<Map<String, dynamic>> audioStationRequestCache;
 late final PersistentApiCache<Map<String, dynamic>> lyricCache;
 
@@ -88,7 +89,18 @@ void initHttpClientWrapper() {
         connectTimeout: Duration(seconds: 30),
       ),
     ),
+    retryInterceptor: RetryInterceptor(maxRetries: 0),
     loggingInterceptor: LoggingInterceptor(logger: logger),
+  );
+
+  coverDownloadHttpClientWrapper = HttpClientWrapper(
+    settings: const ClientSettings(
+      timeoutSettings: TimeoutSettings(
+        timeout: Duration(minutes: 1),
+        connectTimeout: Duration(seconds: 30),
+      ),
+    ),
+    retryInterceptor: RetryInterceptor(maxRetries: 1),
   );
 }
 

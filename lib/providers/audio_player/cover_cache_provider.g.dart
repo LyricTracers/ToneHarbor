@@ -70,7 +70,7 @@ final class FetchCoverBytesProvider
   }
 }
 
-String _$fetchCoverBytesHash() => r'68a3ab26e5e352ed3a1e7a888d83d1d466088485';
+String _$fetchCoverBytesHash() => r'5ae14951c71a2302488b51eed747209f59f7cebe';
 
 final class FetchCoverBytesFamily extends $Family
     with
