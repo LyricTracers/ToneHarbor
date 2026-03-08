@@ -54,6 +54,10 @@ class BottomPlayer extends HookConsumerWidget {
     if (currentLineLyrics.value.isEmpty) {
       currentLineLyrics.value = activeTrack.title;
     }
+    useEffect(() {
+      currentLineLyrics.value = activeTrack.title;
+      return null;
+    }, [activeTrack]);
 
     final rating = activeTrack.rating;
 
@@ -72,6 +76,7 @@ class BottomPlayer extends HookConsumerWidget {
     final volume = ref.watch(volumeProvider);
 
     final width = MediaQuery.of(context).size.width;
+
     return Container(
       color: colorScheme.surface.withValues(alpha: 0.2),
       height: 70,
