@@ -55,8 +55,6 @@ PODS:
     - sqlite3/perf-threadsafe
     - sqlite3/rtree
     - sqlite3/session
-  - system_music_monitor (0.0.1):
-    - FlutterMacOS (>= 1.0.0)
   - tray_manager (0.0.1):
     - FlutterMacOS
   - window_manager (0.5.0):
@@ -78,7 +76,6 @@ DEPENDENCIES:
   - shared_preferences_foundation (from `Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sqflite_darwin (from `Flutter/ephemeral/.symlinks/plugins/sqflite_darwin/darwin`)
   - sqlite3_flutter_libs (from `Flutter/ephemeral/.symlinks/plugins/sqlite3_flutter_libs/darwin`)
-  - system_music_monitor (from `Flutter/ephemeral/.symlinks/plugins/system_music_monitor/macos`)
   - tray_manager (from `Flutter/ephemeral/.symlinks/plugins/tray_manager/macos`)
   - window_manager (from `Flutter/ephemeral/.symlinks/plugins/window_manager/macos`)
 
@@ -117,8 +114,6 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/sqflite_darwin/darwin
   sqlite3_flutter_libs:
     :path: Flutter/ephemeral/.symlinks/plugins/sqlite3_flutter_libs/darwin
-  system_music_monitor:
-    :path: Flutter/ephemeral/.symlinks/plugins/system_music_monitor/macos
   tray_manager:
     :path: Flutter/ephemeral/.symlinks/plugins/tray_manager/macos
   window_manager:
@@ -141,7 +136,6 @@ SPEC CHECKSUMS:
   sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
   sqlite3: 8d708bc63e9f4ce48f0ad9d6269e478c5ced1d9b
   sqlite3_flutter_libs: d13b8b3003f18f596e542bcb9482d105577eff41
-  system_music_monitor: 502addd2b34c862b7ebabbd02dc9d366add19671
   tray_manager: a104b5c81b578d83f3c3d0f40a997c8b10810166
   window_manager: b729e31d38fb04905235df9ea896128991cad99e
 
