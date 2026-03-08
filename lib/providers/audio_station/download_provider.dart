@@ -16,7 +16,8 @@ part 'download_provider.g.dart';
 Future<String> streamUrl(
   Ref ref, {
   required String id,
-  String format = 'mp3',
+  AudioQuality? quality,
+  String? container,
 }) async {
   final cookiesInfo = ref.read(audioStationCookiesInfoProvider);
   if (cookiesInfo == null || !cookiesInfo.isValid) {
@@ -29,24 +30,34 @@ Future<String> streamUrl(
 
   final baseUrl = await ref.read(baseUrlProvider.future);
   final synotoken = ref.read(synoTokenProvider);
-  final timestamp = DateTime.now().millisecondsSinceEpoch;
+  quality ??= ref.read(audioQualityProvider);
 
-  final queryParams = {
-    'sid': cookiesInfo.id,
+  final queryParams = <String, String>{
     'api': 'SYNO.AudioStation.Stream',
-    'version': '2',
-    'method': 'stream',
+    'version': '1',
     'id': id,
-    '_dc': timestamp.toString(),
+    'method': quality!.method,
+    '_sid': cookiesInfo.id,
     'SynoToken': synotoken ?? '',
   };
+
+  String fileExtension;
+  if (quality.isTranscode) {
+    queryParams['format'] = quality.format!;
+    queryParams['bitrate'] = quality.bitrate.toString();
+    fileExtension = quality.format!;
+  } else {
+    final format = container ?? 'mp3';
+    queryParams['format'] = '.$format';
+    fileExtension = format;
+  }
 
   final queryString = queryParams.entries
       .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
       .join('&');
 
   final streamUrl =
-      '$baseUrl/music/webapi/AudioStation/stream.cgi/0.$format?$queryString';
+      '$baseUrl/webapi/AudioStation/stream.cgi/0.$fileExtension?$queryString';
 
   return streamUrl;
 }
@@ -148,14 +159,15 @@ Future<String> _getCoverUrlBySongId({
 Future<int> downloadSong({
   required WidgetRef ref,
   required String id,
-  String format = 'mp3',
+  AudioQuality quality = AudioQuality.high,
+  String? container,
   required String filePath,
   bool resume = true,
 }) async {
   final l10n = ref.read(l10nProvider);
 
   final streamUrl = await ref.read(
-    streamUrlProvider(id: id, format: format).future,
+    streamUrlProvider(id: id, quality: quality, container: container).future,
   );
   final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {

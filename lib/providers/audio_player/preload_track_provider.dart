@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:rhttp/rhttp.dart' as rhttp;
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
+import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/metadata_utils.dart';
@@ -33,14 +34,17 @@ class PreloadTrack extends _$PreloadTrack {
     _preloadingTracks[track.id] = true;
 
     try {
-      final streamUrl = await ref.read(streamUrlProvider(id: track.id).future);
+      final quality = ref.read(audioQualityProvider);
+      final streamUrl = await ref.read(
+        streamUrlProvider(id: track.id, container: track.container).future,
+      );
 
       if (streamUrl.isEmpty) {
         logger.w('[PreloadTrack] Stream URL is empty for track: ${track.id}');
         return;
       }
 
-      final cachePath = await getTrackCachePath(track);
+      final cachePath = await getTrackCachePath(track, quality);
       final finalCacheFile = File(cachePath);
 
       if (await finalCacheFile.exists()) {

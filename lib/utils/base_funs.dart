@@ -16,6 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
+import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/providers/theme_data_provider.dart';
 import 'package:toneharbor/utils/consts.dart';
@@ -279,13 +280,20 @@ Future<void> openCacheFolder() async {
   }
 }
 
-Future<String> getTrackCachePath(ToneHarborTrackObject track) async {
+Future<String> getTrackCachePath(
+  ToneHarborTrackObject track,
+  AudioQuality quality,
+) async {
   final cacheDir = await getMusicCacheDir();
-  return '$cacheDir/${track.id}.${track.container}';
+  final extension = quality.isTranscode ? 'mp3' : track.container;
+  return '$cacheDir/${track.id}.$extension';
 }
 
-Future<bool> isTrackCached(ToneHarborTrackObject track) async {
-  final cachePath = await getTrackCachePath(track);
+Future<bool> isTrackCached(
+  ToneHarborTrackObject track,
+  AudioQuality quality,
+) async {
+  final cachePath = await getTrackCachePath(track, quality);
   return File(cachePath).exists();
 }
 

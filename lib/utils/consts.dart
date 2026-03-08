@@ -12,6 +12,7 @@ const String synotokenKey = 'synotoken';
 const String useHttpKey = 'use_http';
 const String searchHistoryKey = 'search_history';
 const String volumeKey = 'volume';
+const String audioQualityKey = 'audio_quality';
 
 // pic path
 const String iconPlaceholder = 'assets/icons/icon_placeholder.png';

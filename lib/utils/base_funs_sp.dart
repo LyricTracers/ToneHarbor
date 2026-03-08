@@ -100,4 +100,15 @@ abstract class SharedPreferencesUtils {
   static Future<void> setCookie(String value) async {
     await sharedPreferences.setString(cookieKey, value);
   }
+
+  static AudioQuality getAudioQuality() {
+    final savedValue = sharedPreferences.getInt(audioQualityKey);
+    return savedValue != null
+        ? AudioQuality.values[savedValue]
+        : AudioQuality.high;
+  }
+
+  static Future<void> setAudioQuality(AudioQuality quality) async {
+    await sharedPreferences.setInt(audioQualityKey, quality.index);
+  }
 }

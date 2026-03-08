@@ -7,6 +7,7 @@ import 'package:rhttp/rhttp.dart' as rhttp;
 import 'package:shelf/shelf.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
+import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -136,7 +137,8 @@ class PlaybackRoutes {
         );
       }
 
-      final cachePath = await getTrackCachePath(track);
+      final quality = ref.read(audioQualityProvider);
+      final cachePath = await getTrackCachePath(track, quality);
       final cacheFile = File(cachePath);
 
       if (await cacheFile.exists()) {
@@ -152,7 +154,13 @@ class PlaybackRoutes {
         );
       }
 
-      final streamUrl = await ref.read(streamUrlProvider(id: songId).future);
+      final streamUrl = await ref.read(
+        streamUrlProvider(
+          id: songId,
+          quality: quality,
+          container: track.container,
+        ).future,
+      );
       if (streamUrl.isEmpty) {
         return Response.notFound("Stream URL not found");
       }
@@ -206,14 +214,21 @@ class PlaybackRoutes {
         return _serveLocalFile(track);
       }
 
-      final cachePath = await getTrackCachePath(track);
+      final quality = ref.read(audioQualityProvider);
+      final cachePath = await getTrackCachePath(track, quality);
       final cacheFile = File(cachePath);
 
       if (await cacheFile.exists()) {
         return _serveCachedFile(cacheFile, track);
       }
 
-      return await _serveRemoteStream(request, songId, track, cachePath);
+      return await _serveRemoteStream(
+        request,
+        songId,
+        track,
+        cachePath,
+        quality: quality,
+      );
     } catch (e, stack) {
       logger.e(
         '[PlaybackRoutes] GET: stream error',
@@ -263,9 +278,16 @@ class PlaybackRoutes {
     Request request,
     String songId,
     ToneHarborTrackObject track,
-    String cachePath,
-  ) async {
-    final streamUrl = await ref.read(streamUrlProvider(id: songId).future);
+    String cachePath, {
+    AudioQuality quality = AudioQuality.high,
+  }) async {
+    final streamUrl = await ref.read(
+      streamUrlProvider(
+        id: songId,
+        quality: quality,
+        container: track.container,
+      ).future,
+    );
 
     if (streamUrl.isEmpty) {
       logger.e('[PlaybackRoutes] Stream URL is empty for: $songId');

@@ -542,7 +542,7 @@ class TestLayout extends BaseBgLayout {
       });
 
       try {
-        final directory = await getApplicationDocumentsDirectory();
+        final directory = await getApplicationCacheDirectory();
         final fileName = 'music_785331.mp3';
         final filePath = '${directory.path}/$fileName';
 

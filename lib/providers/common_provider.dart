@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
@@ -98,5 +99,18 @@ class VolumeNotifier extends _$VolumeNotifier {
     state = value;
     await audioPlayer.setVolume(value);
     await SharedPreferencesUtils.setVolume(value);
+  }
+}
+
+@riverpod
+class AudioQualityNotifier extends _$AudioQualityNotifier {
+  @override
+  AudioQuality build() {
+    return SharedPreferencesUtils.getAudioQuality();
+  }
+
+  Future<void> setAudioQuality(AudioQuality quality) async {
+    state = quality;
+    await SharedPreferencesUtils.setAudioQuality(quality);
   }
 }

@@ -17,7 +17,8 @@ final class StreamUrlProvider
     with $FutureModifier<String>, $FutureProvider<String> {
   StreamUrlProvider._({
     required StreamUrlFamily super.from,
-    required ({String id, String format}) super.argument,
+    required ({String id, AudioQuality? quality, String? container})
+    super.argument,
   }) : super(
          retry: null,
          name: r'streamUrlProvider',
@@ -43,8 +44,15 @@ final class StreamUrlProvider
 
   @override
   FutureOr<String> create(Ref ref) {
-    final argument = this.argument as ({String id, String format});
-    return streamUrl(ref, id: argument.id, format: argument.format);
+    final argument =
+        this.argument
+            as ({String id, AudioQuality? quality, String? container});
+    return streamUrl(
+      ref,
+      id: argument.id,
+      quality: argument.quality,
+      container: argument.container,
+    );
   }
 
   @override
@@ -58,13 +66,13 @@ final class StreamUrlProvider
   }
 }
 
-String _$streamUrlHash() => r'2b85c01835e40e4f84058f8117a88313bc9f0290';
+String _$streamUrlHash() => r'2f73832b861d1c9540e095e40b6b66f5e472e4f9';
 
 final class StreamUrlFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<String>,
-          ({String id, String format})
+          ({String id, AudioQuality? quality, String? container})
         > {
   StreamUrlFamily._()
     : super(
@@ -75,8 +83,14 @@ final class StreamUrlFamily extends $Family
         isAutoDispose: true,
       );
 
-  StreamUrlProvider call({required String id, String format = 'mp3'}) =>
-      StreamUrlProvider._(argument: (id: id, format: format), from: this);
+  StreamUrlProvider call({
+    required String id,
+    AudioQuality? quality,
+    String? container,
+  }) => StreamUrlProvider._(
+    argument: (id: id, quality: quality, container: container),
+    from: this,
+  );
 
   @override
   String toString() => r'streamUrlProvider';

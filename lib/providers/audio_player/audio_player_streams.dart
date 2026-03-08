@@ -7,6 +7,7 @@ import 'package:toneharbor/models/audio_player/audio_player_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
 import 'package:toneharbor/providers/audio_player/preload_track_provider.dart';
+import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/services/audio_services/audio_services.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -87,7 +88,10 @@ class AudioPlayerStreamListeners {
           return;
         }
 
-        final isCached = await isTrackCached(nextTrack);
+        final isCached = await isTrackCached(
+          nextTrack,
+          ref.read(audioQualityProvider),
+        );
         if (isCached) {
           lastPreloadedTrack = nextTrack.id;
           logger.i('[AudioPlayer] Track already cached: ${nextTrack.title}');
