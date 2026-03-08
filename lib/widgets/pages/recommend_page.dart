@@ -11,9 +11,11 @@ class RecommendPage extends BaseContentPage {
   @override
   PreferredSizeWidget buildAppBar(BuildContext context, WidgetRef ref) {
     final colorScheme = getColorSchemeWhenReady(ref);
+    final i10n = ref.watch(l10nProvider);
+
     return AppBar(
       title: Text(
-        AppLocalizations.of(context)!.recommend,
+        i10n.recommend,
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
