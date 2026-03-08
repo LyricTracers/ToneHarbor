@@ -143,10 +143,13 @@ class PlaybackRoutes {
 
       if (await cacheFile.exists()) {
         final fileLength = await cacheFile.length();
+        final actualContainer = quality.isTranscode
+            ? 'mp3'
+            : cacheFile.path.split('.').last;
         return Response(
           200,
           headers: {
-            'content-type': _getMimeType(track.container),
+            'content-type': _getMimeType(actualContainer),
             'content-length': '$fileLength',
             'accept-ranges': 'bytes',
             'content-range': 'bytes 0-$fileLength/$fileLength',
