@@ -121,11 +121,11 @@ extension AsToneHarborTrackObject on Iterable<Song> {
         artist = song.additional?.songTag?.albumArtist;
       }
       if (artist == null || artist.isEmpty) {
-        artist = 'None Artist';
+        artist = 'Unknown Artist';
       }
       var album = song.additional?.songTag?.album;
       if (album == null || album.isEmpty) {
-        album = 'None Album';
+        album = 'Unknown Album';
       }
       var container = song.additional?.songAudio?.container;
       if (container == null || container.isEmpty) {

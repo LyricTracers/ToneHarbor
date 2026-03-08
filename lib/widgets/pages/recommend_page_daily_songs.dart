@@ -105,16 +105,8 @@ class RecommendPageDailySongs extends ConsumerWidget {
 
     final config = _LayoutConfig.defaultConfig;
     final columns = _calculateColumns(context, config);
-    final displaySongs = songs.take(_getDisplayCount(columns)).toList();
 
-    return _buildSongGrid(
-      context,
-      ref,
-      displaySongs,
-      colorScheme,
-      config,
-      columns,
-    );
+    return _buildSongGrid(context, ref, songs, colorScheme, config, columns);
   }
 
   Widget _buildShimmerLoading(BuildContext context, ColorScheme colorScheme) {
@@ -133,8 +125,6 @@ class RecommendPageDailySongs extends ConsumerWidget {
         .floor()
         .clamp(2, 3);
   }
-
-  int _getDisplayCount(int columns) => columns == 3 ? 9 : 6;
 
   Widget _buildSongGrid(
     BuildContext context,
