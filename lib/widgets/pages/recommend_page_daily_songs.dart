@@ -70,7 +70,7 @@ class RecommendPageDailySongs extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = getColorSchemeWhenReady(ref);
-    final randomSongs = ref.watch(randomSongsProvider(limit: 9, offset: 0));
+    final randomSongs = ref.watch(randomSongsProvider(limit: 100));
 
     return randomSongs.when(
       data: (data) {
