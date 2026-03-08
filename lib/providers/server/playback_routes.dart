@@ -313,7 +313,7 @@ class PlaybackRoutes {
     final resStream = response.body.asBroadcastStream();
 
     final trackPartialCacheFile = File('$cachePath.part');
-    final cacheKey = songId;
+    final cacheKey = cachePath;
 
     final rangeStart = _parseRangeStart(rangeHeader);
     final isFromStart = rangeStart == 0;
