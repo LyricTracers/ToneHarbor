@@ -17,7 +17,6 @@ import screen_retriever_macos
 import shared_preferences_foundation
 import sqflite_darwin
 import sqlite3_flutter_libs
-import system_music_monitor
 import tray_manager
 import window_manager
 
@@ -34,7 +33,6 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   SharedPreferencesPlugin.register(with: registry.registrar(forPlugin: "SharedPreferencesPlugin"))
   SqflitePlugin.register(with: registry.registrar(forPlugin: "SqflitePlugin"))
   Sqlite3FlutterLibsPlugin.register(with: registry.registrar(forPlugin: "Sqlite3FlutterLibsPlugin"))
-  SystemMusicMonitorPlugin.register(with: registry.registrar(forPlugin: "SystemMusicMonitorPlugin"))
   TrayManagerPlugin.register(with: registry.registrar(forPlugin: "TrayManagerPlugin"))
   WindowManagerPlugin.register(with: registry.registrar(forPlugin: "WindowManagerPlugin"))
 }

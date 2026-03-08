@@ -1417,15 +1417,6 @@ packages:
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
     version: "3.4.0"
-  system_music_monitor:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: main
-      resolved-ref: "8b1b617f6309dc364284c65abc0c21b11acc280b"
-      url: "https://git.nxcloud.club:12750/LyricTracers/system_music_monitor.git"
-    source: git
-    version: "0.0.1"
   term_glyph:
     dependency: transitive
     description:
