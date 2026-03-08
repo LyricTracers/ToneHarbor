@@ -17,6 +17,10 @@ class PreloadTrack extends _$PreloadTrack {
   final _preloadingTracks = <String, bool>{};
   final _cancelTokens = <String, rhttp.CancelToken>{};
 
+  String _getCacheKey(String trackId, AudioQuality quality) {
+    return '${trackId}_${quality.name}';
+  }
+
   @override
   void build() {}
 
@@ -26,17 +30,25 @@ class PreloadTrack extends _$PreloadTrack {
       return;
     }
 
-    if (_preloadingTracks[track.id] == true) {
-      logger.i('[PreloadTrack] Already preloading: ${track.id}');
+    final quality = ref.read(audioQualityProvider);
+    final cacheKey = _getCacheKey(track.id, quality);
+
+    if (_preloadingTracks[cacheKey] == true) {
+      logger.i(
+        '[PreloadTrack] Already preloading: ${track.id} at ${quality.name}',
+      );
       return;
     }
 
-    _preloadingTracks[track.id] = true;
+    _preloadingTracks[cacheKey] = true;
 
     try {
-      final quality = ref.read(audioQualityProvider);
       final streamUrl = await ref.read(
-        streamUrlProvider(id: track.id, container: track.container).future,
+        streamUrlProvider(
+          id: track.id,
+          quality: quality,
+          container: track.container,
+        ).future,
       );
 
       if (streamUrl.isEmpty) {
@@ -48,7 +60,9 @@ class PreloadTrack extends _$PreloadTrack {
       final finalCacheFile = File(cachePath);
 
       if (await finalCacheFile.exists()) {
-        logger.i('[PreloadTrack] Track already cached: ${track.id}');
+        logger.i(
+          '[PreloadTrack] Track already cached: ${track.id} at ${quality.name}',
+        );
         return;
       }
 
@@ -64,10 +78,12 @@ class PreloadTrack extends _$PreloadTrack {
         return;
       }
 
-      logger.i('[PreloadTrack] Preloading track: ${track.id}');
+      logger.i(
+        '[PreloadTrack] Preloading track: ${track.id} at ${quality.name}',
+      );
 
       final cancelToken = rhttp.CancelToken();
-      _cancelTokens[track.id] = cancelToken;
+      _cancelTokens[cacheKey] = cancelToken;
 
       final response = await downloadHttpClientWrapper.getStream(
         streamUrl,
@@ -155,16 +171,20 @@ class PreloadTrack extends _$PreloadTrack {
         stackTrace: stack,
       );
     } finally {
-      _preloadingTracks.remove(track.id);
-      _cancelTokens.remove(track.id);
+      _preloadingTracks.remove(cacheKey);
+      _cancelTokens.remove(cacheKey);
     }
   }
 
-  void cancelPreload(String trackId) {
-    final cancelToken = _cancelTokens[trackId];
+  void cancelPreload(String trackId, {AudioQuality? quality}) {
+    quality ??= SharedPreferencesUtils.getAudioQuality();
+    final cacheKey = _getCacheKey(trackId, quality);
+    final cancelToken = _cancelTokens[cacheKey];
     if (cancelToken != null && !cancelToken.isCancelled) {
       cancelToken.cancel();
-      logger.i('[PreloadTrack] Cancelling preload: $trackId');
+      logger.i(
+        '[PreloadTrack] Cancelling preload: $trackId at ${quality.name}',
+      );
     }
   }
 
@@ -179,7 +199,8 @@ class PreloadTrack extends _$PreloadTrack {
     _preloadingTracks.clear();
   }
 
-  bool isPreloading(String trackId) {
-    return _preloadingTracks[trackId] == true;
+  bool isPreloading(String trackId, {AudioQuality? quality}) {
+    quality ??= SharedPreferencesUtils.getAudioQuality();
+    return _preloadingTracks[_getCacheKey(trackId, quality)] == true;
   }
 }

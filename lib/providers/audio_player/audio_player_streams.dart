@@ -88,10 +88,8 @@ class AudioPlayerStreamListeners {
           return;
         }
 
-        final isCached = await isTrackCached(
-          nextTrack,
-          ref.read(audioQualityProvider),
-        );
+        final quality = ref.read(audioQualityProvider);
+        final isCached = await isTrackCached(nextTrack, quality);
         if (isCached) {
           lastPreloadedTrack = nextTrack.id;
           logger.i('[AudioPlayer] Track already cached: ${nextTrack.title}');
@@ -100,7 +98,7 @@ class AudioPlayerStreamListeners {
 
         final isPreloading = ref
             .read(preloadTrackProvider.notifier)
-            .isPreloading(nextTrack.id);
+            .isPreloading(nextTrack.id, quality: quality);
         if (isPreloading) {
           logger.i(
             '[AudioPlayer] Track already preloading: ${nextTrack.title}',
