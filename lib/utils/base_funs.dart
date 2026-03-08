@@ -240,19 +240,26 @@ Widget buildErrorView(
   );
 }
 
-Future<String> getMusicCacheDir() async {
+Future<String> getMusicCacheDir(AudioQuality quality) async {
+  String subDir;
+  subDir = quality.name;
   if (Platform.isAndroid) {
     final dir = await paths.getExternalCacheDirectories().then(
       (dirs) => dirs!.first,
     );
-    if (!await dir.exists()) {
-      await dir.create(recursive: true);
+    final cacheDir = Directory(join(dir.path, 'Cached Tracks', subDir));
+    if (!await cacheDir.exists()) {
+      await cacheDir.create(recursive: true);
     }
-    return join(dir.path, 'Cached Tracks');
+    return cacheDir.path;
   }
 
   final dir = await paths.getApplicationCacheDirectory();
-  return join(dir.path, 'cached_tracks');
+  final cacheDir = Directory(join(dir.path, 'cached_tracks', subDir));
+  if (!await cacheDir.exists()) {
+    await cacheDir.create(recursive: true);
+  }
+  return cacheDir.path;
 }
 
 Future<String> getCoverCacheDir() async {
@@ -272,7 +279,9 @@ Future<String> getCoverCacheDir() async {
 
 Future<void> openCacheFolder() async {
   try {
-    final filePath = await getMusicCacheDir();
+    final filePath = await getMusicCacheDir(
+      SharedPreferencesUtils.getAudioQuality(),
+    );
 
     await OpenFile.open(filePath);
   } catch (e, stack) {
@@ -284,7 +293,7 @@ Future<String> getTrackCachePath(
   ToneHarborTrackObject track,
   AudioQuality quality,
 ) async {
-  final cacheDir = await getMusicCacheDir();
+  final cacheDir = await getMusicCacheDir(quality);
   final extension = quality.isTranscode ? 'mp3' : track.container;
   return '$cacheDir/${track.id}.$extension';
 }
