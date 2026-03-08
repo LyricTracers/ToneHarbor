@@ -143,9 +143,7 @@ class PlaybackRoutes {
 
       if (await cacheFile.exists()) {
         final fileLength = await cacheFile.length();
-        final actualContainer = quality.isTranscode
-            ? 'mp3'
-            : cacheFile.path.split('.').last;
+        final actualContainer = cacheFile.path.split('.').last;
         return Response(
           200,
           headers: {
@@ -183,11 +181,13 @@ class PlaybackRoutes {
         headers[header.$1.toLowerCase()] = header.$2;
       }
 
+      final actualContainer = quality.isTranscode ? 'mp3' : track.container;
+
       return Response(
         response.statusCode,
         headers: {
           'content-type':
-              headers['content-type'] ?? _getMimeType(track.container),
+              headers['content-type'] ?? _getMimeType(actualContainer),
           'content-length': headers['content-length'] ?? '',
           'accept-ranges': 'bytes',
           if (headers['content-range'] != null)
@@ -221,7 +221,13 @@ class PlaybackRoutes {
         return _serveCachedFile(cacheFile, quality);
       }
 
-      return await _serveRemoteStream(request, songId, track, cachePath);
+      return await _serveRemoteStream(
+        request,
+        songId,
+        track,
+        cachePath,
+        quality,
+      );
     } catch (e, stack) {
       logger.e(
         '[PlaybackRoutes] GET: stream error',
@@ -253,9 +259,7 @@ class PlaybackRoutes {
   Response _serveCachedFile(File cacheFile, AudioQuality quality) {
     final bytes = cacheFile.readAsBytesSync();
     final fileLength = bytes.length;
-    final actualContainer = quality.isTranscode
-        ? 'mp3'
-        : cacheFile.path.split('.').last;
+    final actualContainer = cacheFile.path.split('.').last;
 
     return Response(
       200,
@@ -275,6 +279,7 @@ class PlaybackRoutes {
     String songId,
     ToneHarborTrackObject track,
     String cachePath,
+    AudioQuality quality,
   ) async {
     final streamUrl = await ref.read(
       streamUrlProvider(id: songId, container: track.container).future,
@@ -320,6 +325,7 @@ class PlaybackRoutes {
 
     final trackPartialCacheFile = File('$cachePath.part');
     final cacheKey = cachePath;
+    final actualContainer = quality.isTranscode ? 'mp3' : track.container;
 
     final rangeStart = _parseRangeStart(rangeHeader);
     final isFromStart = rangeStart == 0;
@@ -345,7 +351,7 @@ class PlaybackRoutes {
         body: resStream,
         headers: {
           'content-type':
-              headers['content-type'] ?? _getMimeType(track.container),
+              headers['content-type'] ?? _getMimeType(actualContainer),
           'content-length': headers['content-length'] ?? '',
           'accept-ranges': 'bytes',
           if (headers['content-range'] != null)
@@ -361,7 +367,7 @@ class PlaybackRoutes {
         body: resStream,
         headers: {
           'content-type':
-              headers['content-type'] ?? _getMimeType(track.container),
+              headers['content-type'] ?? _getMimeType(actualContainer),
           'content-length': headers['content-length'] ?? '',
           'accept-ranges': 'bytes',
           if (headers['content-range'] != null)
@@ -387,7 +393,7 @@ class PlaybackRoutes {
           body: resStream,
           headers: {
             'content-type':
-                headers['content-type'] ?? _getMimeType(track.container),
+                headers['content-type'] ?? _getMimeType(actualContainer),
             'content-length': headers['content-length'] ?? '',
             'accept-ranges': 'bytes',
             if (headers['content-range'] != null)
@@ -450,7 +456,7 @@ class PlaybackRoutes {
       body: resStream,
       headers: {
         'content-type':
-            headers['content-type'] ?? _getMimeType(track.container),
+            headers['content-type'] ?? _getMimeType(actualContainer),
         'content-length': headers['content-length'] ?? '',
         'accept-ranges': 'bytes',
         if (headers['content-range'] != null)
