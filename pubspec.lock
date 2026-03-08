@@ -694,7 +694,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: a707c720dd9f5367d07250b86601defe9e97f785
+      resolved-ref: "4a4318d97155c8da59c57e44edb2c0bb782b56c7"
       url: "https://git.nxcloud.club:12750/LyricTracers/lyricskit.git"
     source: git
     version: "0.1.0"
@@ -976,7 +976,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "268d38e0cccf63c933b82ebb05da322e8dcf548f"
+      resolved-ref: c26c74dc0e77f4bb30e09fbeb9a03cc1ebd4cb7a
       url: "https://git.nxcloud.club:12750/LyricTracers/persistent_cache_flutter.git"
     source: git
     version: "2.0.0"
