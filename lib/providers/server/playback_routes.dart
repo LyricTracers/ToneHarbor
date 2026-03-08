@@ -155,11 +155,7 @@ class PlaybackRoutes {
       }
 
       final streamUrl = await ref.read(
-        streamUrlProvider(
-          id: songId,
-          quality: quality,
-          container: track.container,
-        ).future,
+        streamUrlProvider(id: songId, container: track.container).future,
       );
       if (streamUrl.isEmpty) {
         return Response.notFound("Stream URL not found");
@@ -222,13 +218,7 @@ class PlaybackRoutes {
         return _serveCachedFile(cacheFile, track);
       }
 
-      return await _serveRemoteStream(
-        request,
-        songId,
-        track,
-        cachePath,
-        quality: quality,
-      );
+      return await _serveRemoteStream(request, songId, track, cachePath);
     } catch (e, stack) {
       logger.e(
         '[PlaybackRoutes] GET: stream error',
@@ -278,15 +268,10 @@ class PlaybackRoutes {
     Request request,
     String songId,
     ToneHarborTrackObject track,
-    String cachePath, {
-    AudioQuality quality = AudioQuality.high,
-  }) async {
+    String cachePath,
+  ) async {
     final streamUrl = await ref.read(
-      streamUrlProvider(
-        id: songId,
-        quality: quality,
-        container: track.container,
-      ).future,
+      streamUrlProvider(id: songId, container: track.container).future,
     );
 
     if (streamUrl.isEmpty) {
