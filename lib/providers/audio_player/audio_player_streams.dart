@@ -76,20 +76,26 @@ class AudioPlayerStreamListeners {
           audioPlayerState.currentIndex + 1,
         );
 
-        if (nextTrack == null || lastPreloadedTrack == nextTrack.id) {
-          return;
-        }
-
-        if (nextTrack is ToneHarborTrackObjectLocal) {
-          lastPreloadedTrack = nextTrack.id;
-          logger.i('[AudioPlayer] Skip local track: ${nextTrack.title}');
+        if (nextTrack == null) {
           return;
         }
 
         final quality = ref.read(audioQualityProvider);
+        final preloadKey = '${nextTrack.id}_${quality.name}';
+
+        if (lastPreloadedTrack == preloadKey) {
+          return;
+        }
+
+        if (nextTrack is ToneHarborTrackObjectLocal) {
+          lastPreloadedTrack = preloadKey;
+          logger.i('[AudioPlayer] Skip local track: ${nextTrack.title}');
+          return;
+        }
+
         final isCached = await isTrackCached(nextTrack, quality);
         if (isCached) {
-          lastPreloadedTrack = nextTrack.id;
+          lastPreloadedTrack = preloadKey;
           logger.i('[AudioPlayer] Track already cached: ${nextTrack.title}');
           return;
         }
@@ -105,14 +111,14 @@ class AudioPlayerStreamListeners {
         }
 
         logger.i(
-          '[AudioPlayer] Preloading next track: ${nextTrack.title} (${nextTrack.id})',
+          '[AudioPlayer] Preloading next track: ${nextTrack.title} (${nextTrack.id}) at ${quality.name}',
         );
 
         await ref
             .read(preloadTrackProvider.notifier)
             .preloadNextTrack(nextTrack);
 
-        lastPreloadedTrack = nextTrack.id;
+        lastPreloadedTrack = preloadKey;
       } catch (e, stack) {
         logger.e('Failed to preload next track', error: e, stackTrace: stack);
       }

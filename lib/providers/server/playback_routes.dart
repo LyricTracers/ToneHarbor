@@ -215,7 +215,7 @@ class PlaybackRoutes {
       final cacheFile = File(cachePath);
 
       if (await cacheFile.exists()) {
-        return _serveCachedFile(cacheFile, track);
+        return _serveCachedFile(cacheFile, quality);
       }
 
       return await _serveRemoteStream(request, songId, track, cachePath);
@@ -247,15 +247,18 @@ class PlaybackRoutes {
     );
   }
 
-  Response _serveCachedFile(File cacheFile, ToneHarborTrackObject track) {
+  Response _serveCachedFile(File cacheFile, AudioQuality quality) {
     final bytes = cacheFile.readAsBytesSync();
     final fileLength = bytes.length;
+    final actualContainer = quality.isTranscode
+        ? 'mp3'
+        : cacheFile.path.split('.').last;
 
     return Response(
       200,
       body: bytes,
       headers: {
-        'content-type': _getMimeType(track.container),
+        'content-type': _getMimeType(actualContainer),
         'content-length': '${fileLength - 1}',
         'accept-ranges': 'bytes',
         'content-range': 'bytes 0-${fileLength - 1}/$fileLength',
