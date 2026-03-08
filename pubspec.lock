@@ -418,7 +418,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "3cd2c81c0211ad50060bc3091ed9de2840dd52e1"
+      resolved-ref: "11521dbe486782716671d92647d193829c6827c3"
       url: "https://git.nxcloud.club:12750/LyricTracers/flutter_lyric.git"
     source: git
     version: "3.0.2"
@@ -427,7 +427,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: a253564fc91eb713baffa49dcf7f930e9f166e98
+      resolved-ref: a73502cd064d28a421341f89976c4a50d631391b
       url: "https://git.nxcloud.club:12750/LyricTracers/flutter_native_splash.git"
     source: git
     version: "2.4.7"
@@ -459,10 +459,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_svg
-      sha256: "87fbd7c534435b6c5d9d98b01e1fd527812b82e68ddd8bd35fc45ed0fa8f0a95"
+      sha256: "1ded017b39c8e15c8948ea855070a5ff8ff8b3d5e83f3446e02d6bb12add7ad9"
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
-    version: "2.2.3"
+    version: "2.2.4"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -976,7 +976,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "569252d29fa078b3505e372d5037fc84783d8ea2"
+      resolved-ref: "268d38e0cccf63c933b82ebb05da322e8dcf548f"
       url: "https://git.nxcloud.club:12750/LyricTracers/persistent_cache_flutter.git"
     source: git
     version: "2.0.0"
