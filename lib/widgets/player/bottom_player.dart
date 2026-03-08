@@ -130,11 +130,7 @@ class BottomPlayer extends HookConsumerWidget {
                           child: SizedBox(
                             width: double.infinity,
                             child: Text(
-                              isHovered.value
-                                  ? "$artist - $album"
-                                  : (currentLine != null
-                                        ? "$artist - $album"
-                                        : ""),
+                              "$artist - $album",
                               style: textStyle11,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -151,7 +152,13 @@ class RecommendPageDailySongs extends ConsumerWidget {
           padding: EdgeInsets.only(
             right: colIndex == columns - 1 ? 0 : config.itemSpacing,
           ),
-          child: _buildSongItem(context, ref, song, colorScheme),
+          child: _buildSongItem(context, ref, song, colorScheme, (
+            WidgetRef ref,
+          ) {
+            ref
+                .read(audioPlayerStateProvider.notifier)
+                .load(songs.asTrackList(), initialIndex: index, autoPlay: true);
+          }),
         ),
       );
     }, songs.length);
@@ -204,9 +211,20 @@ class RecommendPageDailySongs extends ConsumerWidget {
     WidgetRef ref,
     Song song,
     ColorScheme colorScheme,
+    Function(WidgetRef ref) onTap,
   ) {
-    final albumName = song.additional?.songTag?.album ?? '';
-    final artistName = song.additional?.songTag?.artist ?? '';
+    var albumName = song.additional?.songTag?.album ?? '';
+    var artistName = song.additional?.songTag?.artist ?? '';
+    if (artistName.isEmpty) {
+      artistName = song.additional?.songTag?.albumArtist ?? '';
+    }
+    if (artistName.isEmpty) {
+      artistName = 'Unknown Artist';
+    }
+
+    if (albumName.isEmpty) {
+      albumName = 'Unknown Album';
+    }
     final songTitle = song.title;
     final config = _SongItemConfig.defaultConfig;
 
@@ -218,7 +236,7 @@ class RecommendPageDailySongs extends ConsumerWidget {
         hoverColor: colorScheme.surface.withValues(alpha: 0.3),
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
-        onTap: () {},
+        onTap: () => onTap(ref),
         child: Container(
           height: config.height,
           padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -244,9 +262,9 @@ class RecommendPageDailySongs extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SmartMarquee(
-                        text: albumName.isNotEmpty
-                            ? albumName
-                            : 'Unknown Album',
+                        text: songTitle.isNotEmpty
+                            ? songTitle
+                            : 'Unknown Title',
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
@@ -256,7 +274,7 @@ class RecommendPageDailySongs extends ConsumerWidget {
                       ),
                       SizedBox(height: config.marqueeSpacing),
                       SmartMarquee(
-                        text: '$artistName - $songTitle',
+                        text: '$artistName - $albumName',
                         style: TextStyle(
                           fontSize: config.subtitleFontSize,
                           color: colorScheme.onSurfaceVariant,
