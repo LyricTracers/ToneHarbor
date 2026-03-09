@@ -12,8 +12,8 @@ useProgress(WidgetRef ref) {
   final bufferProgress =
       useStream(audioPlayer.bufferedPositionStream).data?.inSeconds ?? 0;
 
-  final duration = useState(Duration.zero);
-  final position = useState(Duration.zero);
+  final duration = useState(audioPlayer.duration);
+  final position = useState(audioPlayer.position);
 
   final sliderMax = duration.value.inSeconds;
   final sliderValue = position.value.inSeconds;
