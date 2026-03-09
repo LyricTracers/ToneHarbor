@@ -86,19 +86,18 @@ class PlayingDetailLayout extends BaseBgLayout {
     var radius = size.height > size.width / 2
         ? size.width / 4
         : size.height / 2;
+    final borderWidth = radius * 0.175;
+    final containerSize = radius + borderWidth * 2;
 
     return Stack(
       alignment: Alignment.center,
       children: [
         Container(
-          width: radius * 1.35,
-          height: radius * 1.35,
+          width: containerSize,
+          height: containerSize,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(
-              color: colorScheme.surface,
-              width: 0.35 * radius,
-            ),
+            border: Border.all(color: colorScheme.surface, width: borderWidth),
             boxShadow: [
               BoxShadow(
                 color: colorScheme.surfaceContainer,
