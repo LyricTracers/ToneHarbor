@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -101,7 +100,7 @@ class _PlaylistItem extends StatelessWidget {
             trailing: IconButton(
               icon: const Icon(Icons.delete_rounded, size: 16),
               onPressed: onDelete,
-              tooltip: onDelete == null ? null : '删除',
+              tooltip: onDelete == null ? null : deleteText,
             ),
             selected: isDefault,
             onTap: onTap,
