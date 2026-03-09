@@ -40,7 +40,7 @@ class SlideTransitionPage extends CustomTransitionPage<void> {
     final fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: animation,
-        curve: const Interval(0, 1.0, curve: Curves.fastOutSlowIn),
+        curve: const Interval(0, 1.0, curve: Curves.fastEaseInToSlowEaseOut),
       ),
     );
 

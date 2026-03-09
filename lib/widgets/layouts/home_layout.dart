@@ -49,7 +49,10 @@ class HomeLayout extends BaseBgLayout {
     }, [isPlaylistPage.value]);
     final slideAnimation =
         Tween<Offset>(begin: const Offset(0.0, 1.0), end: Offset.zero).animate(
-          CurvedAnimation(parent: animationController, curve: Curves.easeInOut),
+          CurvedAnimation(
+            parent: animationController,
+            curve: Curves.fastEaseInToSlowEaseOut,
+          ),
         );
     return Stack(
       children: [
