@@ -62,24 +62,16 @@ class SlideTransitionPage extends CustomTransitionPage<void> {
     final fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: animation,
-        curve: const Interval(0.3, 1.0, curve: Curves.easeOut),
+        curve: const Interval(0.8, 1.0, curve: Curves.easeInBack),
       ),
     );
-
-    final scaleAnimation = Tween<double>(
-      begin: 0.95,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic));
 
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) {
-        return Transform.scale(
-          scale: scaleAnimation.value,
-          child: SlideTransition(
-            position: slideAnimation,
-            child: FadeTransition(opacity: fadeAnimation, child: child),
-          ),
+        return SlideTransition(
+          position: slideAnimation,
+          child: FadeTransition(opacity: fadeAnimation, child: child),
         );
       },
       child: child,
