@@ -6,6 +6,107 @@ import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
+class _PlaylistItem extends StatelessWidget {
+  const _PlaylistItem({
+    required this.index,
+    required this.track,
+    required this.isDefault,
+    required this.colorScheme,
+    required this.onTap,
+    required this.onDelete,
+  });
+
+  final int index;
+  final dynamic track;
+  final bool isDefault;
+  final ColorScheme colorScheme;
+  final VoidCallback onTap;
+  final VoidCallback? onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 44,
+      child: Stack(
+        children: [
+          if (isDefault)
+            Positioned(
+              top: 0,
+              left: 0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary,
+                  borderRadius: const BorderRadius.only(
+                    bottomRight: Radius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  '播放中',
+                  style: TextStyle(
+                    color: colorScheme.onPrimary,
+                    fontSize: 8,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ListTile(
+            contentPadding: const EdgeInsets.only(left: 10, right: 10),
+            horizontalTitleGap: 10,
+            leading: Text(
+              '${index + 1}',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.primary,
+              ),
+            ),
+            title: Row(
+              children: [
+                Flexible(
+                  child: SmartMarquee(
+                    text: track.title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    pauseOnHover: true,
+                    alignment: AlignmentGeometry.centerLeft,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                SizedBox(
+                  width: 80,
+                  child: Text(
+                    track.artist,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.7,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            trailing: IconButton(
+              icon: const Icon(Icons.delete_rounded, size: 16),
+              onPressed: onDelete,
+              tooltip: onDelete == null ? null : '删除',
+            ),
+            selected: isDefault,
+            onTap: onTap,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class PlaylistPage extends HookConsumerWidget {
   const PlaylistPage({super.key});
 
@@ -87,101 +188,22 @@ class PlaylistPage extends HookConsumerWidget {
               itemCount: playlist.tracks.length,
               itemExtent: 44,
               cacheExtent: 50,
+              addAutomaticKeepAlives: true,
               itemBuilder: (context, index) {
                 var isDefault = playlist.currentIndex == index;
                 var track = playlist.tracks[index];
                 return RepaintBoundary(
-                  child: SizedBox(
-                    height: 44,
-                    child: Stack(
-                      children: [
-                        if (isDefault)
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colorScheme.primary,
-                                borderRadius: const BorderRadius.only(
-                                  bottomRight: Radius.circular(8),
-                                ),
-                              ),
-                              child: Text(
-                                '播放中',
-                                style: TextStyle(
-                                  color: colorScheme.onPrimary,
-                                  fontSize: 8,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ListTile(
-                          contentPadding: const EdgeInsets.only(
-                            left: 10,
-                            right: 10,
-                          ),
-                          horizontalTitleGap: 10,
-                          leading: Text(
-                            '${index + 1}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.primary,
-                            ),
-                          ),
-                          title: Row(
-                            children: [
-                              Flexible(
-                                child: SmartMarquee(
-                                  text: track.title,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                  pauseOnHover: true,
-                                  alignment: AlignmentGeometry.centerLeft,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              SizedBox(
-                                width: 80,
-                                child: Text(
-                                  track.artist,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.right,
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: colorScheme.onSurfaceVariant
-                                        .withValues(alpha: 0.7),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete_rounded, size: 16),
-                            onPressed: isDefault
-                                ? null
-                                : () {
-                                    ref
-                                        .read(audioPlayerStateProvider.notifier)
-                                        .removeTrack(track.id);
-                                  },
-                            tooltip: isDefault ? null : '删除',
-                          ),
-                          selected: isDefault,
-                          onTap: () {
-                            audioPlayer.jumpTo(index);
-                          },
-                        ),
-                      ],
-                    ),
+                  child: _PlaylistItem(
+                    index: index,
+                    track: track,
+                    isDefault: isDefault,
+                    colorScheme: colorScheme,
+                    onTap: () => audioPlayer.jumpTo(index),
+                    onDelete: isDefault
+                        ? null
+                        : () => ref
+                              .read(audioPlayerStateProvider.notifier)
+                              .removeTrack(track.id),
                   ),
                 );
               },
