@@ -42,7 +42,40 @@ class PlayingDetailLayout extends BaseBgLayout {
             Expanded(
               child: Row(
                 children: [
-                  Expanded(flex: 1, child: Center(child: _buildSongIcon(ref))),
+                  Expanded(
+                    flex: 1,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildSongIcon(ref),
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                onPressed: () {},
+                                icon: Icon(
+                                  Icons.playlist_add_rounded,
+                                  size: 24,
+                                ),
+                              ),
+                              const SizedBox(width: 20),
+                              IconButton(
+                                onPressed: () {},
+                                icon: Icon(Icons.lyrics_rounded, size: 24),
+                              ),
+                              const SizedBox(width: 20),
+                              IconButton(
+                                onPressed: () {},
+                                icon: Icon(Icons.more_horiz_rounded, size: 24),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   Expanded(flex: 1, child: LyricsContentPage()),
                 ],
               ),
