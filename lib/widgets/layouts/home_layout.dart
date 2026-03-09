@@ -161,6 +161,9 @@ class HomeLayout extends BaseBgLayout {
               onTap: () {
                 isPlaylistPage.value = false;
               },
+              onLongPress: () {
+                isPlaylistPage.value = false;
+              },
             ),
           ),
         if (isPlaylistPage.value)

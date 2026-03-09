@@ -48,6 +48,9 @@ class PlayingDetailLayout extends BaseBgLayout {
               onTap: () {
                 playingSubContent.value = PlayingSubContent.none;
               },
+              onLongPress: () {
+                playingSubContent.value = PlayingSubContent.none;
+              },
             ),
           ),
         if (playingSubContent.value == PlayingSubContent.playList)
