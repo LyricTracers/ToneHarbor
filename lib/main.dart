@@ -144,7 +144,7 @@ class MyApp extends HookConsumerWidget {
           GoRoute(
             path: '/login',
             pageBuilder: (context, state) =>
-                const MaterialPage(child: LoginLayout()),
+                SlideTransitionPage(child: LoginLayout()),
           ),
           GoRoute(
             path: '/test',
