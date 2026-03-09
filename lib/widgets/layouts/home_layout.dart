@@ -37,7 +37,7 @@ class HomeLayout extends BaseBgLayout {
       ),
     );
     final animationController = useAnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 100),
     );
     useEffect(() {
       if (isPlaylistPage.value) {
@@ -48,7 +48,7 @@ class HomeLayout extends BaseBgLayout {
       return null;
     }, [isPlaylistPage.value]);
     final slideAnimation =
-        Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(
+        Tween<Offset>(begin: const Offset(0.0, 1.0), end: Offset.zero).animate(
           CurvedAnimation(parent: animationController, curve: Curves.easeInOut),
         );
     return Stack(

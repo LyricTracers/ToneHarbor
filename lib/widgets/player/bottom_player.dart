@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:media_kit/media_kit.dart';
@@ -12,7 +13,8 @@ import 'package:toneharbor/widgets/widgets.dart';
 
 class BottomPlayer extends HookConsumerWidget {
   final VoidCallback onShowPlaylist;
-  const BottomPlayer(this.onShowPlaylist, {super.key});
+  final bool showArrowUp;
+  const BottomPlayer(this.onShowPlaylist, {super.key, this.showArrowUp = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -292,11 +294,17 @@ class BottomPlayer extends HookConsumerWidget {
                       ),
                       const SizedBox(width: 2),
                       IconButton(
-                        icon: const Icon(
-                          Icons.keyboard_arrow_up_rounded,
+                        icon: Icon(
+                          showArrowUp
+                              ? Icons.keyboard_arrow_up_rounded
+                              : Icons.keyboard_arrow_down_rounded,
                           size: 18,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          showArrowUp
+                              ? context.push("/playing_detail")
+                              : context.pop();
+                        },
                       ),
                     ],
                   ),
