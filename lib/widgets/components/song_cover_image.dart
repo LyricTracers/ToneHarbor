@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -6,7 +7,7 @@ import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/components/cached_network_image.dart';
 
-class SongCoverImage extends ConsumerWidget {
+class SongCoverImage extends HookConsumerWidget {
   const SongCoverImage({
     super.key,
     required this.songId,
@@ -35,6 +36,19 @@ class SongCoverImage extends ConsumerWidget {
     final borderRadius = config.isCircular
         ? config.size / 2
         : config.borderRadius;
+
+    final rotationController = useAnimationController(
+      duration: config.rotationDuration,
+    );
+
+    useEffect(() {
+      if (config.rotating) {
+        rotationController.repeat();
+      } else {
+        rotationController.stop();
+      }
+      return null;
+    }, [config.rotating]);
 
     Widget imageChild = ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
@@ -75,6 +89,13 @@ class SongCoverImage extends ConsumerWidget {
             width: config.borderWidth!,
           ),
         ),
+        child: imageChild,
+      );
+    }
+
+    if (config.rotating) {
+      imageChild = RotationTransition(
+        turns: rotationController,
         child: imageChild,
       );
     }
@@ -161,6 +182,8 @@ class SongCoverImageConfig {
     this.isCircular = false,
     this.borderWidth,
     this.borderColor,
+    this.rotating = false,
+    this.rotationDuration = const Duration(seconds: 20),
   });
 
   final double size;
@@ -168,6 +191,8 @@ class SongCoverImageConfig {
   final bool isCircular;
   final double? borderWidth;
   final Color? borderColor;
+  final bool rotating;
+  final Duration rotationDuration;
 
   static const SongCoverImageConfig defaultConfig = SongCoverImageConfig(
     size: 48,

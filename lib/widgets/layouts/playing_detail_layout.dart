@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
 import "package:toneharbor/providers/providers.dart";
+import "package:toneharbor/services/audio_player/audio_player.dart";
 import "package:toneharbor/utils/base_funs.dart";
 import "package:toneharbor/widgets/layouts/base_bg_layout.dart";
 import "package:toneharbor/widgets/pages/lyrics_content_page.dart";
@@ -120,6 +121,8 @@ class PlayingDetailLayout extends BaseBgLayout {
             config: SongCoverImageConfig(
               size: containerSize * 0.65,
               isCircular: true,
+              rotating: audioPlayer.isPlaying,
+              rotationDuration: Duration(seconds: 30),
             ),
           ),
         ),
