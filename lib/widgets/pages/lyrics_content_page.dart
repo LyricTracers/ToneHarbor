@@ -11,6 +11,12 @@ import 'package:toneharbor/utils/base_funs.dart';
 class LyricsContentPage extends HookConsumerWidget {
   const LyricsContentPage({super.key});
 
+  String formatDuration(Duration duration) {
+    final minutes = duration.inMinutes.remainder(60);
+    final seconds = duration.inSeconds.remainder(60);
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentLyrics = ref.watch(currentLyricsProvider).value;
@@ -46,7 +52,9 @@ class LyricsContentPage extends HookConsumerWidget {
         controller.dispose();
       };
     }, []);
-    double extraFontSize = 0;
+
+    const double extraFontSize = 0;
+
     final customStyle = useMemoized(
       () => LyricStyle(
         textStyle: TextStyle(
@@ -110,33 +118,132 @@ class LyricsContentPage extends HookConsumerWidget {
       }
       return null;
     }, [progressData.position, controller, isMounted]);
+
+    final isSelecting = useValueListenable(controller.isSelectingNotifier);
+    final anchorPosition = useValueListenable(
+      controller.anchorPositionNotifier,
+    );
+    final selectedIndex = useValueListenable(controller.selectedIndexNotifier);
+
+    Widget buildSelectionProgress() {
+      if (!isSelecting) return const SizedBox.shrink();
+      final lyricModel = controller.lyricNotifier.value;
+      if (lyricModel == null) return const SizedBox.shrink();
+      final duration = lyricModel.lines[selectedIndex].start;
+      return Positioned(
+        top: anchorPosition,
+        right: 12,
+        left: 12,
+        child: FractionalTranslation(
+          translation: const Offset(0, -0.5),
+          transformHitTests: true,
+          child: SizedBox(
+            height: 200,
+            child: Stack(
+              alignment: AlignmentDirectional.center,
+              children: [
+                Positioned(
+                  right: 20,
+                  child: DecoratedBox(
+                    decoration: _SelectionProgressDecoration(),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 2,
+                      ).copyWith(left: 2),
+                      child: Row(
+                        children: [
+                          Icon(Icons.play_arrow, size: 14),
+                          Text(
+                            formatDuration(duration),
+                            style: const TextStyle(fontSize: 12, height: 1),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return currentLyrics != null
         ? RepaintBoundary(
-            child: GestureDetector(
-              onDoubleTap: () {
-                final lyricModel = controller.lyricNotifier.value;
-                final selectedIndex = controller.selectedIndexNotifier.value;
-                if (lyricModel != null &&
-                    selectedIndex >= 0 &&
-                    selectedIndex < lyricModel.lines.length) {
-                  final line = lyricModel.lines[selectedIndex];
-                  if (ref.read(lyricDoubleClickProvider) ==
-                      LyricsDoubleClickAction.seek) {
-                    audioPlayer.seek(
-                      line.start + const Duration(milliseconds: 300),
-                    );
-                  } else {
-                    copyToClipboard(
-                      line.text,
-                      ref.context,
-                      colorScheme.secondary,
-                    );
-                  }
-                }
-              },
-              child: LyricView(controller: controller, style: customStyle),
+            child: Stack(
+              children: [
+                GestureDetector(
+                  onDoubleTap: () {
+                    final lyricModel = controller.lyricNotifier.value;
+                    final selectedIndex =
+                        controller.selectedIndexNotifier.value;
+                    if (lyricModel != null &&
+                        selectedIndex >= 0 &&
+                        selectedIndex < lyricModel.lines.length) {
+                      final line = lyricModel.lines[selectedIndex];
+                      if (ref.read(lyricDoubleClickProvider) ==
+                          LyricsDoubleClickAction.seek) {
+                        audioPlayer.seek(
+                          line.start + const Duration(milliseconds: 300),
+                        );
+                      } else {
+                        copyToClipboard(
+                          line.text,
+                          ref.context,
+                          colorScheme.secondary,
+                        );
+                      }
+                    }
+                  },
+                  child: LyricView(controller: controller, style: customStyle),
+                ),
+                buildSelectionProgress(),
+              ],
             ),
           )
-        : Center(child: Text(i10n.no_lyric, style: TextStyle(fontSize: 18)));
+        : Center(
+            child: Text(i10n.no_lyric, style: const TextStyle(fontSize: 18)),
+          );
+  }
+}
+
+class _SelectionProgressDecoration extends Decoration {
+  @override
+  BoxPainter createBoxPainter([VoidCallback? onChanged]) {
+    return _SelectionProgressBoxPainter(onChanged);
+  }
+}
+
+class _SelectionProgressBoxPainter extends BoxPainter {
+  _SelectionProgressBoxPainter(super.onChanged);
+
+  @override
+  void paint(Canvas canvas, Offset offset, ImageConfiguration configuration) {
+    final radius = 2.0;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          offset.dx,
+          offset.dy,
+          configuration.size!.width,
+          configuration.size!.height,
+        ),
+        Radius.circular(radius),
+      ),
+      Paint()..color = Colors.white10,
+    );
+
+    final path = Path();
+    final triangleWidth = 8.0;
+    path.moveTo(
+      offset.dx - triangleWidth,
+      offset.dy + configuration.size!.height / 2,
+    );
+    path.lineTo(offset.dx, offset.dy + radius / 2);
+    path.lineTo(offset.dx, offset.dy + configuration.size!.height - radius / 2);
+    path.close();
+    canvas.drawPath(path, Paint()..color = Colors.white10);
   }
 }
