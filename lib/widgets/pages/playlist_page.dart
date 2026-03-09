@@ -17,42 +17,33 @@ class PlaylistPage extends HookConsumerWidget {
         useStream(audioPlayer.shuffledStream).data ?? audioPlayer.isShuffled;
     final scrollController = useScrollController();
     final lastScrollIndex = useState<int?>(null);
-    final shouldScroll = useState(false);
 
     useEffect(() {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await Future.delayed(const Duration(milliseconds: 100));
-        shouldScroll.value = true;
-      });
-      return null;
-    }, []);
-
-    useEffect(() {
-      if (!shouldScroll.value) return;
-
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (scrollController.hasClients &&
-            scrollController.position.hasViewportDimension) {
-          final selectedIndex = playlist.currentIndex;
+        if (!scrollController.hasClients ||
+            !scrollController.position.hasViewportDimension) {
+          return;
+        }
 
-          if (lastScrollIndex.value == selectedIndex) {
-            return;
-          }
+        final selectedIndex = playlist.currentIndex;
 
-          final selectedPosition = selectedIndex * 44;
-          final currentPosition = scrollController.offset;
-          final viewportHeight = scrollController.position.viewportDimension;
-          final visibleEnd = currentPosition + viewportHeight;
+        if (lastScrollIndex.value == selectedIndex) {
+          return;
+        }
 
-          if (selectedPosition < currentPosition ||
-              selectedPosition > visibleEnd - 44) {
-            scrollController.jumpTo(selectedPosition.toDouble());
-            lastScrollIndex.value = selectedIndex;
-          }
+        final selectedPosition = selectedIndex * 44;
+        final currentPosition = scrollController.offset;
+        final viewportHeight = scrollController.position.viewportDimension;
+        final visibleEnd = currentPosition + viewportHeight;
+
+        if (selectedPosition < currentPosition ||
+            selectedPosition > visibleEnd - 44) {
+          scrollController.jumpTo(selectedPosition.toDouble());
+          lastScrollIndex.value = selectedIndex;
         }
       });
       return null;
-    }, [playlist.currentIndex, shouldScroll.value]);
+    }, [playlist.currentIndex]);
     return Container(
       width: 400,
       color: colorScheme.surface.withValues(alpha: 0.8),
