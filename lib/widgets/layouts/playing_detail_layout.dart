@@ -35,6 +35,8 @@ class PlayingDetailLayout extends BaseBgLayout {
             curve: Curves.fastEaseInToSlowEaseOut,
           ),
         );
+    var size = MediaQuery.of(ref.context).size;
+    double radius = size.height > size.width / 2 ? size.width / 2 : size.height;
     return Stack(
       children: [
         Column(
@@ -48,29 +50,35 @@ class PlayingDetailLayout extends BaseBgLayout {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _buildSongIcon(ref),
+                          _buildSongIcon(ref, radius),
                           const SizedBox(height: 12),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.playlist_add_rounded,
-                                  size: 24,
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: radius * 0.25,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.playlist_add_rounded,
+                                    size: 24,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 20),
-                              IconButton(
-                                onPressed: () {},
-                                icon: Icon(Icons.lyrics_rounded, size: 24),
-                              ),
-                              const SizedBox(width: 20),
-                              IconButton(
-                                onPressed: () {},
-                                icon: Icon(Icons.more_horiz_rounded, size: 24),
-                              ),
-                            ],
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.lyrics_rounded, size: 24),
+                                ),
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.more_horiz_rounded,
+                                    size: 24,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -109,15 +117,15 @@ class PlayingDetailLayout extends BaseBgLayout {
     );
   }
 
-  Widget _buildSongIcon(WidgetRef ref) {
+  Widget _buildSongIcon(WidgetRef ref, double radius) {
     final audioPlayerState = ref.watch(audioPlayerStateProvider);
     final colorScheme = getColorSchemeWhenReady(ref);
     final activeTrack = audioPlayerState.activeTrack;
-    var size = MediaQuery.of(ref.context).size;
+
     if (activeTrack == null) {
-      return buildErrorView(ref.context, ref, colorScheme, size.height, () {});
+      return buildErrorView(ref.context, ref, colorScheme, radius, () {});
     }
-    var radius = size.height > size.width / 2 ? size.width / 2 : size.height;
+
     final containerSize = radius * 0.75;
 
     return Stack(
