@@ -1,5 +1,6 @@
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 
 ({
@@ -10,7 +11,8 @@ import 'package:toneharbor/services/audio_player/audio_player.dart';
 })
 useProgress(WidgetRef ref) {
   final bufferProgress =
-      useStream(audioPlayer.bufferedPositionStream).data?.inSeconds ?? 0;
+      useStream(audioPlayer.bufferedPositionStream).data?.inSeconds ??
+      audioPlayer.bufferedPosition.inSeconds;
 
   final duration = useState(audioPlayer.duration);
   final position = useState(audioPlayer.position);
