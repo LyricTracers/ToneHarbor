@@ -15,14 +15,11 @@ import 'l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/foundation.dart';
 
-enum SlideDirection { rightToLeft, bottomToTop }
-
 class SlideTransitionPage extends CustomTransitionPage<void> {
   SlideTransitionPage({
     required super.child,
     super.transitionDuration = const Duration(milliseconds: 300),
     super.reverseTransitionDuration = const Duration(milliseconds: 300),
-    this.slideDirection = SlideDirection.rightToLeft,
   }) : super(
          transitionsBuilder: (context, animation, secondaryAnimation, child) {
            return _buildSlideTransition(
@@ -30,49 +27,27 @@ class SlideTransitionPage extends CustomTransitionPage<void> {
              animation,
              secondaryAnimation,
              child,
-             slideDirection,
            );
          },
        );
-
-  final SlideDirection slideDirection;
 
   static Widget _buildSlideTransition(
     BuildContext context,
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     Widget child,
-    SlideDirection direction,
   ) {
-    Offset beginOffset;
-    switch (direction) {
-      case SlideDirection.rightToLeft:
-        beginOffset = const Offset(1.0, 0.0);
-        break;
-      case SlideDirection.bottomToTop:
-        beginOffset = const Offset(0.0, 1.0);
-        break;
-    }
-
-    final slideAnimation = Tween<Offset>(
-      begin: beginOffset,
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic));
-
     final fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: animation,
-        curve: const Interval(0.8, 1.0, curve: Curves.easeInBack),
+        curve: const Interval(0, 1.0, curve: Curves.fastOutSlowIn),
       ),
     );
 
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) {
-        return SlideTransition(
-          position: slideAnimation,
-          child: FadeTransition(opacity: fadeAnimation, child: child),
-        );
+        return FadeTransition(opacity: fadeAnimation, child: child);
       },
       child: child,
     );
@@ -136,20 +111,18 @@ class MyApp extends HookConsumerWidget {
           ),
           GoRoute(
             path: "/playing_detail",
-            pageBuilder: (context, state) => SlideTransitionPage(
-              child: const PlayingDetailLayout(),
-              slideDirection: SlideDirection.bottomToTop,
-            ),
+            pageBuilder: (context, state) =>
+                SlideTransitionPage(child: const PlayingDetailLayout()),
           ),
           GoRoute(
             path: '/login',
             pageBuilder: (context, state) =>
-                SlideTransitionPage(child: LoginLayout()),
+                SlideTransitionPage(child: const LoginLayout()),
           ),
           GoRoute(
             path: '/test',
             pageBuilder: (context, state) =>
-                const MaterialPage(child: TestLayout()),
+                SlideTransitionPage(child: const TestLayout()),
           ),
         ],
         redirect: (context, state) {
