@@ -37,19 +37,6 @@ class LyricsContentPage extends HookConsumerWidget {
       };
     }, []);
 
-    useEffect(() {
-      controller.setOnTapLineCallback((duration) {
-        if (!isMounted.value) return;
-        final lyricModel = controller.lyricNotifier.value;
-        if (lyricModel != null) {
-          final index = controller.selectedIndexNotifier.value;
-        }
-      });
-      return () {
-        controller.cancelOnTapLineCallback();
-      };
-    }, []);
-
     const double extraFontSize = 0;
 
     final customStyle = useMemoized(

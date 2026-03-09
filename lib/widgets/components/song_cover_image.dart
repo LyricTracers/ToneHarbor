@@ -31,8 +31,13 @@ class SongCoverImage extends ConsumerWidget {
     if (cacheKey.isEmpty) {
       cacheKey = sanitizeCacheKey("$artistName-$albumName");
     }
-    Widget child = ClipRRect(
-      borderRadius: BorderRadius.circular(config.borderRadius),
+
+    final borderRadius = config.isCircular
+        ? config.size / 2
+        : config.borderRadius;
+
+    Widget imageChild = ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius),
       child: CachedNetworkImage(
         keepLiveDuration: const Duration(minutes: 10),
         imageUrl: coverUrl,
@@ -44,7 +49,7 @@ class SongCoverImage extends ConsumerWidget {
           return CoverPlaceholder(
             colorScheme: colorScheme,
             size: config.size,
-            borderRadius: config.borderRadius,
+            borderRadius: borderRadius,
             isLoading: true,
           );
         },
@@ -52,11 +57,27 @@ class SongCoverImage extends ConsumerWidget {
           return CoverPlaceholder(
             colorScheme: colorScheme,
             size: config.size,
-            borderRadius: config.borderRadius,
+            borderRadius: borderRadius,
           );
         },
       ),
     );
+
+    if (config.borderWidth != null && config.borderWidth! > 0) {
+      imageChild = Container(
+        decoration: BoxDecoration(
+          shape: config.isCircular ? BoxShape.circle : BoxShape.rectangle,
+          borderRadius: config.isCircular
+              ? null
+              : BorderRadius.circular(borderRadius),
+          border: Border.all(
+            color: config.borderColor ?? colorScheme.primary,
+            width: config.borderWidth!,
+          ),
+        ),
+        child: imageChild,
+      );
+    }
 
     return Builder(
       builder: (context) {
@@ -71,7 +92,7 @@ class SongCoverImage extends ConsumerWidget {
               }
             }
           },
-          child: child,
+          child: imageChild,
         );
       },
     );
@@ -134,10 +155,19 @@ class SongCoverImage extends ConsumerWidget {
 }
 
 class SongCoverImageConfig {
-  const SongCoverImageConfig({required this.size, this.borderRadius = 8});
+  const SongCoverImageConfig({
+    required this.size,
+    this.borderRadius = 8,
+    this.isCircular = false,
+    this.borderWidth,
+    this.borderColor,
+  });
 
   final double size;
   final double borderRadius;
+  final bool isCircular;
+  final double? borderWidth;
+  final Color? borderColor;
 
   static const SongCoverImageConfig defaultConfig = SongCoverImageConfig(
     size: 48,
