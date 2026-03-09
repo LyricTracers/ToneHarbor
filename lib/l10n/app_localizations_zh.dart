@@ -270,8 +270,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get setThemeBackgroundConfirm => '是否将此封面设置为主题背景？';
 
   @override
+  String get playlist_text => '播放列表(%s)';
+
+  @override
   String get cancel => '取消';
 
   @override
   String get confirm => '确定';
+
+  @override
+  String get playing => '播放中';
+
+  @override
+  String get delete => '删除';
 }

@@ -283,8 +283,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setThemeBackgroundConfirm => 'Set this cover as theme background?';
 
   @override
+  String get playlist_text => 'Playlist(%s)';
+
+  @override
   String get cancel => 'Cancel';
 
   @override
   String get confirm => 'Confirm';
+
+  @override
+  String get playing => 'Playing';
+
+  @override
+  String get delete => 'Delete';
 }

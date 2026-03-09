@@ -87,6 +87,9 @@
   "more": "Load More",
   "setThemeBackground": "Set Theme Background",
   "setThemeBackgroundConfirm": "Set this cover as theme background?",
+  "playlist_text": "Playlist(%s)",
   "cancel": "Cancel",
-  "confirm": "Confirm"
+  "confirm": "Confirm",
+  "playing": "Playing",
+  "delete": "Delete"
 }

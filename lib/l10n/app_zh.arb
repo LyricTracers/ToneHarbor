@@ -87,6 +87,9 @@
   "more": "查看更多",
   "setThemeBackground": "设置主题背景",
   "setThemeBackgroundConfirm": "是否将此封面设置为主题背景？",
+  "playlist_text": "播放列表(%s)",
   "cancel": "取消",
-  "confirm": "确定"
+  "confirm": "确定",
+  "playing": "播放中",
+  "delete": "删除"
 }

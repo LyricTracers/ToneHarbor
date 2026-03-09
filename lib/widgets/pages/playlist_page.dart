@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -12,6 +13,8 @@ class _PlaylistItem extends StatelessWidget {
     required this.track,
     required this.isDefault,
     required this.colorScheme,
+    required this.playingText,
+    required this.deleteText,
     required this.onTap,
     required this.onDelete,
   });
@@ -20,6 +23,8 @@ class _PlaylistItem extends StatelessWidget {
   final dynamic track;
   final bool isDefault;
   final ColorScheme colorScheme;
+  final String playingText;
+  final String deleteText;
   final VoidCallback onTap;
   final VoidCallback? onDelete;
 
@@ -42,7 +47,7 @@ class _PlaylistItem extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  '播放中',
+                  playingText,
                   style: TextStyle(
                     color: colorScheme.onPrimary,
                     fontSize: 8,
@@ -113,6 +118,7 @@ class PlaylistPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = getColorSchemeWhenReady(ref);
+    final i10n = ref.watch(l10nProvider);
     final playlist = ref.watch(audioPlayerStateProvider);
     final shuffled =
         useStream(audioPlayer.shuffledStream).data ?? audioPlayer.isShuffled;
@@ -157,7 +163,10 @@ class PlaylistPage extends HookConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "播放列表(${playlist.tracks.length})",
+                  i10n.playlist_text.replaceFirst(
+                    '%s',
+                    '${playlist.tracks.length}',
+                  ),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -198,6 +207,8 @@ class PlaylistPage extends HookConsumerWidget {
                     track: track,
                     isDefault: isDefault,
                     colorScheme: colorScheme,
+                    playingText: i10n.playing,
+                    deleteText: i10n.delete,
                     onTap: () => audioPlayer.jumpTo(index),
                     onDelete: isDefault
                         ? null

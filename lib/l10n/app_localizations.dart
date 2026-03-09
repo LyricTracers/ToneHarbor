@@ -620,6 +620,12 @@ abstract class AppLocalizations {
   /// **'Set this cover as theme background?'**
   String get setThemeBackgroundConfirm;
 
+  /// No description provided for @playlist_text.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist(%s)'**
+  String get playlist_text;
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:
@@ -631,6 +637,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Confirm'**
   String get confirm;
+
+  /// No description provided for @playing.
+  ///
+  /// In en, this message translates to:
+  /// **'Playing'**
+  String get playing;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
 }
 
 class _AppLocalizationsDelegate
