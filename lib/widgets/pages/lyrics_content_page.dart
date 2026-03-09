@@ -29,12 +29,11 @@ class LyricsContentPage extends HookConsumerWidget {
 
     final isMounted = useRef(true);
 
-    final tappedIndex = useState<int?>(null);
-
     useEffect(() {
       isMounted.value = true;
       return () {
         isMounted.value = false;
+        controller.dispose();
       };
     }, []);
 
@@ -44,12 +43,10 @@ class LyricsContentPage extends HookConsumerWidget {
         final lyricModel = controller.lyricNotifier.value;
         if (lyricModel != null) {
           final index = controller.selectedIndexNotifier.value;
-          tappedIndex.value = index;
         }
       });
       return () {
         controller.cancelOnTapLineCallback();
-        controller.dispose();
       };
     }, []);
 
@@ -129,6 +126,9 @@ class LyricsContentPage extends HookConsumerWidget {
       if (!isSelecting) return const SizedBox.shrink();
       final lyricModel = controller.lyricNotifier.value;
       if (lyricModel == null) return const SizedBox.shrink();
+      if (selectedIndex < 0 || selectedIndex >= lyricModel.lines.length) {
+        return const SizedBox.shrink();
+      }
       final duration = lyricModel.lines[selectedIndex].start;
       return Positioned(
         top: anchorPosition,
@@ -153,7 +153,18 @@ class LyricsContentPage extends HookConsumerWidget {
                       ).copyWith(left: 2),
                       child: Row(
                         children: [
-                          Icon(Icons.play_arrow, size: 14),
+                          GestureDetector(
+                            onTap: () async {
+                              if (!audioPlayer.isPlaying) {
+                                await audioPlayer.resume();
+                              }
+                              controller.stopSelection();
+                              audioPlayer.seek(
+                                duration + const Duration(milliseconds: 300),
+                              );
+                            },
+                            child: const Icon(Icons.play_arrow, size: 16),
+                          ),
                           Text(
                             formatDuration(duration),
                             style: const TextStyle(fontSize: 12, height: 1),
@@ -162,6 +173,11 @@ class LyricsContentPage extends HookConsumerWidget {
                       ),
                     ),
                   ),
+                ),
+                Positioned(
+                  left: 100,
+                  right: 100,
+                  child: Container(height: 1, color: Colors.white30),
                 ),
               ],
             ),
@@ -175,7 +191,7 @@ class LyricsContentPage extends HookConsumerWidget {
             child: Stack(
               children: [
                 GestureDetector(
-                  onDoubleTap: () {
+                  onDoubleTap: () async {
                     final lyricModel = controller.lyricNotifier.value;
                     final selectedIndex =
                         controller.selectedIndexNotifier.value;
@@ -185,6 +201,10 @@ class LyricsContentPage extends HookConsumerWidget {
                       final line = lyricModel.lines[selectedIndex];
                       if (ref.read(lyricDoubleClickProvider) ==
                           LyricsDoubleClickAction.seek) {
+                        if (!audioPlayer.isPlaying) {
+                          await audioPlayer.resume();
+                        }
+                        controller.stopSelection();
                         audioPlayer.seek(
                           line.start + const Duration(milliseconds: 300),
                         );
