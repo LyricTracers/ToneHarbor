@@ -150,8 +150,9 @@ class PlaylistPage extends HookConsumerWidget {
       });
       return null;
     }, [playlist.currentIndex]);
+    var width = MediaQuery.of(context).size.width;
     return Container(
-      width: 400,
+      width: width * 0.35,
       color: colorScheme.surface.withValues(alpha: 0.8),
       height: double.infinity,
       child: Column(
