@@ -83,11 +83,8 @@ class PlayingDetailLayout extends BaseBgLayout {
     if (activeTrack == null) {
       return buildErrorView(ref.context, ref, colorScheme, size.height, () {});
     }
-    var radius = size.height > size.width / 2
-        ? size.width / 4
-        : size.height / 2;
-    final borderWidth = radius * 0.175;
-    final containerSize = radius + borderWidth * 2;
+    var radius = size.height > size.width / 2 ? size.width / 2 : size.height;
+    final containerSize = radius * 0.75;
 
     return Stack(
       alignment: Alignment.center,
@@ -97,7 +94,10 @@ class PlayingDetailLayout extends BaseBgLayout {
           height: containerSize,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: colorScheme.surface, width: borderWidth),
+            border: Border.all(
+              color: colorScheme.surface,
+              width: containerSize * 0.35,
+            ),
             boxShadow: [
               BoxShadow(
                 color: colorScheme.surfaceContainer,
@@ -117,7 +117,10 @@ class PlayingDetailLayout extends BaseBgLayout {
             albumName: activeTrack.album,
             artistName: activeTrack.artist,
             colorScheme: colorScheme,
-            config: SongCoverImageConfig(size: radius, isCircular: true),
+            config: SongCoverImageConfig(
+              size: containerSize * 0.65,
+              isCircular: true,
+            ),
           ),
         ),
       ],
