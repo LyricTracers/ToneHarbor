@@ -90,7 +90,7 @@ class BottomPlayer extends HookConsumerWidget {
             padding: const EdgeInsets.only(
               top: 10,
               bottom: 5,
-              left: 10,
+              left: 15,
               right: 10,
             ),
             child: Row(
