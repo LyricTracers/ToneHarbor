@@ -1,0 +1,142 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_lyric/flutter_lyric.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/hooks/use_progress.dart';
+import 'package:toneharbor/providers/audio_player/lyrics_cache_provider.dart';
+import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/services/audio_player/audio_player.dart';
+import 'package:toneharbor/utils/base_funs.dart';
+
+class LyricsContentPage extends HookConsumerWidget {
+  const LyricsContentPage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentLyrics = ref.watch(currentLyricsProvider).value;
+    final colorScheme = getColorSchemeWhenReady(ref);
+    final i10n = ref.watch(l10nProvider);
+    final progressData = useProgress(ref);
+    final controller = useMemoized(() {
+      return LyricController();
+    }, []);
+
+    final isMounted = useRef(true);
+
+    final tappedIndex = useState<int?>(null);
+
+    useEffect(() {
+      isMounted.value = true;
+      return () {
+        isMounted.value = false;
+      };
+    }, []);
+
+    useEffect(() {
+      controller.setOnTapLineCallback((duration) {
+        if (!isMounted.value) return;
+        final lyricModel = controller.lyricNotifier.value;
+        if (lyricModel != null) {
+          final index = controller.selectedIndexNotifier.value;
+          tappedIndex.value = index;
+        }
+      });
+      return () {
+        controller.cancelOnTapLineCallback();
+        controller.dispose();
+      };
+    }, []);
+    double extraFontSize = 0;
+    final customStyle = useMemoized(
+      () => LyricStyle(
+        textStyle: TextStyle(
+          fontSize: 16 + extraFontSize,
+          color: colorScheme.onSurface.withValues(alpha: .7),
+        ),
+        activeStyle: TextStyle(
+          fontSize: 18 + extraFontSize,
+          color: colorScheme.primary,
+          fontWeight: FontWeight.bold,
+        ),
+        translationActiveColor: colorScheme.primary,
+        translationStyle: TextStyle(
+          fontSize: 15 + extraFontSize,
+          color: colorScheme.onSurface.withValues(alpha: .7),
+        ),
+        lineTextAlign: TextAlign.center,
+        lineGap: 26,
+        translationLineGap: 10,
+        contentAlignment: CrossAxisAlignment.center,
+        contentPadding: const EdgeInsets.only(
+          top: 100,
+          left: 20,
+          right: 20,
+          bottom: 20,
+        ),
+        selectionAnchorPosition: 0.48,
+        fadeRange: FadeRange(top: 0.2, bottom: 0.2),
+        selectedColor: colorScheme.secondary,
+        selectedTranslationColor: colorScheme.secondary,
+        scrollDuration: const Duration(milliseconds: 240),
+        scrollDurations: {
+          500: const Duration(milliseconds: 500),
+          1000: const Duration(milliseconds: 1000),
+        },
+        enableSwitchAnimation: true,
+        selectionAutoResumeMode: SelectionAutoResumeMode.afterSelecting,
+        selectionAutoResumeDuration: const Duration(milliseconds: 320),
+        activeAutoResumeDuration: const Duration(milliseconds: 1500),
+        activeHighlightColor: colorScheme.primary,
+        switchEnterDuration: const Duration(milliseconds: 300),
+        switchExitDuration: const Duration(milliseconds: 500),
+        switchEnterCurve: Curves.easeOutBack,
+        switchExitCurve: Curves.easeOutQuint,
+        selectionAlignment: MainAxisAlignment.center,
+      ),
+      [colorScheme, extraFontSize],
+    );
+
+    useEffect(() {
+      if (currentLyrics != null && isMounted.value) {
+        final lyricModel = currentLyrics.toLyricModel();
+        controller.loadLyricModel(lyricModel);
+      }
+      return null;
+    }, [currentLyrics, controller, isMounted]);
+
+    useEffect(() {
+      if (isMounted.value) {
+        controller.setProgress(progressData.position);
+      }
+      return null;
+    }, [progressData.position, controller, isMounted]);
+    return currentLyrics != null
+        ? RepaintBoundary(
+            child: GestureDetector(
+              onDoubleTap: () {
+                final lyricModel = controller.lyricNotifier.value;
+                final selectedIndex = controller.selectedIndexNotifier.value;
+                if (lyricModel != null &&
+                    selectedIndex >= 0 &&
+                    selectedIndex < lyricModel.lines.length) {
+                  final line = lyricModel.lines[selectedIndex];
+                  if (ref.read(lyricDoubleClickProvider) ==
+                      LyricsDoubleClickAction.seek) {
+                    audioPlayer.seek(
+                      line.start + const Duration(milliseconds: 300),
+                    );
+                  } else {
+                    copyToClipboard(
+                      line.text,
+                      ref.context,
+                      colorScheme.secondary,
+                    );
+                  }
+                }
+              },
+              child: LyricView(controller: controller, style: customStyle),
+            ),
+          )
+        : Center(child: Text(i10n.no_lyric, style: TextStyle(fontSize: 18)));
+  }
+}

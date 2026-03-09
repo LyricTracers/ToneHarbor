@@ -9,6 +9,59 @@ part of 'common_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(LyricDoubleClick)
+final lyricDoubleClickProvider = LyricDoubleClickProvider._();
+
+final class LyricDoubleClickProvider
+    extends $NotifierProvider<LyricDoubleClick, LyricsDoubleClickAction> {
+  LyricDoubleClickProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'lyricDoubleClickProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$lyricDoubleClickHash();
+
+  @$internal
+  @override
+  LyricDoubleClick create() => LyricDoubleClick();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(LyricsDoubleClickAction value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<LyricsDoubleClickAction>(value),
+    );
+  }
+}
+
+String _$lyricDoubleClickHash() => r'817648f92135bc82c4dc993dadb350351b6aa009';
+
+abstract class _$LyricDoubleClick extends $Notifier<LyricsDoubleClickAction> {
+  LyricsDoubleClickAction build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<LyricsDoubleClickAction, LyricsDoubleClickAction>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<LyricsDoubleClickAction, LyricsDoubleClickAction>,
+              LyricsDoubleClickAction,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(RequestFlag)
 final requestFlagProvider = RequestFlagProvider._();
 

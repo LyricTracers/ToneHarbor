@@ -273,6 +273,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get playlist_text => '播放列表(%s)';
 
   @override
+  String get no_lyric => '暂无歌词';
+
+  @override
   String get cancel => '取消';
 
   @override

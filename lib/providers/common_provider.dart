@@ -8,6 +8,33 @@ import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 part 'common_provider.g.dart';
 
+enum LyricsDoubleClickAction {
+  copy,
+  seek;
+
+  String get displayName {
+    switch (this) {
+      case LyricsDoubleClickAction.copy:
+        return '拷贝歌词';
+      case LyricsDoubleClickAction.seek:
+        return '跳转播放';
+    }
+  }
+}
+
+@riverpod
+class LyricDoubleClick extends _$LyricDoubleClick {
+  @override
+  LyricsDoubleClickAction build() {
+    return SharedPreferencesUtils.getDoubleLyricAction();
+  }
+
+  void setAction(LyricsDoubleClickAction action) async {
+    state = action;
+    await SharedPreferencesUtils.setDoubleLyricAction(action);
+  }
+}
+
 @riverpod
 class RequestFlag extends _$RequestFlag {
   @override

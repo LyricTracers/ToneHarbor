@@ -111,4 +111,17 @@ abstract class SharedPreferencesUtils {
   static Future<void> setAudioQuality(AudioQuality quality) async {
     await sharedPreferences.setInt(audioQualityKey, quality.index);
   }
+
+  static LyricsDoubleClickAction getDoubleLyricAction() {
+    final savedValue = sharedPreferences.getInt(doubleLyricActionKey);
+    return savedValue != null
+        ? LyricsDoubleClickAction.values[savedValue]
+        : LyricsDoubleClickAction.seek;
+  }
+
+  static Future<void> setDoubleLyricAction(
+    LyricsDoubleClickAction action,
+  ) async {
+    await sharedPreferences.setInt(doubleLyricActionKey, action.index);
+  }
 }

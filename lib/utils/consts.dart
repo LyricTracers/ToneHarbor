@@ -13,6 +13,7 @@ const String useHttpKey = 'use_http';
 const String searchHistoryKey = 'search_history';
 const String volumeKey = 'volume';
 const String audioQualityKey = 'audio_quality';
+const String doubleLyricActionKey = 'double_lyric_action';
 
 // pic path
 const String iconPlaceholder = 'assets/icons/icon_placeholder.png';

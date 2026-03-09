@@ -88,6 +88,7 @@
   "setThemeBackground": "设置主题背景",
   "setThemeBackgroundConfirm": "是否将此封面设置为主题背景？",
   "playlist_text": "播放列表(%s)",
+  "no_lyric": "暂无歌词",
   "cancel": "取消",
   "confirm": "确定",
   "playing": "播放中",

@@ -88,6 +88,7 @@
   "setThemeBackground": "Set Theme Background",
   "setThemeBackgroundConfirm": "Set this cover as theme background?",
   "playlist_text": "Playlist(%s)",
+  "no_lyric": "No lyrics available",
   "cancel": "Cancel",
   "confirm": "Confirm",
   "playing": "Playing",
