@@ -45,7 +45,9 @@ class HomeLayout extends BaseBgLayout {
       } else {
         animationController.reverse();
       }
-      return null;
+      return () {
+        animationController.dispose();
+      };
     }, [isPlaylistPage.value]);
     final slideAnimation =
         Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(

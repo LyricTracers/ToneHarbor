@@ -23,7 +23,9 @@ class PlayingDetailLayout extends BaseBgLayout {
       } else {
         animationController.reverse();
       }
-      return null;
+      return () {
+        animationController.dispose();
+      };
     }, [playingSubContent.value]);
     final slideAnimation =
         Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(
