@@ -275,7 +275,7 @@ class _SmartMarqueeState extends State<SmartMarquee>
       child: LayoutBuilder(
         builder: (context, constraints) {
           final availableWidth = constraints.maxWidth;
-          const padding = 8.0;
+          const padding = 18.0;
 
           final shouldScroll = metrics.width > availableWidth - padding;
 

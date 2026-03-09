@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
+import 'package:toneharbor/widgets/pages/playlist_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 part 'home_layout_logic.dart';
 
@@ -19,6 +21,7 @@ class HomeLayout extends BaseBgLayout {
     final router = GoRouter.of(context);
     final isRecommendPage =
         router.routeInformationProvider.value.uri.path == '/';
+    final isPlaylistPage = useState(false);
     final gradientDecoration = BoxDecoration(
       gradient: LinearGradient(
         begin: Alignment(-0.8, -0.8),
@@ -33,98 +36,138 @@ class HomeLayout extends BaseBgLayout {
         ],
       ),
     );
-    return Row(
+    final animationController = useAnimationController(
+      duration: const Duration(milliseconds: 300),
+    );
+    useEffect(() {
+      if (isPlaylistPage.value) {
+        animationController.forward();
+      } else {
+        animationController.reverse();
+      }
+      return null;
+    }, [isPlaylistPage.value]);
+    final slideAnimation =
+        Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(
+          CurvedAnimation(parent: animationController, curve: Curves.easeInOut),
+        );
+    return Stack(
       children: [
-        SizedBox(
-          width: 200,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 2000),
-            curve: Curves.easeInOutSine,
-            decoration: gradientDecoration,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 20, bottom: 8),
-                  child: SearchHistoryTextField(
-                    showHistoryIcon: false,
-                    listTextStyle: const TextStyle(fontSize: 14),
-                    decoration: InputDecoration(
-                      labelText: l10n.search,
-                      labelStyle: const TextStyle(fontSize: 16),
-                      hintText: l10n.searchHint,
-                      hintStyle: const TextStyle(fontSize: 14),
-                      prefixIcon: const Icon(Icons.search, size: 16),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+        Row(
+          children: [
+            SizedBox(
+              width: 200,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 2000),
+                curve: Curves.easeInOutSine,
+                decoration: gradientDecoration,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20, bottom: 8),
+                      child: SearchHistoryTextField(
+                        showHistoryIcon: false,
+                        listTextStyle: const TextStyle(fontSize: 14),
+                        decoration: InputDecoration(
+                          labelText: l10n.search,
+                          labelStyle: const TextStyle(fontSize: 16),
+                          hintText: l10n.searchHint,
+                          hintStyle: const TextStyle(fontSize: 14),
+                          prefixIcon: const Icon(Icons.search, size: 16),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                        ),
+                        onSubmitSearch: (value) {
+                          onSubmitSearch(ref, value);
+                        },
                       ),
                     ),
-                    onSubmitSearch: (value) {
-                      onSubmitSearch(ref, value);
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: InkWell(
-                    onTap: () {
-                      if (!isRecommendPage) {
-                        context.go('/');
-                      }
-                    },
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isRecommendPage
-                            ? colorScheme.primary.withValues(alpha: 0.3)
-                            : Colors.transparent,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: InkWell(
+                        onTap: () {
+                          if (!isRecommendPage) {
+                            context.go('/');
+                          }
+                        },
                         borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.recommend,
-                            size: 20,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
                             color: isRecommendPage
-                                ? colorScheme.primary
-                                : colorScheme.onSurface.withValues(alpha: 0.8),
+                                ? colorScheme.primary.withValues(alpha: 0.3)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            l10n.recommend,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: isRecommendPage
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
-                              color: isRecommendPage
-                                  ? colorScheme.primary
-                                  : colorScheme.onSurface.withValues(
-                                      alpha: 0.8,
-                                    ),
-                            ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.recommend,
+                                size: 20,
+                                color: isRecommendPage
+                                    ? colorScheme.primary
+                                    : colorScheme.onSurface.withValues(
+                                        alpha: 0.8,
+                                      ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                l10n.recommend,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: isRecommendPage
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
+                                  color: isRecommendPage
+                                      ? colorScheme.primary
+                                      : colorScheme.onSurface.withValues(
+                                          alpha: 0.8,
+                                        ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  Expanded(child: child),
+                  BottomPlayer(() {
+                    isPlaylistPage.value = true;
+                  }),
+                ],
+              ),
+            ),
+          ],
+        ),
+        if (isPlaylistPage.value)
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                isPlaylistPage.value = false;
+              },
             ),
           ),
-        ),
-        Expanded(
-          child: Column(
-            children: [
-              Expanded(child: child),
-              const BottomPlayer(),
-            ],
+        if (isPlaylistPage.value)
+          SlideTransition(
+            position: slideAnimation,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [PlaylistPage()],
+            ),
           ),
-        ),
       ],
     );
   }

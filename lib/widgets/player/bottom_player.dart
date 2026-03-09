@@ -11,7 +11,8 @@ import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class BottomPlayer extends HookConsumerWidget {
-  const BottomPlayer({super.key});
+  final VoidCallback onShowPlaylist;
+  const BottomPlayer(this.onShowPlaylist, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -287,7 +288,7 @@ class BottomPlayer extends HookConsumerWidget {
                       const SizedBox(width: 2),
                       IconButton(
                         icon: const Icon(Icons.playlist_play_rounded, size: 18),
-                        onPressed: () {},
+                        onPressed: onShowPlaylist,
                       ),
                       const SizedBox(width: 2),
                       IconButton(
