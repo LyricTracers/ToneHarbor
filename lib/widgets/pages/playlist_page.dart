@@ -85,99 +85,103 @@ class PlaylistPage extends HookConsumerWidget {
             child: ListView.builder(
               controller: scrollController,
               itemCount: playlist.tracks.length,
+              itemExtent: 44,
+              cacheExtent: 50,
               itemBuilder: (context, index) {
                 var isDefault = playlist.currentIndex == index;
                 var track = playlist.tracks[index];
-                return SizedBox(
-                  height: 44,
-                  child: Stack(
-                    children: [
-                      if (isDefault)
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colorScheme.primary,
-                              borderRadius: const BorderRadius.only(
-                                bottomRight: Radius.circular(8),
+                return RepaintBoundary(
+                  child: SizedBox(
+                    height: 44,
+                    child: Stack(
+                      children: [
+                        if (isDefault)
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
                               ),
-                            ),
-                            child: Text(
-                              '播放中',
-                              style: TextStyle(
-                                color: colorScheme.onPrimary,
-                                fontSize: 8,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ListTile(
-                        contentPadding: const EdgeInsets.only(
-                          left: 10,
-                          right: 10,
-                        ),
-                        horizontalTitleGap: 10,
-                        leading: Text(
-                          '${index + 1}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.primary,
-                          ),
-                        ),
-                        title: Row(
-                          children: [
-                            Flexible(
-                              child: SmartMarquee(
-                                text: track.title,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: colorScheme.onSurfaceVariant,
+                              decoration: BoxDecoration(
+                                color: colorScheme.primary,
+                                borderRadius: const BorderRadius.only(
+                                  bottomRight: Radius.circular(8),
                                 ),
-                                pauseOnHover: true,
-                                alignment: AlignmentGeometry.centerLeft,
                               ),
-                            ),
-                            SizedBox(width: 10),
-                            SizedBox(
-                              width: 80,
                               child: Text(
-                                track.artist,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.right,
-                                maxLines: 1,
+                                '播放中',
                                 style: TextStyle(
-                                  fontSize: 12,
-                                  color: colorScheme.onSurfaceVariant
-                                      .withValues(alpha: 0.7),
+                                  color: colorScheme.onPrimary,
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
-                          ],
+                          ),
+                        ListTile(
+                          contentPadding: const EdgeInsets.only(
+                            left: 10,
+                            right: 10,
+                          ),
+                          horizontalTitleGap: 10,
+                          leading: Text(
+                            '${index + 1}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.primary,
+                            ),
+                          ),
+                          title: Row(
+                            children: [
+                              Flexible(
+                                child: SmartMarquee(
+                                  text: track.title,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  pauseOnHover: true,
+                                  alignment: AlignmentGeometry.centerLeft,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              SizedBox(
+                                width: 80,
+                                child: Text(
+                                  track.artist,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.right,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: colorScheme.onSurfaceVariant
+                                        .withValues(alpha: 0.7),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete_rounded, size: 16),
+                            onPressed: isDefault
+                                ? null
+                                : () {
+                                    ref
+                                        .read(audioPlayerStateProvider.notifier)
+                                        .removeTrack(track.id);
+                                  },
+                            tooltip: isDefault ? null : '删除',
+                          ),
+                          selected: isDefault,
+                          onTap: () {
+                            audioPlayer.jumpTo(index);
+                          },
                         ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete_rounded, size: 16),
-                          onPressed: isDefault
-                              ? null
-                              : () {
-                                  ref
-                                      .read(audioPlayerStateProvider.notifier)
-                                      .removeTrack(track.id);
-                                },
-                          tooltip: isDefault ? null : '删除',
-                        ),
-                        selected: isDefault,
-                        onTap: () {
-                          audioPlayer.jumpTo(index);
-                        },
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },
