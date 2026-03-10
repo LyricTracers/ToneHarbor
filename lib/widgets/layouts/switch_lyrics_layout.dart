@@ -17,6 +17,10 @@ import 'package:toneharbor/widgets/widgets.dart';
 class SwitchLyricsLayout extends BaseBgLayout {
   final ToneHarborTrackObject songTrackObject;
   const SwitchLyricsLayout({super.key, required this.songTrackObject});
+
+  static const double _sidebarWidthRatio = 0.25;
+  static const double _itemHeight = 56.0;
+
   @override
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
     var audioPlayState = ref.watch(audioPlayerStateProvider);
@@ -123,13 +127,12 @@ class SwitchLyricsLayout extends BaseBgLayout {
           ),
         );
     var width = MediaQuery.of(context).size.width;
-    const itemHeight = 56.0;
     return Stack(
       children: [
         Row(
           children: [
             SizedBox(
-              width: width * 0.25,
+              width: width * _sidebarWidthRatio,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 2000),
                 curve: Curves.easeInOutSine,
@@ -275,7 +278,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
                             var isSelected = selectedIndex.value == index;
 
                             return Container(
-                              height: itemHeight,
+                              height: _itemHeight,
                               color: isSelected
                                   ? colorScheme.primaryContainer.withValues(
                                       alpha: .3,
@@ -297,7 +300,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
                                       color: colorScheme.primary,
                                     ),
                                   ),
-                                  minTileHeight: itemHeight,
+                                  minTileHeight: _itemHeight,
                                   title: isSelected
                                       ? SmartMarquee(
                                           alignment: Alignment.centerLeft,
