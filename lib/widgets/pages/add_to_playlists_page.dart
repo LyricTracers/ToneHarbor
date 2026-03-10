@@ -52,7 +52,6 @@ class AddToPlaylistsPage extends HookConsumerWidget {
 
     var skipDuplicate = useState(true);
     void callBackAddPlaylists(String name) async {
-      if (name.isEmpty) return;
       try {
         ref.read(requestFlagProvider.notifier).setRequestFlag(true);
         var result = await ref
