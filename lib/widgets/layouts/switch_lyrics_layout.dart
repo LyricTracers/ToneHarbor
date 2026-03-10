@@ -406,6 +406,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
                               permanent: true,
                             );
                             ref.invalidate(getLyricsProvider);
+                            ref.invalidate(currentLyricsProvider);
                             if (context.mounted) {
                               showSnackBar(
                                 "保存成功",
