@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
 import "package:toneharbor/models/audio_player/tone_harbor_track.dart";
+import "package:toneharbor/providers/audio_player/lyrics_cache_provider.dart";
 import "package:toneharbor/providers/providers.dart";
 import "package:toneharbor/services/audio_player/audio_player.dart";
 import "package:toneharbor/utils/base_funs.dart";
@@ -103,7 +104,12 @@ class PlayingDetailLayout extends BaseBgLayout {
                       ),
                     ),
                   ),
-                  Expanded(flex: 1, child: LyricsContentPage()),
+                  Expanded(
+                    flex: 1,
+                    child: LyricsContentPage(
+                      currentLyrics: ref.watch(currentLyricsProvider).value,
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_lyric/flutter_lyric.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lyricskit/lyricskit.dart';
 import 'package:toneharbor/hooks/use_progress.dart';
-import 'package:toneharbor/providers/audio_player/lyrics_cache_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 
 class LyricsContentPage extends HookConsumerWidget {
-  const LyricsContentPage({super.key});
+  final Lyrics? currentLyrics;
+  const LyricsContentPage({super.key, this.currentLyrics});
 
   String formatDuration(Duration duration) {
     final minutes = duration.inMinutes.remainder(60);
@@ -19,7 +20,6 @@ class LyricsContentPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentLyrics = ref.watch(currentLyricsProvider).value;
     final colorScheme = getColorSchemeWhenReady(ref);
     final i10n = ref.watch(l10nProvider);
     final progressData = useProgress(ref);
@@ -90,7 +90,7 @@ class LyricsContentPage extends HookConsumerWidget {
 
     useEffect(() {
       if (currentLyrics != null && isMounted.value) {
-        final lyricModel = currentLyrics.toLyricModel();
+        final lyricModel = currentLyrics!.toLyricModel();
         controller.loadLyricModel(lyricModel);
       }
       return null;

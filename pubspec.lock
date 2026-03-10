@@ -694,7 +694,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "4a4318d97155c8da59c57e44edb2c0bb782b56c7"
+      resolved-ref: "01de0e2c28bb6f19aa74c952bb32adad6d881c58"
       url: "https://git.nxcloud.club:12750/LyricTracers/lyricskit.git"
     source: git
     version: "0.1.0"
@@ -1357,10 +1357,10 @@ packages:
     dependency: "direct main"
     description:
       name: sqlite3_flutter_libs
-      sha256: "1e800ebe7f85a80a66adacaa6febe4d5f4d8b75f244e9838a27cb2ffc7aec08d"
+      sha256: eeb9e3a45207649076b808f8a5a74d68770d0b7f26ccef6d5f43106eee5375ad
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
-    version: "0.5.41"
+    version: "0.5.42"
   sqlparser:
     dependency: transitive
     description:
