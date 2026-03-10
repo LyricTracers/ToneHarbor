@@ -298,6 +298,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get no_playlists => 'No playlist';
 
   @override
+  String get playlist_name => 'Playlist Name';
+
+  @override
+  String get input_playlist_name => 'Input Playlist Name';
+
+  @override
+  String get addsong_to_playlist_success =>
+      'Successfully added Songs to [%s playlist]';
+
+  @override
   String get cancel => 'Cancel';
 
   @override

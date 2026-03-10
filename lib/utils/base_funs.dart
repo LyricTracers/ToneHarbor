@@ -191,6 +191,15 @@ Future<T?> getFromCache<T>({
   return null;
 }
 
+Future<void> clearCacheByGroupKey({required String groupKey}) async {
+  try {
+    await audioStationRequestCache.clearGroup(groupKey);
+    logger.d('groupKey: $groupKey 缓存已清除');
+  } catch (e) {
+    logger.w('groupKey: $groupKey 清除缓存失败: $e');
+  }
+}
+
 Future<void> saveToCache({
   required String cacheKey,
   required Map<String, dynamic> jsonBody,
@@ -308,4 +317,52 @@ Future<bool> isTrackCached(
 
 String sanitizeCacheKey(String key) {
   return key.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
+}
+
+void showCreatePlaylistDialog(
+  WidgetRef ref,
+  TextEditingController controller,
+  ColorScheme colorScheme,
+  void Function(String name) onCreated,
+) async {
+  var i10n = ref.read(l10nProvider);
+  showDialog(
+    context: ref.context,
+    builder: (context) => AlertDialog(
+      title: Text(
+        i10n.create_playlist,
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      content: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          hintText: i10n.input_playlist_name,
+          labelText: i10n.playlist_name,
+          border: OutlineInputBorder(),
+          prefixIcon: Icon(Icons.playlist_add),
+        ),
+      ),
+      actions: [
+        ElevatedButton.icon(
+          onPressed: () {
+            controller.text = "";
+            Navigator.of(context).pop();
+          },
+          icon: Icon(Icons.cancel),
+          label: Text(i10n.cancel),
+        ),
+        ElevatedButton.icon(
+          onPressed: () {
+            if (controller.text.isNotEmpty) {
+              onCreated(controller.text);
+            }
+            controller.text = "";
+            Navigator.of(context).pop();
+          },
+          icon: Icon(Icons.playlist_add),
+          label: Text(i10n.create_playlist),
+        ),
+      ],
+    ),
+  );
 }

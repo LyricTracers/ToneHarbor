@@ -19,6 +19,7 @@ class AddToPlaylistsPage extends HookConsumerWidget {
     var width = MediaQuery.of(context).size.width;
 
     final scrollController = useScrollController();
+    final nameController = useTextEditingController();
 
     final playlistsState = ref.watch(playlistResponseProvider());
     final playlists = playlistsState.value?.data?.playlists ?? [];
@@ -50,6 +51,29 @@ class AddToPlaylistsPage extends HookConsumerWidget {
     }, [scrollController]);
 
     var skipDuplicate = useState(true);
+    void callBackAddPlaylists(String name) async {
+      if (name.isEmpty) return;
+      try {
+        ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+        var result = await ref
+            .read(playlistStateProvider.notifier)
+            .createPlaylist(name: name);
+        if (result.success) {
+          await clearCacheByGroupKey(groupKey: "playlist");
+          ref.invalidate(playlistResponseProvider);
+        }
+      } catch (e) {
+        if (context.mounted) {
+          if (e is AudioStationException) {
+            showSnackBar(e.message, context, colorScheme.secondary);
+          } else {
+            showSnackBar(e.toString(), context, colorScheme.secondary);
+          }
+        }
+      } finally {
+        ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+      }
+    }
 
     return Stack(
       children: [
@@ -74,7 +98,14 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                     Expanded(child: SizedBox()),
 
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        showCreatePlaylistDialog(
+                          ref,
+                          nameController,
+                          colorScheme,
+                          callBackAddPlaylists,
+                        );
+                      },
                       icon: Icon(Icons.create_rounded, size: 18),
                       tooltip: i10n.create_playlist,
                     ),
@@ -143,7 +174,14 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                                       songIds: songIds,
                                       skipDuplicate: skipDuplicate.value,
                                     );
-                                logger.i("result: $result");
+                                if (result.success && context.mounted) {
+                                  showSnackBar(
+                                    i10n.addsong_to_playlist_success
+                                        .replaceFirst("%s", playlist.name),
+                                    context,
+                                    colorScheme.secondary,
+                                  );
+                                }
                               } catch (e) {
                                 logger.e("Error: $e");
                                 if (context.mounted) {
@@ -151,7 +189,7 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                                     showSnackBar(
                                       e.message,
                                       context,
-                                      colorScheme.error,
+                                      colorScheme.secondary,
                                     );
                                   }
                                 }

@@ -162,6 +162,7 @@ Future<PlaylistListResponse> _getPlaylists({
       group: 'playlist',
       fromJson: (json) => PlaylistListResponse.fromJson(json),
     );
+
     if (cached != null) {
       return cached;
     }

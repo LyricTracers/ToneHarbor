@@ -650,6 +650,24 @@ abstract class AppLocalizations {
   /// **'No playlist'**
   String get no_playlists;
 
+  /// No description provided for @playlist_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist Name'**
+  String get playlist_name;
+
+  /// No description provided for @input_playlist_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Input Playlist Name'**
+  String get input_playlist_name;
+
+  /// No description provided for @addsong_to_playlist_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully added Songs to [%s playlist]'**
+  String get addsong_to_playlist_success;
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:
