@@ -703,6 +703,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete'**
   String get delete;
+
+  /// No description provided for @title.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get title;
+
+  /// No description provided for @artist.
+  ///
+  /// In en, this message translates to:
+  /// **'Artist'**
+  String get artist;
+
+  /// No description provided for @input_song_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter song title'**
+  String get input_song_title;
+
+  /// No description provided for @input_song_artist.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter song artist'**
+  String get input_song_artist;
+
+  /// No description provided for @sync.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync'**
+  String get sync;
+
+  /// No description provided for @restore_default.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore Default'**
+  String get restore_default;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @unknown_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Title'**
+  String get unknown_title;
+
+  /// No description provided for @unknown_artist.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Artist'**
+  String get unknown_artist;
+
+  /// No description provided for @unknown_source.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Source'**
+  String get unknown_source;
+
+  /// No description provided for @save_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved successfully'**
+  String get save_success;
 }
 
 class _AppLocalizationsDelegate

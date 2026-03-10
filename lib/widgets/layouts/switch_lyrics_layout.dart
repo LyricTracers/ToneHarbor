@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/audio_player/lyrics_cache_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -152,8 +153,8 @@ class SwitchLyricsLayout extends BaseBgLayout {
                             style: TextStyle(fontSize: 14),
                             controller: titleController,
                             decoration: InputDecoration(
-                              labelText: "标题",
-                              hintText: '输入歌曲标题',
+                              labelText: l10n.title,
+                              hintText: l10n.input_song_title,
                               prefixIcon: Icon(Icons.music_note, size: 18),
                               suffixIcon:
                                   activeTrack != currentTrack.value &&
@@ -163,7 +164,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
                                         currentTrack.value = activeTrack;
                                       },
                                       icon: Icon(Icons.sync, size: 18),
-                                      tooltip: "同步",
+                                      tooltip: l10n.sync,
                                     ))
                                   : (currentTrack.value.title != title.value)
                                   ? IconButton(
@@ -172,7 +173,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
                                             currentTrack.value.title;
                                       },
                                       icon: Icon(Icons.restore, size: 18),
-                                      tooltip: "恢复默认标题",
+                                      tooltip: l10n.restore_default,
                                     )
                                   : null,
                             ),
@@ -183,8 +184,8 @@ class SwitchLyricsLayout extends BaseBgLayout {
                             style: TextStyle(fontSize: 14),
                             controller: artistController,
                             decoration: InputDecoration(
-                              labelText: "歌手",
-                              hintText: '输入歌曲歌手',
+                              labelText: l10n.artist,
+                              hintText: l10n.input_song_artist,
                               prefixIcon: Icon(Icons.person, size: 18),
                               suffixIcon:
                                   activeTrack != currentTrack.value &&
@@ -194,7 +195,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
                                         currentTrack.value = activeTrack;
                                       },
                                       icon: Icon(Icons.sync, size: 18),
-                                      tooltip: "同步",
+                                      tooltip: l10n.sync,
                                     ))
                                   : (currentTrack.value.artist !=
                                             artist.value &&
@@ -206,7 +207,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
                                             currentTrack.value.artist;
                                       },
                                       icon: Icon(Icons.restore, size: 18),
-                                      tooltip: "恢复默认歌手",
+                                      tooltip: l10n.restore_default,
                                     )
                                   : null,
                             ),
@@ -222,7 +223,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
                       ),
                       onPressed: callBack,
                       icon: Icon(Icons.search, size: 16),
-                      label: const Text('搜索', style: TextStyle(fontSize: 14)),
+                      label: Text(l10n.search, style: TextStyle(fontSize: 14)),
                     ),
 
                     SizedBox(height: 15),
@@ -249,8 +250,8 @@ class SwitchLyricsLayout extends BaseBgLayout {
                               SizedBox(height: 15),
                               ElevatedButton.icon(
                                 onPressed: () => callBack(),
-                                label: const Text(
-                                  '重试',
+                                label: Text(
+                                  l10n.retry,
                                   style: TextStyle(fontSize: 16),
                                 ),
                                 icon: Icon(Icons.refresh_rounded, size: 18),
@@ -273,6 +274,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
                               isSelected: selectedIndex.value == index,
                               onTap: () => selectedIndex.value = index,
                               colorScheme: colorScheme,
+                              l10n: l10n,
                             );
                           },
                         ),
@@ -323,7 +325,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
                             ref.invalidate(currentLyricsProvider);
                             if (context.mounted) {
                               showSnackBar(
-                                "保存成功",
+                                l10n.save_success,
                                 context,
                                 colorScheme.primary,
                               );
@@ -384,6 +386,7 @@ class _LyricsListItem extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
   final ColorScheme colorScheme;
+  final AppLocalizations l10n;
 
   const _LyricsListItem({
     required this.index,
@@ -391,13 +394,14 @@ class _LyricsListItem extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
     required this.colorScheme,
+    required this.l10n,
   });
 
   @override
   Widget build(BuildContext context) {
-    final title = lyric.idTags[IDTagKey('title')] ?? '未知标题';
-    final artist = lyric.idTags[IDTagKey('artist')] ?? '未知艺术家';
-    final source = lyric.idTags[IDTagKey('source')] ?? '未知来源';
+    final title = lyric.idTags[IDTagKey('title')] ?? l10n.unknown_title;
+    final artist = lyric.idTags[IDTagKey('artist')] ?? l10n.unknown_artist;
+    final source = lyric.idTags[IDTagKey('source')] ?? l10n.unknown_source;
 
     return Container(
       height: SwitchLyricsLayout._itemHeight,

@@ -100,5 +100,16 @@
   "cancel": "取消",
   "confirm": "确定",
   "playing": "播放中",
-  "delete": "删除"
+  "delete": "删除",
+  "title": "标题",
+  "artist": "歌手",
+  "input_song_title": "输入歌曲标题",
+  "input_song_artist": "输入歌曲歌手",
+  "sync": "同步",
+  "restore_default": "恢复默认",
+  "retry": "重试",
+  "unknown_title": "未知标题",
+  "unknown_artist": "未知艺术家",
+  "unknown_source": "未知来源",
+  "save_success": "保存成功"
 }

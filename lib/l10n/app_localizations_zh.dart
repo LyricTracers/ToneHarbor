@@ -310,4 +310,37 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get delete => '删除';
+
+  @override
+  String get title => '标题';
+
+  @override
+  String get artist => '歌手';
+
+  @override
+  String get input_song_title => '输入歌曲标题';
+
+  @override
+  String get input_song_artist => '输入歌曲歌手';
+
+  @override
+  String get sync => '同步';
+
+  @override
+  String get restore_default => '恢复默认';
+
+  @override
+  String get retry => '重试';
+
+  @override
+  String get unknown_title => '未知标题';
+
+  @override
+  String get unknown_artist => '未知艺术家';
+
+  @override
+  String get unknown_source => '未知来源';
+
+  @override
+  String get save_success => '保存成功';
 }

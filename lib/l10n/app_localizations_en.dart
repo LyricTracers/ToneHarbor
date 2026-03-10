@@ -324,4 +324,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get delete => 'Delete';
+
+  @override
+  String get title => 'Title';
+
+  @override
+  String get artist => 'Artist';
+
+  @override
+  String get input_song_title => 'Enter song title';
+
+  @override
+  String get input_song_artist => 'Enter song artist';
+
+  @override
+  String get sync => 'Sync';
+
+  @override
+  String get restore_default => 'Restore Default';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get unknown_title => 'Unknown Title';
+
+  @override
+  String get unknown_artist => 'Unknown Artist';
+
+  @override
+  String get unknown_source => 'Unknown Source';
+
+  @override
+  String get save_success => 'Saved successfully';
 }
