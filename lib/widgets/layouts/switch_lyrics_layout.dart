@@ -267,101 +267,12 @@ class SwitchLyricsLayout extends BaseBgLayout {
                         child: ListView.builder(
                           itemCount: searchProvider.value!.length,
                           itemBuilder: (context, index) {
-                            var lyricsList = searchProvider.value!;
-                            final lyric = lyricsList[index];
-                            final title =
-                                lyric.idTags[IDTagKey('title')] ?? '未知标题';
-                            final artist =
-                                lyric.idTags[IDTagKey('artist')] ?? '未知艺术家';
-                            final source =
-                                lyric.idTags[IDTagKey('source')] ?? '未知来源';
-                            var isSelected = selectedIndex.value == index;
-
-                            return Container(
-                              height: _itemHeight,
-                              color: isSelected
-                                  ? colorScheme.primaryContainer.withValues(
-                                      alpha: .3,
-                                    )
-                                  : Colors.transparent,
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: ListTile(
-                                  contentPadding: const EdgeInsets.only(
-                                    left: 10,
-                                    right: 10,
-                                  ),
-                                  horizontalTitleGap: 0,
-                                  titleAlignment: ListTileTitleAlignment.center,
-                                  leading: Text(
-                                    '${index + 1}',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: colorScheme.primary,
-                                    ),
-                                  ),
-                                  minTileHeight: _itemHeight,
-                                  title: isSelected
-                                      ? SmartMarquee(
-                                          alignment: Alignment.centerLeft,
-                                          text: title,
-                                          style: TextStyle(fontSize: 13),
-                                          pauseAfterRound: Duration(seconds: 1),
-                                        )
-                                      : Text(
-                                          title,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(fontSize: 13),
-                                        ),
-                                  subtitle: isSelected
-                                      ? SmartMarquee(
-                                          alignment:
-                                              AlignmentGeometry.centerLeft,
-                                          text: artist,
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            color: isSelected
-                                                ? colorScheme.primary
-                                                      .withValues(alpha: .8)
-                                                : colorScheme.onSurface
-                                                      .withValues(alpha: .8),
-                                          ),
-                                          pauseAfterRound: Duration(seconds: 1),
-                                        )
-                                      : Text(
-                                          artist,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            color: isSelected
-                                                ? colorScheme.primary
-                                                      .withValues(alpha: .8)
-                                                : colorScheme.onSurface
-                                                      .withValues(alpha: .8),
-                                          ),
-                                        ),
-                                  trailing: Text(
-                                    source,
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                      color: isSelected
-                                          ? colorScheme.primary.withValues(
-                                              alpha: .8,
-                                            )
-                                          : colorScheme.onSurface.withValues(
-                                              alpha: .4,
-                                            ),
-                                      fontSize: 9,
-                                    ),
-                                  ),
-                                  selected: isSelected,
-                                  onTap: () {
-                                    selectedIndex.value = index;
-                                  },
-                                ),
-                              ),
+                            return _LyricsListItem(
+                              index: index,
+                              lyric: searchProvider.value![index],
+                              isSelected: selectedIndex.value == index,
+                              onTap: () => selectedIndex.value = index,
+                              colorScheme: colorScheme,
                             );
                           },
                         ),
@@ -464,5 +375,94 @@ class SwitchLyricsLayout extends BaseBgLayout {
           ),
       ],
     );
+  }
+}
+
+class _LyricsListItem extends StatelessWidget {
+  final int index;
+  final Lyrics lyric;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final ColorScheme colorScheme;
+
+  const _LyricsListItem({
+    required this.index,
+    required this.lyric,
+    required this.isSelected,
+    required this.onTap,
+    required this.colorScheme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final title = lyric.idTags[IDTagKey('title')] ?? '未知标题';
+    final artist = lyric.idTags[IDTagKey('artist')] ?? '未知艺术家';
+    final source = lyric.idTags[IDTagKey('source')] ?? '未知来源';
+
+    return Container(
+      height: SwitchLyricsLayout._itemHeight,
+      color: isSelected
+          ? colorScheme.primaryContainer.withValues(alpha: .3)
+          : Colors.transparent,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: ListTile(
+          contentPadding: const EdgeInsets.only(left: 10, right: 10),
+          horizontalTitleGap: 0,
+          titleAlignment: ListTileTitleAlignment.center,
+          leading: Text(
+            '${index + 1}',
+            style: TextStyle(fontSize: 12, color: colorScheme.primary),
+          ),
+          minTileHeight: SwitchLyricsLayout._itemHeight,
+          title: isSelected
+              ? SmartMarquee(
+                  alignment: Alignment.centerLeft,
+                  text: title,
+                  style: const TextStyle(fontSize: 13),
+                  pauseAfterRound: const Duration(seconds: 1),
+                )
+              : Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 13),
+                ),
+          subtitle: _buildSubtitle(artist),
+          trailing: Text(
+            source,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              color: isSelected
+                  ? colorScheme.primary.withValues(alpha: .8)
+                  : colorScheme.onSurface.withValues(alpha: .4),
+              fontSize: 9,
+            ),
+          ),
+          selected: isSelected,
+          onTap: onTap,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubtitle(String artist) {
+    final color = isSelected
+        ? colorScheme.primary.withValues(alpha: .8)
+        : colorScheme.onSurface.withValues(alpha: .8);
+
+    return isSelected
+        ? SmartMarquee(
+            alignment: AlignmentGeometry.centerLeft,
+            text: artist,
+            style: TextStyle(fontSize: 11, color: color),
+            pauseAfterRound: const Duration(seconds: 1),
+          )
+        : Text(
+            artist,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 11, color: color),
+          );
   }
 }
