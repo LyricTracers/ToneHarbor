@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:logger/logger.dart';
 import 'package:toneharbor/init/initialized.dart';
-import 'package:toneharbor/models/audio_station/playlist_list.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/excetions.dart';
@@ -113,36 +111,26 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                         final playlist = playlists[index];
                         return RepaintBoundary(
                           child: ListTile(
-                            minTileHeight: 44,
+                            minTileHeight: 36,
                             contentPadding: const EdgeInsets.only(
                               left: 10,
                               right: 10,
                             ),
                             horizontalTitleGap: 10,
-                            leading: Text(
-                              '${index + 1}',
+                            leading: IconButton(
+                              icon: Icon(Icons.folder_rounded, size: 18),
+                              onPressed: () {},
+                              tooltip: '${index + 1}',
+                            ),
+                            title: Text(
+                              playlist.name,
                               style: TextStyle(
                                 fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: colorScheme.primary,
+                                color: colorScheme.onSurfaceVariant,
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            title: Row(
-                              children: [
-                                Icon(Icons.folder_rounded, size: 18),
-                                SizedBox(width: 10),
-                                Text(
-                                  playlist.name,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-
                             onTap: () async {
                               ref
                                   .read(requestFlagProvider.notifier)
