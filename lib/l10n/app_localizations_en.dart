@@ -289,6 +289,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get no_lyric => 'No lyrics available';
 
   @override
+  String get add_to_playlists => 'Add to';
+
+  @override
+  String get create_playlist => 'Create playlist';
+
+  @override
+  String get no_playlists => 'No playlist';
+
+  @override
   String get cancel => 'Cancel';
 
   @override

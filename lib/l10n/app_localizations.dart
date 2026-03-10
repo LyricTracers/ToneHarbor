@@ -632,6 +632,24 @@ abstract class AppLocalizations {
   /// **'No lyrics available'**
   String get no_lyric;
 
+  /// No description provided for @add_to_playlists.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to'**
+  String get add_to_playlists;
+
+  /// No description provided for @create_playlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Create playlist'**
+  String get create_playlist;
+
+  /// No description provided for @no_playlists.
+  ///
+  /// In en, this message translates to:
+  /// **'No playlist'**
+  String get no_playlists;
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:

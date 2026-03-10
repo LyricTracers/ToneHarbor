@@ -1,6 +1,4 @@
-import 'dart:ui';
-
-import 'package:rhttp/rhttp.dart';
+import 'package:lyricskit/lyricskit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
@@ -8,144 +6,30 @@ import 'package:toneharbor/models/audio_station/playlist_list.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
-part 'playlist_provider.dependence.dart';
 part 'playlist_provider.g.dart';
+part 'playlist_provider.dependence.dart';
 
 @riverpod
-Future<RemoveMissingSongsResponse> removeMissingSongs(
-  Ref ref, {
-  required String id,
-}) async {
-  final link = ref.keepAlive();
-  try {
-    return await _removeMissingSongs(ref: ref, id: id);
-  } finally {
-    link.close();
-  }
-}
+class PlaylistResponseNotifier extends _$PlaylistResponseNotifier {
+  late int _limit;
+  late String _library;
+  late String _sortBy;
+  late String _sortDirection;
 
-@riverpod
-Future<AddPlaylistSongsResponse> removeSongsFromPlaylist(
-  Ref ref, {
-  required String id,
-  required int offset,
-  required int limit,
-}) async {
-  final link = ref.keepAlive();
-  try {
-    return await _addSongToPlaylist(
-      ref: ref,
-      id: id,
-      songId: '',
-      offset: offset,
-      limit: limit,
-    );
-  } finally {
-    link.close();
-  }
-}
+  @override
+  Future<PlaylistListResponse?> build({
+    int limit = 100,
+    int offset = 0,
+    String library = 'all',
+    String sortBy = '',
+    String sortDirection = 'ASC',
+  }) async {
+    _limit = limit;
+    _library = library;
+    _sortBy = sortBy;
+    _sortDirection = sortDirection;
 
-@riverpod
-Future<AddPlaylistSongsResponse> addSongsToPlaylist(
-  Ref ref, {
-  required String id,
-  required List<String> songIds,
-  int offset = -1,
-  int limit = 0,
-  bool skipDuplicate = false,
-}) async {
-  final link = ref.keepAlive();
-  try {
-    return await _addSongToPlaylist(
-      ref: ref,
-      id: id,
-      songId: songIds.join(','),
-      offset: offset,
-      limit: limit,
-      skipDuplicate: skipDuplicate,
-    );
-  } finally {
-    link.close();
-  }
-}
-
-@riverpod
-Future<AddPlaylistSongsResponse> addSongToPlaylist(
-  Ref ref, {
-  required String id,
-  required String songId,
-  int offset = -1,
-  int limit = 0,
-  bool skipDuplicate = false,
-}) async {
-  final link = ref.keepAlive();
-  try {
-    return await _addSongToPlaylist(
-      ref: ref,
-      id: id,
-      songId: songId,
-      offset: offset,
-      limit: limit,
-      skipDuplicate: skipDuplicate,
-    );
-  } finally {
-    link.close();
-  }
-}
-
-@riverpod
-Future<DeletePlaylistResponse> deletePlaylist(
-  Ref ref, {
-  required String id,
-}) async {
-  final link = ref.keepAlive();
-  try {
-    return await _deletePlaylist(ref: ref, id: id);
-  } finally {
-    link.close();
-  }
-}
-
-@riverpod
-Future<RenamePlaylistResponse> renamePlaylist(
-  Ref ref, {
-  required String id,
-  required String newName,
-}) async {
-  final link = ref.keepAlive();
-  try {
-    return await _renamePlaylist(ref: ref, id: id, newName: newName);
-  } finally {
-    link.close();
-  }
-}
-
-@riverpod
-Future<CreatePlaylistResponse> createPlaylist(
-  Ref ref, {
-  required String name,
-}) async {
-  final link = ref.keepAlive();
-  try {
-    return await _createPlaylist(ref: ref, name: name);
-  } finally {
-    link.close();
-  }
-}
-
-@riverpod
-Future<PlaylistListResponse> playlists(
-  Ref ref, {
-  int limit = 100,
-  int offset = 0,
-  String library = 'shared',
-  String sortBy = '',
-  String sortDirection = 'ASC',
-  Duration? cacheDuration = const Duration(minutes: 5),
-  Duration? keepAliveDuration = const Duration(minutes: 5),
-}) async {
-  final link = ref.keepAliveFor(keepAliveDuration);
-  try {
+    ref.keepAliveFor(const Duration(minutes: 5));
     return await _getPlaylists(
       ref: ref,
       limit: limit,
@@ -153,30 +37,66 @@ Future<PlaylistListResponse> playlists(
       library: library,
       sortBy: sortBy,
       sortDirection: sortDirection,
-      cacheDuration: cacheDuration,
+      cacheDuration: const Duration(minutes: 30),
     );
-  } finally {
-    if (keepAliveDuration != null) {
-      link.close();
+  }
+
+  Future<void> fetchMore() async {
+    if (state.value == null) return;
+    final currentData = state.value!.data;
+    if (currentData == null) return;
+
+    final currentTotal = currentData.total;
+    final currentPlaylists = currentData.playlists ?? [];
+
+    if (currentPlaylists.length >= currentTotal) return;
+
+    final oldState = state.value;
+    try {
+      final newState = await _getPlaylists(
+        ref: ref,
+        limit: _limit,
+        offset: currentPlaylists.length,
+        library: _library,
+        sortBy: _sortBy,
+        sortDirection: _sortDirection,
+        cacheDuration: const Duration(minutes: 30),
+      );
+
+      final newPlaylists = newState.data?.playlists ?? [];
+      final mergedPlaylists = [...currentPlaylists, ...newPlaylists];
+
+      state = AsyncData(
+        newState.copyWith(
+          data: newState.data?.copyWith(
+            playlists: mergedPlaylists,
+            total: currentTotal,
+          ),
+        ),
+      );
+    } catch (e) {
+      logger.e('加载更多播放列表失败: $e');
+      state = AsyncData(oldState!);
     }
   }
 }
 
 @riverpod
-Future<PlaylistDetailResponse> playlistDetail(
-  Ref ref, {
-  required String id,
-  String library = 'shared',
-  String additional = 'songs,song_tag,song_audio,song_rating,sharing_info',
-  int limit = 100,
-  int offset = 0,
-  String sortBy = '',
-  String sortDirection = 'ASC',
-  Duration? cacheDuration = const Duration(minutes: 5),
-  Duration? keepAliveDuration = const Duration(minutes: 5),
-}) async {
-  final link = ref.keepAliveFor(keepAliveDuration);
-  try {
+class PlaylistStateNotifier extends _$PlaylistStateNotifier {
+  @override
+  void build() {
+    ref.keepAliveFor(const Duration(minutes: 5));
+  }
+
+  Future<PlaylistDetailResponse> fetchPlaylistDetail({
+    required String id,
+    String library = 'shared',
+    String additional = 'songs,song_tag,song_audio,song_rating,sharing_info',
+    int limit = 100,
+    int offset = 0,
+    String sortBy = '',
+    String sortDirection = 'ASC',
+  }) async {
     return await _getPlaylistDetail(
       ref: ref,
       id: id,
@@ -186,68 +106,88 @@ Future<PlaylistDetailResponse> playlistDetail(
       offset: offset,
       sortBy: sortBy,
       sortDirection: sortDirection,
-      cacheDuration: cacheDuration,
+      cacheDuration: const Duration(minutes: 5),
     );
-  } finally {
-    if (keepAliveDuration != null) {
-      link.close();
-    }
   }
-}
 
-@riverpod
-Future<PlaylistDetailResponse> playlistInfo(
-  Ref ref, {
-  required String id,
-  String additional = 'songs',
-  Duration? cacheDuration = const Duration(minutes: 5),
-  Duration? keepAliveDuration = const Duration(minutes: 5),
-}) async {
-  final link = ref.keepAliveFor(keepAliveDuration);
-  try {
+  Future<PlaylistDetailResponse> fetchPlaylistInfo({
+    required String id,
+    String additional = 'songs',
+  }) async {
     return await _getPlaylistInfo(
       ref: ref,
       id: id,
       additional: additional,
-      cacheDuration: cacheDuration,
+      cacheDuration: const Duration(minutes: 5),
     );
-  } finally {
-    if (keepAliveDuration != null) {
-      link.close();
-    }
-  }
-}
-
-@riverpod
-class PlaylistsState extends _$PlaylistsState {
-  @override
-  PlaylistListResponse? build() {
-    return null;
   }
 
-  Future<void> fetchPlaylists({
-    int limit = 100,
-    int offset = 0,
-    String library = 'shared',
-    String sortBy = '',
-    String sortDirection = 'ASC',
-    Duration? cacheDuration = const Duration(minutes: 5),
+  Future<CreatePlaylistResponse> createPlaylist({required String name}) async {
+    return await _createPlaylist(ref: ref, name: name);
+  }
+
+  Future<RenamePlaylistResponse> renamePlaylist({
+    required String id,
+    required String newName,
   }) async {
-    state = null;
-    try {
-      final response = await _getPlaylists(
-        ref: ref,
-        limit: limit,
-        offset: offset,
-        library: library,
-        sortBy: sortBy,
-        sortDirection: sortDirection,
-        cacheDuration: cacheDuration,
-      );
-      state = response;
-    } catch (e) {
-      logger.e('获取播放列表失败: $e');
-      rethrow;
-    }
+    return await _renamePlaylist(ref: ref, id: id, newName: newName);
+  }
+
+  Future<DeletePlaylistResponse> deletePlaylist({required String id}) async {
+    return await _deletePlaylist(ref: ref, id: id);
+  }
+
+  Future<AddPlaylistSongsResponse> addSongToPlaylist({
+    required String id,
+    required String songId,
+    int offset = -1,
+    int limit = 0,
+    bool skipDuplicate = false,
+  }) async {
+    return await _addSongToPlaylist(
+      ref: ref,
+      id: id,
+      songId: songId,
+      offset: offset,
+      limit: limit,
+      skipDuplicate: skipDuplicate,
+    );
+  }
+
+  Future<AddPlaylistSongsResponse> addSongsToPlaylist({
+    required String id,
+    required List<String> songIds,
+    int offset = -1,
+    int limit = 0,
+    bool skipDuplicate = false,
+  }) async {
+    return await _addSongToPlaylist(
+      ref: ref,
+      id: id,
+      songId: songIds.join(','),
+      offset: offset,
+      limit: limit,
+      skipDuplicate: skipDuplicate,
+    );
+  }
+
+  Future<AddPlaylistSongsResponse> removeSongsFromPlaylist({
+    required String id,
+    required int offset,
+    required int limit,
+  }) async {
+    return await _addSongToPlaylist(
+      ref: ref,
+      id: id,
+      songId: '',
+      offset: offset,
+      limit: limit,
+    );
+  }
+
+  Future<RemoveMissingSongsResponse> removeMissingSongs({
+    required String id,
+  }) async {
+    return await _removeMissingSongs(ref: ref, id: id);
   }
 }

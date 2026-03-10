@@ -1,21 +1,38 @@
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
+import "package:toneharbor/models/audio_player/tone_harbor_track.dart";
 import "package:toneharbor/providers/providers.dart";
 import "package:toneharbor/services/audio_player/audio_player.dart";
 import "package:toneharbor/utils/base_funs.dart";
 import "package:toneharbor/widgets/layouts/base_bg_layout.dart";
+import "package:toneharbor/widgets/pages/add_to_playlists_page.dart";
 import "package:toneharbor/widgets/pages/lyrics_content_page.dart";
 import "package:toneharbor/widgets/pages/playlist_page.dart";
 import "package:toneharbor/widgets/widgets.dart";
 
-enum PlayingSubContent { none, playList, songInfo, updateLyrics }
+enum PlayingSubContent {
+  none,
+  playList,
+  songInfo,
+  addToPlayLists,
+  updateLyrics,
+}
 
 class PlayingDetailLayout extends BaseBgLayout {
   const PlayingDetailLayout({super.key});
 
   @override
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
+    final audioPlayerState = ref.watch(audioPlayerStateProvider);
+    final colorScheme = getColorSchemeWhenReady(ref);
+    final activeTrack = audioPlayerState.activeTrack;
+    var size = MediaQuery.of(ref.context).size;
+    double radius = size.height > size.width / 2 ? size.width / 2 : size.height;
+    if (activeTrack == null) {
+      return buildErrorView(ref.context, ref, colorScheme, size.height, () {});
+    }
+
     var playingSubContent = useState(PlayingSubContent.none);
     final animationController = useAnimationController(
       duration: const Duration(milliseconds: 100),
@@ -35,8 +52,7 @@ class PlayingDetailLayout extends BaseBgLayout {
             curve: Curves.fastEaseInToSlowEaseOut,
           ),
         );
-    var size = MediaQuery.of(ref.context).size;
-    double radius = size.height > size.width / 2 ? size.width / 2 : size.height;
+
     return Stack(
       children: [
         Column(
@@ -50,7 +66,7 @@ class PlayingDetailLayout extends BaseBgLayout {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _buildSongIcon(ref, radius),
+                          _buildSongIcon(ref, activeTrack, radius),
                           const SizedBox(height: 12),
                           Padding(
                             padding: EdgeInsets.symmetric(
@@ -60,7 +76,10 @@ class PlayingDetailLayout extends BaseBgLayout {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    playingSubContent.value =
+                                        PlayingSubContent.addToPlayLists;
+                                  },
                                   icon: Icon(
                                     Icons.playlist_add_rounded,
                                     size: 24,
@@ -105,27 +124,34 @@ class PlayingDetailLayout extends BaseBgLayout {
               },
             ),
           ),
-        if (playingSubContent.value == PlayingSubContent.playList)
+        if (playingSubContent.value != PlayingSubContent.none)
           SlideTransition(
             position: slideAnimation,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: [PlaylistPage()],
+              children: [
+                switch (playingSubContent.value) {
+                  PlayingSubContent.playList => PlaylistPage(),
+                  PlayingSubContent.songInfo => SizedBox(),
+                  PlayingSubContent.addToPlayLists => AddToPlaylistsPage([
+                    activeTrack.id,
+                  ]),
+                  PlayingSubContent.updateLyrics => SizedBox(),
+                  PlayingSubContent.none => const SizedBox(),
+                },
+              ],
             ),
           ),
       ],
     );
   }
 
-  Widget _buildSongIcon(WidgetRef ref, double radius) {
-    final audioPlayerState = ref.watch(audioPlayerStateProvider);
+  Widget _buildSongIcon(
+    WidgetRef ref,
+    ToneHarborTrackObject activeTrack,
+    double radius,
+  ) {
     final colorScheme = getColorSchemeWhenReady(ref);
-    final activeTrack = audioPlayerState.activeTrack;
-
-    if (activeTrack == null) {
-      return buildErrorView(ref.context, ref, colorScheme, radius, () {});
-    }
-
     final containerSize = radius * 0.75;
 
     return Stack(

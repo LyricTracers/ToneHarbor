@@ -276,6 +276,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get no_lyric => '暂无歌词';
 
   @override
+  String get add_to_playlists => '添加到';
+
+  @override
+  String get create_playlist => '创建歌单';
+
+  @override
+  String get no_playlists => '没有歌单';
+
+  @override
   String get cancel => '取消';
 
   @override

@@ -415,11 +415,11 @@ class TestLayout extends BaseBgLayout {
       });
 
       try {
-        final result = await ref.read(playlistsProvider().future);
+        final result = await ref.read(playlistResponseProvider().future);
         updateRequest(
           requestId: requestId,
           status: 'success',
-          response: '获取成功，播放列表数量: ${result.data?.playlists?.length ?? 0}',
+          response: '获取成功，播放列表数量: ${result?.data?.playlists?.length ?? 0}',
         );
       } catch (e) {
         final errorMessage = formatErrorMessage(e);
@@ -444,15 +444,15 @@ class TestLayout extends BaseBgLayout {
       });
 
       try {
-        final result = await ref.read(
-          createPlaylistProvider(
-            name: 'Test Playlist ${DateTime.now().millisecondsSinceEpoch}',
-          ).future,
-        );
+        final result = await ref
+            .read(playlistStateProvider.notifier)
+            .createPlaylist(
+              name: 'Test Playlist ${DateTime.now().millisecondsSinceEpoch}',
+            );
         updateRequest(
           requestId: requestId,
           status: 'success',
-          response: '创建成功，ID: ${result.data?.id ?? '未知'}',
+          response: '创建成功',
         );
       } catch (e) {
         final errorMessage = formatErrorMessage(e);
