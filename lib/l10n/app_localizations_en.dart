@@ -308,6 +308,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Successfully added Songs to [%s playlist]';
 
   @override
+  String get switch_lyrics => 'Switch Lyrics';
+
+  @override
+  String get input_title_empty => 'The current input title is empty';
+
+  @override
   String get cancel => 'Cancel';
 
   @override

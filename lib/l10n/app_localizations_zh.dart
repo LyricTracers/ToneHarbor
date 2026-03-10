@@ -294,6 +294,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addsong_to_playlist_success => '添加歌曲到[%s歌单]成功';
 
   @override
+  String get switch_lyrics => '切换歌词';
+
+  @override
+  String get input_title_empty => '当前输入标题为空';
+
+  @override
   String get cancel => '取消';
 
   @override

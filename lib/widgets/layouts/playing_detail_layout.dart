@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
+import "package:go_router/go_router.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
 import "package:toneharbor/models/audio_player/tone_harbor_track.dart";
 import "package:toneharbor/providers/audio_player/lyrics_cache_provider.dart";
@@ -87,7 +88,12 @@ class PlayingDetailLayout extends BaseBgLayout {
                                   ),
                                 ),
                                 IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    context.push(
+                                      "/switch_lyrics",
+                                      extra: activeTrack,
+                                    );
+                                  },
                                   icon: Icon(Icons.lyrics_rounded, size: 24),
                                 ),
                                 IconButton(
@@ -115,7 +121,7 @@ class PlayingDetailLayout extends BaseBgLayout {
             ),
             BottomPlayer(() {
               playingSubContent.value = PlayingSubContent.playList;
-            }, showArrowUp: false),
+            }, showArrowType: ShowArrowType.down),
           ],
         ),
         if (playingSubContent.value != PlayingSubContent.none)

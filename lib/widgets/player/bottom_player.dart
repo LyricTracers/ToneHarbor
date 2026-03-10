@@ -11,10 +11,16 @@ import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
+enum ShowArrowType { up, down, none }
+
 class BottomPlayer extends HookConsumerWidget {
   final VoidCallback onShowPlaylist;
-  final bool showArrowUp;
-  const BottomPlayer(this.onShowPlaylist, {super.key, this.showArrowUp = true});
+  final ShowArrowType showArrowType;
+  const BottomPlayer(
+    this.onShowPlaylist, {
+    super.key,
+    this.showArrowType = ShowArrowType.up,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -292,20 +298,22 @@ class BottomPlayer extends HookConsumerWidget {
                         icon: const Icon(Icons.playlist_play_rounded, size: 18),
                         onPressed: onShowPlaylist,
                       ),
-                      const SizedBox(width: 2),
-                      IconButton(
-                        icon: Icon(
-                          showArrowUp
-                              ? Icons.keyboard_arrow_up_rounded
-                              : Icons.keyboard_arrow_down_rounded,
-                          size: 18,
+                      if (showArrowType != ShowArrowType.none)
+                        const SizedBox(width: 2),
+                      if (showArrowType != ShowArrowType.none)
+                        IconButton(
+                          icon: Icon(
+                            showArrowType == ShowArrowType.up
+                                ? Icons.keyboard_arrow_up_rounded
+                                : Icons.keyboard_arrow_down_rounded,
+                            size: 18,
+                          ),
+                          onPressed: () {
+                            showArrowType == ShowArrowType.up
+                                ? context.push("/playing_detail")
+                                : context.pop();
+                          },
                         ),
-                        onPressed: () {
-                          showArrowUp
-                              ? context.push("/playing_detail")
-                              : context.pop();
-                        },
-                      ),
                     ],
                   ),
                 ),

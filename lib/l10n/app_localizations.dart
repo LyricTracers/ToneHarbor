@@ -668,6 +668,18 @@ abstract class AppLocalizations {
   /// **'Successfully added Songs to [%s playlist]'**
   String get addsong_to_playlist_success;
 
+  /// No description provided for @switch_lyrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch Lyrics'**
+  String get switch_lyrics;
+
+  /// No description provided for @input_title_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'The current input title is empty'**
+  String get input_title_empty;
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:

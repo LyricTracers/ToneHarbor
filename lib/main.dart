@@ -3,10 +3,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/providers/server/server_provider.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_streams.dart';
 import 'package:toneharbor/widgets/layouts/playing_detail_layout.dart';
+import 'package:toneharbor/widgets/layouts/switch_lyrics_layout.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'init/initialized.dart';
@@ -108,6 +110,14 @@ class MyApp extends HookConsumerWidget {
             builder: (context, state, child) {
               return HomeLayout(child: child);
             },
+          ),
+          GoRoute(
+            path: "/switch_lyrics",
+            pageBuilder: (context, state) => SlideTransitionPage(
+              child: SwitchLyricsLayout(
+                songTrackObject: state.extra as ToneHarborTrackObject,
+              ),
+            ),
           ),
           GoRoute(
             path: "/playing_detail",

@@ -6,6 +6,11 @@ import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
 
 part 'lyrics_cache_provider.g.dart';
 
+@riverpod
+Future<Lyrics?> getLyrics(Ref ref, {required String songId}) async {
+  return await _requestLyrics(ref, songId);
+}
+
 @keepAlive
 Future<Lyrics?> currentLyrics(Ref ref) async {
   final activeTrack = ref.watch(audioPlayerStateProvider).activeTrack;
@@ -13,8 +18,11 @@ Future<Lyrics?> currentLyrics(Ref ref) async {
   if (activeTrack == null) {
     return null;
   }
-
   final songId = activeTrack.id;
+  return await _requestLyrics(ref, songId);
+}
+
+Future<Lyrics?> _requestLyrics(Ref ref, String songId) async {
   final cachedLyrics = await lyricCache.get(songId);
   if (cachedLyrics != null) {
     return Lyrics.fromJson(cachedLyrics);

@@ -94,6 +94,8 @@
   "playlist_name": "歌单名",
   "input_playlist_name": "输入歌单名",
   "addsong_to_playlist_success": "添加歌曲到[%s歌单]成功",
+  "switch_lyrics": "切换歌词",
+  "input_title_empty": "当前输入标题为空",
   "no_lyric": "暂无歌词",
   "cancel": "取消",
   "confirm": "确定",
