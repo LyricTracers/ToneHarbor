@@ -270,7 +270,7 @@ class TestLayout extends BaseBgLayout {
         updateRequest(
           requestId: requestId,
           status: 'success',
-          response: '获取成功，专辑数量: ${result.data?.albums?.length ?? 0}',
+          response: '获取成功，专辑数量: ${result?.data?.albums?.length ?? 0}',
         );
       } catch (e) {
         final errorMessage = formatErrorMessage(e);

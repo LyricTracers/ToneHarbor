@@ -54,7 +54,7 @@ class CommonAlbums extends ConsumerWidget {
     required this.onErrorTap,
   });
 
-  final AsyncValue<AlbumResponse> albums;
+  final AsyncValue<AlbumResponse?> albums;
   final Function() onErrorTap;
 
   @override
@@ -62,7 +62,7 @@ class CommonAlbums extends ConsumerWidget {
     final colorScheme = getColorSchemeWhenReady(ref);
     return albums.when(
       data: (data) =>
-          _buildHorizontalList(context, data.data?.albums ?? [], colorScheme),
+          _buildHorizontalList(context, data!.data?.albums ?? [], colorScheme),
       loading: () => _buildShimmerLoading(context, colorScheme),
       error: (error, stackTrace) {
         final config = _LayoutConfig.defaultConfig;

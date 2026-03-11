@@ -12,39 +12,6 @@ part 'albums_provider.dependence.dart';
 part 'albums_provider.g.dart';
 
 @riverpod
-Future<AlbumResponse> albums(
-  Ref ref, {
-  int limit = 100,
-  int offset = 0,
-  String library = 'shared',
-  String sortBy = 'name',
-  String sortDirection = 'asc',
-  String additional = 'avg_rating',
-  String? artist,
-  Duration? cacheDuration,
-  Duration? keepAliveDuration = const Duration(minutes: 5),
-}) async {
-  final link = ref.keepAliveFor(keepAliveDuration);
-  try {
-    return await _getAlbums(
-      ref: ref,
-      limit: limit,
-      offset: offset,
-      library: library,
-      sortBy: sortBy,
-      sortDirection: sortDirection,
-      additional: additional,
-      artist: artist,
-      cacheDuration: cacheDuration,
-    );
-  } finally {
-    if (keepAliveDuration != null) {
-      link.close();
-    }
-  }
-}
-
-@riverpod
 Future<AlbumResponse> randomAlbums(
   Ref ref, {
   int limit = 20,
@@ -143,13 +110,16 @@ Future<AlbumResponse> searchAlbums(
 }
 
 @riverpod
-class AlbumsState extends _$AlbumsState {
+class Albums extends _$Albums {
+  late int _limit;
+  late String _library;
+  late String _sortBy;
+  late String _sortDirection;
+  late String _additional;
+  String? _artist;
+  Duration? _duration;
   @override
-  AlbumResponse? build() {
-    return null;
-  }
-
-  Future<void> fetchAlbums({
+  Future<AlbumResponse?> build({
     int limit = 100,
     int offset = 0,
     String library = 'shared',
@@ -157,25 +127,67 @@ class AlbumsState extends _$AlbumsState {
     String sortDirection = 'asc',
     String additional = 'avg_rating',
     String? artist,
-    Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? cacheDuration = const Duration(minutes: 30),
   }) async {
-    state = null;
+    _limit = limit;
+    _library = library;
+    _sortBy = sortBy;
+    _sortDirection = sortDirection;
+    _additional = additional;
+    _artist = artist;
+    _duration = cacheDuration;
+    ref.keepAliveFor(Duration(minutes: 5));
+    return await _getAlbums(
+      ref: ref,
+      limit: _limit,
+      offset: offset,
+      library: _library,
+      sortBy: _sortBy,
+      sortDirection: _sortDirection,
+      additional: _additional,
+      artist: _artist,
+      cacheDuration: _duration,
+    );
+  }
+
+  Future<void> fetchMore() async {
+    if (state.value == null) return;
+    final currentData = state.value!.data;
+    if (currentData == null) return;
+
+    final currentTotal = currentData.total;
+    final currentAlbums = currentData.albums ?? [];
+
+    if (currentAlbums.length >= currentTotal) return;
+
+    final oldState = state.value;
     try {
-      final response = await _getAlbums(
+      final newState = await _getAlbums(
         ref: ref,
-        limit: limit,
-        offset: offset,
-        library: library,
-        sortBy: sortBy,
-        sortDirection: sortDirection,
-        additional: additional,
-        artist: artist,
-        cacheDuration: cacheDuration,
+        limit: _limit,
+        offset: currentAlbums.length,
+        library: _library,
+        sortBy: _sortBy,
+        sortDirection: _sortDirection,
+        additional: _additional,
+        artist: _artist,
+        cacheDuration: _duration,
       );
-      state = response;
+
+      final newAlbums = newState.data?.albums ?? [];
+      final mergedAlbums = [...currentAlbums, ...newAlbums];
+
+      state = AsyncData(
+        newState.copyWith(
+          data: newState.data?.copyWith(
+            albums: mergedAlbums,
+            total: currentTotal,
+          ),
+        ),
+      );
     } catch (e) {
-      logger.e('获取专辑列表失败: $e');
-      rethrow;
+      logger.e('加载更多Albums失败: $e');
+      state = AsyncData(oldState!);
     }
   }
 }
