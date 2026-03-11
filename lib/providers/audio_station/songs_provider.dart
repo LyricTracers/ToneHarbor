@@ -87,6 +87,7 @@ Future<SongListResponse> randomSongs(
       additional: additional,
       sortBy: 'random',
       cacheDuration: cacheDuration,
+      group: 'randomSongs',
     );
   } finally {
     if (keepAliveDuration == null) {
@@ -96,19 +97,20 @@ Future<SongListResponse> randomSongs(
 }
 
 @riverpod
-Future<SongListResponse> favoriteSongs(
-  Ref ref, {
-  int limit = 100,
-  int offset = 0,
-  String library = 'shared',
-  String sortBy = 'name',
-  String sortDirection = 'desc',
-  String additional = 'song_tag,song_audio,song_rating',
-  Duration? cacheDuration = const Duration(minutes: 5),
-  Duration? keepAliveDuration = const Duration(minutes: 5),
-}) async {
-  final link = ref.keepAliveFor(keepAliveDuration);
-  try {
+class FavoriteSongs extends _$FavoriteSongs with CacheInvalidateProvider {
+  @override
+  Future<SongListResponse> build({
+    int limit = 100,
+    int offset = 0,
+    String library = 'shared',
+    String sortBy = 'name',
+    String sortDirection = 'desc',
+    String additional = 'song_tag,song_audio,song_rating',
+    Duration? cacheDuration = const Duration(minutes: 30),
+  }) async {
+    ref.keepAliveFor(Duration(minutes: 5));
+    duration = cacheDuration;
+    groupKey = 'favoriteSongs';
     return await _getSongs(
       ref: ref,
       limit: limit,
@@ -118,36 +120,111 @@ Future<SongListResponse> favoriteSongs(
       sortBy: sortBy,
       sortDirection: sortDirection,
       songRatingMeq: 5,
-      cacheDuration: cacheDuration,
+      cacheDuration: duration,
+      group: groupKey,
     );
-  } finally {
-    if (keepAliveDuration == null) {
-      link.close();
+  }
+
+  Future<void> fetchMore() async {
+    if (state.value == null) return;
+    final currentData = state.value!.data;
+    if (currentData == null) return;
+
+    final currentTotal = currentData.total ?? 0;
+    final currentSongs = currentData.songs;
+
+    if (currentSongs.length >= currentTotal) return;
+
+    final oldState = state.value;
+    try {
+      final newState = await _getSongs(
+        ref: ref,
+        limit: limit,
+        offset: currentSongs.length,
+        library: library,
+        additional: additional,
+        sortBy: sortBy,
+        sortDirection: sortDirection,
+        songRatingMeq: 5,
+        cacheDuration: duration,
+        group: groupKey,
+      );
+
+      final newSongs = newState.data?.songs ?? [];
+      final mergedSongs = [...currentSongs, ...newSongs];
+
+      state = AsyncData(
+        newState.copyWith(
+          data: newState.data?.copyWith(
+            songs: mergedSongs,
+            total: currentTotal,
+          ),
+        ),
+      );
+    } catch (e) {
+      logger.e('加载更多songs失败: $e');
+      state = AsyncData(oldState!);
     }
   }
 }
 
 @riverpod
-Future<SongListResponse> artistSongs(
-  Ref ref, {
-  required String artist,
-  int limit = 100,
-  int offset = 0,
-  Duration? cacheDuration = const Duration(minutes: 5),
-  Duration? keepAliveDuration = const Duration(minutes: 5),
-}) async {
-  final link = ref.keepAliveFor(keepAliveDuration);
-  try {
+class ArtistSongs extends _$ArtistSongs with CacheInvalidateProvider {
+  @override
+  Future<SongListResponse> build({
+    required String artist,
+    int limit = 100,
+    int offset = 0,
+    Duration? cacheDuration = const Duration(minutes: 5),
+  }) async {
+    ref.keepAliveFor(Duration(minutes: 5));
+    duration = cacheDuration;
+    groupKey = 'artistSongs';
     return await _getSongs(
       ref: ref,
       limit: limit,
       offset: offset,
       artist: artist,
-      cacheDuration: cacheDuration,
+      cacheDuration: duration,
+      group: groupKey,
     );
-  } finally {
-    if (keepAliveDuration == null) {
-      link.close();
+  }
+
+  Future<void> fetchMore() async {
+    if (state.value == null) return;
+    final currentData = state.value!.data;
+    if (currentData == null) return;
+
+    final currentTotal = currentData.total ?? 0;
+    final currentSongs = currentData.songs;
+
+    if (currentSongs.length >= currentTotal) return;
+
+    final oldState = state.value;
+    try {
+      final newState = await _getSongs(
+        ref: ref,
+        limit: limit,
+        offset: currentSongs.length,
+        artist: artist,
+        cacheDuration: duration,
+        group: groupKey,
+      );
+
+      final newSongs = newState.data?.songs ?? [];
+      final mergedSongs = [...currentSongs, ...newSongs];
+
+      state = AsyncData(
+        newState.copyWith(
+          data: newState.data?.copyWith(
+            songs: mergedSongs,
+            total: currentTotal,
+          ),
+        ),
+      );
+    } catch (e) {
+      logger.e('加载更多songs失败: $e');
+      state = AsyncData(oldState!);
     }
   }
 }
@@ -184,22 +261,23 @@ Future<SongListResponse> searchSongs(
 }
 
 @riverpod
-Future<SongListResponse> albumSongs(
-  Ref ref, {
-  required String album,
-  required String albumArtist,
-  int limit = 100,
-  int offset = 0,
-  String library = 'shared',
-  String sortBy = 'song_rating',
-  String sortDirection = 'DESC',
-  String additional = 'song_tag,song_audio,song_rating',
-  String? artist,
-  Duration? cacheDuration = const Duration(minutes: 5),
-  Duration? keepAliveDuration = const Duration(minutes: 5),
-}) async {
-  final link = ref.keepAliveFor(keepAliveDuration);
-  try {
+class AlbumSongs extends _$AlbumSongs with CacheInvalidateProvider {
+  @override
+  Future<SongListResponse> build({
+    required String album,
+    required String albumArtist,
+    int limit = 100,
+    int offset = 0,
+    String library = 'shared',
+    String sortBy = 'song_rating',
+    String sortDirection = 'DESC',
+    String additional = 'song_tag,song_audio,song_rating',
+    String? artist,
+    Duration? cacheDuration = const Duration(minutes: 5),
+  }) async {
+    ref.keepAliveFor(Duration(minutes: 5));
+    duration = cacheDuration;
+    groupKey = 'albumSongs';
     return await _getAlbumSongs(
       ref: ref,
       album: album,
@@ -211,24 +289,56 @@ Future<SongListResponse> albumSongs(
       sortDirection: sortDirection,
       additional: additional,
       artist: artist,
-      cacheDuration: cacheDuration,
+      cacheDuration: duration,
     );
-  } finally {
-    if (keepAliveDuration == null) {
-      link.close();
+  }
+
+  Future<void> fetchMore() async {
+    if (state.value == null) return;
+    final currentData = state.value!.data;
+    if (currentData == null) return;
+
+    final currentTotal = currentData.total ?? 0;
+    final currentSongs = currentData.songs;
+
+    if (currentSongs.length >= currentTotal) return;
+
+    final oldState = state.value;
+    try {
+      final newState = await _getAlbumSongs(
+        ref: ref,
+        album: album,
+        albumArtist: albumArtist,
+        limit: limit,
+        offset: currentSongs.length,
+        library: library,
+        sortBy: sortBy,
+        sortDirection: sortDirection,
+        additional: additional,
+        artist: artist,
+        cacheDuration: duration,
+      );
+
+      final newSongs = newState.data?.songs ?? [];
+      final mergedSongs = [...currentSongs, ...newSongs];
+
+      state = AsyncData(
+        newState.copyWith(
+          data: newState.data?.copyWith(
+            songs: mergedSongs,
+            total: currentTotal,
+          ),
+        ),
+      );
+    } catch (e) {
+      logger.e('加载更多albumSongs失败: $e');
+      state = AsyncData(oldState!);
     }
   }
 }
 
 @riverpod
-class Songs extends _$Songs {
-  late int _limit;
-  late String _library;
-  late String _sortBy;
-  late String _sortDirection;
-  late String _additional;
-  String? _artist;
-  Duration? _duration;
+class Songs extends _$Songs with CacheInvalidateProvider {
   @override
   Future<SongListResponse?> build({
     int limit = 100,
@@ -239,25 +349,22 @@ class Songs extends _$Songs {
     String additional = 'song_tag,song_audio,song_rating',
     String? artist,
     Duration? cacheDuration = const Duration(minutes: 30),
+    String group = 'songs',
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
-    _limit = limit;
-    _library = library;
-    _sortBy = sortBy;
-    _sortDirection = sortDirection;
-    _additional = additional;
-    _artist = artist;
-    _duration = cacheDuration;
+    duration = cacheDuration;
+    groupKey = group;
     return await _getSongs(
       ref: ref,
-      limit: _limit,
+      limit: limit,
       offset: offset,
-      library: _library,
-      sortBy: _sortBy,
-      sortDirection: _sortDirection,
-      additional: _additional,
-      artist: _artist,
-      cacheDuration: _duration,
+      library: library,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+      additional: additional,
+      artist: artist,
+      cacheDuration: duration,
+      group: groupKey,
     );
   }
 
@@ -275,14 +382,15 @@ class Songs extends _$Songs {
     try {
       final newState = await _getSongs(
         ref: ref,
-        limit: _limit,
+        limit: limit,
         offset: currentSongs.length,
-        library: _library,
-        sortBy: _sortBy,
-        sortDirection: _sortDirection,
-        additional: _additional,
-        artist: _artist,
-        cacheDuration: _duration,
+        library: library,
+        sortBy: sortBy,
+        sortDirection: sortDirection,
+        additional: additional,
+        artist: artist,
+        cacheDuration: duration,
+        group: groupKey,
       );
 
       final newSongs = newState.data?.songs ?? [];

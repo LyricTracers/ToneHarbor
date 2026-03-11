@@ -152,6 +152,7 @@ Future<PlaylistListResponse> _getPlaylists({
   String sortBy = '',
   String sortDirection = 'ASC',
   Duration? cacheDuration,
+  String groupKey = 'playlist',
 }) async {
   final cacheKey =
       'getPlaylists:$limit:$offset:$library:$sortBy:$sortDirection';
@@ -159,7 +160,7 @@ Future<PlaylistListResponse> _getPlaylists({
   if (cacheDuration != null) {
     final cached = await getFromCache<PlaylistListResponse>(
       cacheKey: cacheKey,
-      group: 'playlist',
+      group: groupKey,
       fromJson: (json) => PlaylistListResponse.fromJson(json),
     );
 
@@ -194,7 +195,7 @@ Future<PlaylistListResponse> _getPlaylists({
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
       cacheDuration: cacheDuration,
-      group: 'playlist',
+      group: groupKey,
     );
   }
 
@@ -211,6 +212,7 @@ Future<PlaylistDetailResponse> _getPlaylistDetail({
   String sortBy = '',
   String sortDirection = 'ASC',
   Duration? cacheDuration,
+  String groupKey = 'playlist',
 }) async {
   final cacheKey =
       'getPlaylistDetail:$id:$library:$additional:$limit:$offset:$sortBy:$sortDirection';
@@ -218,7 +220,7 @@ Future<PlaylistDetailResponse> _getPlaylistDetail({
   if (cacheDuration != null) {
     final cached = await getFromCache<PlaylistDetailResponse>(
       cacheKey: cacheKey,
-      group: 'playlist',
+      group: groupKey,
       fromJson: (json) => PlaylistDetailResponse.fromJson(json),
     );
     if (cached != null) {
@@ -254,7 +256,7 @@ Future<PlaylistDetailResponse> _getPlaylistDetail({
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
       cacheDuration: cacheDuration,
-      group: 'playlist',
+      group: groupKey,
     );
   }
 
@@ -266,13 +268,14 @@ Future<PlaylistDetailResponse> _getPlaylistInfo({
   required String id,
   String additional = 'songs',
   Duration? cacheDuration,
+  String groupKey = 'playlist',
 }) async {
   final cacheKey = 'getPlaylistInfo:$id:$additional';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<PlaylistDetailResponse>(
       cacheKey: cacheKey,
-      group: 'playlist',
+      group: groupKey,
       fromJson: (json) => PlaylistDetailResponse.fromJson(json),
     );
     if (cached != null) {
@@ -308,7 +311,7 @@ Future<PlaylistDetailResponse> _getPlaylistInfo({
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
       cacheDuration: cacheDuration,
-      group: 'playlist',
+      group: groupKey,
     );
   }
 

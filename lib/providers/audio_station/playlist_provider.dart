@@ -10,12 +10,8 @@ part 'playlist_provider.g.dart';
 part 'playlist_provider.dependence.dart';
 
 @riverpod
-class PlaylistResponseNotifier extends _$PlaylistResponseNotifier {
-  late int _limit;
-  late String _library;
-  late String _sortBy;
-  late String _sortDirection;
-
+class PlaylistResponseNotifier extends _$PlaylistResponseNotifier
+    with CacheInvalidateProvider {
   @override
   Future<PlaylistListResponse?> build({
     int limit = 100,
@@ -24,12 +20,9 @@ class PlaylistResponseNotifier extends _$PlaylistResponseNotifier {
     String sortBy = '',
     String sortDirection = 'ASC',
   }) async {
-    _limit = limit;
-    _library = library;
-    _sortBy = sortBy;
-    _sortDirection = sortDirection;
-
     ref.keepAliveFor(const Duration(minutes: 5));
+    duration = const Duration(minutes: 30);
+    groupKey = 'playlist';
     return await _getPlaylists(
       ref: ref,
       limit: limit,
@@ -37,7 +30,8 @@ class PlaylistResponseNotifier extends _$PlaylistResponseNotifier {
       library: library,
       sortBy: sortBy,
       sortDirection: sortDirection,
-      cacheDuration: const Duration(minutes: 30),
+      cacheDuration: duration,
+      groupKey: groupKey,
     );
   }
 
@@ -55,12 +49,13 @@ class PlaylistResponseNotifier extends _$PlaylistResponseNotifier {
     try {
       final newState = await _getPlaylists(
         ref: ref,
-        limit: _limit,
+        limit: limit,
         offset: currentPlaylists.length,
-        library: _library,
-        sortBy: _sortBy,
-        sortDirection: _sortDirection,
-        cacheDuration: const Duration(minutes: 30),
+        library: library,
+        sortBy: sortBy,
+        sortDirection: sortDirection,
+        cacheDuration: duration,
+        groupKey: groupKey,
       );
 
       final newPlaylists = newState.data?.playlists ?? [];
@@ -106,7 +101,7 @@ class PlaylistStateNotifier extends _$PlaylistStateNotifier {
       offset: offset,
       sortBy: sortBy,
       sortDirection: sortDirection,
-      cacheDuration: const Duration(minutes: 5),
+      cacheDuration: const Duration(minutes: 30),
     );
   }
 

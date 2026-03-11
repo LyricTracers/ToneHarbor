@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:rhttp/rhttp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -26,6 +24,7 @@ Future<AlbumResponse> randomAlbums(
       sortBy: 'random',
       sortDirection: 'desc',
       cacheDuration: cacheDuration,
+      groupKey: "randomAlbums",
     );
   } finally {
     if (keepAliveDuration != null) {
@@ -49,6 +48,7 @@ Future<AlbumResponse> recentAlbums(
       sortBy: 'time',
       sortDirection: 'desc',
       cacheDuration: cacheDuration,
+      groupKey: "recentAlbums",
     );
   } finally {
     if (keepAliveDuration != null) {
@@ -72,6 +72,7 @@ Future<AlbumResponse> artistAlbums(
       limit: limit,
       artist: artist,
       cacheDuration: cacheDuration,
+      groupKey: "artistAlbums",
     );
   } finally {
     if (keepAliveDuration != null) {
@@ -101,6 +102,7 @@ Future<AlbumResponse> searchAlbums(
       sortBy: sortBy,
       sortDirection: sortDirection,
       cacheDuration: cacheDuration,
+      groupKey: "search",
     );
   } finally {
     if (keepAliveDuration != null) {
@@ -110,14 +112,7 @@ Future<AlbumResponse> searchAlbums(
 }
 
 @riverpod
-class Albums extends _$Albums {
-  late int _limit;
-  late String _library;
-  late String _sortBy;
-  late String _sortDirection;
-  late String _additional;
-  String? _artist;
-  Duration? _duration;
+class Albums extends _$Albums with CacheInvalidateProvider {
   @override
   Future<AlbumResponse?> build({
     int limit = 100,
@@ -129,24 +124,20 @@ class Albums extends _$Albums {
     String? artist,
     Duration? cacheDuration = const Duration(minutes: 30),
   }) async {
-    _limit = limit;
-    _library = library;
-    _sortBy = sortBy;
-    _sortDirection = sortDirection;
-    _additional = additional;
-    _artist = artist;
-    _duration = cacheDuration;
+    duration = cacheDuration;
+    groupKey = "albums";
     ref.keepAliveFor(Duration(minutes: 5));
     return await _getAlbums(
       ref: ref,
-      limit: _limit,
+      limit: limit,
       offset: offset,
-      library: _library,
-      sortBy: _sortBy,
-      sortDirection: _sortDirection,
-      additional: _additional,
-      artist: _artist,
-      cacheDuration: _duration,
+      library: library,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+      additional: additional,
+      artist: artist,
+      cacheDuration: cacheDuration,
+      groupKey: groupKey,
     );
   }
 
@@ -164,14 +155,15 @@ class Albums extends _$Albums {
     try {
       final newState = await _getAlbums(
         ref: ref,
-        limit: _limit,
+        limit: limit,
         offset: currentAlbums.length,
-        library: _library,
-        sortBy: _sortBy,
-        sortDirection: _sortDirection,
-        additional: _additional,
-        artist: _artist,
-        cacheDuration: _duration,
+        library: library,
+        sortBy: sortBy,
+        sortDirection: sortDirection,
+        additional: additional,
+        artist: artist,
+        cacheDuration: duration,
+        groupKey: groupKey,
       );
 
       final newAlbums = newState.data?.albums ?? [];

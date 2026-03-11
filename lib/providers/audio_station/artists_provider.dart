@@ -31,19 +31,13 @@ class SearchArtist extends _$SearchArtist {
       sortBy: sortBy,
       sortDirection: sortDirection,
       cacheDuration: cacheDuration,
+      groupKey: "search",
     );
   }
 }
 
 @riverpod
-class Artists extends _$Artists {
-  late int _limit;
-  late String _library;
-  late String _sortBy;
-  late String _sortDirection;
-  late String _additional;
-  Duration? _cacheDuration;
-
+class Artists extends _$Artists with CacheInvalidateProvider {
   @override
   Future<ArtistResponse> build({
     int limit = 100,
@@ -54,22 +48,19 @@ class Artists extends _$Artists {
     String additional = 'avg_rating',
     Duration? cacheDuration = const Duration(minutes: 30),
   }) async {
-    _limit = limit;
-    _library = library;
-    _sortBy = sortBy;
-    _sortDirection = sortDirection;
-    _additional = additional;
-    _cacheDuration = cacheDuration;
+    duration = cacheDuration;
+    groupKey = 'artists';
     ref.keepAliveFor(Duration(minutes: 5));
     return await _getArtists(
       ref: ref,
-      limit: _limit,
+      limit: limit,
       offset: offset,
-      library: _library,
-      sortBy: _sortBy,
-      sortDirection: _sortDirection,
-      additional: _additional,
-      cacheDuration: _cacheDuration,
+      library: library,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+      additional: additional,
+      cacheDuration: duration,
+      groupKey: groupKey,
     );
   }
 
@@ -87,13 +78,14 @@ class Artists extends _$Artists {
     try {
       final newState = await _getArtists(
         ref: ref,
-        limit: _limit,
+        limit: limit,
         offset: currentArtists.length,
-        library: _library,
-        sortBy: _sortBy,
-        sortDirection: _sortDirection,
-        additional: _additional,
-        cacheDuration: _cacheDuration,
+        library: library,
+        sortBy: sortBy,
+        sortDirection: sortDirection,
+        additional: additional,
+        cacheDuration: duration,
+        groupKey: groupKey,
       );
 
       final newArtists = newState.data?.artists ?? [];

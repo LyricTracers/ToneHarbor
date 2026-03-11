@@ -76,7 +76,7 @@ final class RandomAlbumsProvider
   }
 }
 
-String _$randomAlbumsHash() => r'ccd4baf129aa19d94681f50b1385c4e249cfa3dc';
+String _$randomAlbumsHash() => r'8431240b978c41a96f63e69c5e8a9308e00bf624';
 
 final class RandomAlbumsFamily extends $Family
     with
@@ -177,7 +177,7 @@ final class RecentAlbumsProvider
   }
 }
 
-String _$recentAlbumsHash() => r'3e5bdc576359727b52aed0935771a1cf413e6528';
+String _$recentAlbumsHash() => r'475bff23ca74addef420defd95f565568f30b9b0';
 
 final class RecentAlbumsFamily extends $Family
     with
@@ -285,7 +285,7 @@ final class ArtistAlbumsProvider
   }
 }
 
-String _$artistAlbumsHash() => r'c0f206cdb7505bbaafe675998f343ffb414b9fb1';
+String _$artistAlbumsHash() => r'19f837d9335bfee8a4e9a84da075193b1fc5e556';
 
 final class ArtistAlbumsFamily extends $Family
     with
@@ -409,7 +409,7 @@ final class SearchAlbumsProvider
   }
 }
 
-String _$searchAlbumsHash() => r'f89eb4e9d4009ee34c3176653f9c12d5cbd7efc1';
+String _$searchAlbumsHash() => r'2fcb0d54cac69f3ef621e669b745ea99b8ba6cfe';
 
 final class SearchAlbumsFamily extends $Family
     with
@@ -510,7 +510,7 @@ final class AlbumsProvider
   }
 }
 
-String _$albumsHash() => r'276d8f2026bc9ac9fd9b507f66004fbf36120e99';
+String _$albumsHash() => r'f8393c0d2e2e0df16459f3fbcd054e7e360a0d69';
 
 final class AlbumsFamily extends $Family
     with

@@ -93,6 +93,7 @@ Future<AlbumResponse> _getAlbums({
   String additional = 'avg_rating',
   String? artist,
   Duration? cacheDuration,
+  String groupKey = "album",
 }) async {
   final cacheKey =
       'getAlbums:$limit:$offset:$library:$sortBy:$sortDirection:$additional:$artist';
@@ -100,7 +101,7 @@ Future<AlbumResponse> _getAlbums({
   if (cacheDuration != null) {
     final cached = await getFromCache<AlbumResponse>(
       cacheKey: cacheKey,
-      group: 'album',
+      group: groupKey,
       fromJson: (json) => AlbumResponse.fromJson(json),
     );
     if (cached != null) {
@@ -136,7 +137,7 @@ Future<AlbumResponse> _getAlbums({
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
       cacheDuration: cacheDuration,
-      group: 'album',
+      group: groupKey,
     );
   }
 
@@ -159,13 +160,14 @@ Future<AlbumResponse> _searchAlbums({
   String sortBy = 'name',
   String sortDirection = 'asc',
   Duration? cacheDuration,
+  String groupKey = "search",
 }) async {
   final cacheKey = 'searchAlbums:$filter:$limit:$offset:$sortBy:$sortDirection';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<AlbumResponse>(
       cacheKey: cacheKey,
-      group: 'album',
+      group: groupKey,
       fromJson: (json) => AlbumResponse.fromJson(json),
     );
     if (cached != null) {
@@ -198,7 +200,7 @@ Future<AlbumResponse> _searchAlbums({
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
       cacheDuration: cacheDuration,
-      group: 'album',
+      group: groupKey,
     );
   }
 

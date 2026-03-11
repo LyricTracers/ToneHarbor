@@ -8,6 +8,16 @@ import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 part 'common_provider.g.dart';
 
+mixin CacheInvalidateProvider {
+  Duration? duration;
+  late String groupKey;
+  Future<void> invalidateCache() async {
+    if (duration != null) {
+      await audioStationRequestCache.clearGroup(groupKey);
+    }
+  }
+}
+
 enum LyricsDoubleClickAction {
   copy,
   seek;

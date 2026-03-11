@@ -316,6 +316,7 @@ Future<SongListResponse> _getSongs({
   String? artist,
   int? songRatingMeq,
   Duration? cacheDuration,
+  String group = 'song',
 }) async {
   final cacheKey =
       'getSongs:$limit:$offset:$library:$sortBy:$sortDirection:$additional:$artist:$songRatingMeq';
@@ -323,7 +324,7 @@ Future<SongListResponse> _getSongs({
   if (cacheDuration != null) {
     final cached = await getFromCache<SongListResponse>(
       cacheKey: cacheKey,
-      group: 'song',
+      group: group,
       fromJson: (json) => SongListResponse.fromJson(json),
     );
     if (cached != null) {
@@ -360,7 +361,7 @@ Future<SongListResponse> _getSongs({
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
       cacheDuration: cacheDuration,
-      group: 'song',
+      group: group,
     );
   }
 
@@ -468,7 +469,7 @@ Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
   if (cacheDuration != null) {
     final cached = await getFromCache<GetNumberOfPlugInsResponse>(
       cacheKey: cacheKey,
-      group: 'song',
+      group: 'songPlugins',
       fromJson: (json) => GetNumberOfPlugInsResponse.fromJson(json),
     );
     if (cached != null) {
@@ -541,7 +542,7 @@ Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
       cacheDuration: cacheDuration,
-      group: 'song',
+      group: 'songPlugins',
     );
   }
 
@@ -572,6 +573,7 @@ Future<SongListResponse> _getAlbumSongs({
   String additional = 'song_tag,song_audio,song_rating',
   String? artist,
   Duration? cacheDuration,
+  String groupKey = 'albumSongs',
 }) async {
   final cacheKey =
       'getAlbumSongs:$album:$albumArtist:$limit:$offset:$library:$sortBy:$sortDirection:$additional:$artist';
@@ -579,7 +581,7 @@ Future<SongListResponse> _getAlbumSongs({
   if (cacheDuration != null) {
     final cached = await getFromCache<SongListResponse>(
       cacheKey: cacheKey,
-      group: 'song',
+      group: groupKey,
       fromJson: (json) => SongListResponse.fromJson(json),
     );
     if (cached != null) {
@@ -617,7 +619,7 @@ Future<SongListResponse> _getAlbumSongs({
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
       cacheDuration: cacheDuration,
-      group: 'song',
+      group: groupKey,
     );
   }
 
@@ -642,6 +644,7 @@ Future<SongListResponse> _searchSongs({
   String sortDirection = 'asc',
   String additional = 'song_tag,song_audio,song_rating',
   Duration? cacheDuration,
+  String groupKey = 'search',
 }) async {
   final cacheKey =
       'searchSongs:$title:$library:$limit:$offset:$sortDirection:$additional';
@@ -649,7 +652,7 @@ Future<SongListResponse> _searchSongs({
   if (cacheDuration != null) {
     final cached = await getFromCache<SongListResponse>(
       cacheKey: cacheKey,
-      group: 'song',
+      group: groupKey,
       fromJson: (json) => SongListResponse.fromJson(json),
     );
     if (cached != null) {
@@ -684,7 +687,7 @@ Future<SongListResponse> _searchSongs({
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
       cacheDuration: cacheDuration,
-      group: 'song',
+      group: groupKey,
     );
   }
 
@@ -818,7 +821,7 @@ Future<SongInfoResponse> _getSongInfo({
   if (cacheDuration != null) {
     final cached = await getFromCache<SongInfoResponse>(
       cacheKey: cacheKey,
-      group: 'song',
+      group: 'songInfo',
       fromJson: (json) => SongInfoResponse.fromJson(json),
     );
     if (cached != null) {
@@ -849,7 +852,7 @@ Future<SongInfoResponse> _getSongInfo({
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
       cacheDuration: cacheDuration,
-      group: 'song',
+      group: 'songInfo',
     );
   }
 

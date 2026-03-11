@@ -59,7 +59,7 @@ final class SearchArtistProvider
   }
 }
 
-String _$searchArtistHash() => r'602a842df54dae998318ac40569fc8d7a18b276c';
+String _$searchArtistHash() => r'0c7f569edf72ce87d54b1e026403d12be5623fac';
 
 final class SearchArtistFamily extends $Family
     with
@@ -218,7 +218,7 @@ final class ArtistsProvider
   }
 }
 
-String _$artistsHash() => r'f07287261c52992e3976991538420821dde331d5';
+String _$artistsHash() => r'8b48c927066081cea62b2d31e4305faa0efd4ee5';
 
 final class ArtistsFamily extends $Family
     with

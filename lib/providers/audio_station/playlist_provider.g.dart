@@ -63,7 +63,7 @@ final class PlaylistResponseNotifierProvider
 }
 
 String _$playlistResponseNotifierHash() =>
-    r'fd9a9e0f396b9c08ac70b97193b63b50595cad5f';
+    r'7df463abf9ad8e752294b21e74cf9095e10e8d24';
 
 final class PlaylistResponseNotifierFamily extends $Family
     with
@@ -197,7 +197,7 @@ final class PlaylistStateNotifierProvider
 }
 
 String _$playlistStateNotifierHash() =>
-    r'bf168775b765db3f9175a85cfe4e4fb53f90415a';
+    r'd47638e8824ad1de04b0a215d19b018490f570d6';
 
 abstract class _$PlaylistStateNotifier extends $Notifier<void> {
   void build();
