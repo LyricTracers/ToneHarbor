@@ -207,7 +207,7 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                       Center(child: Text(error.toString())),
                   loading: () => Center(
                     child: Transform.scale(
-                      scale: 0.5,
+                      scale: 0.8,
                       child: const AudioEqualizerLoader(),
                     ),
                   ),
