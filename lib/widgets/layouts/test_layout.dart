@@ -56,7 +56,7 @@ class TestLayout extends BaseBgLayout {
         updateRequest(
           requestId: requestId,
           status: 'success',
-          response: '获取成功，歌曲数量: ${result.data?.total ?? 0}',
+          response: '获取成功，歌曲数量: ${result?.data?.total ?? 0}',
         );
       } catch (e) {
         final errorMessage = formatErrorMessage(e);
@@ -110,9 +110,9 @@ class TestLayout extends BaseBgLayout {
       });
 
       try {
-        final result = await ref.read(
-          lyricsProvider(id: 'music_785331').future,
-        );
+        final result = await ref
+            .read(songCommonProvider.notifier)
+            .lyrics(id: 'music_785331');
         updateRequest(
           requestId: requestId,
           status: 'success',
@@ -141,13 +141,9 @@ class TestLayout extends BaseBgLayout {
       });
 
       try {
-        final result = await ref.read(
-          searchLyricsProvider(
-            title: 'Dive',
-            artist: 'Ed Sheeran',
-            limit: 10,
-          ).future,
-        );
+        final result = await ref
+            .read(songCommonProvider.notifier)
+            .searchLyrics(title: 'Dive', artist: 'Ed Sheeran', limit: 10);
         updateRequest(
           requestId: requestId,
           status: 'success',
@@ -176,9 +172,9 @@ class TestLayout extends BaseBgLayout {
       });
 
       try {
-        final result = await ref.read(
-          songInfoProvider(id: 'music_785331').future,
-        );
+        final result = await ref
+            .read(songCommonProvider.notifier)
+            .songInfo(id: 'music_785331');
         updateRequest(
           requestId: requestId,
           status: 'success',
@@ -208,7 +204,9 @@ class TestLayout extends BaseBgLayout {
       });
 
       try {
-        await ref.read(setRatingProvider(id: 'music_785331', rating: 5).future);
+        await ref
+            .read(songCommonProvider.notifier)
+            .setRating(id: 'music_785331', rating: 5);
         updateRequest(
           requestId: requestId,
           status: 'success',
@@ -385,7 +383,7 @@ class TestLayout extends BaseBgLayout {
 
       try {
         final result = await ref.read(
-          searchArtistsProvider(filter: 'Test', limit: 10).future,
+          searchArtistProvider(filter: 'Test', limit: 10).future,
         );
         updateRequest(
           requestId: requestId,
@@ -681,7 +679,9 @@ class TestLayout extends BaseBgLayout {
       });
 
       try {
-        final result = await ref.read(numberOfPlugInsProvider().future);
+        final result = await ref
+            .read(songCommonProvider.notifier)
+            .numberOfPlugIns();
         updateRequest(
           requestId: requestId,
           status: 'success',

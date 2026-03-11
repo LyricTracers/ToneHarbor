@@ -39,7 +39,7 @@ Future<MixSearchData> mixSearch(Ref ref, String query, SearchType type) async {
         case SearchType.all:
           final results = await Future.wait([
             ref.read(searchSongsProvider(title: query).future),
-            ref.read(searchArtistsProvider(filter: query).future),
+            ref.read(searchArtistProvider(filter: query).future),
             ref.read(searchAlbumsProvider(filter: query).future),
           ]);
 
@@ -57,7 +57,7 @@ Future<MixSearchData> mixSearch(Ref ref, String query, SearchType type) async {
 
         case SearchType.artists:
           final artists = await ref.read(
-            searchArtistsProvider(filter: query).future,
+            searchArtistProvider(filter: query).future,
           );
           return MixSearchData.loaded(artists: artists);
 

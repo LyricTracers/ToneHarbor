@@ -9,17 +9,170 @@ part of 'artists_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(artists)
+@ProviderFor(SearchArtist)
+final searchArtistProvider = SearchArtistFamily._();
+
+final class SearchArtistProvider
+    extends $AsyncNotifierProvider<SearchArtist, ArtistResponse> {
+  SearchArtistProvider._({
+    required SearchArtistFamily super.from,
+    required ({
+      String filter,
+      String library,
+      int limit,
+      int offset,
+      String sortBy,
+      String sortDirection,
+      Duration? cacheDuration,
+    })
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'searchArtistProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$searchArtistHash();
+
+  @override
+  String toString() {
+    return r'searchArtistProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  SearchArtist create() => SearchArtist();
+
+  @override
+  bool operator ==(Object other) {
+    return other is SearchArtistProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$searchArtistHash() => r'602a842df54dae998318ac40569fc8d7a18b276c';
+
+final class SearchArtistFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          SearchArtist,
+          AsyncValue<ArtistResponse>,
+          ArtistResponse,
+          FutureOr<ArtistResponse>,
+          ({
+            String filter,
+            String library,
+            int limit,
+            int offset,
+            String sortBy,
+            String sortDirection,
+            Duration? cacheDuration,
+          })
+        > {
+  SearchArtistFamily._()
+    : super(
+        retry: null,
+        name: r'searchArtistProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  SearchArtistProvider call({
+    required String filter,
+    String library = 'all',
+    int limit = 5000,
+    int offset = 0,
+    String sortBy = 'name',
+    String sortDirection = 'asc',
+    Duration? cacheDuration = const Duration(minutes: 30),
+  }) => SearchArtistProvider._(
+    argument: (
+      filter: filter,
+      library: library,
+      limit: limit,
+      offset: offset,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+      cacheDuration: cacheDuration,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'searchArtistProvider';
+}
+
+abstract class _$SearchArtist extends $AsyncNotifier<ArtistResponse> {
+  late final _$args =
+      ref.$arg
+          as ({
+            String filter,
+            String library,
+            int limit,
+            int offset,
+            String sortBy,
+            String sortDirection,
+            Duration? cacheDuration,
+          });
+  String get filter => _$args.filter;
+  String get library => _$args.library;
+  int get limit => _$args.limit;
+  int get offset => _$args.offset;
+  String get sortBy => _$args.sortBy;
+  String get sortDirection => _$args.sortDirection;
+  Duration? get cacheDuration => _$args.cacheDuration;
+
+  FutureOr<ArtistResponse> build({
+    required String filter,
+    String library = 'all',
+    int limit = 5000,
+    int offset = 0,
+    String sortBy = 'name',
+    String sortDirection = 'asc',
+    Duration? cacheDuration = const Duration(minutes: 30),
+  });
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<ArtistResponse>, ArtistResponse>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<ArtistResponse>, ArtistResponse>,
+              AsyncValue<ArtistResponse>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(
+      ref,
+      () => build(
+        filter: _$args.filter,
+        library: _$args.library,
+        limit: _$args.limit,
+        offset: _$args.offset,
+        sortBy: _$args.sortBy,
+        sortDirection: _$args.sortDirection,
+        cacheDuration: _$args.cacheDuration,
+      ),
+    );
+  }
+}
+
+@ProviderFor(Artists)
 final artistsProvider = ArtistsFamily._();
 
 final class ArtistsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<ArtistResponse>,
-          ArtistResponse,
-          FutureOr<ArtistResponse>
-        >
-    with $FutureModifier<ArtistResponse>, $FutureProvider<ArtistResponse> {
+    extends $AsyncNotifierProvider<Artists, ArtistResponse> {
   ArtistsProvider._({
     required ArtistsFamily super.from,
     required ({
@@ -30,7 +183,6 @@ final class ArtistsProvider
       String sortDirection,
       String additional,
       Duration? cacheDuration,
-      Duration? keepAliveDuration,
     })
     super.argument,
   }) : super(
@@ -53,36 +205,7 @@ final class ArtistsProvider
 
   @$internal
   @override
-  $FutureProviderElement<ArtistResponse> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<ArtistResponse> create(Ref ref) {
-    final argument =
-        this.argument
-            as ({
-              int limit,
-              int offset,
-              String library,
-              String sortBy,
-              String sortDirection,
-              String additional,
-              Duration? cacheDuration,
-              Duration? keepAliveDuration,
-            });
-    return artists(
-      ref,
-      limit: argument.limit,
-      offset: argument.offset,
-      library: argument.library,
-      sortBy: argument.sortBy,
-      sortDirection: argument.sortDirection,
-      additional: argument.additional,
-      cacheDuration: argument.cacheDuration,
-      keepAliveDuration: argument.keepAliveDuration,
-    );
-  }
+  Artists create() => Artists();
 
   @override
   bool operator ==(Object other) {
@@ -95,11 +218,14 @@ final class ArtistsProvider
   }
 }
 
-String _$artistsHash() => r'6292abef5863edda0a0780f4989ef362b0f953c3';
+String _$artistsHash() => r'f07287261c52992e3976991538420821dde331d5';
 
 final class ArtistsFamily extends $Family
     with
-        $FunctionalFamilyOverride<
+        $ClassFamilyOverride<
+          Artists,
+          AsyncValue<ArtistResponse>,
+          ArtistResponse,
           FutureOr<ArtistResponse>,
           ({
             int limit,
@@ -109,7 +235,6 @@ final class ArtistsFamily extends $Family
             String sortDirection,
             String additional,
             Duration? cacheDuration,
-            Duration? keepAliveDuration,
           })
         > {
   ArtistsFamily._()
@@ -124,12 +249,11 @@ final class ArtistsFamily extends $Family
   ArtistsProvider call({
     int limit = 100,
     int offset = 0,
-    String library = 'shared',
+    String library = 'all',
     String sortBy = 'name',
     String sortDirection = 'ASC',
     String additional = 'avg_rating',
-    Duration? cacheDuration = const Duration(minutes: 5),
-    Duration? keepAliveDuration = const Duration(minutes: 5),
+    Duration? cacheDuration = const Duration(minutes: 30),
   }) => ArtistsProvider._(
     argument: (
       limit: limit,
@@ -139,7 +263,6 @@ final class ArtistsFamily extends $Family
       sortDirection: sortDirection,
       additional: additional,
       cacheDuration: cacheDuration,
-      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );
@@ -148,193 +271,58 @@ final class ArtistsFamily extends $Family
   String toString() => r'artistsProvider';
 }
 
-@ProviderFor(searchArtists)
-final searchArtistsProvider = SearchArtistsFamily._();
-
-final class SearchArtistsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<ArtistResponse>,
-          ArtistResponse,
-          FutureOr<ArtistResponse>
-        >
-    with $FutureModifier<ArtistResponse>, $FutureProvider<ArtistResponse> {
-  SearchArtistsProvider._({
-    required SearchArtistsFamily super.from,
-    required ({
-      String filter,
-      String library,
-      int limit,
-      int offset,
-      String sortBy,
-      String sortDirection,
-      Duration? cacheDuration,
-      Duration? keepAliveDuration,
-    })
-    super.argument,
-  }) : super(
-         retry: null,
-         name: r'searchArtistsProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$searchArtistsHash();
-
-  @override
-  String toString() {
-    return r'searchArtistsProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<ArtistResponse> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<ArtistResponse> create(Ref ref) {
-    final argument =
-        this.argument
-            as ({
-              String filter,
-              String library,
-              int limit,
-              int offset,
-              String sortBy,
-              String sortDirection,
-              Duration? cacheDuration,
-              Duration? keepAliveDuration,
-            });
-    return searchArtists(
-      ref,
-      filter: argument.filter,
-      library: argument.library,
-      limit: argument.limit,
-      offset: argument.offset,
-      sortBy: argument.sortBy,
-      sortDirection: argument.sortDirection,
-      cacheDuration: argument.cacheDuration,
-      keepAliveDuration: argument.keepAliveDuration,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is SearchArtistsProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$searchArtistsHash() => r'3ea8f087b9cdc43a860315d1ee0796e2ed78d16e';
-
-final class SearchArtistsFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<ArtistResponse>,
-          ({
-            String filter,
-            String library,
+abstract class _$Artists extends $AsyncNotifier<ArtistResponse> {
+  late final _$args =
+      ref.$arg
+          as ({
             int limit,
             int offset,
+            String library,
             String sortBy,
             String sortDirection,
+            String additional,
             Duration? cacheDuration,
-            Duration? keepAliveDuration,
-          })
-        > {
-  SearchArtistsFamily._()
-    : super(
-        retry: null,
-        name: r'searchArtistsProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
+          });
+  int get limit => _$args.limit;
+  int get offset => _$args.offset;
+  String get library => _$args.library;
+  String get sortBy => _$args.sortBy;
+  String get sortDirection => _$args.sortDirection;
+  String get additional => _$args.additional;
+  Duration? get cacheDuration => _$args.cacheDuration;
 
-  SearchArtistsProvider call({
-    required String filter,
-    String library = 'all',
-    int limit = 5000,
+  FutureOr<ArtistResponse> build({
+    int limit = 100,
     int offset = 0,
+    String library = 'all',
     String sortBy = 'name',
-    String sortDirection = 'asc',
-    Duration? cacheDuration = const Duration(minutes: 5),
-    Duration? keepAliveDuration,
-  }) => SearchArtistsProvider._(
-    argument: (
-      filter: filter,
-      library: library,
-      limit: limit,
-      offset: offset,
-      sortBy: sortBy,
-      sortDirection: sortDirection,
-      cacheDuration: cacheDuration,
-      keepAliveDuration: keepAliveDuration,
-    ),
-    from: this,
-  );
-
-  @override
-  String toString() => r'searchArtistsProvider';
-}
-
-@ProviderFor(ArtistsState)
-final artistsStateProvider = ArtistsStateProvider._();
-
-final class ArtistsStateProvider
-    extends $NotifierProvider<ArtistsState, ArtistResponse?> {
-  ArtistsStateProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'artistsStateProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$artistsStateHash();
-
-  @$internal
-  @override
-  ArtistsState create() => ArtistsState();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ArtistResponse? value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<ArtistResponse?>(value),
-    );
-  }
-}
-
-String _$artistsStateHash() => r'54531294956292974b27a0fb68c821919157e9ea';
-
-abstract class _$ArtistsState extends $Notifier<ArtistResponse?> {
-  ArtistResponse? build();
+    String sortDirection = 'ASC',
+    String additional = 'avg_rating',
+    Duration? cacheDuration = const Duration(minutes: 30),
+  });
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<ArtistResponse?, ArtistResponse?>;
+    final ref = this.ref as $Ref<AsyncValue<ArtistResponse>, ArtistResponse>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<ArtistResponse?, ArtistResponse?>,
-              ArtistResponse?,
+              AnyNotifier<AsyncValue<ArtistResponse>, ArtistResponse>,
+              AsyncValue<ArtistResponse>,
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    element.handleCreate(
+      ref,
+      () => build(
+        limit: _$args.limit,
+        offset: _$args.offset,
+        library: _$args.library,
+        sortBy: _$args.sortBy,
+        sortDirection: _$args.sortDirection,
+        additional: _$args.additional,
+        cacheDuration: _$args.cacheDuration,
+      ),
+    );
   }
 }

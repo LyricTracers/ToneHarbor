@@ -9,230 +9,55 @@ part of 'songs_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(setRating)
-final setRatingProvider = SetRatingFamily._();
+@ProviderFor(SongCommon)
+final songCommonProvider = SongCommonProvider._();
 
-final class SetRatingProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<SetRatingResponse>,
-          SetRatingResponse,
-          FutureOr<SetRatingResponse>
-        >
-    with
-        $FutureModifier<SetRatingResponse>,
-        $FutureProvider<SetRatingResponse> {
-  SetRatingProvider._({
-    required SetRatingFamily super.from,
-    required ({String id, int rating}) super.argument,
-  }) : super(
-         retry: null,
-         name: r'setRatingProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$setRatingHash();
-
-  @override
-  String toString() {
-    return r'setRatingProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<SetRatingResponse> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<SetRatingResponse> create(Ref ref) {
-    final argument = this.argument as ({String id, int rating});
-    return setRating(ref, id: argument.id, rating: argument.rating);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is SetRatingProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$setRatingHash() => r'579cbd8a7d344ef5ca07ab57dff12242e243f027';
-
-final class SetRatingFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<SetRatingResponse>,
-          ({String id, int rating})
-        > {
-  SetRatingFamily._()
+final class SongCommonProvider extends $NotifierProvider<SongCommon, void> {
+  SongCommonProvider._()
     : super(
+        from: null,
+        argument: null,
         retry: null,
-        name: r'setRatingProvider',
+        name: r'songCommonProvider',
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
       );
 
-  SetRatingProvider call({required String id, int rating = 5}) =>
-      SetRatingProvider._(argument: (id: id, rating: rating), from: this);
-
   @override
-  String toString() => r'setRatingProvider';
-}
-
-@ProviderFor(songs)
-final songsProvider = SongsFamily._();
-
-final class SongsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<SongListResponse>,
-          SongListResponse,
-          FutureOr<SongListResponse>
-        >
-    with $FutureModifier<SongListResponse>, $FutureProvider<SongListResponse> {
-  SongsProvider._({
-    required SongsFamily super.from,
-    required ({
-      int limit,
-      int offset,
-      String library,
-      String sortBy,
-      String sortDirection,
-      String additional,
-      String? artist,
-      Duration? cacheDuration,
-      Duration? keepAliveDuration,
-    })
-    super.argument,
-  }) : super(
-         retry: null,
-         name: r'songsProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$songsHash();
-
-  @override
-  String toString() {
-    return r'songsProvider'
-        ''
-        '$argument';
-  }
+  String debugGetCreateSourceHash() => _$songCommonHash();
 
   @$internal
   @override
-  $FutureProviderElement<SongListResponse> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  SongCommon create() => SongCommon();
 
-  @override
-  FutureOr<SongListResponse> create(Ref ref) {
-    final argument =
-        this.argument
-            as ({
-              int limit,
-              int offset,
-              String library,
-              String sortBy,
-              String sortDirection,
-              String additional,
-              String? artist,
-              Duration? cacheDuration,
-              Duration? keepAliveDuration,
-            });
-    return songs(
-      ref,
-      limit: argument.limit,
-      offset: argument.offset,
-      library: argument.library,
-      sortBy: argument.sortBy,
-      sortDirection: argument.sortDirection,
-      additional: argument.additional,
-      artist: argument.artist,
-      cacheDuration: argument.cacheDuration,
-      keepAliveDuration: argument.keepAliveDuration,
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(void value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<void>(value),
     );
   }
-
-  @override
-  bool operator ==(Object other) {
-    return other is SongsProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
 }
 
-String _$songsHash() => r'f6c42798822b6485cb7b11659e33512e372d2563';
+String _$songCommonHash() => r'dd3b66614462684707ba227e48c4bb0d33e8c67b';
 
-final class SongsFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<SongListResponse>,
-          ({
-            int limit,
-            int offset,
-            String library,
-            String sortBy,
-            String sortDirection,
-            String additional,
-            String? artist,
-            Duration? cacheDuration,
-            Duration? keepAliveDuration,
-          })
-        > {
-  SongsFamily._()
-    : super(
-        retry: null,
-        name: r'songsProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  SongsProvider call({
-    int limit = 100,
-    int offset = 0,
-    String library = 'shared',
-    String sortBy = 'artist',
-    String sortDirection = 'ASC',
-    String additional = 'song_tag,song_audio,song_rating',
-    String? artist,
-    Duration? cacheDuration = const Duration(minutes: 5),
-    Duration? keepAliveDuration = const Duration(minutes: 5),
-  }) => SongsProvider._(
-    argument: (
-      limit: limit,
-      offset: offset,
-      library: library,
-      sortBy: sortBy,
-      sortDirection: sortDirection,
-      additional: additional,
-      artist: artist,
-      cacheDuration: cacheDuration,
-      keepAliveDuration: keepAliveDuration,
-    ),
-    from: this,
-  );
-
+abstract class _$SongCommon extends $Notifier<void> {
+  void build();
+  @$mustCallSuper
   @override
-  String toString() => r'songsProvider';
+  void runBuild() {
+    final ref = this.ref as $Ref<void, void>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<void, void>,
+              void,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
 }
 
 @ProviderFor(randomSongs)
@@ -918,181 +743,49 @@ final class AlbumSongsFamily extends $Family
   String toString() => r'albumSongsProvider';
 }
 
-@ProviderFor(lyrics)
-final lyricsProvider = LyricsFamily._();
+@ProviderFor(Songs)
+final songsProvider = SongsFamily._();
 
-final class LyricsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<LyricsResponse>,
-          LyricsResponse,
-          FutureOr<LyricsResponse>
-        >
-    with $FutureModifier<LyricsResponse>, $FutureProvider<LyricsResponse> {
-  LyricsProvider._({
-    required LyricsFamily super.from,
-    required ({String id, Duration? cacheDuration, Duration? keepAliveDuration})
-    super.argument,
-  }) : super(
-         retry: null,
-         name: r'lyricsProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$lyricsHash();
-
-  @override
-  String toString() {
-    return r'lyricsProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<LyricsResponse> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<LyricsResponse> create(Ref ref) {
-    final argument =
-        this.argument
-            as ({
-              String id,
-              Duration? cacheDuration,
-              Duration? keepAliveDuration,
-            });
-    return lyrics(
-      ref,
-      id: argument.id,
-      cacheDuration: argument.cacheDuration,
-      keepAliveDuration: argument.keepAliveDuration,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is LyricsProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$lyricsHash() => r'e69ea1f76a6d1ffd24c22570a6752159521768d4';
-
-final class LyricsFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<LyricsResponse>,
-          ({String id, Duration? cacheDuration, Duration? keepAliveDuration})
-        > {
-  LyricsFamily._()
-    : super(
-        retry: null,
-        name: r'lyricsProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  LyricsProvider call({
-    required String id,
-    Duration? cacheDuration = const Duration(minutes: 5),
-    Duration? keepAliveDuration = const Duration(minutes: 5),
-  }) => LyricsProvider._(
-    argument: (
-      id: id,
-      cacheDuration: cacheDuration,
-      keepAliveDuration: keepAliveDuration,
-    ),
-    from: this,
-  );
-
-  @override
-  String toString() => r'lyricsProvider';
-}
-
-@ProviderFor(searchLyrics)
-final searchLyricsProvider = SearchLyricsFamily._();
-
-final class SearchLyricsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<SearchLyricsResponse>,
-          SearchLyricsResponse,
-          FutureOr<SearchLyricsResponse>
-        >
-    with
-        $FutureModifier<SearchLyricsResponse>,
-        $FutureProvider<SearchLyricsResponse> {
-  SearchLyricsProvider._({
-    required SearchLyricsFamily super.from,
+final class SongsProvider
+    extends $AsyncNotifierProvider<Songs, SongListResponse?> {
+  SongsProvider._({
+    required SongsFamily super.from,
     required ({
-      String title,
-      String? artist,
       int limit,
+      int offset,
+      String library,
+      String sortBy,
+      String sortDirection,
       String additional,
+      String? artist,
       Duration? cacheDuration,
-      Duration? keepAliveDuration,
     })
     super.argument,
   }) : super(
          retry: null,
-         name: r'searchLyricsProvider',
+         name: r'songsProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$searchLyricsHash();
+  String debugGetCreateSourceHash() => _$songsHash();
 
   @override
   String toString() {
-    return r'searchLyricsProvider'
+    return r'songsProvider'
         ''
         '$argument';
   }
 
   @$internal
   @override
-  $FutureProviderElement<SearchLyricsResponse> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<SearchLyricsResponse> create(Ref ref) {
-    final argument =
-        this.argument
-            as ({
-              String title,
-              String? artist,
-              int limit,
-              String additional,
-              Duration? cacheDuration,
-              Duration? keepAliveDuration,
-            });
-    return searchLyrics(
-      ref,
-      title: argument.title,
-      artist: argument.artist,
-      limit: argument.limit,
-      additional: argument.additional,
-      cacheDuration: argument.cacheDuration,
-      keepAliveDuration: argument.keepAliveDuration,
-    );
-  }
+  Songs create() => Songs();
 
   @override
   bool operator ==(Object other) {
-    return other is SearchLyricsProvider && other.argument == argument;
+    return other is SongsProvider && other.argument == argument;
   }
 
   @override
@@ -1101,312 +794,119 @@ final class SearchLyricsProvider
   }
 }
 
-String _$searchLyricsHash() => r'7f85a39007030726bbfe101df1f7bc156c04750f';
+String _$songsHash() => r'4ec2138e1c9d6e26f53b7abfc8189128b17cc00f';
 
-final class SearchLyricsFamily extends $Family
+final class SongsFamily extends $Family
     with
-        $FunctionalFamilyOverride<
-          FutureOr<SearchLyricsResponse>,
+        $ClassFamilyOverride<
+          Songs,
+          AsyncValue<SongListResponse?>,
+          SongListResponse?,
+          FutureOr<SongListResponse?>,
           ({
-            String title,
-            String? artist,
             int limit,
+            int offset,
+            String library,
+            String sortBy,
+            String sortDirection,
             String additional,
+            String? artist,
             Duration? cacheDuration,
-            Duration? keepAliveDuration,
           })
         > {
-  SearchLyricsFamily._()
+  SongsFamily._()
     : super(
         retry: null,
-        name: r'searchLyricsProvider',
+        name: r'songsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  SearchLyricsProvider call({
-    required String title,
+  SongsProvider call({
+    int limit = 100,
+    int offset = 0,
+    String library = 'shared',
+    String sortBy = 'artist',
+    String sortDirection = 'ASC',
+    String additional = 'song_tag,song_audio,song_rating',
     String? artist,
-    int limit = 10,
-    String additional = 'full_lyrics',
-    Duration? cacheDuration = const Duration(minutes: 5),
-    Duration? keepAliveDuration = const Duration(minutes: 5),
-  }) => SearchLyricsProvider._(
+    Duration? cacheDuration = const Duration(minutes: 30),
+  }) => SongsProvider._(
     argument: (
-      title: title,
-      artist: artist,
       limit: limit,
+      offset: offset,
+      library: library,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
       additional: additional,
+      artist: artist,
       cacheDuration: cacheDuration,
-      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );
 
   @override
-  String toString() => r'searchLyricsProvider';
+  String toString() => r'songsProvider';
 }
 
-@ProviderFor(songInfo)
-final songInfoProvider = SongInfoFamily._();
-
-final class SongInfoProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<SongInfoResponse>,
-          SongInfoResponse,
-          FutureOr<SongInfoResponse>
-        >
-    with $FutureModifier<SongInfoResponse>, $FutureProvider<SongInfoResponse> {
-  SongInfoProvider._({
-    required SongInfoFamily super.from,
-    required ({
-      String id,
-      String additional,
-      Duration? cacheDuration,
-      Duration? keepAliveDuration,
-    })
-    super.argument,
-  }) : super(
-         retry: null,
-         name: r'songInfoProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$songInfoHash();
-
-  @override
-  String toString() {
-    return r'songInfoProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<SongInfoResponse> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<SongInfoResponse> create(Ref ref) {
-    final argument =
-        this.argument
-            as ({
-              String id,
-              String additional,
-              Duration? cacheDuration,
-              Duration? keepAliveDuration,
-            });
-    return songInfo(
-      ref,
-      id: argument.id,
-      additional: argument.additional,
-      cacheDuration: argument.cacheDuration,
-      keepAliveDuration: argument.keepAliveDuration,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is SongInfoProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$songInfoHash() => r'2600a44b80dcde8d8ed257aec3fc6c3224cfe75d';
-
-final class SongInfoFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<SongInfoResponse>,
-          ({
-            String id,
+abstract class _$Songs extends $AsyncNotifier<SongListResponse?> {
+  late final _$args =
+      ref.$arg
+          as ({
+            int limit,
+            int offset,
+            String library,
+            String sortBy,
+            String sortDirection,
             String additional,
+            String? artist,
             Duration? cacheDuration,
-            Duration? keepAliveDuration,
-          })
-        > {
-  SongInfoFamily._()
-    : super(
-        retry: null,
-        name: r'songInfoProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
+          });
+  int get limit => _$args.limit;
+  int get offset => _$args.offset;
+  String get library => _$args.library;
+  String get sortBy => _$args.sortBy;
+  String get sortDirection => _$args.sortDirection;
+  String get additional => _$args.additional;
+  String? get artist => _$args.artist;
+  Duration? get cacheDuration => _$args.cacheDuration;
 
-  SongInfoProvider call({
-    required String id,
-    String additional = 'song_rating',
-    Duration? cacheDuration = const Duration(minutes: 5),
-    Duration? keepAliveDuration = const Duration(minutes: 5),
-  }) => SongInfoProvider._(
-    argument: (
-      id: id,
-      additional: additional,
-      cacheDuration: cacheDuration,
-      keepAliveDuration: keepAliveDuration,
-    ),
-    from: this,
-  );
-
-  @override
-  String toString() => r'songInfoProvider';
-}
-
-@ProviderFor(numberOfPlugIns)
-final numberOfPlugInsProvider = NumberOfPlugInsFamily._();
-
-final class NumberOfPlugInsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<GetNumberOfPlugInsResponse>,
-          GetNumberOfPlugInsResponse,
-          FutureOr<GetNumberOfPlugInsResponse>
-        >
-    with
-        $FutureModifier<GetNumberOfPlugInsResponse>,
-        $FutureProvider<GetNumberOfPlugInsResponse> {
-  NumberOfPlugInsProvider._({
-    required NumberOfPlugInsFamily super.from,
-    required ({Duration? cacheDuration, Duration? keepAliveDuration})
-    super.argument,
-  }) : super(
-         retry: null,
-         name: r'numberOfPlugInsProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$numberOfPlugInsHash();
-
-  @override
-  String toString() {
-    return r'numberOfPlugInsProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<GetNumberOfPlugInsResponse> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<GetNumberOfPlugInsResponse> create(Ref ref) {
-    final argument =
-        this.argument
-            as ({Duration? cacheDuration, Duration? keepAliveDuration});
-    return numberOfPlugIns(
-      ref,
-      cacheDuration: argument.cacheDuration,
-      keepAliveDuration: argument.keepAliveDuration,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is NumberOfPlugInsProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$numberOfPlugInsHash() => r'412b0049f09b11ee321fd44fe71af901b9aee4ae';
-
-final class NumberOfPlugInsFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<GetNumberOfPlugInsResponse>,
-          ({Duration? cacheDuration, Duration? keepAliveDuration})
-        > {
-  NumberOfPlugInsFamily._()
-    : super(
-        retry: null,
-        name: r'numberOfPlugInsProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  NumberOfPlugInsProvider call({
-    Duration? cacheDuration = const Duration(hours: 24),
-    Duration? keepAliveDuration = const Duration(minutes: 1),
-  }) => NumberOfPlugInsProvider._(
-    argument: (
-      cacheDuration: cacheDuration,
-      keepAliveDuration: keepAliveDuration,
-    ),
-    from: this,
-  );
-
-  @override
-  String toString() => r'numberOfPlugInsProvider';
-}
-
-@ProviderFor(SongsState)
-final songsStateProvider = SongsStateProvider._();
-
-final class SongsStateProvider
-    extends $NotifierProvider<SongsState, SongListResponse?> {
-  SongsStateProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'songsStateProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$songsStateHash();
-
-  @$internal
-  @override
-  SongsState create() => SongsState();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(SongListResponse? value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<SongListResponse?>(value),
-    );
-  }
-}
-
-String _$songsStateHash() => r'b16dc42da59858c0a1de4fa880d3d1d0609674f6';
-
-abstract class _$SongsState extends $Notifier<SongListResponse?> {
-  SongListResponse? build();
+  FutureOr<SongListResponse?> build({
+    int limit = 100,
+    int offset = 0,
+    String library = 'shared',
+    String sortBy = 'artist',
+    String sortDirection = 'ASC',
+    String additional = 'song_tag,song_audio,song_rating',
+    String? artist,
+    Duration? cacheDuration = const Duration(minutes: 30),
+  });
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<SongListResponse?, SongListResponse?>;
+    final ref =
+        this.ref as $Ref<AsyncValue<SongListResponse?>, SongListResponse?>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<SongListResponse?, SongListResponse?>,
-              SongListResponse?,
+              AnyNotifier<AsyncValue<SongListResponse?>, SongListResponse?>,
+              AsyncValue<SongListResponse?>,
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    element.handleCreate(
+      ref,
+      () => build(
+        limit: _$args.limit,
+        offset: _$args.offset,
+        library: _$args.library,
+        sortBy: _$args.sortBy,
+        sortDirection: _$args.sortDirection,
+        additional: _$args.additional,
+        artist: _$args.artist,
+        cacheDuration: _$args.cacheDuration,
+      ),
+    );
   }
 }

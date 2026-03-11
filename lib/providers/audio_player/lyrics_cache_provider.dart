@@ -29,7 +29,9 @@ Future<Lyrics?> _requestLyrics(Ref ref, String songId) async {
   }
 
   try {
-    final lyricsResponse = await ref.watch(lyricsProvider(id: songId).future);
+    final lyricsResponse = await ref
+        .read(songCommonProvider.notifier)
+        .lyrics(id: songId);
 
     if (lyricsResponse.success && lyricsResponse.data != null) {
       final lyricsString = lyricsResponse.data!.lyrics;

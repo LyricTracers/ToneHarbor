@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:rhttp/rhttp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -12,50 +10,18 @@ part 'artists_provider.dependence.dart';
 part 'artists_provider.g.dart';
 
 @riverpod
-Future<ArtistResponse> artists(
-  Ref ref, {
-  int limit = 100,
-  int offset = 0,
-  String library = 'shared',
-  String sortBy = 'name',
-  String sortDirection = 'ASC',
-  String additional = 'avg_rating',
-  Duration? cacheDuration = const Duration(minutes: 5),
-  Duration? keepAliveDuration = const Duration(minutes: 5),
-}) async {
-  final link = ref.keepAliveFor(keepAliveDuration);
-  try {
-    return await _getArtists(
-      ref: ref,
-      limit: limit,
-      offset: offset,
-      library: library,
-      sortBy: sortBy,
-      sortDirection: sortDirection,
-      additional: additional,
-      cacheDuration: cacheDuration,
-    );
-  } finally {
-    if (keepAliveDuration != null) {
-      link.close();
-    }
-  }
-}
-
-@riverpod
-Future<ArtistResponse> searchArtists(
-  Ref ref, {
-  required String filter,
-  String library = 'all',
-  int limit = 5000,
-  int offset = 0,
-  String sortBy = 'name',
-  String sortDirection = 'asc',
-  Duration? cacheDuration = const Duration(minutes: 5),
-  Duration? keepAliveDuration,
-}) async {
-  final link = ref.keepAliveFor(keepAliveDuration);
-  try {
+class SearchArtist extends _$SearchArtist {
+  @override
+  Future<ArtistResponse> build({
+    required String filter,
+    String library = 'all',
+    int limit = 5000,
+    int offset = 0,
+    String sortBy = 'name',
+    String sortDirection = 'asc',
+    Duration? cacheDuration = const Duration(minutes: 30),
+  }) async {
+    ref.keepAliveFor(Duration(minutes: 5));
     return await _searchArtists(
       ref: ref,
       filter: filter,
@@ -66,46 +32,84 @@ Future<ArtistResponse> searchArtists(
       sortDirection: sortDirection,
       cacheDuration: cacheDuration,
     );
-  } finally {
-    if (keepAliveDuration != null) {
-      link.close();
-    }
   }
 }
 
 @riverpod
-class ArtistsState extends _$ArtistsState {
-  @override
-  ArtistResponse? build() {
-    return null;
-  }
+class Artists extends _$Artists {
+  late int _limit;
+  late String _library;
+  late String _sortBy;
+  late String _sortDirection;
+  late String _additional;
+  Duration? _cacheDuration;
 
-  Future<void> fetchArtists({
+  @override
+  Future<ArtistResponse> build({
     int limit = 100,
     int offset = 0,
-    String library = 'shared',
+    String library = 'all',
     String sortBy = 'name',
     String sortDirection = 'ASC',
     String additional = 'avg_rating',
-    Duration? cacheDuration = const Duration(minutes: 5),
+    Duration? cacheDuration = const Duration(minutes: 30),
   }) async {
-    state = null;
+    _limit = limit;
+    _library = library;
+    _sortBy = sortBy;
+    _sortDirection = sortDirection;
+    _additional = additional;
+    _cacheDuration = cacheDuration;
+    ref.keepAliveFor(Duration(minutes: 5));
+    return await _getArtists(
+      ref: ref,
+      limit: _limit,
+      offset: offset,
+      library: _library,
+      sortBy: _sortBy,
+      sortDirection: _sortDirection,
+      additional: _additional,
+      cacheDuration: _cacheDuration,
+    );
+  }
+
+  Future<void> fetchMore() async {
+    if (state.value == null) return;
+    final currentData = state.value!.data;
+    if (currentData == null) return;
+
+    final currentTotal = currentData.total;
+    final currentArtists = currentData.artists ?? [];
+
+    if (currentArtists.length >= currentTotal) return;
+
+    final oldState = state.value;
     try {
-      // 直接调用 getArtists 函数，而不是通过 artistsProvider
-      final response = await _getArtists(
+      final newState = await _getArtists(
         ref: ref,
-        limit: limit,
-        offset: offset,
-        library: library,
-        sortBy: sortBy,
-        sortDirection: sortDirection,
-        additional: additional,
-        cacheDuration: cacheDuration,
+        limit: _limit,
+        offset: currentArtists.length,
+        library: _library,
+        sortBy: _sortBy,
+        sortDirection: _sortDirection,
+        additional: _additional,
+        cacheDuration: _cacheDuration,
       );
-      state = response;
+
+      final newArtists = newState.data?.artists ?? [];
+      final mergedArtists = [...currentArtists, ...newArtists];
+
+      state = AsyncData(
+        newState.copyWith(
+          data: newState.data?.copyWith(
+            artists: mergedArtists,
+            total: currentTotal,
+          ),
+        ),
+      );
     } catch (e) {
-      logger.e('获取艺术家列表失败: $e');
-      rethrow;
+      logger.e('加载更多artists失败: $e');
+      state = AsyncData(oldState!);
     }
   }
 }
