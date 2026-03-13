@@ -149,10 +149,18 @@ class _AlbumItem extends StatelessWidget {
     return InkWell(
       onTap: () {
         logger.d('点击专辑: $albumName, 艺术家: $artistName');
+        var tempAlbumName = albumName;
+        var tempArtistName = artistName;
+        if (albumName == "Unknown Album") tempAlbumName = "";
+        if (artistName == "Unknown Artist") tempArtistName = "";
+        ;
         context.push(
           "/songs/${Uri.encodeComponent(albumName)}",
           extra: (
-            albumSongsProvider(album: albumName, albumArtist: artistName),
+            albumSongsProvider(
+              album: tempAlbumName,
+              albumArtist: tempArtistName,
+            ),
             -1,
           ),
         );
