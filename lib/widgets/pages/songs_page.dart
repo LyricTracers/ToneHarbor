@@ -1,33 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 
-class _SongItem extends StatelessWidget {
+class _SongItem extends HookConsumerWidget {
   final int index;
   final Song song;
   final ColorScheme colorScheme;
   final ValueChanged<WidgetRef> onTap;
   final AppLocalizations l10n;
-  final bool isSelected;
+  final String? activeSongId;
   const _SongItem({
     required this.index,
     required this.song,
+    required this.activeSongId,
     required this.colorScheme,
-    required this.isSelected,
     required this.l10n,
     required this.onTap,
   });
   static const double itemHeight = 56.0;
 
   @override
-  Widget build(Object context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final bitrate = ((song.additional?.songAudio?.bitrate ?? 0) / 1000).round();
     var container = song.additional?.songAudio?.container;
     if (container == null || container.isEmpty) {
@@ -44,63 +47,111 @@ class _SongItem extends StatelessWidget {
     if (album == null || album.isEmpty) {
       album = 'Unknown Album';
     }
+    var isHovered = useState(false);
     final isFavorite = song.additional?.songRating?.rating == 5;
-    return Ink(
-      child: ListTile(
-        autofocus: true,
-        minTileHeight: itemHeight,
-        hoverColor: colorScheme.surfaceContainerHighest,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-        horizontalTitleGap: 15,
-        titleAlignment: ListTileTitleAlignment.center,
-        leading: Text(
-          '${index + 1}',
-          style: TextStyle(fontSize: 14, color: colorScheme.primary),
-        ),
-        title: Text(
-          song.title,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        subtitle: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              decoration: BoxDecoration(
-                border: Border.all(color: colorScheme.onSurfaceVariant),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                '$container ${bitrate}k',
-                style: TextStyle(
-                  fontSize: 9,
-                  color: colorScheme.onSurfaceVariant,
+    return MouseRegion(
+      onEnter: (event) => isHovered.value = true,
+      onExit: (event) => isHovered.value = false,
+      child: Container(
+        height: itemHeight,
+        color: isHovered.value
+            ? colorScheme.outline.withValues(alpha: .1)
+            : Colors.transparent,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onDoubleTap: () => onTap(ref),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                activeSongId == song.id
+                    ? SvgPicture.string(
+                        placeholderErrorIconString,
+                        width: 24,
+                        height: 24,
+                        fit: BoxFit.fitWidth,
+                        colorFilter: ColorFilter.mode(
+                          colorScheme.primary,
+                          BlendMode.srcIn,
+                        ),
+                      )
+                    : Text(
+                        '${index + 1}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: colorScheme.primary,
+                        ),
+                      ),
+                const SizedBox(width: 15),
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        song.title,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '$container ${bitrate}k',
+                              style: TextStyle(
+                                fontSize: 9,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 15),
+                          Text(
+                            '$artist-$album',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                const SizedBox(width: 15),
+                IconButton(
+                  onPressed: () {
+                    logger.i('isFavorite: $isFavorite');
+                  },
+
+                  icon: Icon(
+                    isFavorite
+                        ? Icons.favorite_rounded
+                        : Icons.favorite_border_rounded,
+                    size: 18,
+                  ),
+                ),
+              ],
             ),
-            SizedBox(width: 15),
-            Text(
-              '$artist-$album',
-              style: TextStyle(
-                fontSize: 12,
-                color: colorScheme.onSurfaceVariant,
-              ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-          ],
-        ),
-        trailing: IconButton(
-          onPressed: () {
-            // ref.invalidate(favoriteSongsProvider(limit: 50));
-          },
-          icon: Icon(
-            isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-            size: 18,
           ),
         ),
-        onTap: () => {logger.i('onTap $song')},
       ),
     );
   }
@@ -140,7 +191,7 @@ class SongsPage extends HookConsumerWidget {
             Align(
               alignment: Alignment.bottomLeft,
               child: Text(
-                " (共$total首)",
+                " ${l10n.total_songs.replaceFirst("%s", total.toString())}",
                 style: TextStyle(
                   fontSize: 12,
                   color: colorScheme.onSurface.withValues(alpha: 0.7),
@@ -182,7 +233,8 @@ class SongsPage extends HookConsumerWidget {
     final songItems = songs.value?.data?.songs ?? [];
     final hasMore = songItems.length < total;
     final isLoadingMore = useState(false);
-    var selectedIndex = useState(0);
+    final activeTrack = ref.watch(audioPlayerStateProvider).activeTrack;
+    final activeSongId = activeTrack?.id;
 
     useEffect(() {
       void onScroll() {
@@ -244,10 +296,19 @@ class SongsPage extends HookConsumerWidget {
                     child: _SongItem(
                       index: index,
                       song: item,
-                      isSelected: selectedIndex.value == index,
+                      activeSongId: activeSongId,
                       colorScheme: colorScheme,
                       l10n: l10n,
-                      onTap: (ref) => {},
+                      onTap: (ref) async => {
+                        await ref
+                            .read(audioPlayerStateProvider.notifier)
+                            .load(
+                              songItems.asTrackList(),
+                              initialIndex: index,
+                              autoPlay: true,
+                            ),
+                        if (context.mounted) context.push("/playing_detail"),
+                      },
                     ),
                   );
                 },

@@ -318,6 +318,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get artist => '歌手';
 
   @override
+  String get total_songs => '(共%s首)';
+
+  @override
   String get input_song_title => '输入歌曲标题';
 
   @override

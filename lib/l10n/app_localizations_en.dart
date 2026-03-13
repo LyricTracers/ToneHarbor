@@ -332,6 +332,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get artist => 'Artist';
 
   @override
+  String get total_songs => '(Total %s songs)';
+
+  @override
   String get input_song_title => 'Enter song title';
 
   @override

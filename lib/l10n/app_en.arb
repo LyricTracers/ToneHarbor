@@ -104,6 +104,7 @@
   "delete": "Delete",
   "title": "Title",
   "artist": "Artist",
+  "total_songs":"(Total %s songs)",
   "input_song_title": "Enter song title",
   "input_song_artist": "Enter song artist",
   "sync": "Sync",
