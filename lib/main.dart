@@ -4,11 +4,13 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
+import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/providers/server/server_provider.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_streams.dart';
 import 'package:toneharbor/widgets/layouts/playing_detail_layout.dart';
 import 'package:toneharbor/widgets/layouts/switch_lyrics_layout.dart';
+import 'package:toneharbor/widgets/pages/songs_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'init/initialized.dart';
@@ -105,6 +107,15 @@ class MyApp extends HookConsumerWidget {
                 path: '/',
                 pageBuilder: (context, state) =>
                     SlideTransitionPage(child: const RecommendPage()),
+              ),
+              GoRoute(
+                path: '/songs/:title',
+                pageBuilder: (context, state) => SlideTransitionPage(
+                  child: SongsPage(
+                    title: state.pathParameters['title'] ?? 'Songs',
+                    songs: state.extra as AsyncValue<SongListResponse>,
+                  ),
+                ),
               ),
             ],
             builder: (context, state, child) {

@@ -35,6 +35,7 @@ class CachedNetworkImage extends ConsumerWidget {
   final int? memCacheHeight;
   final ValueChanged<Object>? errorListener;
   final Duration? keepLiveDuration;
+  final Widget Function(Widget child)? packageChild;
 
   const CachedNetworkImage({
     super.key,
@@ -59,6 +60,7 @@ class CachedNetworkImage extends ConsumerWidget {
     this.memCacheHeight,
     this.errorListener,
     this.keepLiveDuration,
+    this.packageChild,
   });
 
   @override
@@ -76,7 +78,9 @@ class CachedNetworkImage extends ConsumerWidget {
         if (bytes == null) {
           return _buildError(context, Exception('No data'));
         }
-        return _buildImage(context, bytes);
+
+        return packageChild?.call(_buildImage(context, bytes)) ??
+            _buildImage(context, bytes);
       },
       loading: () => _buildPlaceholder(context),
       error: (error, stack) => _buildError(context, error),

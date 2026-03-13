@@ -24,6 +24,7 @@ late final HttpClientWrapper downloadHttpClientWrapper;
 late final HttpClientWrapper coverDownloadHttpClientWrapper;
 late final PersistentApiCache<Map<String, dynamic>> audioStationRequestCache;
 late final PersistentApiCache<Map<String, dynamic>> lyricCache;
+late final String placeholderErrorIconString;
 
 const keepAlive = Riverpod(keepAlive: true);
 
@@ -40,6 +41,9 @@ Future<void> initialized() async {
   defaultSongIconProvider = const AssetImage(iconPlaceholder);
   defaultColorScheme = await FrostedColorSchemeGenerator.generate(
     imageProvider: defaultSongIconProvider,
+  );
+  placeholderErrorIconString = await rootBundle.loadString(
+    placeholderErrorIcon,
   );
   if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
     _initTray();

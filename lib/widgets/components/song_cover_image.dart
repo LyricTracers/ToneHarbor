@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -74,6 +75,19 @@ class SongCoverImage extends HookConsumerWidget {
             borderRadius: borderRadius,
           );
         },
+        packageChild: (child) => GestureDetector(
+          onLongPress: () async {
+            if (onLongPress != null) {
+              onLongPress?.call();
+            } else {
+              final syncSongIcon = ref.read(syncSongIconProvider);
+              if (syncSongIcon == false && context.mounted) {
+                _showSetBackgroundDialog(context, ref, coverUrl, cacheKey);
+              }
+            }
+          },
+          child: child,
+        ),
       ),
     );
 
@@ -102,19 +116,7 @@ class SongCoverImage extends HookConsumerWidget {
 
     return Builder(
       builder: (context) {
-        return GestureDetector(
-          onLongPress: () async {
-            if (onLongPress != null) {
-              onLongPress?.call();
-            } else {
-              final syncSongIcon = ref.read(syncSongIconProvider);
-              if (syncSongIcon == false && context.mounted) {
-                _showSetBackgroundDialog(context, ref, coverUrl, cacheKey);
-              }
-            }
-          },
-          child: imageChild,
-        );
+        return imageChild;
       },
     );
   }
@@ -234,10 +236,15 @@ class CoverPlaceholder extends StatelessWidget {
               ),
             )
           : RepaintBoundary(
-              child: Icon(
-                Icons.music_note,
-                size: size * 0.4,
-                color: colorScheme.onSurface,
+              child: SvgPicture.string(
+                placeholderErrorIconString,
+                width: size * 0.4,
+                height: size * 0.4,
+                fit: BoxFit.fitWidth,
+                colorFilter: const ColorFilter.mode(
+                  Colors.white54,
+                  BlendMode.srcIn,
+                ),
               ),
             ),
     );

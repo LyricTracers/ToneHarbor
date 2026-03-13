@@ -19,3 +19,4 @@ const String doubleLyricActionKey = 'double_lyric_action';
 const String iconPlaceholder = 'assets/icons/icon_placeholder.png';
 const String statusBarIcon = 'assets/icons/status_bar_icon.png';
 const String loadingErrorIcon = 'assets/icons/loading_error.svg';
+const String placeholderErrorIcon = 'assets/icons/placeholder_icon.svg';
