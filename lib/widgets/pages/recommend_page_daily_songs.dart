@@ -80,15 +80,9 @@ class RecommendPageDailySongs extends ConsumerWidget {
       loading: () {
         return _buildShimmerLoading(context, colorScheme);
       },
-      error: (error, stack) {
-        final config = _LayoutConfig.defaultConfig;
-        final itemConfig = _SongItemConfig.defaultConfig;
-        final totalHeight = config.rows * (itemConfig.height + 8);
-
-        return buildErrorView(context, ref, colorScheme, totalHeight, () {
-          ref.invalidate(randomSongsProvider);
-        });
-      },
+      error: (error, stack) => buildErrorView(context, ref, colorScheme, () {
+        ref.invalidate(randomSongsProvider);
+      }),
     );
   }
 

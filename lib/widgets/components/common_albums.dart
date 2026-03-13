@@ -65,14 +65,7 @@ class CommonAlbums extends ConsumerWidget {
           _buildHorizontalList(context, data!.data?.albums ?? [], colorScheme),
       loading: () => _buildShimmerLoading(context, colorScheme),
       error: (error, stackTrace) {
-        final config = _LayoutConfig.defaultConfig;
-        return buildErrorView(
-          context,
-          ref,
-          colorScheme,
-          config.height,
-          onErrorTap,
-        );
+        return buildErrorView(context, ref, colorScheme, onErrorTap);
       },
     );
   }

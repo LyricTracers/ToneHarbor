@@ -746,6 +746,12 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get retry;
 
+  /// No description provided for @song_playlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Song PlayList'**
+  String get song_playlist;
+
   /// No description provided for @unknown_title.
   ///
   /// In en, this message translates to:

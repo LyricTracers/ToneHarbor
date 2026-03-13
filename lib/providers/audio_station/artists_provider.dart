@@ -37,7 +37,7 @@ class SearchArtist extends _$SearchArtist {
 }
 
 @riverpod
-class Artists extends _$Artists with CacheInvalidateProvider {
+class Artists extends _$Artists with ExtraProvider<ArtistResponse> {
   @override
   Future<ArtistResponse> build({
     int limit = 100,
@@ -64,7 +64,8 @@ class Artists extends _$Artists with CacheInvalidateProvider {
     );
   }
 
-  Future<void> fetchMore() async {
+  @override
+  Future<void> loadMore() async {
     if (state.value == null) return;
     final currentData = state.value!.data;
     if (currentData == null) return;

@@ -14,10 +14,7 @@ final playlistResponseProvider = PlaylistResponseNotifierFamily._();
 
 final class PlaylistResponseNotifierProvider
     extends
-        $AsyncNotifierProvider<
-          PlaylistResponseNotifier,
-          PlaylistListResponse?
-        > {
+        $AsyncNotifierProvider<PlaylistResponseNotifier, PlaylistListResponse> {
   PlaylistResponseNotifierProvider._({
     required PlaylistResponseNotifierFamily super.from,
     required ({
@@ -63,15 +60,15 @@ final class PlaylistResponseNotifierProvider
 }
 
 String _$playlistResponseNotifierHash() =>
-    r'7df463abf9ad8e752294b21e74cf9095e10e8d24';
+    r'76ae547985c765b25a8636022d93d52e5886638e';
 
 final class PlaylistResponseNotifierFamily extends $Family
     with
         $ClassFamilyOverride<
           PlaylistResponseNotifier,
-          AsyncValue<PlaylistListResponse?>,
-          PlaylistListResponse?,
-          FutureOr<PlaylistListResponse?>,
+          AsyncValue<PlaylistListResponse>,
+          PlaylistListResponse,
+          FutureOr<PlaylistListResponse>,
           ({
             int limit,
             int offset,
@@ -111,7 +108,7 @@ final class PlaylistResponseNotifierFamily extends $Family
 }
 
 abstract class _$PlaylistResponseNotifier
-    extends $AsyncNotifier<PlaylistListResponse?> {
+    extends $AsyncNotifier<PlaylistListResponse> {
   late final _$args =
       ref.$arg
           as ({
@@ -127,7 +124,7 @@ abstract class _$PlaylistResponseNotifier
   String get sortBy => _$args.sortBy;
   String get sortDirection => _$args.sortDirection;
 
-  FutureOr<PlaylistListResponse?> build({
+  FutureOr<PlaylistListResponse> build({
     int limit = 100,
     int offset = 0,
     String library = 'all',
@@ -139,15 +136,15 @@ abstract class _$PlaylistResponseNotifier
   void runBuild() {
     final ref =
         this.ref
-            as $Ref<AsyncValue<PlaylistListResponse?>, PlaylistListResponse?>;
+            as $Ref<AsyncValue<PlaylistListResponse>, PlaylistListResponse>;
     final element =
         ref.element
             as $ClassProviderElement<
               AnyNotifier<
-                AsyncValue<PlaylistListResponse?>,
-                PlaylistListResponse?
+                AsyncValue<PlaylistListResponse>,
+                PlaylistListResponse
               >,
-              AsyncValue<PlaylistListResponse?>,
+              AsyncValue<PlaylistListResponse>,
               Object?,
               Object?
             >;

@@ -11,9 +11,9 @@ part 'playlist_provider.dependence.dart';
 
 @riverpod
 class PlaylistResponseNotifier extends _$PlaylistResponseNotifier
-    with CacheInvalidateProvider {
+    with ExtraProvider<PlaylistListResponse> {
   @override
-  Future<PlaylistListResponse?> build({
+  Future<PlaylistListResponse> build({
     int limit = 100,
     int offset = 0,
     String library = 'all',
@@ -35,7 +35,8 @@ class PlaylistResponseNotifier extends _$PlaylistResponseNotifier
     );
   }
 
-  Future<void> fetchMore() async {
+  @override
+  Future<void> loadMore() async {
     if (state.value == null) return;
     final currentData = state.value!.data;
     if (currentData == null) return;

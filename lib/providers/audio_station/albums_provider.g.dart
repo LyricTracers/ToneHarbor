@@ -463,7 +463,7 @@ final class SearchAlbumsFamily extends $Family
 final albumsProvider = AlbumsFamily._();
 
 final class AlbumsProvider
-    extends $AsyncNotifierProvider<Albums, AlbumResponse?> {
+    extends $AsyncNotifierProvider<Albums, AlbumResponse> {
   AlbumsProvider._({
     required AlbumsFamily super.from,
     required ({
@@ -510,15 +510,15 @@ final class AlbumsProvider
   }
 }
 
-String _$albumsHash() => r'f8393c0d2e2e0df16459f3fbcd054e7e360a0d69';
+String _$albumsHash() => r'19768a9368398632dc61a65e20d6f8cf6fc0de10';
 
 final class AlbumsFamily extends $Family
     with
         $ClassFamilyOverride<
           Albums,
-          AsyncValue<AlbumResponse?>,
-          AlbumResponse?,
-          FutureOr<AlbumResponse?>,
+          AsyncValue<AlbumResponse>,
+          AlbumResponse,
+          FutureOr<AlbumResponse>,
           ({
             int limit,
             int offset,
@@ -566,7 +566,7 @@ final class AlbumsFamily extends $Family
   String toString() => r'albumsProvider';
 }
 
-abstract class _$Albums extends $AsyncNotifier<AlbumResponse?> {
+abstract class _$Albums extends $AsyncNotifier<AlbumResponse> {
   late final _$args =
       ref.$arg
           as ({
@@ -588,7 +588,7 @@ abstract class _$Albums extends $AsyncNotifier<AlbumResponse?> {
   String? get artist => _$args.artist;
   Duration? get cacheDuration => _$args.cacheDuration;
 
-  FutureOr<AlbumResponse?> build({
+  FutureOr<AlbumResponse> build({
     int limit = 100,
     int offset = 0,
     String library = 'shared',
@@ -601,12 +601,12 @@ abstract class _$Albums extends $AsyncNotifier<AlbumResponse?> {
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<AlbumResponse?>, AlbumResponse?>;
+    final ref = this.ref as $Ref<AsyncValue<AlbumResponse>, AlbumResponse>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<AlbumResponse?>, AlbumResponse?>,
-              AsyncValue<AlbumResponse?>,
+              AnyNotifier<AsyncValue<AlbumResponse>, AlbumResponse>,
+              AsyncValue<AlbumResponse>,
               Object?,
               Object?
             >;

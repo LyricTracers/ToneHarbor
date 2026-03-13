@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -15,19 +16,11 @@ class RecommendPage extends BaseContentPage {
     return AppBar(
       title: Text(
         i10n.recommend,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: colorScheme.onSurface,
-        ),
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
       actions: [
         IconButton(
-          icon: Icon(
-            Icons.refresh_rounded,
-            color: colorScheme.onSurface,
-            size: 16,
-          ),
+          icon: Icon(Icons.refresh_rounded, size: 18),
           onPressed: () {
             ref.invalidate(randomSongsProvider);
             ref.invalidate(recentAlbumsProvider);
@@ -39,7 +32,6 @@ class RecommendPage extends BaseContentPage {
         ),
       ],
       centerTitle: false,
-      toolbarOpacity: 0.5,
     );
   }
 
@@ -76,6 +68,10 @@ class RecommendPage extends BaseContentPage {
                     TextButton(
                       onPressed: () {
                         // todo('查看更多');
+                        context.push(
+                          "/songs/${Uri.encodeComponent(i10n.my_favorite)}",
+                          extra: (favoriteSongsProvider(limit: 50), -1),
+                        );
                       },
                       child: Text(
                         i10n.more,

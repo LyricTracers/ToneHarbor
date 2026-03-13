@@ -8,7 +8,7 @@ import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 part 'common_provider.g.dart';
 
-mixin CacheInvalidateProvider {
+mixin ExtraProvider<T> on $AsyncNotifier<T> {
   Duration? duration;
   late String groupKey;
   Future<void> invalidateCache() async {
@@ -16,6 +16,8 @@ mixin CacheInvalidateProvider {
       await audioStationRequestCache.clearGroup(groupKey);
     }
   }
+
+  Future<void> loadMore();
 }
 
 enum LyricsDoubleClickAction {

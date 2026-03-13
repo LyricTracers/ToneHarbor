@@ -18,7 +18,6 @@ import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/providers.dart';
-import 'package:toneharbor/providers/theme_data_provider.dart';
 import 'package:toneharbor/utils/consts.dart';
 import 'package:open_file/open_file.dart';
 part 'base_funs_sp.dart';
@@ -223,11 +222,9 @@ Widget buildErrorView(
   BuildContext context,
   WidgetRef ref,
   ColorScheme colorScheme,
-  double totalHeight,
   Function() onTap,
 ) {
   return SizedBox(
-    height: totalHeight,
     child: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -236,7 +233,6 @@ Widget buildErrorView(
             onTap: onTap,
             child: SvgPicture.asset(
               loadingErrorIcon,
-              height: totalHeight,
               colorFilter: ColorFilter.mode(
                 colorScheme.onSurface.withValues(alpha: 0.5),
                 BlendMode.srcIn,

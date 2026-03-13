@@ -112,9 +112,9 @@ Future<AlbumResponse> searchAlbums(
 }
 
 @riverpod
-class Albums extends _$Albums with CacheInvalidateProvider {
+class Albums extends _$Albums with ExtraProvider<AlbumResponse> {
   @override
-  Future<AlbumResponse?> build({
+  Future<AlbumResponse> build({
     int limit = 100,
     int offset = 0,
     String library = 'shared',
@@ -141,7 +141,8 @@ class Albums extends _$Albums with CacheInvalidateProvider {
     );
   }
 
-  Future<void> fetchMore() async {
+  @override
+  Future<void> loadMore() async {
     if (state.value == null) return;
     final currentData = state.value!.data;
     if (currentData == null) return;

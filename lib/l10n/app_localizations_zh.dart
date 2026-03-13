@@ -333,6 +333,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get retry => '重试';
 
   @override
+  String get song_playlist => '歌单';
+
+  @override
   String get unknown_title => '未知标题';
 
   @override

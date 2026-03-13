@@ -235,7 +235,7 @@ class AddToPlaylistsPage extends HookConsumerWidget {
   }) async {
     isLoadingMore.value = true;
     try {
-      await ref.read(playlistResponseProvider().notifier).fetchMore();
+      await ref.read(playlistResponseProvider().notifier).loadMore();
     } finally {
       isLoadingMore.value = false;
     }

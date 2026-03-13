@@ -218,7 +218,7 @@ final class ArtistsProvider
   }
 }
 
-String _$artistsHash() => r'8b48c927066081cea62b2d31e4305faa0efd4ee5';
+String _$artistsHash() => r'd92fb409512f0323ca89422f72d837d0431e0a31';
 
 final class ArtistsFamily extends $Family
     with

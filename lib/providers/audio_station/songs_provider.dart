@@ -97,7 +97,8 @@ Future<SongListResponse> randomSongs(
 }
 
 @riverpod
-class FavoriteSongs extends _$FavoriteSongs with CacheInvalidateProvider {
+class FavoriteSongs extends _$FavoriteSongs
+    with ExtraProvider<SongListResponse> {
   @override
   Future<SongListResponse> build({
     int limit = 100,
@@ -125,7 +126,8 @@ class FavoriteSongs extends _$FavoriteSongs with CacheInvalidateProvider {
     );
   }
 
-  Future<void> fetchMore() async {
+  @override
+  Future<void> loadMore() async {
     if (state.value == null) return;
     final currentData = state.value!.data;
     if (currentData == null) return;
@@ -169,7 +171,7 @@ class FavoriteSongs extends _$FavoriteSongs with CacheInvalidateProvider {
 }
 
 @riverpod
-class ArtistSongs extends _$ArtistSongs with CacheInvalidateProvider {
+class ArtistSongs extends _$ArtistSongs with ExtraProvider<SongListResponse> {
   @override
   Future<SongListResponse> build({
     required String artist,
@@ -190,7 +192,8 @@ class ArtistSongs extends _$ArtistSongs with CacheInvalidateProvider {
     );
   }
 
-  Future<void> fetchMore() async {
+  @override
+  Future<void> loadMore() async {
     if (state.value == null) return;
     final currentData = state.value!.data;
     if (currentData == null) return;
@@ -261,7 +264,7 @@ Future<SongListResponse> searchSongs(
 }
 
 @riverpod
-class AlbumSongs extends _$AlbumSongs with CacheInvalidateProvider {
+class AlbumSongs extends _$AlbumSongs with ExtraProvider<SongListResponse> {
   @override
   Future<SongListResponse> build({
     required String album,
@@ -293,7 +296,8 @@ class AlbumSongs extends _$AlbumSongs with CacheInvalidateProvider {
     );
   }
 
-  Future<void> fetchMore() async {
+  @override
+  Future<void> loadMore() async {
     if (state.value == null) return;
     final currentData = state.value!.data;
     if (currentData == null) return;
@@ -338,9 +342,9 @@ class AlbumSongs extends _$AlbumSongs with CacheInvalidateProvider {
 }
 
 @riverpod
-class Songs extends _$Songs with CacheInvalidateProvider {
+class Songs extends _$Songs with ExtraProvider<SongListResponse> {
   @override
-  Future<SongListResponse?> build({
+  Future<SongListResponse> build({
     int limit = 100,
     int offset = 0,
     String library = 'shared',
@@ -368,7 +372,8 @@ class Songs extends _$Songs with CacheInvalidateProvider {
     );
   }
 
-  Future<void> fetchMore() async {
+  @override
+  Future<void> loadMore() async {
     if (state.value == null) return;
     final currentData = state.value!.data;
     if (currentData == null) return;

@@ -237,7 +237,7 @@ final class FavoriteSongsProvider
   }
 }
 
-String _$favoriteSongsHash() => r'245446633282ee0beb4d4131e0a22f744a705b7b';
+String _$favoriteSongsHash() => r'1dc20eab6e497bb6948fd97fa6cc3445de9b226e';
 
 final class FavoriteSongsFamily extends $Family
     with
@@ -389,7 +389,7 @@ final class ArtistSongsProvider
   }
 }
 
-String _$artistSongsHash() => r'0fe7260e8ba26a8eb09f3b8e333bfec05d5f5f79';
+String _$artistSongsHash() => r'13c5298b25a6a4fc82beb6a3c43407c81b471789';
 
 final class ArtistSongsFamily extends $Family
     with
@@ -660,7 +660,7 @@ final class AlbumSongsProvider
   }
 }
 
-String _$albumSongsHash() => r'a3cc1b4d5e9bd5ba9fa659b985e1f21c19d29e1b';
+String _$albumSongsHash() => r'53a71aadcf7ce4b21307b6f9bb55906f8e1eecfc';
 
 final class AlbumSongsFamily extends $Family
     with
@@ -795,7 +795,7 @@ abstract class _$AlbumSongs extends $AsyncNotifier<SongListResponse> {
 final songsProvider = SongsFamily._();
 
 final class SongsProvider
-    extends $AsyncNotifierProvider<Songs, SongListResponse?> {
+    extends $AsyncNotifierProvider<Songs, SongListResponse> {
   SongsProvider._({
     required SongsFamily super.from,
     required ({
@@ -843,15 +843,15 @@ final class SongsProvider
   }
 }
 
-String _$songsHash() => r'1ad1bacbf5a20935046c8b540562cf7478c7881b';
+String _$songsHash() => r'49f5235249efaa33cd39cd24ae10736c9c609ad9';
 
 final class SongsFamily extends $Family
     with
         $ClassFamilyOverride<
           Songs,
-          AsyncValue<SongListResponse?>,
-          SongListResponse?,
-          FutureOr<SongListResponse?>,
+          AsyncValue<SongListResponse>,
+          SongListResponse,
+          FutureOr<SongListResponse>,
           ({
             int limit,
             int offset,
@@ -902,7 +902,7 @@ final class SongsFamily extends $Family
   String toString() => r'songsProvider';
 }
 
-abstract class _$Songs extends $AsyncNotifier<SongListResponse?> {
+abstract class _$Songs extends $AsyncNotifier<SongListResponse> {
   late final _$args =
       ref.$arg
           as ({
@@ -926,7 +926,7 @@ abstract class _$Songs extends $AsyncNotifier<SongListResponse?> {
   Duration? get cacheDuration => _$args.cacheDuration;
   String get group => _$args.group;
 
-  FutureOr<SongListResponse?> build({
+  FutureOr<SongListResponse> build({
     int limit = 100,
     int offset = 0,
     String library = 'shared',
@@ -941,12 +941,12 @@ abstract class _$Songs extends $AsyncNotifier<SongListResponse?> {
   @override
   void runBuild() {
     final ref =
-        this.ref as $Ref<AsyncValue<SongListResponse?>, SongListResponse?>;
+        this.ref as $Ref<AsyncValue<SongListResponse>, SongListResponse>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<SongListResponse?>, SongListResponse?>,
-              AsyncValue<SongListResponse?>,
+              AnyNotifier<AsyncValue<SongListResponse>, SongListResponse>,
+              AsyncValue<SongListResponse>,
               Object?,
               Object?
             >;

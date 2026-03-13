@@ -347,6 +347,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Retry';
 
   @override
+  String get song_playlist => 'Song PlayList';
+
+  @override
   String get unknown_title => 'Unknown Title';
 
   @override

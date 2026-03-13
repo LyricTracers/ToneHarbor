@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -106,16 +107,28 @@ class MyApp extends HookConsumerWidget {
               GoRoute(
                 path: '/',
                 pageBuilder: (context, state) =>
-                    SlideTransitionPage(child: const RecommendPage()),
+                    MaterialPage(child: const RecommendPage()),
               ),
               GoRoute(
                 path: '/songs/:title',
-                pageBuilder: (context, state) => SlideTransitionPage(
-                  child: SongsPage(
-                    title: state.pathParameters['title'] ?? 'Songs',
-                    songs: state.extra as AsyncValue<SongListResponse>,
-                  ),
-                ),
+                pageBuilder: (context, state) {
+                  final (provider, total) =
+                      state.extra
+                          as (
+                            $AsyncNotifierProvider<
+                              ExtraProvider<SongListResponse>,
+                              SongListResponse
+                            >,
+                            int,
+                          );
+                  return MaterialPage(
+                    child: SongsPage(
+                      title: state.pathParameters['title'] ?? 'Songs',
+                      baseProvider: provider,
+                      limitTotal: total,
+                    ),
+                  );
+                },
               ),
             ],
             builder: (context, state, child) {

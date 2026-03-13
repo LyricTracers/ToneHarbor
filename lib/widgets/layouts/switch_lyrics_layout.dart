@@ -287,14 +287,12 @@ class SwitchLyricsLayout extends BaseBgLayout {
               child: Column(
                 children: [
                   AppBar(
-                    toolbarOpacity: 0.5,
                     centerTitle: false,
                     title: Text(
                       l10n.switch_lyrics,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
                       ),
                     ),
                     leading: IconButton(
