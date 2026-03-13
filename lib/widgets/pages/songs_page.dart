@@ -27,7 +27,7 @@ class _SongItem extends HookConsumerWidget {
     required this.l10n,
     required this.onTap,
   });
-  static const double itemHeight = 56.0;
+  static const double itemHeight = 66.0;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -62,6 +62,7 @@ class _SongItem extends HookConsumerWidget {
           onDoubleTap: () => onTap(ref),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -88,6 +89,7 @@ class _SongItem extends HookConsumerWidget {
                   flex: 1,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         song.title,

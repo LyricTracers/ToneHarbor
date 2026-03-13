@@ -22,6 +22,7 @@ import 'package:flutter/foundation.dart';
 
 class SlideTransitionPage extends CustomTransitionPage<void> {
   SlideTransitionPage({
+    super.key,
     required super.child,
     super.transitionDuration = const Duration(milliseconds: 300),
     super.reverseTransitionDuration = const Duration(milliseconds: 300),
@@ -106,8 +107,10 @@ class MyApp extends HookConsumerWidget {
             routes: [
               GoRoute(
                 path: '/',
-                pageBuilder: (context, state) =>
-                    MaterialPage(child: const RecommendPage()),
+                pageBuilder: (context, state) => NoTransitionPage<void>(
+                  key: state.pageKey,
+                  child: const RecommendPage(),
+                ),
               ),
               GoRoute(
                 path: '/songs/:title',
@@ -121,9 +124,8 @@ class MyApp extends HookConsumerWidget {
                             >,
                             int,
                           );
-                  return SlideTransitionPage(
-                    transitionDuration: const Duration(milliseconds: 30),
-                    reverseTransitionDuration: const Duration(milliseconds: 30),
+                  return NoTransitionPage<void>(
+                    key: state.pageKey,
                     child: SongsPage(
                       title: state.pathParameters['title'] ?? 'Songs',
                       baseProvider: provider,
@@ -139,7 +141,8 @@ class MyApp extends HookConsumerWidget {
           ),
           GoRoute(
             path: "/switch_lyrics",
-            pageBuilder: (context, state) => SlideTransitionPage(
+            pageBuilder: (context, state) => NoTransitionPage<void>(
+              key: state.pageKey,
               child: SwitchLyricsLayout(
                 songTrackObject: state.extra as ToneHarborTrackObject,
               ),
@@ -147,18 +150,24 @@ class MyApp extends HookConsumerWidget {
           ),
           GoRoute(
             path: "/playing_detail",
-            pageBuilder: (context, state) =>
-                SlideTransitionPage(child: const PlayingDetailLayout()),
+            pageBuilder: (context, state) => SlideTransitionPage(
+              key: state.pageKey,
+              child: const PlayingDetailLayout(),
+            ),
           ),
           GoRoute(
             path: '/login',
-            pageBuilder: (context, state) =>
-                SlideTransitionPage(child: const LoginLayout()),
+            pageBuilder: (context, state) => NoTransitionPage(
+              key: state.pageKey,
+              child: const LoginLayout(),
+            ),
           ),
           GoRoute(
             path: '/test',
-            pageBuilder: (context, state) =>
-                SlideTransitionPage(child: const TestLayout()),
+            pageBuilder: (context, state) => SlideTransitionPage(
+              key: state.pageKey,
+              child: const TestLayout(),
+            ),
           ),
         ],
         redirect: (context, state) {
