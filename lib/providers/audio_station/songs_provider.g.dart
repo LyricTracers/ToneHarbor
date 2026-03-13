@@ -60,17 +60,11 @@ abstract class _$SongCommon extends $Notifier<void> {
   }
 }
 
-@ProviderFor(randomSongs)
+@ProviderFor(RandomSongs)
 final randomSongsProvider = RandomSongsFamily._();
 
 final class RandomSongsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<SongListResponse>,
-          SongListResponse,
-          FutureOr<SongListResponse>
-        >
-    with $FutureModifier<SongListResponse>, $FutureProvider<SongListResponse> {
+    extends $AsyncNotifierProvider<RandomSongs, SongListResponse> {
   RandomSongsProvider._({
     required RandomSongsFamily super.from,
     required ({
@@ -79,7 +73,6 @@ final class RandomSongsProvider
       String library,
       String additional,
       Duration? cacheDuration,
-      Duration? keepAliveDuration,
     })
     super.argument,
   }) : super(
@@ -102,32 +95,7 @@ final class RandomSongsProvider
 
   @$internal
   @override
-  $FutureProviderElement<SongListResponse> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<SongListResponse> create(Ref ref) {
-    final argument =
-        this.argument
-            as ({
-              int limit,
-              int offset,
-              String library,
-              String additional,
-              Duration? cacheDuration,
-              Duration? keepAliveDuration,
-            });
-    return randomSongs(
-      ref,
-      limit: argument.limit,
-      offset: argument.offset,
-      library: argument.library,
-      additional: argument.additional,
-      cacheDuration: argument.cacheDuration,
-      keepAliveDuration: argument.keepAliveDuration,
-    );
-  }
+  RandomSongs create() => RandomSongs();
 
   @override
   bool operator ==(Object other) {
@@ -140,11 +108,14 @@ final class RandomSongsProvider
   }
 }
 
-String _$randomSongsHash() => r'8b2afd398224c6ca6977ba1ebfe2b8f42aa52a8f';
+String _$randomSongsHash() => r'b263f65c7c0a062903920d4881b1fc55ca19cc86';
 
 final class RandomSongsFamily extends $Family
     with
-        $FunctionalFamilyOverride<
+        $ClassFamilyOverride<
+          RandomSongs,
+          AsyncValue<SongListResponse>,
+          SongListResponse,
           FutureOr<SongListResponse>,
           ({
             int limit,
@@ -152,7 +123,6 @@ final class RandomSongsFamily extends $Family
             String library,
             String additional,
             Duration? cacheDuration,
-            Duration? keepAliveDuration,
           })
         > {
   RandomSongsFamily._()
@@ -170,7 +140,6 @@ final class RandomSongsFamily extends $Family
     String library = 'shared',
     String additional = 'song_tag,song_audio,song_rating',
     Duration? cacheDuration,
-    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => RandomSongsProvider._(
     argument: (
       limit: limit,
@@ -178,13 +147,61 @@ final class RandomSongsFamily extends $Family
       library: library,
       additional: additional,
       cacheDuration: cacheDuration,
-      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );
 
   @override
   String toString() => r'randomSongsProvider';
+}
+
+abstract class _$RandomSongs extends $AsyncNotifier<SongListResponse> {
+  late final _$args =
+      ref.$arg
+          as ({
+            int limit,
+            int offset,
+            String library,
+            String additional,
+            Duration? cacheDuration,
+          });
+  int get limit => _$args.limit;
+  int get offset => _$args.offset;
+  String get library => _$args.library;
+  String get additional => _$args.additional;
+  Duration? get cacheDuration => _$args.cacheDuration;
+
+  FutureOr<SongListResponse> build({
+    int limit = 100,
+    int offset = 0,
+    String library = 'shared',
+    String additional = 'song_tag,song_audio,song_rating',
+    Duration? cacheDuration,
+  });
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<AsyncValue<SongListResponse>, SongListResponse>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<SongListResponse>, SongListResponse>,
+              AsyncValue<SongListResponse>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(
+      ref,
+      () => build(
+        limit: _$args.limit,
+        offset: _$args.offset,
+        library: _$args.library,
+        additional: _$args.additional,
+        cacheDuration: _$args.cacheDuration,
+      ),
+    );
+  }
 }
 
 @ProviderFor(FavoriteSongs)

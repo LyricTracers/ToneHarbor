@@ -68,17 +68,18 @@ class SongCommon extends _$SongCommon {
 }
 
 @riverpod
-Future<SongListResponse> randomSongs(
-  Ref ref, {
-  int limit = 100,
-  int offset = 0,
-  String library = 'shared',
-  String additional = 'song_tag,song_audio,song_rating',
-  Duration? cacheDuration,
-  Duration? keepAliveDuration = const Duration(minutes: 5),
-}) async {
-  final link = ref.keepAliveFor(keepAliveDuration);
-  try {
+class RandomSongs extends _$RandomSongs with ExtraProvider<SongListResponse> {
+  @override
+  Future<SongListResponse> build({
+    int limit = 100,
+    int offset = 0,
+    String library = 'shared',
+    String additional = 'song_tag,song_audio,song_rating',
+    Duration? cacheDuration,
+  }) async {
+    ref.keepAliveFor(Duration(minutes: 30));
+    duration = cacheDuration;
+    groupKey = 'randomSongs';
     return await _getSongs(
       ref: ref,
       limit: limit,
@@ -87,13 +88,12 @@ Future<SongListResponse> randomSongs(
       additional: additional,
       sortBy: 'random',
       cacheDuration: cacheDuration,
-      group: 'randomSongs',
+      group: groupKey,
     );
-  } finally {
-    if (keepAliveDuration == null) {
-      link.close();
-    }
   }
+
+  @override
+  Future<void> loadMore() async {}
 }
 
 @riverpod

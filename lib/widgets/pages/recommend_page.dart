@@ -67,7 +67,6 @@ class RecommendPage extends BaseContentPage {
                     ),
                     TextButton(
                       onPressed: () {
-                        // todo('查看更多');
                         context.push(
                           "/songs/${Uri.encodeComponent(i10n.my_favorite)}",
                           extra: (favoriteSongsProvider(limit: 50), -1),
@@ -117,7 +116,10 @@ class RecommendPage extends BaseContentPage {
                     ),
                     TextButton(
                       onPressed: () {
-                        // todo('查看更多');
+                        context.push(
+                          "/songs/${Uri.encodeComponent(i10n.daily_recommend)}",
+                          extra: (randomSongsProvider(limit: 100), 100),
+                        );
                       },
                       child: Text(
                         i10n.more,

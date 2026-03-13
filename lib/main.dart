@@ -122,8 +122,8 @@ class MyApp extends HookConsumerWidget {
                             int,
                           );
                   return SlideTransitionPage(
-                    transitionDuration: const Duration(milliseconds: 50),
-                    reverseTransitionDuration: const Duration(milliseconds: 50),
+                    transitionDuration: const Duration(milliseconds: 30),
+                    reverseTransitionDuration: const Duration(milliseconds: 30),
                     child: SongsPage(
                       title: state.pathParameters['title'] ?? 'Songs',
                       baseProvider: provider,
