@@ -51,17 +51,52 @@ class Artists extends _$Artists with ExtraProvider<ArtistResponse> {
     duration = cacheDuration;
     groupKey = 'artists';
     ref.keepAliveFor(Duration(minutes: 5));
+    extraSortBy = sortBy;
+    extraSortDirection = sortDirection;
     return await _getArtists(
       ref: ref,
       limit: limit,
       offset: offset,
       library: library,
-      sortBy: sortBy,
-      sortDirection: sortDirection,
+      sortBy: extraSortBy,
+      sortDirection: extraSortDirection,
       additional: additional,
       cacheDuration: duration,
       groupKey: groupKey,
     );
+  }
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {
+    if (extraSortBy == sortBy && extraSortDirection == sortDirection) {
+      return;
+    }
+
+    final oldState = state.value;
+    state = AsyncLoading();
+    try {
+      final newState = await _getArtists(
+        ref: ref,
+        limit: limit,
+        offset: 0,
+        library: library,
+        sortBy: sortBy,
+        sortDirection: sortDirection,
+        additional: additional,
+        cacheDuration: duration,
+        groupKey: groupKey,
+      );
+      state = AsyncData(newState);
+    } catch (e) {
+      logger.e('set Sort artists失败: $e');
+      state = AsyncData(oldState!);
+    } finally {
+      extraSortBy = sortBy;
+      extraSortDirection = sortDirection;
+    }
   }
 
   @override
@@ -82,8 +117,8 @@ class Artists extends _$Artists with ExtraProvider<ArtistResponse> {
         limit: limit,
         offset: currentArtists.length,
         library: library,
-        sortBy: sortBy,
-        sortDirection: sortDirection,
+        sortBy: extraSortBy,
+        sortDirection: extraSortDirection,
         additional: additional,
         cacheDuration: duration,
         groupKey: groupKey,

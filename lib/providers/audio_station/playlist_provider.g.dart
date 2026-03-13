@@ -60,7 +60,7 @@ final class PlaylistResponseNotifierProvider
 }
 
 String _$playlistResponseNotifierHash() =>
-    r'76ae547985c765b25a8636022d93d52e5886638e';
+    r'3ebcf4b924055fa3cf9c52c3222d9063ce13e269';
 
 final class PlaylistResponseNotifierFamily extends $Family
     with

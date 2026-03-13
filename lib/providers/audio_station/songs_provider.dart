@@ -80,16 +80,52 @@ class RandomSongs extends _$RandomSongs with ExtraProvider<SongListResponse> {
     ref.keepAliveFor(Duration(minutes: 30));
     duration = cacheDuration;
     groupKey = 'randomSongs';
+    extraSortBy = 'random';
+    extraSortDirection = 'ASC';
     return await _getSongs(
       ref: ref,
       limit: limit,
       offset: offset,
       library: library,
       additional: additional,
-      sortBy: 'random',
+      sortBy: extraSortBy,
+      sortDirection: extraSortDirection,
       cacheDuration: cacheDuration,
       group: groupKey,
     );
+  }
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {
+    if (extraSortBy == sortBy && extraSortDirection == sortDirection) {
+      return;
+    }
+
+    final oldState = state.value;
+    state = AsyncLoading();
+    try {
+      final newState = await _getSongs(
+        ref: ref,
+        limit: limit,
+        offset: 0,
+        library: library,
+        additional: additional,
+        sortBy: sortBy,
+        sortDirection: sortDirection,
+        cacheDuration: duration,
+        group: groupKey,
+      );
+      state = AsyncData(newState);
+    } catch (e) {
+      logger.e('set Sort randomSongs失败: $e');
+      state = AsyncData(oldState!);
+    } finally {
+      extraSortBy = sortBy;
+      extraSortDirection = sortDirection;
+    }
   }
 
   @override
@@ -112,18 +148,54 @@ class FavoriteSongs extends _$FavoriteSongs
     ref.keepAliveFor(Duration(minutes: 5));
     duration = cacheDuration;
     groupKey = 'favoriteSongs';
+    extraSortBy = sortBy;
+    extraSortDirection = sortDirection;
     return await _getSongs(
       ref: ref,
       limit: limit,
       offset: offset,
       library: library,
       additional: additional,
-      sortBy: sortBy,
-      sortDirection: sortDirection,
+      sortBy: extraSortBy,
+      sortDirection: extraSortDirection,
       songRatingMeq: 5,
       cacheDuration: duration,
       group: groupKey,
     );
+  }
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {
+    if (extraSortBy == sortBy && extraSortDirection == sortDirection) {
+      return;
+    }
+
+    final oldState = state.value;
+    state = AsyncLoading();
+    try {
+      final newState = await _getSongs(
+        ref: ref,
+        limit: limit,
+        offset: 0,
+        library: library,
+        additional: additional,
+        sortBy: sortBy,
+        sortDirection: sortDirection,
+        songRatingMeq: 5,
+        cacheDuration: duration,
+        group: groupKey,
+      );
+      state = AsyncData(newState);
+    } catch (e) {
+      logger.e('set Sort favoriteSongs失败: $e');
+      state = AsyncData(oldState!);
+    } finally {
+      extraSortBy = sortBy;
+      extraSortDirection = sortDirection;
+    }
   }
 
   @override
@@ -145,8 +217,8 @@ class FavoriteSongs extends _$FavoriteSongs
         offset: currentSongs.length,
         library: library,
         additional: additional,
-        sortBy: sortBy,
-        sortDirection: sortDirection,
+        sortBy: extraSortBy,
+        sortDirection: extraSortDirection,
         songRatingMeq: 5,
         cacheDuration: duration,
         group: groupKey,
@@ -182,6 +254,8 @@ class ArtistSongs extends _$ArtistSongs with ExtraProvider<SongListResponse> {
     ref.keepAliveFor(Duration(minutes: 5));
     duration = cacheDuration;
     groupKey = 'artistSongs';
+    extraSortBy = 'artist';
+    extraSortDirection = 'ASC';
     return await _getSongs(
       ref: ref,
       limit: limit,
@@ -189,7 +263,41 @@ class ArtistSongs extends _$ArtistSongs with ExtraProvider<SongListResponse> {
       artist: artist,
       cacheDuration: duration,
       group: groupKey,
+      sortBy: extraSortBy,
+      sortDirection: extraSortDirection,
     );
+  }
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {
+    if (extraSortBy == sortBy && extraSortDirection == sortDirection) {
+      return;
+    }
+
+    final oldState = state.value;
+    state = AsyncLoading();
+    try {
+      final newState = await _getSongs(
+        ref: ref,
+        limit: limit,
+        offset: 0,
+        artist: artist,
+        cacheDuration: duration,
+        group: groupKey,
+        sortBy: sortBy,
+        sortDirection: sortDirection,
+      );
+      state = AsyncData(newState);
+    } catch (e) {
+      logger.e('set Sort artistSongs失败: $e');
+      state = AsyncData(oldState!);
+    } finally {
+      extraSortBy = sortBy;
+      extraSortDirection = sortDirection;
+    }
   }
 
   @override
@@ -281,6 +389,8 @@ class AlbumSongs extends _$AlbumSongs with ExtraProvider<SongListResponse> {
     ref.keepAliveFor(Duration(minutes: 5));
     duration = cacheDuration;
     groupKey = 'albumSongs';
+    extraSortBy = sortBy;
+    extraSortDirection = sortDirection;
     return await _getAlbumSongs(
       ref: ref,
       album: album,
@@ -288,12 +398,47 @@ class AlbumSongs extends _$AlbumSongs with ExtraProvider<SongListResponse> {
       limit: limit,
       offset: offset,
       library: library,
-      sortBy: sortBy,
-      sortDirection: sortDirection,
+      sortBy: extraSortBy,
+      sortDirection: extraSortDirection,
       additional: additional,
       artist: artist,
       cacheDuration: duration,
     );
+  }
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {
+    if (extraSortBy == sortBy && extraSortDirection == sortDirection) {
+      return;
+    }
+
+    final oldState = state.value;
+    state = AsyncLoading();
+    try {
+      final newState = await _getAlbumSongs(
+        ref: ref,
+        album: album,
+        albumArtist: albumArtist,
+        limit: limit,
+        offset: 0,
+        library: library,
+        sortBy: sortBy,
+        sortDirection: sortDirection,
+        additional: additional,
+        artist: artist,
+        cacheDuration: duration,
+      );
+      state = AsyncData(newState);
+    } catch (e) {
+      logger.e('set Sort albumSongs失败: $e');
+      state = AsyncData(oldState!);
+    } finally {
+      extraSortBy = sortBy;
+      extraSortDirection = sortDirection;
+    }
   }
 
   @override
@@ -316,8 +461,8 @@ class AlbumSongs extends _$AlbumSongs with ExtraProvider<SongListResponse> {
         limit: limit,
         offset: currentSongs.length,
         library: library,
-        sortBy: sortBy,
-        sortDirection: sortDirection,
+        sortBy: extraSortBy,
+        sortDirection: extraSortDirection,
         additional: additional,
         artist: artist,
         cacheDuration: duration,
@@ -358,18 +503,55 @@ class Songs extends _$Songs with ExtraProvider<SongListResponse> {
     ref.keepAliveFor(Duration(minutes: 5));
     duration = cacheDuration;
     groupKey = group;
+
+    extraSortBy = sortBy;
+    extraSortDirection = sortDirection;
     return await _getSongs(
       ref: ref,
       limit: limit,
       offset: offset,
       library: library,
-      sortBy: sortBy,
-      sortDirection: sortDirection,
+      sortBy: extraSortBy,
+      sortDirection: extraSortDirection,
       additional: additional,
       artist: artist,
       cacheDuration: duration,
       group: groupKey,
     );
+  }
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {
+    if (extraSortBy == sortBy && extraSortDirection == sortDirection) {
+      return;
+    }
+
+    final oldState = state.value;
+    state = AsyncLoading();
+    try {
+      final newState = await _getSongs(
+        ref: ref,
+        limit: limit,
+        offset: 0,
+        library: library,
+        sortBy: sortBy,
+        sortDirection: sortDirection,
+        additional: additional,
+        artist: artist,
+        cacheDuration: duration,
+        group: groupKey,
+      );
+      state = AsyncData(newState);
+    } catch (e) {
+      logger.e('set Sort songs失败: $e');
+      state = AsyncData(oldState!);
+    } finally {
+      extraSortBy = sortBy;
+      extraSortDirection = sortDirection;
+    }
   }
 
   @override
@@ -390,8 +572,8 @@ class Songs extends _$Songs with ExtraProvider<SongListResponse> {
         limit: limit,
         offset: currentSongs.length,
         library: library,
-        sortBy: sortBy,
-        sortDirection: sortDirection,
+        sortBy: extraSortBy,
+        sortDirection: extraSortDirection,
         additional: additional,
         artist: artist,
         cacheDuration: duration,

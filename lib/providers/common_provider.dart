@@ -11,6 +11,9 @@ part 'common_provider.g.dart';
 mixin ExtraProvider<T> on $AsyncNotifier<T> {
   Duration? duration;
   late String groupKey;
+  late String extraSortBy;
+  late String extraSortDirection;
+
   Future<void> invalidateCache() async {
     if (duration != null) {
       await audioStationRequestCache.clearGroup(groupKey);
@@ -18,6 +21,8 @@ mixin ExtraProvider<T> on $AsyncNotifier<T> {
   }
 
   Future<void> loadMore();
+
+  Future<void> setSort({required String sortBy, required String sortDirection});
 }
 
 enum LyricsDoubleClickAction {

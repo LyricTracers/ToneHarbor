@@ -159,7 +159,8 @@ class _SongItem extends HookConsumerWidget {
   }
 }
 
-class SongsPage extends HookConsumerWidget {
+class SongsPage<T extends ExtraProvider<SongListResponse>>
+    extends HookConsumerWidget {
   const SongsPage({
     super.key,
     required this.title,
@@ -169,11 +170,7 @@ class SongsPage extends HookConsumerWidget {
 
   final int limitTotal;
   final String title;
-  final $AsyncNotifierProvider<
-    ExtraProvider<SongListResponse>,
-    SongListResponse
-  >
-  baseProvider;
+  final $AsyncNotifierProvider<T, SongListResponse> baseProvider;
 
   PreferredSizeWidget _buildAppBar(
     WidgetRef ref,
