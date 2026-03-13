@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -148,6 +149,13 @@ class _AlbumItem extends StatelessWidget {
     return InkWell(
       onTap: () {
         logger.d('点击专辑: $albumName, 艺术家: $artistName');
+        context.push(
+          "/songs/${Uri.encodeComponent(albumName)}",
+          extra: (
+            albumSongsProvider(album: albumName, albumArtist: artistName),
+            -1,
+          ),
+        );
       },
       borderRadius: BorderRadius.circular(config.coverBorderRadius),
       child: Column(
