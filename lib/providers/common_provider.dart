@@ -11,8 +11,8 @@ part 'common_provider.g.dart';
 mixin ExtraProvider<T> on $AsyncNotifier<T> {
   Duration? duration;
   late String groupKey;
-  late String extraSortBy;
-  late String extraSortDirection;
+  String extraSortBy = '';
+  String extraSortDirection = '';
 
   Future<void> invalidateCache() async {
     if (duration != null) {

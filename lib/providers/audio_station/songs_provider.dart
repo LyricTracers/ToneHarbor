@@ -80,8 +80,10 @@ class RandomSongs extends _$RandomSongs with ExtraProvider<SongListResponse> {
     ref.keepAliveFor(Duration(minutes: 30));
     duration = cacheDuration;
     groupKey = 'randomSongs';
-    extraSortBy = 'random';
-    extraSortDirection = 'ASC';
+    if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {
+      extraSortBy = 'random';
+      extraSortDirection = 'ASC';
+    }
     return await _getSongs(
       ref: ref,
       limit: limit,
@@ -148,8 +150,13 @@ class FavoriteSongs extends _$FavoriteSongs
     ref.keepAliveFor(Duration(minutes: 5));
     duration = cacheDuration;
     groupKey = 'favoriteSongs';
-    extraSortBy = sortBy;
-    extraSortDirection = sortDirection;
+    if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {
+      extraSortBy = sortBy;
+      extraSortDirection = sortDirection;
+    }
+    logger.i(
+      'extraSortBy: $extraSortBy, extraSortDirection: $extraSortDirection',
+    );
     return await _getSongs(
       ref: ref,
       limit: limit,
@@ -254,8 +261,11 @@ class ArtistSongs extends _$ArtistSongs with ExtraProvider<SongListResponse> {
     ref.keepAliveFor(Duration(minutes: 5));
     duration = cacheDuration;
     groupKey = 'artistSongs';
-    extraSortBy = 'artist';
-    extraSortDirection = 'ASC';
+
+    if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {
+      extraSortBy = 'artist';
+      extraSortDirection = 'ASC';
+    }
     return await _getSongs(
       ref: ref,
       limit: limit,
@@ -389,8 +399,10 @@ class AlbumSongs extends _$AlbumSongs with ExtraProvider<SongListResponse> {
     ref.keepAliveFor(Duration(minutes: 5));
     duration = cacheDuration;
     groupKey = 'albumSongs';
-    extraSortBy = sortBy;
-    extraSortDirection = sortDirection;
+    if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {
+      extraSortBy = sortBy;
+      extraSortDirection = sortDirection;
+    }
     return await _getAlbumSongs(
       ref: ref,
       album: album,
@@ -503,9 +515,10 @@ class Songs extends _$Songs with ExtraProvider<SongListResponse> {
     ref.keepAliveFor(Duration(minutes: 5));
     duration = cacheDuration;
     groupKey = group;
-
-    extraSortBy = sortBy;
-    extraSortDirection = sortDirection;
+    if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {
+      extraSortBy = sortBy;
+      extraSortDirection = sortDirection;
+    }
     return await _getSongs(
       ref: ref,
       limit: limit,

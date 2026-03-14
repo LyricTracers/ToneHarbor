@@ -51,8 +51,10 @@ class Artists extends _$Artists with ExtraProvider<ArtistResponse> {
     duration = cacheDuration;
     groupKey = 'artists';
     ref.keepAliveFor(Duration(minutes: 5));
-    extraSortBy = sortBy;
-    extraSortDirection = sortDirection;
+    if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {
+      extraSortBy = sortBy;
+      extraSortDirection = sortDirection;
+    }
     return await _getArtists(
       ref: ref,
       limit: limit,

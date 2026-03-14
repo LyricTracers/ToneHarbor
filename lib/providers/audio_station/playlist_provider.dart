@@ -23,8 +23,10 @@ class PlaylistResponseNotifier extends _$PlaylistResponseNotifier
     ref.keepAliveFor(const Duration(minutes: 5));
     duration = const Duration(minutes: 30);
     groupKey = 'playlist';
-    extraSortBy = sortBy;
-    extraSortDirection = sortDirection;
+    if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {
+      extraSortBy = sortBy;
+      extraSortDirection = sortDirection;
+    }
     return await _getPlaylists(
       ref: ref,
       limit: limit,

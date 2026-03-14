@@ -127,8 +127,10 @@ class Albums extends _$Albums with ExtraProvider<AlbumResponse> {
     duration = cacheDuration;
     groupKey = "albums";
     ref.keepAliveFor(Duration(minutes: 5));
-    extraSortBy = sortBy;
-    extraSortDirection = sortDirection;
+    if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {
+      extraSortBy = sortBy;
+      extraSortDirection = sortDirection;
+    }
     return await _getAlbums(
       ref: ref,
       limit: limit,
