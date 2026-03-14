@@ -154,9 +154,6 @@ class FavoriteSongs extends _$FavoriteSongs
       extraSortBy = sortBy;
       extraSortDirection = sortDirection;
     }
-    logger.i(
-      'extraSortBy: $extraSortBy, extraSortDirection: $extraSortDirection',
-    );
     return await _getSongs(
       ref: ref,
       limit: limit,
