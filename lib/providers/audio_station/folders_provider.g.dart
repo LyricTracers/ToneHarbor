@@ -9,17 +9,11 @@ part of 'folders_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(folders)
+@ProviderFor(Folders)
 final foldersProvider = FoldersFamily._();
 
 final class FoldersProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<FolderResponse>,
-          FolderResponse,
-          FutureOr<FolderResponse>
-        >
-    with $FutureModifier<FolderResponse>, $FutureProvider<FolderResponse> {
+    extends $AsyncNotifierProvider<Folders, FolderResponse> {
   FoldersProvider._({
     required FoldersFamily super.from,
     required ({
@@ -31,7 +25,6 @@ final class FoldersProvider
       String sortDirection,
       String additional,
       Duration? cacheDuration,
-      Duration? keepAliveDuration,
     })
     super.argument,
   }) : super(
@@ -54,38 +47,7 @@ final class FoldersProvider
 
   @$internal
   @override
-  $FutureProviderElement<FolderResponse> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<FolderResponse> create(Ref ref) {
-    final argument =
-        this.argument
-            as ({
-              String? id,
-              int limit,
-              int offset,
-              String library,
-              String sortBy,
-              String sortDirection,
-              String additional,
-              Duration? cacheDuration,
-              Duration? keepAliveDuration,
-            });
-    return folders(
-      ref,
-      id: argument.id,
-      limit: argument.limit,
-      offset: argument.offset,
-      library: argument.library,
-      sortBy: argument.sortBy,
-      sortDirection: argument.sortDirection,
-      additional: argument.additional,
-      cacheDuration: argument.cacheDuration,
-      keepAliveDuration: argument.keepAliveDuration,
-    );
-  }
+  Folders create() => Folders();
 
   @override
   bool operator ==(Object other) {
@@ -98,11 +60,14 @@ final class FoldersProvider
   }
 }
 
-String _$foldersHash() => r'aa2b75c4bbfb61d714c4bf710d78ab8c446525a0';
+String _$foldersHash() => r'242907b8316fc4b90de2fe6903414d8802f4bc90';
 
 final class FoldersFamily extends $Family
     with
-        $FunctionalFamilyOverride<
+        $ClassFamilyOverride<
+          Folders,
+          AsyncValue<FolderResponse>,
+          FolderResponse,
           FutureOr<FolderResponse>,
           ({
             String? id,
@@ -113,7 +78,6 @@ final class FoldersFamily extends $Family
             String sortDirection,
             String additional,
             Duration? cacheDuration,
-            Duration? keepAliveDuration,
           })
         > {
   FoldersFamily._()
@@ -127,14 +91,13 @@ final class FoldersFamily extends $Family
 
   FoldersProvider call({
     String? id,
-    int limit = 1000,
+    int limit = 100,
     int offset = 0,
     String library = 'shared',
     String sortBy = 'song_rating',
     String sortDirection = 'DESC',
     String additional = 'song_tag,song_audio,song_rating',
     Duration? cacheDuration = const Duration(minutes: 100),
-    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => FoldersProvider._(
     argument: (
       id: id,
@@ -145,7 +108,6 @@ final class FoldersFamily extends $Family
       sortDirection: sortDirection,
       additional: additional,
       cacheDuration: cacheDuration,
-      keepAliveDuration: keepAliveDuration,
     ),
     from: this,
   );
@@ -154,54 +116,62 @@ final class FoldersFamily extends $Family
   String toString() => r'foldersProvider';
 }
 
-@ProviderFor(FoldersState)
-final foldersStateProvider = FoldersStateProvider._();
+abstract class _$Folders extends $AsyncNotifier<FolderResponse> {
+  late final _$args =
+      ref.$arg
+          as ({
+            String? id,
+            int limit,
+            int offset,
+            String library,
+            String sortBy,
+            String sortDirection,
+            String additional,
+            Duration? cacheDuration,
+          });
+  String? get id => _$args.id;
+  int get limit => _$args.limit;
+  int get offset => _$args.offset;
+  String get library => _$args.library;
+  String get sortBy => _$args.sortBy;
+  String get sortDirection => _$args.sortDirection;
+  String get additional => _$args.additional;
+  Duration? get cacheDuration => _$args.cacheDuration;
 
-final class FoldersStateProvider
-    extends $NotifierProvider<FoldersState, FolderResponse?> {
-  FoldersStateProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'foldersStateProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$foldersStateHash();
-
-  @$internal
-  @override
-  FoldersState create() => FoldersState();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(FolderResponse? value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<FolderResponse?>(value),
-    );
-  }
-}
-
-String _$foldersStateHash() => r'5d3d67841ea8be5389f2229b7b02b089f97af046';
-
-abstract class _$FoldersState extends $Notifier<FolderResponse?> {
-  FolderResponse? build();
+  FutureOr<FolderResponse> build({
+    String? id,
+    int limit = 100,
+    int offset = 0,
+    String library = 'shared',
+    String sortBy = 'song_rating',
+    String sortDirection = 'DESC',
+    String additional = 'song_tag,song_audio,song_rating',
+    Duration? cacheDuration = const Duration(minutes: 100),
+  });
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<FolderResponse?, FolderResponse?>;
+    final ref = this.ref as $Ref<AsyncValue<FolderResponse>, FolderResponse>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<FolderResponse?, FolderResponse?>,
-              FolderResponse?,
+              AnyNotifier<AsyncValue<FolderResponse>, FolderResponse>,
+              AsyncValue<FolderResponse>,
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    element.handleCreate(
+      ref,
+      () => build(
+        id: _$args.id,
+        limit: _$args.limit,
+        offset: _$args.offset,
+        library: _$args.library,
+        sortBy: _$args.sortBy,
+        sortDirection: _$args.sortDirection,
+        additional: _$args.additional,
+        cacheDuration: _$args.cacheDuration,
+      ),
+    );
   }
 }

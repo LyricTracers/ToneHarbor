@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:rhttp/rhttp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -12,72 +10,113 @@ part 'folders_provider.dependence.dart';
 part 'folders_provider.g.dart';
 
 @riverpod
-Future<FolderResponse> folders(
-  Ref ref, {
-  String? id,
-  int limit = 1000,
-  int offset = 0,
-  String library = 'shared',
-  String sortBy = 'song_rating',
-  String sortDirection = 'DESC',
-  String additional = 'song_tag,song_audio,song_rating',
-  Duration? cacheDuration = const Duration(minutes: 100),
-  Duration? keepAliveDuration = const Duration(minutes: 5),
-}) async {
-  final link = ref.keepAliveFor(keepAliveDuration);
-  try {
+class Folders extends _$Folders with ExtraProvider<FolderResponse> {
+  @override
+  Future<FolderResponse> build({
+    String? id,
+    int limit = 100,
+    int offset = 0,
+    String library = 'shared',
+    String sortBy = 'song_rating',
+    String sortDirection = 'DESC',
+    String additional = 'song_tag,song_audio,song_rating',
+    Duration? cacheDuration = const Duration(minutes: 100),
+  }) async {
+    ref.keepAliveFor(Duration(minutes: 5));
+    duration = cacheDuration;
+    groupKey = 'folders';
+    if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {
+      extraSortBy = sortBy;
+      extraSortDirection = sortDirection;
+    }
     return await _getFolders(
       ref: ref,
       id: id,
       limit: limit,
       offset: offset,
       library: library,
-      sortBy: sortBy,
-      sortDirection: sortDirection,
+      sortBy: extraSortBy,
+      sortDirection: extraSortDirection,
       additional: additional,
       cacheDuration: cacheDuration,
+      groupKey: groupKey,
     );
-  } finally {
-    if (keepAliveDuration != null) {
-      link.close();
-    }
   }
-}
 
-@riverpod
-class FoldersState extends _$FoldersState {
   @override
-  FolderResponse? build() {
-    return null;
-  }
-
-  Future<void> fetchFolders({
-    String? id,
-    int limit = 1000,
-    int offset = 0,
-    String library = 'shared',
-    String sortBy = 'song_rating',
-    String sortDirection = 'DESC',
-    String additional = 'song_tag,song_audio,song_rating',
-    Duration? cacheDuration = const Duration(minutes: 5),
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
   }) async {
-    state = null;
+    if (extraSortBy == sortBy && extraSortDirection == sortDirection) {
+      return;
+    }
+
+    final oldState = state.value;
+    state = AsyncLoading();
     try {
-      final response = await _getFolders(
+      final newState = await _getFolders(
         ref: ref,
         id: id,
         limit: limit,
         offset: offset,
         library: library,
-        sortBy: sortBy,
-        sortDirection: sortDirection,
+        sortBy: extraSortBy,
+        sortDirection: extraSortDirection,
         additional: additional,
         cacheDuration: cacheDuration,
+        groupKey: groupKey,
       );
-      state = response;
+      state = AsyncData(newState);
     } catch (e) {
-      logger.e('获取文件夹列表失败: $e');
-      rethrow;
+      logger.e('set Sort folders失败: $e');
+      state = AsyncData(oldState!);
+    } finally {
+      extraSortBy = sortBy;
+      extraSortDirection = sortDirection;
+    }
+  }
+
+  @override
+  Future<void> loadMore() async {
+    if (state.value == null) return;
+    final currentData = state.value!.data;
+    if (currentData == null) return;
+
+    final currentTotal = currentData.total;
+    final currentFolders = currentData.items;
+
+    if (currentFolders.length >= currentTotal) return;
+
+    final oldState = state.value;
+    try {
+      final newState = await _getFolders(
+        ref: ref,
+        id: id,
+        limit: limit,
+        offset: offset,
+        library: library,
+        sortBy: extraSortBy,
+        sortDirection: extraSortDirection,
+        additional: additional,
+        cacheDuration: cacheDuration,
+        groupKey: groupKey,
+      );
+
+      final newFolders = newState.data?.items ?? [];
+      final mergedFolders = [...currentFolders, ...newFolders];
+
+      state = AsyncData(
+        newState.copyWith(
+          data: newState.data?.copyWith(
+            items: mergedFolders,
+            total: currentTotal,
+          ),
+        ),
+      );
+    } catch (e) {
+      logger.e('加载更多folders失败: $e');
+      state = AsyncData(oldState!);
     }
   }
 }

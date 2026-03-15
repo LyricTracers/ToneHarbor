@@ -93,6 +93,7 @@ Future<FolderResponse> _getFolders({
   String sortDirection = 'DESC',
   String additional = 'song_tag,song_audio,song_rating',
   Duration? cacheDuration,
+  String groupKey = 'folders',
 }) async {
   final cacheKey =
       'getFolders:$id:$limit:$offset:$library:$sortBy:$sortDirection:$additional';
@@ -100,7 +101,7 @@ Future<FolderResponse> _getFolders({
   if (cacheDuration != null) {
     final cached = await getFromCache<FolderResponse>(
       cacheKey: cacheKey,
-      group: 'folder',
+      group: groupKey,
       fromJson: (json) => FolderResponse.fromJson(json),
     );
     if (cached != null) {
@@ -136,7 +137,7 @@ Future<FolderResponse> _getFolders({
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
       cacheDuration: cacheDuration,
-      group: 'folder',
+      group: groupKey,
     );
   }
 
