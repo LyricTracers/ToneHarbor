@@ -215,21 +215,6 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
           ),
         ),
         SizedBox(width: 16),
-        // IconButton(
-        //   onPressed: () {
-        //     final notifier = ref.read(baseProvider.notifier);
-        //     final currentSortDirection = notifier.extraSortDirection;
-        //     if (currentSortDirection.isEmpty) return;
-        //     final newSortDirection = currentSortDirection == 'ASC'
-        //         ? 'DESC'
-        //         : 'ASC';
-        //     notifier.setSort(
-        //       sortBy: notifier.extraSortBy,
-        //       sortDirection: newSortDirection,
-        //     );
-        //   },
-        //   icon: Icon(Icons.sort_rounded, size: 18),
-        // ),
         _buildSortAction(ref, l10n),
         IconButton(
           onPressed: () {},

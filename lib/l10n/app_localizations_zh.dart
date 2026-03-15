@@ -324,6 +324,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sort_name => '歌曲名排序';
 
   @override
+  String get music_house => '音乐库';
+
+  @override
+  String get all_music => '歌曲';
+
+  @override
   String get sort_artist_name => '演唱者排序';
 
   @override

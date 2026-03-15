@@ -728,6 +728,18 @@ abstract class AppLocalizations {
   /// **'Order Of Title'**
   String get sort_name;
 
+  /// No description provided for @music_house.
+  ///
+  /// In en, this message translates to:
+  /// **'Music Library'**
+  String get music_house;
+
+  /// No description provided for @all_music.
+  ///
+  /// In en, this message translates to:
+  /// **'Music'**
+  String get all_music;
+
   /// No description provided for @sort_artist_name.
   ///
   /// In en, this message translates to:

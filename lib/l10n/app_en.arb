@@ -106,6 +106,8 @@
   "artist": "Artist",
   "sort": "sort",
   "sort_name": "Order Of Title",
+  "music_house": "Music Library",
+  "all_music": "Music",
   "sort_artist_name": "Order Of Artist",
   "total_songs":"(Total %s songs)",
   "input_song_title": "Enter song title",

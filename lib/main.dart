@@ -138,7 +138,8 @@ class MyApp extends HookConsumerWidget {
               ),
             ],
             builder: (context, state, child) {
-              return HomeLayout(child: child);
+              final currentPath = state.uri.path;
+              return HomeLayout(currentPath: currentPath, child: child);
             },
           ),
           GoRoute(

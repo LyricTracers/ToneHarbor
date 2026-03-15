@@ -7,21 +7,27 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
 import 'package:toneharbor/widgets/pages/playlist_page.dart';
+import 'package:toneharbor/widgets/pages/songs_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 part 'home_layout_logic.dart';
 
 class HomeLayout extends BaseBgLayout {
   final Widget child;
-  const HomeLayout({super.key, super.showLoading = false, required this.child});
+  final String currentPath;
+  const HomeLayout({
+    super.key,
+    super.showLoading = false,
+    required this.child,
+    required this.currentPath,
+  });
 
   @override
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
     final colorScheme = getColorSchemeWhenReady(ref);
     final l10n = ref.watch(l10nProvider);
-    final router = GoRouter.of(context);
-    final isRecommendPage =
-        router.routeInformationProvider.value.uri.path == '/';
+
     final isPlaylistPage = useState(false);
+    final allMusicPath = '/songs/${Uri.encodeComponent(l10n.all_music)}';
     final gradientDecoration = BoxDecoration(
       gradient: LinearGradient(
         begin: Alignment(-0.8, -0.8),
@@ -87,56 +93,54 @@ class HomeLayout extends BaseBgLayout {
                         },
                       ),
                     ),
+                    _getItem(
+                      currentPath == '/',
+                      colorScheme,
+                      Icons.recommend,
+                      l10n.recommend,
+                      () {
+                        context.go('/');
+                      },
+                    ),
+                    SizedBox(height: 8),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: InkWell(
-                        onTap: () {
-                          if (!isRecommendPage) {
-                            context.go('/');
-                          }
-                        },
-                        borderRadius: BorderRadius.circular(8),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isRecommendPage
-                                ? colorScheme.primary.withValues(alpha: 0.3)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.recommend,
-                                size: 20,
-                                color: isRecommendPage
-                                    ? colorScheme.primary
-                                    : colorScheme.onSurface.withValues(
-                                        alpha: 0.8,
-                                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 18),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            l10n.music_house,
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.7,
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                l10n.recommend,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: isRecommendPage
-                                      ? FontWeight.w600
-                                      : FontWeight.normal,
-                                  color: isRecommendPage
-                                      ? colorScheme.primary
-                                      : colorScheme.onSurface.withValues(
-                                          alpha: 0.8,
-                                        ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
+                          Icon(
+                            Icons.house_rounded,
+                            size: 16,
+                            color: colorScheme.onSurface.withValues(alpha: 0.7),
+                          ),
+                        ],
                       ),
+                    ),
+                    SizedBox(height: 8),
+                    _getItem(
+                      currentPath == allMusicPath,
+                      colorScheme,
+                      Icons.music_note_rounded,
+                      l10n.all_music,
+                      () {
+                        context.push(
+                          allMusicPath,
+                          extra: (
+                            songsProvider(limit: 100),
+                            -1,
+                            SongsPageSortAction.all,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -175,6 +179,57 @@ class HomeLayout extends BaseBgLayout {
             ),
           ),
       ],
+    );
+  }
+
+  Widget _getItem(
+    bool targetPage,
+    ColorScheme colorScheme,
+    IconData icon,
+    String text,
+    VoidCallback onTapCallback,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: InkWell(
+        onTap: () {
+          if (!targetPage) {
+            onTapCallback.call();
+          }
+        },
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          decoration: BoxDecoration(
+            color: targetPage
+                ? colorScheme.primary.withValues(alpha: 0.3)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                size: 20,
+                color: targetPage
+                    ? colorScheme.primary
+                    : colorScheme.onSurface.withValues(alpha: 0.8),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: targetPage ? FontWeight.w600 : FontWeight.normal,
+                  color: targetPage
+                      ? colorScheme.primary
+                      : colorScheme.onSurface.withValues(alpha: 0.8),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
