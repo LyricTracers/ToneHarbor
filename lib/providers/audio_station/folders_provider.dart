@@ -94,7 +94,7 @@ class Folders extends _$Folders with ExtraProvider<FolderResponse> {
         ref: ref,
         id: id,
         limit: limit,
-        offset: offset,
+        offset: currentFolders.length,
         library: library,
         sortBy: extraSortBy,
         sortDirection: extraSortDirection,
