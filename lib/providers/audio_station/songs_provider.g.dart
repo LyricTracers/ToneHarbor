@@ -254,7 +254,7 @@ final class FavoriteSongsProvider
   }
 }
 
-String _$favoriteSongsHash() => r'32e6fa85edd73c833991e7cb7a26e177e767beac';
+String _$favoriteSongsHash() => r'71cc0982115976252ed6946e101ae5985831d27a';
 
 final class FavoriteSongsFamily extends $Family
     with
@@ -677,7 +677,7 @@ final class AlbumSongsProvider
   }
 }
 
-String _$albumSongsHash() => r'83ef890382733547ea1857498ee01f38ebbea874';
+String _$albumSongsHash() => r'ab3f99ac1915a8f7879e1e335f38a67a42a10eb1';
 
 final class AlbumSongsFamily extends $Family
     with
@@ -714,7 +714,7 @@ final class AlbumSongsFamily extends $Family
     int limit = 100,
     int offset = 0,
     String library = 'shared',
-    String sortBy = 'song_rating',
+    String sortBy = 'name',
     String sortDirection = 'DESC',
     String additional = 'song_tag,song_audio,song_rating',
     String? artist,
@@ -771,7 +771,7 @@ abstract class _$AlbumSongs extends $AsyncNotifier<SongListResponse> {
     int limit = 100,
     int offset = 0,
     String library = 'shared',
-    String sortBy = 'song_rating',
+    String sortBy = 'name',
     String sortDirection = 'DESC',
     String additional = 'song_tag,song_audio,song_rating',
     String? artist,

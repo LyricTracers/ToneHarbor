@@ -387,7 +387,7 @@ class AlbumSongs extends _$AlbumSongs with ExtraProvider<SongListResponse> {
     int limit = 100,
     int offset = 0,
     String library = 'shared',
-    String sortBy = 'song_rating',
+    String sortBy = 'name',
     String sortDirection = 'DESC',
     String additional = 'song_tag,song_audio,song_rating',
     String? artist,

@@ -115,7 +115,7 @@ class MyApp extends HookConsumerWidget {
               GoRoute(
                 path: '/songs/:title',
                 pageBuilder: (context, state) {
-                  final (provider, total) =
+                  final (provider, total, sortAction) =
                       state.extra
                           as (
                             $AsyncNotifierProvider<
@@ -123,6 +123,7 @@ class MyApp extends HookConsumerWidget {
                               SongListResponse
                             >,
                             int,
+                            SongsPageSortAction,
                           );
                   return NoTransitionPage<void>(
                     key: state.pageKey,
@@ -130,6 +131,7 @@ class MyApp extends HookConsumerWidget {
                       title: state.pathParameters['title'] ?? 'Songs',
                       baseProvider: provider,
                       limitTotal: total,
+                      sortAction: sortAction,
                     ),
                   );
                 },

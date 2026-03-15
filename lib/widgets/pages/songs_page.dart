@@ -12,6 +12,8 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 
+part 'songs_page_action.dart';
+
 class _SongItem extends HookConsumerWidget {
   final int index;
   final Song song;
@@ -166,11 +168,13 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
     required this.title,
     required this.baseProvider,
     required this.limitTotal,
+    this.sortAction = SongsPageSortAction.none,
   });
 
   final int limitTotal;
   final String title;
   final $AsyncNotifierProvider<T, SongListResponse> baseProvider;
+  final SongsPageSortAction sortAction;
 
   PreferredSizeWidget _buildAppBar(
     WidgetRef ref,
@@ -201,21 +205,6 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
         ],
       ),
       actions: [
-        IconButton(
-          onPressed: () {
-            final notifier = ref.read(baseProvider.notifier);
-            final currentSortDirection = notifier.extraSortDirection;
-            if (currentSortDirection.isEmpty) return;
-            final newSortDirection = currentSortDirection == 'ASC'
-                ? 'DESC'
-                : 'ASC';
-            notifier.setSort(
-              sortBy: notifier.extraSortBy,
-              sortDirection: newSortDirection,
-            );
-          },
-          icon: Icon(Icons.sort_rounded, size: 18),
-        ),
         Container(
           constraints: BoxConstraints(maxWidth: 200, maxHeight: 35),
           child: SearchAnchor.bar(
@@ -225,6 +214,23 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
             barLeading: Icon(Icons.search, size: 18),
           ),
         ),
+        SizedBox(width: 16),
+        // IconButton(
+        //   onPressed: () {
+        //     final notifier = ref.read(baseProvider.notifier);
+        //     final currentSortDirection = notifier.extraSortDirection;
+        //     if (currentSortDirection.isEmpty) return;
+        //     final newSortDirection = currentSortDirection == 'ASC'
+        //         ? 'DESC'
+        //         : 'ASC';
+        //     notifier.setSort(
+        //       sortBy: notifier.extraSortBy,
+        //       sortDirection: newSortDirection,
+        //     );
+        //   },
+        //   icon: Icon(Icons.sort_rounded, size: 18),
+        // ),
+        _buildSortAction(ref, l10n),
         IconButton(
           onPressed: () {},
           icon: Icon(Icons.settings_rounded, size: 18),

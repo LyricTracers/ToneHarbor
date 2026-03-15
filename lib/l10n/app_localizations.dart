@@ -716,6 +716,24 @@ abstract class AppLocalizations {
   /// **'Artist'**
   String get artist;
 
+  /// No description provided for @sort.
+  ///
+  /// In en, this message translates to:
+  /// **'sort'**
+  String get sort;
+
+  /// No description provided for @sort_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Of Title'**
+  String get sort_name;
+
+  /// No description provided for @sort_artist_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Of Artist'**
+  String get sort_artist_name;
+
   /// No description provided for @total_songs.
   ///
   /// In en, this message translates to:

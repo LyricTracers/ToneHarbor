@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/widgets/pages/songs_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class RecommendPage extends BaseContentPage {
@@ -69,7 +70,11 @@ class RecommendPage extends BaseContentPage {
                       onPressed: () {
                         context.push(
                           "/songs/${Uri.encodeComponent(i10n.my_favorite)}",
-                          extra: (favoriteSongsProvider(limit: 50), -1),
+                          extra: (
+                            favoriteSongsProvider(limit: 50),
+                            -1,
+                            SongsPageSortAction.all,
+                          ),
                         );
                       },
                       child: Text(
@@ -118,7 +123,11 @@ class RecommendPage extends BaseContentPage {
                       onPressed: () {
                         context.push(
                           "/songs/${Uri.encodeComponent(i10n.daily_recommend)}",
-                          extra: (randomSongsProvider(limit: 100), 100),
+                          extra: (
+                            randomSongsProvider(limit: 100),
+                            100,
+                            SongsPageSortAction.none,
+                          ),
                         );
                       },
                       child: Text(
