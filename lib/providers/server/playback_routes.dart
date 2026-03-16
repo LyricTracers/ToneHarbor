@@ -483,7 +483,7 @@ class PlaybackRoutes {
         return Response.notFound("Cover not found");
       }
 
-      final cacheKey = sanitizeCacheKey(artist);
+      final cacheKey = sanitizeCacheKey('$artist-');
       final imageBytes = await getCoverBytes(ref, coverUrl, cacheKey);
       if (imageBytes == null) {
         return Response.notFound("Cover not found");
