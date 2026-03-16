@@ -17,8 +17,8 @@ class Folders extends _$Folders with ExtraProvider<FolderResponse> {
     int limit = 100,
     int offset = 0,
     String library = 'shared',
-    String sortBy = 'song_rating',
-    String sortDirection = 'DESC',
+    String sortBy = 'name',
+    String sortDirection = 'ASC',
     String additional = 'song_tag,song_audio,song_rating',
     Duration? cacheDuration = const Duration(minutes: 100),
   }) async {
