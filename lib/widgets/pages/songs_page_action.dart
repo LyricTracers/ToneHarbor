@@ -39,7 +39,7 @@ extension _SongsPageActionExtension on SongsPage {
                   () => {
                     ref
                         .read(baseProvider.notifier)
-                        .setSort(sortBy: 'title', sortDirection: 'ASC'),
+                        .setSort(sortBy: 'name', sortDirection: 'ASC'),
                   },
                   l10n.sort_name,
                   Icons.arrow_upward_rounded,
@@ -48,7 +48,7 @@ extension _SongsPageActionExtension on SongsPage {
                   () => {
                     ref
                         .read(baseProvider.notifier)
-                        .setSort(sortBy: 'title', sortDirection: 'DESC'),
+                        .setSort(sortBy: 'name', sortDirection: 'DESC'),
                   },
                   l10n.sort_name,
                   Icons.arrow_downward_rounded,

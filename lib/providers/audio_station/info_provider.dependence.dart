@@ -61,7 +61,7 @@ Future<SynoAPIInfoResponse> _queryAPI({
       group: 'queryAPI',
       fromJson: (json) => SynoAPIInfoResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       logger.d('从缓存中获取查询所有可用的 API 响应: $cached');
       return cached;
     }
@@ -116,7 +116,7 @@ Future<SynoAPIInfoResponse> _queryAPI({
     );
   }
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     logger.d('缓存查询所有可用的 API 响应: $jsonBody');
     await saveToCache(
       cacheKey: cacheKey,
@@ -283,7 +283,7 @@ Future<AudioStationInfoResponse> _getAudioStationInfo({
       group: 'info',
       fromJson: (json) => AudioStationInfoResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -303,7 +303,7 @@ Future<AudioStationInfoResponse> _getAudioStationInfo({
     l10n: l10n,
   );
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
@@ -330,7 +330,7 @@ Future<DSMInfoResponse> _getDSMInfo({
       group: 'info',
       fromJson: (json) => DSMInfoResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -350,7 +350,7 @@ Future<DSMInfoResponse> _getDSMInfo({
     l10n: l10n,
   );
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),

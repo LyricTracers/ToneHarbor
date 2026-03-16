@@ -154,7 +154,7 @@ class FavoriteSongs extends _$FavoriteSongs
       extraSortBy = sortBy;
       extraSortDirection = sortDirection;
     }
-    return await _getSongs(
+    var result = await _getSongs(
       ref: ref,
       limit: limit,
       offset: offset,
@@ -166,6 +166,7 @@ class FavoriteSongs extends _$FavoriteSongs
       cacheDuration: duration,
       group: groupKey,
     );
+    return result;
   }
 
   @override

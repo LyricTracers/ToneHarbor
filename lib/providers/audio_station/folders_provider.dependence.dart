@@ -104,7 +104,7 @@ Future<FolderResponse> _getFolders({
       group: groupKey,
       fromJson: (json) => FolderResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -132,7 +132,7 @@ Future<FolderResponse> _getFolders({
     l10n: l10n,
   );
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),

@@ -102,7 +102,7 @@ Future<ArtistResponse> _getArtists({
       group: groupKey,
       fromJson: (json) => ArtistResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -129,7 +129,7 @@ Future<ArtistResponse> _getArtists({
     l10n: l10n,
   );
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
@@ -170,7 +170,7 @@ Future<ArtistResponse> _searchArtists({
       group: groupKey,
       fromJson: (json) => ArtistResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -195,7 +195,7 @@ Future<ArtistResponse> _searchArtists({
     l10n: l10n,
   );
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),

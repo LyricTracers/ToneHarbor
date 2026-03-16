@@ -164,7 +164,7 @@ Future<PlaylistListResponse> _getPlaylists({
       fromJson: (json) => PlaylistListResponse.fromJson(json),
     );
 
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -190,7 +190,7 @@ Future<PlaylistListResponse> _getPlaylists({
     l10n: l10n,
   );
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
@@ -223,7 +223,7 @@ Future<PlaylistDetailResponse> _getPlaylistDetail({
       group: groupKey,
       fromJson: (json) => PlaylistDetailResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -251,7 +251,7 @@ Future<PlaylistDetailResponse> _getPlaylistDetail({
     l10n: l10n,
   );
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
@@ -278,7 +278,7 @@ Future<PlaylistDetailResponse> _getPlaylistInfo({
       group: groupKey,
       fromJson: (json) => PlaylistDetailResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -306,7 +306,7 @@ Future<PlaylistDetailResponse> _getPlaylistInfo({
     l10n: l10n,
   );
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),

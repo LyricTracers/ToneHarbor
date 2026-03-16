@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
@@ -11,7 +12,6 @@ class RecommendPage extends BaseContentPage {
 
   @override
   PreferredSizeWidget buildAppBar(BuildContext context, WidgetRef ref) {
-    final colorScheme = getColorSchemeWhenReady(ref);
     final i10n = ref.watch(l10nProvider);
 
     return AppBar(

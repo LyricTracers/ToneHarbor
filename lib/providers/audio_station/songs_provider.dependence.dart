@@ -327,7 +327,7 @@ Future<SongListResponse> _getSongs({
       group: group,
       fromJson: (json) => SongListResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -356,7 +356,7 @@ Future<SongListResponse> _getSongs({
     l10n: l10n,
   );
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
@@ -472,7 +472,7 @@ Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
       group: 'songPlugins',
       fromJson: (json) => GetNumberOfPlugInsResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -537,7 +537,7 @@ Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
     throw AudioStationException(message: l10n.error_getNumberOfPlugIns_failed);
   }
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
@@ -584,7 +584,7 @@ Future<SongListResponse> _getAlbumSongs({
       group: groupKey,
       fromJson: (json) => SongListResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -614,7 +614,7 @@ Future<SongListResponse> _getAlbumSongs({
     l10n: l10n,
   );
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
@@ -655,7 +655,7 @@ Future<SongListResponse> _searchSongs({
       group: groupKey,
       fromJson: (json) => SongListResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -682,7 +682,7 @@ Future<SongListResponse> _searchSongs({
     l10n: l10n,
   );
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
@@ -711,7 +711,7 @@ Future<LyricsResponse> _getLyrics({
       group: 'lyrics',
       fromJson: (json) => LyricsResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -733,7 +733,7 @@ Future<LyricsResponse> _getLyrics({
     l10n: l10n,
   );
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
@@ -768,7 +768,7 @@ Future<SearchLyricsResponse> _searchLyrics({
       group: 'lyrics',
       fromJson: (json) => SearchLyricsResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -793,7 +793,7 @@ Future<SearchLyricsResponse> _searchLyrics({
     l10n: l10n,
   );
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
@@ -824,7 +824,7 @@ Future<SongInfoResponse> _getSongInfo({
       group: 'songInfo',
       fromJson: (json) => SongInfoResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -847,7 +847,7 @@ Future<SongInfoResponse> _getSongInfo({
     l10n: l10n,
   );
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),

@@ -104,7 +104,7 @@ Future<AlbumResponse> _getAlbums({
       group: groupKey,
       fromJson: (json) => AlbumResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -132,7 +132,7 @@ Future<AlbumResponse> _getAlbums({
     l10n: l10n,
   );
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
@@ -170,7 +170,7 @@ Future<AlbumResponse> _searchAlbums({
       group: groupKey,
       fromJson: (json) => AlbumResponse.fromJson(json),
     );
-    if (cached != null) {
+    if (cached != null && cached.success) {
       return cached;
     }
   }
@@ -195,7 +195,7 @@ Future<AlbumResponse> _searchAlbums({
     l10n: l10n,
   );
 
-  if (cacheDuration != null) {
+  if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
