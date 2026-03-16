@@ -302,7 +302,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                                   limit: 100,
                                   id: lastFoldItems[index - 1].id,
                                 ),
-                                [...lastFoldItems.sublist(0, index - 1)],
+                                [...lastFoldItems.sublist(0, index)],
                               ),
                             );
                           },
