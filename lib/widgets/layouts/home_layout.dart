@@ -166,6 +166,16 @@ class HomeLayout extends BaseBgLayout {
                     ),
                     SizedBox(height: 8),
                     _getItem(
+                      currentPath == '/playlist',
+                      colorScheme,
+                      Icons.play_lesson_rounded,
+                      l10n.playlists,
+                      () {
+                        context.push('/playlist');
+                      },
+                    ),
+                    SizedBox(height: 8),
+                    _getItem(
                       currentPath.startsWith(allFoldersPath),
                       colorScheme,
                       Icons.folder_rounded,

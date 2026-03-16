@@ -80,6 +80,29 @@ sealed class PlaylistDetailResponse with _$PlaylistDetailResponse {
       _$PlaylistDetailResponseFromJson(json);
 }
 
+extension PlaylistDetailResponseExtension on PlaylistDetailResponse {
+  SongListResponse toSongListResponse() {
+    if (!success || data?.playlists == null || data!.playlists!.isEmpty) {
+      return SongListResponse(success: success, data: null);
+    }
+
+    final playlist = data!.playlists!.first;
+    final additional = playlist.additional;
+
+    if (additional == null) {
+      return SongListResponse(success: success, data: null);
+    }
+
+    final songData = SongData(
+      songs: additional.songs ?? [],
+      offset: additional.songsOffset,
+      total: additional.songsTotal,
+    );
+
+    return SongListResponse(success: success, data: songData);
+  }
+}
+
 @freezed
 sealed class PlaylistDetailRequest with _$PlaylistDetailRequest {
   const PlaylistDetailRequest._();

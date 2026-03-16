@@ -161,6 +161,166 @@ abstract class _$PlaylistResponseNotifier
   }
 }
 
+@ProviderFor(PlaylistDetail)
+final playlistDetailProvider = PlaylistDetailFamily._();
+
+final class PlaylistDetailProvider
+    extends $AsyncNotifierProvider<PlaylistDetail, SongListResponse> {
+  PlaylistDetailProvider._({
+    required PlaylistDetailFamily super.from,
+    required ({
+      String id,
+      String library,
+      String additional,
+      int limit,
+      int offset,
+      String sortBy,
+      String sortDirection,
+    })
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'playlistDetailProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$playlistDetailHash();
+
+  @override
+  String toString() {
+    return r'playlistDetailProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  PlaylistDetail create() => PlaylistDetail();
+
+  @override
+  bool operator ==(Object other) {
+    return other is PlaylistDetailProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$playlistDetailHash() => r'bbc4e5b9c4711d1fae7147668169a01eae821de0';
+
+final class PlaylistDetailFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          PlaylistDetail,
+          AsyncValue<SongListResponse>,
+          SongListResponse,
+          FutureOr<SongListResponse>,
+          ({
+            String id,
+            String library,
+            String additional,
+            int limit,
+            int offset,
+            String sortBy,
+            String sortDirection,
+          })
+        > {
+  PlaylistDetailFamily._()
+    : super(
+        retry: null,
+        name: r'playlistDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  PlaylistDetailProvider call({
+    required String id,
+    String library = 'shared',
+    String additional = 'songs,song_tag,song_audio,song_rating,sharing_info',
+    int limit = 100,
+    int offset = 0,
+    String sortBy = '',
+    String sortDirection = 'ASC',
+  }) => PlaylistDetailProvider._(
+    argument: (
+      id: id,
+      library: library,
+      additional: additional,
+      limit: limit,
+      offset: offset,
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'playlistDetailProvider';
+}
+
+abstract class _$PlaylistDetail extends $AsyncNotifier<SongListResponse> {
+  late final _$args =
+      ref.$arg
+          as ({
+            String id,
+            String library,
+            String additional,
+            int limit,
+            int offset,
+            String sortBy,
+            String sortDirection,
+          });
+  String get id => _$args.id;
+  String get library => _$args.library;
+  String get additional => _$args.additional;
+  int get limit => _$args.limit;
+  int get offset => _$args.offset;
+  String get sortBy => _$args.sortBy;
+  String get sortDirection => _$args.sortDirection;
+
+  FutureOr<SongListResponse> build({
+    required String id,
+    String library = 'shared',
+    String additional = 'songs,song_tag,song_audio,song_rating,sharing_info',
+    int limit = 100,
+    int offset = 0,
+    String sortBy = '',
+    String sortDirection = 'ASC',
+  });
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<AsyncValue<SongListResponse>, SongListResponse>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<SongListResponse>, SongListResponse>,
+              AsyncValue<SongListResponse>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(
+      ref,
+      () => build(
+        id: _$args.id,
+        library: _$args.library,
+        additional: _$args.additional,
+        limit: _$args.limit,
+        offset: _$args.offset,
+        sortBy: _$args.sortBy,
+        sortDirection: _$args.sortDirection,
+      ),
+    );
+  }
+}
+
 @ProviderFor(PlaylistStateNotifier)
 final playlistStateProvider = PlaylistStateNotifierProvider._();
 
@@ -194,7 +354,7 @@ final class PlaylistStateNotifierProvider
 }
 
 String _$playlistStateNotifierHash() =>
-    r'd47638e8824ad1de04b0a215d19b018490f570d6';
+    r'0a249d41f26cdca5a89e7bc7e1b4c1d68d12f463';
 
 abstract class _$PlaylistStateNotifier extends $Notifier<void> {
   void build();

@@ -92,6 +92,7 @@
   "add_to_playlists": "Add to",
   "create_playlist": "Create playlist",
   "no_playlists": "No playlist",
+  "playlists": "Playlists",
   "playlist_name": "Playlist Name",
  "input_playlist_name": "Input Playlist Name",
   "addsong_to_playlist_success": "Successfully added Songs to [%s playlist]",

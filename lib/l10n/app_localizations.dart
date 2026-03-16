@@ -650,6 +650,12 @@ abstract class AppLocalizations {
   /// **'No playlist'**
   String get no_playlists;
 
+  /// No description provided for @playlists.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlists'**
+  String get playlists;
+
   /// No description provided for @playlist_name.
   ///
   /// In en, this message translates to:

@@ -285,6 +285,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get no_playlists => '没有歌单';
 
   @override
+  String get playlists => '歌单';
+
+  @override
   String get playlist_name => '歌单名';
 
   @override

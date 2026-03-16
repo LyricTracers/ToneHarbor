@@ -298,6 +298,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get no_playlists => 'No playlist';
 
   @override
+  String get playlists => 'Playlists';
+
+  @override
   String get playlist_name => 'Playlist Name';
 
   @override

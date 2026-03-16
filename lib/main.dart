@@ -16,6 +16,7 @@ import 'package:toneharbor/widgets/layouts/switch_lyrics_layout.dart';
 import 'package:toneharbor/widgets/pages/album_page.dart';
 import 'package:toneharbor/widgets/pages/artist_page.dart';
 import 'package:toneharbor/widgets/pages/folders_page.dart';
+import 'package:toneharbor/widgets/pages/playlists_page.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -191,6 +192,15 @@ class MyApp extends HookConsumerWidget {
                 pageBuilder: (context, state) => NoTransitionPage<void>(
                   key: state.pageKey,
                   child: ArtistPage(baseProvider: artistsProvider()),
+                ),
+              ),
+              GoRoute(
+                path: '/playlist',
+                pageBuilder: (context, state) => NoTransitionPage<void>(
+                  key: state.pageKey,
+                  child: PlaylistsPage(
+                    baseProvider: playlistResponseProvider(),
+                  ),
                 ),
               ),
             ],

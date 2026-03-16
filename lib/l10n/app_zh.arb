@@ -90,6 +90,7 @@
   "playlist_text": "播放列表(%s)",
   "add_to_playlists": "添加到",
   "create_playlist": "创建歌单",
+  "playlists": "歌单",
   "no_playlists": "没有歌单",
   "playlist_name": "歌单名",
   "input_playlist_name": "输入歌单名",
