@@ -165,6 +165,75 @@ final class CoverUrlBySongIdFamily extends $Family
   String toString() => r'coverUrlBySongIdProvider';
 }
 
+@ProviderFor(coverUrlByArtist)
+final coverUrlByArtistProvider = CoverUrlByArtistFamily._();
+
+final class CoverUrlByArtistProvider
+    extends $FunctionalProvider<AsyncValue<String>, String, FutureOr<String>>
+    with $FutureModifier<String>, $FutureProvider<String> {
+  CoverUrlByArtistProvider._({
+    required CoverUrlByArtistFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'coverUrlByArtistProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$coverUrlByArtistHash();
+
+  @override
+  String toString() {
+    return r'coverUrlByArtistProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<String> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<String> create(Ref ref) {
+    final argument = this.argument as String;
+    return coverUrlByArtist(ref, artistName: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CoverUrlByArtistProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$coverUrlByArtistHash() => r'0317bfc96fade9d2839671caeba2887131baf7ad';
+
+final class CoverUrlByArtistFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<String>, String> {
+  CoverUrlByArtistFamily._()
+    : super(
+        retry: null,
+        name: r'coverUrlByArtistProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CoverUrlByArtistProvider call({required String artistName}) =>
+      CoverUrlByArtistProvider._(argument: artistName, from: this);
+
+  @override
+  String toString() => r'coverUrlByArtistProvider';
+}
+
 @ProviderFor(coverUrlByAlbum)
 final coverUrlByAlbumProvider = CoverUrlByAlbumFamily._();
 

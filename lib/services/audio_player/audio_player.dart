@@ -47,6 +47,9 @@ class ToneHarborMedia extends mk.Media {
     String artistName,
   ) {
     if (songId.isEmpty) {
+      if (albumName.isEmpty && artistName.isNotEmpty) {
+        return 'http://$host:$serverPort/cover-artist/${Uri.encodeComponent(artistName)}';
+      }
       return 'http://$host:$serverPort/cover-album/${Uri.encodeComponent(albumName)}/${Uri.encodeComponent(artistName)}';
     }
     return 'http://$host:$serverPort/cover/$songId';

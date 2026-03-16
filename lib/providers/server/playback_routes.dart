@@ -472,6 +472,40 @@ class PlaybackRoutes {
     });
   }
 
+  Future<Response> getCoverArtist(Request request, String artistName) async {
+    try {
+      var artist = Uri.decodeComponent(artistName);
+      final coverUrl = await ref.read(
+        coverUrlByArtistProvider(artistName: artist).future,
+      );
+
+      if (coverUrl.isEmpty) {
+        return Response.notFound("Cover not found");
+      }
+
+      final cacheKey = sanitizeCacheKey(artist);
+      final imageBytes = await getCoverBytes(ref, coverUrl, cacheKey);
+      if (imageBytes == null) {
+        return Response.notFound("Cover not found");
+      }
+
+      final contentType = _detectImageContentType(imageBytes);
+
+      return Response(
+        200,
+        body: imageBytes,
+        headers: {
+          'content-type': contentType,
+          'content-length': '${imageBytes.length}',
+          'cache-control': 'public, max-age=86400',
+        },
+      );
+    } catch (e, stack) {
+      logger.e('GET cover error', error: e, stackTrace: stack);
+      return Response.internalServerError(body: 'Internal server error');
+    }
+  }
+
   Future<Response> getCoverAlbum(
     Request request,
     String albumName,

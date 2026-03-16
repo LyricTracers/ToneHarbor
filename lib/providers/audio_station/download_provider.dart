@@ -73,6 +73,16 @@ Future<String> coverUrlBySongId(Ref ref, {required String songId}) async {
 }
 
 @riverpod
+Future<String> coverUrlByArtist(Ref ref, {required String artistName}) async {
+  final link = ref.keepAlive();
+  try {
+    return _getCoverUrlByArtist(ref: ref, artistName: artistName);
+  } finally {
+    link.close();
+  }
+}
+
+@riverpod
 Future<String> coverUrlByAlbum(
   Ref ref, {
   required String albumName,
@@ -92,6 +102,30 @@ Future<String> coverUrlByAlbum(
   } finally {
     link.close();
   }
+}
+
+Future<String> _getCoverUrlByArtist({
+  required Ref ref,
+  required String artistName,
+}) async {
+  final baseUrl = await ref.read(baseUrlProvider.future);
+  final synotoken = ref.read(synoTokenProvider);
+
+  final queryParams = {
+    'api': 'SYNO.AudioStation.Cover',
+    'version': '3',
+    'library': "all",
+    'method': 'getcover',
+    'artist_name': artistName,
+    'SynoToken': synotoken ?? '',
+  };
+
+  final queryString = queryParams.entries
+      .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
+      .join('&');
+
+  final coverUrl = '$baseUrl/music/webapi/AudioStation/cover.cgi?$queryString';
+  return coverUrl;
 }
 
 Future<String> _getCoverUrlByAlbum({

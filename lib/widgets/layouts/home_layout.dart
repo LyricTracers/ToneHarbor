@@ -131,7 +131,7 @@ class HomeLayout extends BaseBgLayout {
                     _getItem(
                       currentPath == allMusicPath,
                       colorScheme,
-                      Icons.music_note_rounded,
+                      Icons.library_music_rounded,
                       l10n.all_music,
                       () {
                         context.push(
@@ -146,6 +146,16 @@ class HomeLayout extends BaseBgLayout {
                     ),
                     SizedBox(height: 8),
                     _getItem(
+                      currentPath == '/albums',
+                      colorScheme,
+                      Icons.album_rounded,
+                      l10n.albums,
+                      () {
+                        context.push('/albums');
+                      },
+                    ),
+                    SizedBox(height: 8),
+                    _getItem(
                       currentPath.startsWith(allFoldersPath),
                       colorScheme,
                       Icons.folder_rounded,
@@ -155,16 +165,6 @@ class HomeLayout extends BaseBgLayout {
                           "${allFoldersPath}None",
                           extra: (foldersProvider(limit: 100), <FolderItem>[]),
                         );
-                      },
-                    ),
-                    SizedBox(height: 8),
-                    _getItem(
-                      currentPath == '/albums',
-                      colorScheme,
-                      Icons.album_rounded,
-                      l10n.albums,
-                      () {
-                        context.push('/albums');
                       },
                     ),
                   ],
