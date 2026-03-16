@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:toneharbor/models/audio_station/song.dart';
 part 'folder.freezed.dart';
 part 'folder.g.dart';
 
@@ -31,7 +32,7 @@ sealed class FolderItem with _$FolderItem {
     required String title,
     required String type,
     // 暂时留空，需要根据实际的 SongAdditional 结构来定义
-    dynamic additional,
+    SongAdditional? additional,
   }) = _FolderItem;
   factory FolderItem.fromJson(Map<String, dynamic> json) =>
       _$FolderItemFromJson(json);

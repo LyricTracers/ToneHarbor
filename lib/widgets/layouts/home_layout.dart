@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
@@ -28,6 +29,7 @@ class HomeLayout extends BaseBgLayout {
 
     final isPlaylistPage = useState(false);
     final allMusicPath = '/songs/${Uri.encodeComponent(l10n.all_music)}';
+    final allFoldersPath = '/folders/';
     final gradientDecoration = BoxDecoration(
       gradient: LinearGradient(
         begin: Alignment(-0.8, -0.8),
@@ -139,6 +141,19 @@ class HomeLayout extends BaseBgLayout {
                             -1,
                             SongsPageSortAction.all,
                           ),
+                        );
+                      },
+                    ),
+                    SizedBox(height: 8),
+                    _getItem(
+                      currentPath.startsWith(allFoldersPath),
+                      colorScheme,
+                      Icons.folder_rounded,
+                      l10n.folder,
+                      () {
+                        context.push(
+                          "${allFoldersPath}None",
+                          extra: (foldersProvider(limit: 100), <FolderItem>[]),
                         );
                       },
                     ),

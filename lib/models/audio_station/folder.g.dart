@@ -40,7 +40,9 @@ _FolderItem _$FolderItemFromJson(Map<String, dynamic> json) => _FolderItem(
   path: json['path'] as String,
   title: json['title'] as String,
   type: json['type'] as String,
-  additional: json['additional'],
+  additional: json['additional'] == null
+      ? null
+      : SongAdditional.fromJson(json['additional'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$FolderItemToJson(_FolderItem instance) =>

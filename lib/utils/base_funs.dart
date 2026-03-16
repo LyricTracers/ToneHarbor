@@ -362,3 +362,16 @@ void showCreatePlaylistDialog(
     ),
   );
 }
+
+Future<void> loadMore<T>({
+  required WidgetRef ref,
+  required ValueNotifier<bool> isLoadingMore,
+  required $AsyncNotifierProvider<ExtraProvider<T>, T> baseProvider,
+}) async {
+  isLoadingMore.value = true;
+  try {
+    await ref.read(baseProvider.notifier).loadMore();
+  } finally {
+    isLoadingMore.value = false;
+  }
+}

@@ -300,7 +300,7 @@ as String?,
 mixin _$FolderItem {
 
  String get id;@JsonKey(name: 'is_personal') bool? get isPersonal; String get path; String get title; String get type;// 暂时留空，需要根据实际的 SongAdditional 结构来定义
- dynamic get additional;
+ SongAdditional? get additional;
 /// Create a copy of FolderItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -313,12 +313,12 @@ $FolderItemCopyWith<FolderItem> get copyWith => _$FolderItemCopyWithImpl<FolderI
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FolderItem&&(identical(other.id, id) || other.id == id)&&(identical(other.isPersonal, isPersonal) || other.isPersonal == isPersonal)&&(identical(other.path, path) || other.path == path)&&(identical(other.title, title) || other.title == title)&&(identical(other.type, type) || other.type == type)&&const DeepCollectionEquality().equals(other.additional, additional));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FolderItem&&(identical(other.id, id) || other.id == id)&&(identical(other.isPersonal, isPersonal) || other.isPersonal == isPersonal)&&(identical(other.path, path) || other.path == path)&&(identical(other.title, title) || other.title == title)&&(identical(other.type, type) || other.type == type)&&(identical(other.additional, additional) || other.additional == additional));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,isPersonal,path,title,type,const DeepCollectionEquality().hash(additional));
+int get hashCode => Object.hash(runtimeType,id,isPersonal,path,title,type,additional);
 
 @override
 String toString() {
@@ -333,11 +333,11 @@ abstract mixin class $FolderItemCopyWith<$Res>  {
   factory $FolderItemCopyWith(FolderItem value, $Res Function(FolderItem) _then) = _$FolderItemCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'is_personal') bool? isPersonal, String path, String title, String type, dynamic additional
+ String id,@JsonKey(name: 'is_personal') bool? isPersonal, String path, String title, String type, SongAdditional? additional
 });
 
 
-
+$SongAdditionalCopyWith<$Res>? get additional;
 
 }
 /// @nodoc
@@ -358,10 +358,22 @@ as bool?,path: null == path ? _self.path : path // ignore: cast_nullable_to_non_
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String,additional: freezed == additional ? _self.additional : additional // ignore: cast_nullable_to_non_nullable
-as dynamic,
+as SongAdditional?,
   ));
 }
+/// Create a copy of FolderItem
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SongAdditionalCopyWith<$Res>? get additional {
+    if (_self.additional == null) {
+    return null;
+  }
 
+  return $SongAdditionalCopyWith<$Res>(_self.additional!, (value) {
+    return _then(_self.copyWith(additional: value));
+  });
+}
 }
 
 
@@ -440,7 +452,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'is_personal')  bool? isPersonal,  String path,  String title,  String type,  dynamic additional)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'is_personal')  bool? isPersonal,  String path,  String title,  String type,  SongAdditional? additional)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FolderItem() when $default != null:
 return $default(_that.id,_that.isPersonal,_that.path,_that.title,_that.type,_that.additional);case _:
@@ -461,7 +473,7 @@ return $default(_that.id,_that.isPersonal,_that.path,_that.title,_that.type,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'is_personal')  bool? isPersonal,  String path,  String title,  String type,  dynamic additional)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'is_personal')  bool? isPersonal,  String path,  String title,  String type,  SongAdditional? additional)  $default,) {final _that = this;
 switch (_that) {
 case _FolderItem():
 return $default(_that.id,_that.isPersonal,_that.path,_that.title,_that.type,_that.additional);}
@@ -478,7 +490,7 @@ return $default(_that.id,_that.isPersonal,_that.path,_that.title,_that.type,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'is_personal')  bool? isPersonal,  String path,  String title,  String type,  dynamic additional)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'is_personal')  bool? isPersonal,  String path,  String title,  String type,  SongAdditional? additional)?  $default,) {final _that = this;
 switch (_that) {
 case _FolderItem() when $default != null:
 return $default(_that.id,_that.isPersonal,_that.path,_that.title,_that.type,_that.additional);case _:
@@ -502,7 +514,7 @@ class _FolderItem extends FolderItem {
 @override final  String title;
 @override final  String type;
 // 暂时留空，需要根据实际的 SongAdditional 结构来定义
-@override final  dynamic additional;
+@override final  SongAdditional? additional;
 
 /// Create a copy of FolderItem
 /// with the given fields replaced by the non-null parameter values.
@@ -517,12 +529,12 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FolderItem&&(identical(other.id, id) || other.id == id)&&(identical(other.isPersonal, isPersonal) || other.isPersonal == isPersonal)&&(identical(other.path, path) || other.path == path)&&(identical(other.title, title) || other.title == title)&&(identical(other.type, type) || other.type == type)&&const DeepCollectionEquality().equals(other.additional, additional));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FolderItem&&(identical(other.id, id) || other.id == id)&&(identical(other.isPersonal, isPersonal) || other.isPersonal == isPersonal)&&(identical(other.path, path) || other.path == path)&&(identical(other.title, title) || other.title == title)&&(identical(other.type, type) || other.type == type)&&(identical(other.additional, additional) || other.additional == additional));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,isPersonal,path,title,type,const DeepCollectionEquality().hash(additional));
+int get hashCode => Object.hash(runtimeType,id,isPersonal,path,title,type,additional);
 
 @override
 String toString() {
@@ -537,11 +549,11 @@ abstract mixin class _$FolderItemCopyWith<$Res> implements $FolderItemCopyWith<$
   factory _$FolderItemCopyWith(_FolderItem value, $Res Function(_FolderItem) _then) = __$FolderItemCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'is_personal') bool? isPersonal, String path, String title, String type, dynamic additional
+ String id,@JsonKey(name: 'is_personal') bool? isPersonal, String path, String title, String type, SongAdditional? additional
 });
 
 
-
+@override $SongAdditionalCopyWith<$Res>? get additional;
 
 }
 /// @nodoc
@@ -562,11 +574,23 @@ as bool?,path: null == path ? _self.path : path // ignore: cast_nullable_to_non_
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String,additional: freezed == additional ? _self.additional : additional // ignore: cast_nullable_to_non_nullable
-as dynamic,
+as SongAdditional?,
   ));
 }
 
+/// Create a copy of FolderItem
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SongAdditionalCopyWith<$Res>? get additional {
+    if (_self.additional == null) {
+    return null;
+  }
 
+  return $SongAdditionalCopyWith<$Res>(_self.additional!, (value) {
+    return _then(_self.copyWith(additional: value));
+  });
+}
 }
 
 

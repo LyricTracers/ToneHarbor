@@ -328,21 +328,4 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
       ],
     );
   }
-
-  static Future<void> loadMore({
-    required WidgetRef ref,
-    required ValueNotifier<bool> isLoadingMore,
-    required $AsyncNotifierProvider<
-      ExtraProvider<SongListResponse>,
-      SongListResponse
-    >
-    baseProvider,
-  }) async {
-    isLoadingMore.value = true;
-    try {
-      await ref.read(baseProvider.notifier).loadMore();
-    } finally {
-      isLoadingMore.value = false;
-    }
-  }
 }

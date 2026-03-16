@@ -5,6 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:metadata_god/metadata_god.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart';
+import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 
@@ -155,5 +156,64 @@ extension AsToneHarborTrackObject on Iterable<Song> {
         platform: ToneHarborTrackPlatform.synology,
       );
     }).toList();
+  }
+}
+
+extension FolderAsToneHarborTrackObject on Iterable<FolderItem> {
+  (List<ToneHarborTrackObject>, int) asTrackList(int initIndex) {
+    var tracks = <ToneHarborTrackObject>[];
+    var index = initIndex;
+    int i = 0;
+    forEach((item) {
+      if (i == initIndex) {
+        index = tracks.length;
+      }
+      if (item.type != 'folder') {
+        var artist = item.additional?.songTag?.artist;
+        if (artist == null || artist.isEmpty) {
+          artist = item.additional?.songTag?.albumArtist;
+        }
+        if (artist == null || artist.isEmpty) {
+          artist = 'Unknown Artist';
+        }
+        var album = item.additional?.songTag?.album;
+        if (album == null || album.isEmpty) {
+          album = 'Unknown Album';
+        }
+        var container = item.additional?.songAudio?.container;
+        if (container == null || container.isEmpty) {
+          container = 'mp3';
+        }
+
+        var codec = item.additional?.songAudio?.codec;
+        if (codec == null || codec.isEmpty) {
+          codec = 'mp3';
+        }
+
+        tracks.add(
+          ToneHarborTrackObject.full(
+            id: item.id,
+            title: item.title,
+            artist: artist,
+            album: album,
+            externalUri: "",
+            duration: Duration(
+              seconds: item.additional?.songAudio?.duration.toInt() ?? 0,
+            ),
+            rating: item.additional?.songRating?.rating ?? 0,
+            filesize: item.additional?.songAudio?.filesize ?? 0,
+            bitrate: item.additional?.songAudio?.bitrate ?? 0,
+            channel: item.additional?.songAudio?.channel ?? 0,
+            codec: codec,
+            container: container,
+            frequency: item.additional?.songAudio?.frequency ?? 0,
+            platform: ToneHarborTrackPlatform.synology,
+          ),
+        );
+      }
+
+      i++;
+    });
+    return (tracks, index);
   }
 }

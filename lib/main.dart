@@ -5,12 +5,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
+import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/providers/server/server_provider.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_streams.dart';
 import 'package:toneharbor/widgets/layouts/playing_detail_layout.dart';
 import 'package:toneharbor/widgets/layouts/switch_lyrics_layout.dart';
+import 'package:toneharbor/widgets/pages/folders_page.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -132,6 +134,32 @@ class MyApp extends HookConsumerWidget {
                       baseProvider: provider,
                       limitTotal: total,
                       sortAction: sortAction,
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/folders/:id',
+                pageBuilder: (context, state) {
+                  final (provider, lastFoldItems) =
+                      state.extra
+                          as (
+                            $AsyncNotifierProvider<
+                              ExtraProvider<FolderResponse>,
+                              FolderResponse
+                            >,
+                            List<FolderItem>,
+                          );
+                  var id = state.pathParameters['id'];
+                  if (id == null || id == 'None') {
+                    id = '';
+                  }
+                  return NoTransitionPage<void>(
+                    key: state.pageKey,
+                    child: FoldersPage(
+                      currentId: id,
+                      baseProvider: provider,
+                      lastFoldItems: lastFoldItems,
                     ),
                   );
                 },
