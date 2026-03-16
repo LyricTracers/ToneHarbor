@@ -722,6 +722,12 @@ abstract class AppLocalizations {
   /// **'sort'**
   String get sort;
 
+  /// No description provided for @albums.
+  ///
+  /// In en, this message translates to:
+  /// **'Albums'**
+  String get albums;
+
   /// No description provided for @sort_name.
   ///
   /// In en, this message translates to:

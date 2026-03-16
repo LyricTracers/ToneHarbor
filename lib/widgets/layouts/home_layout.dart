@@ -157,6 +157,16 @@ class HomeLayout extends BaseBgLayout {
                         );
                       },
                     ),
+                    SizedBox(height: 8),
+                    _getItem(
+                      currentPath == '/albums',
+                      colorScheme,
+                      Icons.album_rounded,
+                      l10n.albums,
+                      () {
+                        context.push('/albums');
+                      },
+                    ),
                   ],
                 ),
               ),

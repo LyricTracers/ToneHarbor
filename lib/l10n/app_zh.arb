@@ -113,6 +113,7 @@
   "music_house": "音乐库",
   "all_music": "歌曲",
   "folder": "文件夹",
+  "albums": "专辑",
   "sort_artist_name": "演唱者排序",
   "total_songs":"(共%s首)",
   "unknown_title": "未知标题",

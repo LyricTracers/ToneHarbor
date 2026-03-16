@@ -12,6 +12,7 @@ import 'package:toneharbor/providers/server/server_provider.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_streams.dart';
 import 'package:toneharbor/widgets/layouts/playing_detail_layout.dart';
 import 'package:toneharbor/widgets/layouts/switch_lyrics_layout.dart';
+import 'package:toneharbor/widgets/pages/album_page.dart';
 import 'package:toneharbor/widgets/pages/folders_page.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
@@ -163,6 +164,13 @@ class MyApp extends HookConsumerWidget {
                     ),
                   );
                 },
+              ),
+              GoRoute(
+                path: '/albums',
+                pageBuilder: (context, state) => NoTransitionPage<void>(
+                  key: state.pageKey,
+                  child: AlbumPage(baseProvider: albumsProvider()),
+                ),
               ),
             ],
             builder: (context, state, child) {

@@ -335,6 +335,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sort => 'sort';
 
   @override
+  String get albums => 'Albums';
+
+  @override
   String get sort_name => 'Order Of Title';
 
   @override

@@ -105,6 +105,7 @@
   "title": "Title",
   "artist": "Artist",
   "sort": "sort",
+  "albums": "Albums",
   "sort_name": "Order Of Title",
   "music_house": "Music Library",
   "all_music": "Music",

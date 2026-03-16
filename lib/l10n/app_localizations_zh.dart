@@ -321,6 +321,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sort => '排序';
 
   @override
+  String get albums => '专辑';
+
+  @override
   String get sort_name => '歌曲名排序';
 
   @override
