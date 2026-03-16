@@ -342,6 +342,19 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
         ),
         SizedBox(width: 16),
         IconButton(
+          onPressed: () async {
+            var direction = ref.read(baseProvider.notifier).extraSortDirection;
+            await ref
+                .read(baseProvider.notifier)
+                .setSort(
+                  sortBy: "title",
+                  sortDirection: direction == "ASC" ? "DESC" : "ASC",
+                );
+          },
+          icon: Icon(Icons.sort, size: 18),
+          tooltip: l10n.sort,
+        ),
+        IconButton(
           onPressed: () {},
           icon: Icon(Icons.settings_rounded, size: 18),
         ),
@@ -354,7 +367,6 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
   Widget build(BuildContext context, WidgetRef ref) {
     var colorScheme = getColorSchemeWhenReady(ref);
     final scrollController = useScrollController();
-    final l10n = ref.watch(l10nProvider);
     var folderResponse = ref.watch(baseProvider);
     var total = folderResponse.value?.data?.total ?? 0;
     final folderItems = folderResponse.value?.data?.items ?? [];

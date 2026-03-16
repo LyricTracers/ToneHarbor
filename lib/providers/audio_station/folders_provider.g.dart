@@ -60,7 +60,7 @@ final class FoldersProvider
   }
 }
 
-String _$foldersHash() => r'd724ed3d797fe7f131ec048ea73fb67208db5140';
+String _$foldersHash() => r'ac60f1597cdfaf8913e2288b32b71c95d7eb33a6';
 
 final class FoldersFamily extends $Family
     with
@@ -94,7 +94,7 @@ final class FoldersFamily extends $Family
     int limit = 100,
     int offset = 0,
     String library = 'shared',
-    String sortBy = 'name',
+    String sortBy = 'title',
     String sortDirection = 'ASC',
     String additional = 'song_tag,song_audio,song_rating',
     Duration? cacheDuration = const Duration(minutes: 100),
@@ -143,7 +143,7 @@ abstract class _$Folders extends $AsyncNotifier<FolderResponse> {
     int limit = 100,
     int offset = 0,
     String library = 'shared',
-    String sortBy = 'name',
+    String sortBy = 'title',
     String sortDirection = 'ASC',
     String additional = 'song_tag,song_audio,song_rating',
     Duration? cacheDuration = const Duration(minutes: 100),
