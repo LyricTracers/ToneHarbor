@@ -116,6 +116,8 @@
   "albums": "专辑",
   "sort_artist_name": "演唱者排序",
   "total_songs":"(共%s首)",
+  "total_artists": "(共%s位)",
+  "total_albums": "(共%s个)",
   "unknown_title": "未知标题",
   "unknown_artist": "未知艺术家",
   "unknown_source": "未知来源",

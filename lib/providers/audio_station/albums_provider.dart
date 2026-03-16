@@ -124,6 +124,7 @@ class Albums extends _$Albums with ExtraProvider<AlbumResponse> {
     String? artist,
     Duration? cacheDuration = const Duration(minutes: 30),
   }) async {
+    logger.i("artist: $artist");
     duration = cacheDuration;
     groupKey = "albums";
     ref.keepAliveFor(Duration(minutes: 5));

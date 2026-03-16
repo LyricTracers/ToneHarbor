@@ -761,8 +761,20 @@ abstract class AppLocalizations {
   /// No description provided for @total_songs.
   ///
   /// In en, this message translates to:
-  /// **'(Total %s songs)'**
+  /// **'(Total %s)'**
   String get total_songs;
+
+  /// No description provided for @total_artists.
+  ///
+  /// In en, this message translates to:
+  /// **'(Total %s)'**
+  String get total_artists;
+
+  /// No description provided for @total_albums.
+  ///
+  /// In en, this message translates to:
+  /// **'(Total %s)'**
+  String get total_albums;
 
   /// No description provided for @input_song_title.
   ///

@@ -45,7 +45,7 @@ class Artists extends _$Artists with ExtraProvider<ArtistResponse> {
     String library = 'all',
     String sortBy = 'name',
     String sortDirection = 'ASC',
-    String additional = 'avg_rating',
+    String additional = '',
     Duration? cacheDuration = const Duration(minutes: 30),
   }) async {
     duration = cacheDuration;

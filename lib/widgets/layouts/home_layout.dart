@@ -146,12 +146,22 @@ class HomeLayout extends BaseBgLayout {
                     ),
                     SizedBox(height: 8),
                     _getItem(
-                      currentPath == '/albums',
+                      currentPath == '/albums/None',
                       colorScheme,
                       Icons.album_rounded,
                       l10n.albums,
                       () {
-                        context.push('/albums');
+                        context.push('/albums/None', extra: albumsProvider());
+                      },
+                    ),
+                    SizedBox(height: 8),
+                    _getItem(
+                      currentPath == '/artists',
+                      colorScheme,
+                      Icons.people_rounded,
+                      l10n.artist,
+                      () {
+                        context.push('/artists');
                       },
                     ),
                     SizedBox(height: 8),

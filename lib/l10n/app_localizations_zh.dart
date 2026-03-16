@@ -342,6 +342,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get total_songs => '(共%s首)';
 
   @override
+  String get total_artists => '(共%s位)';
+
+  @override
+  String get total_albums => '(共%s个)';
+
+  @override
   String get input_song_title => '输入歌曲标题';
 
   @override

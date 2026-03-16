@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
+import 'package:toneharbor/models/audio_station/album.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -13,6 +14,7 @@ import 'package:toneharbor/providers/audio_player/audio_player_streams.dart';
 import 'package:toneharbor/widgets/layouts/playing_detail_layout.dart';
 import 'package:toneharbor/widgets/layouts/switch_lyrics_layout.dart';
 import 'package:toneharbor/widgets/pages/album_page.dart';
+import 'package:toneharbor/widgets/pages/artist_page.dart';
 import 'package:toneharbor/widgets/pages/folders_page.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
@@ -166,10 +168,29 @@ class MyApp extends HookConsumerWidget {
                 },
               ),
               GoRoute(
-                path: '/albums',
+                path: '/albums/:title',
+                pageBuilder: (context, state) {
+                  var title = state.pathParameters['title'];
+                  if (title == null || title == 'None') {
+                    title = '';
+                  }
+                  final provider =
+                      state.extra
+                          as $AsyncNotifierProvider<
+                            ExtraProvider<AlbumResponse>,
+                            AlbumResponse
+                          >;
+                  return NoTransitionPage<void>(
+                    key: state.pageKey,
+                    child: AlbumPage(title: title, baseProvider: provider),
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/artists',
                 pageBuilder: (context, state) => NoTransitionPage<void>(
                   key: state.pageKey,
-                  child: AlbumPage(baseProvider: albumsProvider()),
+                  child: ArtistPage(baseProvider: artistsProvider()),
                 ),
               ),
             ],

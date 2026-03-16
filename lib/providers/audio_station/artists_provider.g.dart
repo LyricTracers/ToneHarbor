@@ -218,7 +218,7 @@ final class ArtistsProvider
   }
 }
 
-String _$artistsHash() => r'790b75f4f740be44f049f8dcc1e0f63f30216a43';
+String _$artistsHash() => r'8023df239fe318c1eef2312af2c87e17d44e9b0d';
 
 final class ArtistsFamily extends $Family
     with
@@ -252,7 +252,7 @@ final class ArtistsFamily extends $Family
     String library = 'all',
     String sortBy = 'name',
     String sortDirection = 'ASC',
-    String additional = 'avg_rating',
+    String additional = '',
     Duration? cacheDuration = const Duration(minutes: 30),
   }) => ArtistsProvider._(
     argument: (
@@ -297,7 +297,7 @@ abstract class _$Artists extends $AsyncNotifier<ArtistResponse> {
     String library = 'all',
     String sortBy = 'name',
     String sortDirection = 'ASC',
-    String additional = 'avg_rating',
+    String additional = '',
     Duration? cacheDuration = const Duration(minutes: 30),
   });
   @$mustCallSuper

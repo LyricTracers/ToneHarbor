@@ -353,7 +353,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sort_artist_name => 'Order Of Artist';
 
   @override
-  String get total_songs => '(Total %s songs)';
+  String get total_songs => '(Total %s)';
+
+  @override
+  String get total_artists => '(Total %s)';
+
+  @override
+  String get total_albums => '(Total %s)';
 
   @override
   String get input_song_title => 'Enter song title';

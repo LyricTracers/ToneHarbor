@@ -3,18 +3,15 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:toneharbor/models/audio_station/album.dart';
+import 'package:toneharbor/models/audio_station/artist.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
-import 'package:toneharbor/widgets/pages/songs_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
-class AlbumPage extends HookConsumerWidget {
-  final $AsyncNotifierProvider<ExtraProvider<AlbumResponse>, AlbumResponse>
-  baseProvider;
-  final String title;
-  const AlbumPage({super.key, required this.baseProvider, required this.title});
+class ArtistPage extends HookConsumerWidget {
+  final $AsyncNotifierProvider<Artists, ArtistResponse> baseProvider;
+  const ArtistPage({super.key, required this.baseProvider});
 
   PreferredSizeWidget _buildAppBar(
     WidgetRef ref,
@@ -26,7 +23,7 @@ class AlbumPage extends HookConsumerWidget {
       title: Row(
         children: [
           Text(
-            l10n.albums,
+            l10n.artist,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
 
@@ -34,7 +31,7 @@ class AlbumPage extends HookConsumerWidget {
             Align(
               alignment: Alignment.bottomLeft,
               child: Text(
-                " ${l10n.total_albums.replaceFirst("%s", total.toString())}",
+                " ${l10n.total_artists.replaceFirst("%s", total.toString())}",
                 style: TextStyle(
                   fontSize: 12,
                   color: colorScheme.onSurface.withValues(alpha: 0.7),
@@ -82,8 +79,8 @@ class AlbumPage extends HookConsumerWidget {
     final colorScheme = getColorSchemeWhenReady(ref);
     final albums = ref.watch(baseProvider);
     var total = albums.value?.data?.total ?? 0;
-    final albumItems = albums.value?.data?.albums ?? [];
-    final hasMore = albumItems.length < total;
+    final artistItems = albums.value?.data?.artists ?? [];
+    final hasMore = artistItems.length < total;
     final isLoadingMore = useState(false);
     final scrollController = useScrollController();
     useEffect(() {
@@ -94,10 +91,10 @@ class AlbumPage extends HookConsumerWidget {
         final currentScroll = scrollController.offset;
 
         final state = ref.read(baseProvider);
-        final currentAlbums = state.value?.data?.albums ?? [];
+        final currentArtists = state.value?.data?.artists ?? [];
         var currentTotal = state.value?.data?.total ?? 0;
 
-        final currentHasMore = currentAlbums.length < currentTotal;
+        final currentHasMore = currentArtists.length < currentTotal;
 
         if (currentScroll >= maxScroll * 0.8 &&
             currentHasMore &&
@@ -124,22 +121,25 @@ class AlbumPage extends HookConsumerWidget {
                 padding: const EdgeInsets.all(16),
                 child: GridView.builder(
                   controller: scrollController,
-                  itemCount: albumItems.length + (hasMore ? 1 : 0),
+                  itemCount: artistItems.length + (hasMore ? 1 : 0),
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 180,
+                    maxCrossAxisExtent: 150,
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 16,
                     childAspectRatio: 0.75,
                   ),
                   itemBuilder: (context, index) {
-                    if (index == albumItems.length) {
+                    if (index == artistItems.length) {
                       return const Padding(
                         padding: EdgeInsets.all(16),
                         child: Center(child: CircularProgressIndicator()),
                       );
                     }
-                    final album = albumItems[index];
-                    return _AlbumItem(album: album, colorScheme: colorScheme);
+                    final artist = artistItems[index];
+                    return _ArtistItem(
+                      artist: artist,
+                      colorScheme: colorScheme,
+                    );
                   },
                 ),
               );
@@ -155,38 +155,25 @@ class AlbumPage extends HookConsumerWidget {
   }
 }
 
-class _AlbumItem extends StatelessWidget {
-  const _AlbumItem({required this.album, required this.colorScheme});
+class _ArtistItem extends StatelessWidget {
+  const _ArtistItem({required this.artist, required this.colorScheme});
 
-  final AlbumItem album;
+  final Artist artist;
   final ColorScheme colorScheme;
 
   @override
   Widget build(BuildContext context) {
-    final albumName = (album.name?.isNotEmpty == true)
-        ? album.name!
-        : 'Unknown Album';
-    final artistName = (album.displayArtist?.isNotEmpty == true)
-        ? album.displayArtist!
-        : (album.artist?.isNotEmpty == true)
-        ? album.artist!
-        : 'Unknown Artist';
+    var artistName = artist.name == null ? 'Unknown Artist' : artist.name!;
+    if (artistName.isEmpty) {
+      artistName = "Unknown Artist";
+    }
 
     return InkWell(
       onTap: () {
-        var tempAlbumName = albumName;
-        var tempArtistName = artistName;
-        if (albumName == "Unknown Album") tempAlbumName = "";
-        if (artistName == "Unknown Artist") tempArtistName = "";
         context.push(
-          "/songs/${Uri.encodeComponent(albumName)}",
-          extra: (
-            albumSongsProvider(
-              album: tempAlbumName,
-              albumArtist: tempArtistName,
-            ),
-            -1,
-            SongsPageSortAction.titleName,
+          '/albums/$artistName',
+          extra: albumsProvider(
+            artist: artistName == 'Unknown Artist' ? '' : artistName,
           ),
         );
       },
@@ -201,44 +188,27 @@ class _AlbumItem extends StatelessWidget {
                 aspectRatio: 1.0,
                 child: SongCoverImage(
                   songId: "",
-                  albumName: albumName,
+                  albumName: "",
                   artistName: artistName,
                   colorScheme: colorScheme,
                   config: SongCoverImageConfig(
                     size: coverSize,
-                    borderRadius: 12,
+                    isCircular: true,
                   ),
                 ),
               ),
               const SizedBox(height: 8),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      albumName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      artistName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  artistName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
             ],
