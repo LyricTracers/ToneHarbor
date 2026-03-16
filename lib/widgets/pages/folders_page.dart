@@ -9,6 +9,7 @@ import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
+import 'package:toneharbor/widgets/components/bread_crumb_clipper.dart';
 
 class _FolderItemWidget extends HookConsumerWidget {
   final List<FolderItem> folderItems;
@@ -179,6 +180,54 @@ class _FolderItemWidget extends HookConsumerWidget {
   }
 }
 
+class _BreadCrumbItem extends HookConsumerWidget {
+  final Function() onTap;
+  final BreadcrumbType crumbType;
+  final String title;
+  final Color titleColor;
+  final Color hoverTitleColor;
+  final ColorScheme colorScheme;
+  final double arrowWidth;
+  const _BreadCrumbItem({
+    required this.onTap,
+    required this.crumbType,
+    required this.title,
+    required this.titleColor,
+    required this.hoverTitleColor,
+    required this.colorScheme,
+    required this.arrowWidth,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    var isHovered = useState(false);
+    return MouseRegion(
+      onEnter: (event) => isHovered.value = true,
+      onExit: (event) => isHovered.value = false,
+      child: InkWell(
+        onTap: onTap,
+        child: ClipPath(
+          clipper: BreadcrumbClipper(type: crumbType, arrowWidth: arrowWidth),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            color: colorScheme.outline.withValues(alpha: 0.3),
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isHovered.value
+                    ? FontWeight.bold
+                    : FontWeight.normal,
+                color: isHovered.value ? hoverTitleColor : titleColor,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class FoldersPage<T extends ExtraProvider<FolderResponse>>
     extends HookConsumerWidget {
   final String currentId;
@@ -192,20 +241,111 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
   });
 
   PreferredSizeWidget _buildAppBar(
+    BuildContext context,
     WidgetRef ref,
     ColorScheme colorScheme,
     int total,
   ) {
     final l10n = ref.watch(l10nProvider);
+    double arrowWidth = 12;
     return AppBar(
       title: Row(
         children: [
-          Text(
-            l10n.folder,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
+          if (lastFoldItems.isEmpty)
+            Text(
+              l10n.folder,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          if (lastFoldItems.isNotEmpty) ...[
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    ...List.generate(lastFoldItems.length + 1, (index) {
+                      Widget item;
+                      if (index == 0) {
+                        item = _BreadCrumbItem(
+                          onTap: () {
+                            context.push(
+                              "/folders/None",
+                              extra: (
+                                foldersProvider(limit: 100),
+                                <FolderItem>[],
+                              ),
+                            );
+                          },
+                          crumbType: BreadcrumbType.first,
+                          title: l10n.folder,
+                          titleColor: colorScheme.onSurface,
+                          hoverTitleColor: colorScheme.primary,
+                          colorScheme: colorScheme,
+                          arrowWidth: arrowWidth,
+                        );
+                      } else if (index == lastFoldItems.length) {
+                        item = _BreadCrumbItem(
+                          onTap: () {},
+                          crumbType: BreadcrumbType.last,
+                          title: lastFoldItems[index - 1].title,
+                          titleColor: colorScheme.secondary,
+                          hoverTitleColor: colorScheme.primary,
+                          colorScheme: colorScheme,
+                          arrowWidth: arrowWidth,
+                        );
+                      } else {
+                        item = _BreadCrumbItem(
+                          onTap: () {
+                            context.push(
+                              "/folders/${lastFoldItems[index - 1].id}",
+                              extra: (
+                                foldersProvider(
+                                  limit: 100,
+                                  id: lastFoldItems[index - 1].id,
+                                ),
+                                [...lastFoldItems.sublist(0, index - 1)],
+                              ),
+                            );
+                          },
+                          crumbType: BreadcrumbType.middle,
+                          title: lastFoldItems[index - 1].title,
+                          titleColor: colorScheme.onSurface,
+                          hoverTitleColor: colorScheme.primary,
+                          colorScheme: colorScheme,
+                          arrowWidth: arrowWidth,
+                        );
+                      }
+
+                      if (index != 0) {
+                        item = Transform.translate(
+                          offset: Offset(-arrowWidth / 2 * index, 0),
+                          child: item,
+                        );
+                      }
+                      return item;
+                    }),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ],
       ),
+      actions: [
+        Container(
+          constraints: BoxConstraints(maxWidth: 200, maxHeight: 35),
+          child: SearchAnchor.bar(
+            suggestionsBuilder: (context, ref) => [],
+            barHintStyle: WidgetStateProperty.all(TextStyle(fontSize: 14)),
+            barHintText: l10n.searchHint,
+            barLeading: Icon(Icons.search, size: 18),
+          ),
+        ),
+        SizedBox(width: 16),
+        IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.settings_rounded, size: 18),
+        ),
+      ],
       centerTitle: false,
     );
   }
@@ -249,7 +389,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
     }, [scrollController]);
     return Column(
       children: [
-        _buildAppBar(ref, colorScheme, total),
+        _buildAppBar(context, ref, colorScheme, total),
         Expanded(
           child: folderResponse.when(
             data: (data) {
