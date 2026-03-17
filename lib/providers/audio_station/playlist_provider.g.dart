@@ -211,7 +211,7 @@ final class PlaylistDetailProvider
   }
 }
 
-String _$playlistDetailHash() => r'bbc4e5b9c4711d1fae7147668169a01eae821de0';
+String _$playlistDetailHash() => r'e6e4516fb735b2c760e934e4e412d233b92950e1';
 
 final class PlaylistDetailFamily extends $Family
     with
@@ -242,7 +242,8 @@ final class PlaylistDetailFamily extends $Family
   PlaylistDetailProvider call({
     required String id,
     String library = 'shared',
-    String additional = 'songs,song_tag,song_audio,song_rating,sharing_info',
+    String additional =
+        'songs_song_tag,songs_song_audio,songs_song_rating,sharing_info',
     int limit = 100,
     int offset = 0,
     String sortBy = '',
@@ -287,7 +288,8 @@ abstract class _$PlaylistDetail extends $AsyncNotifier<SongListResponse> {
   FutureOr<SongListResponse> build({
     required String id,
     String library = 'shared',
-    String additional = 'songs,song_tag,song_audio,song_rating,sharing_info',
+    String additional =
+        'songs_song_tag,songs_song_audio,songs_song_rating,sharing_info',
     int limit = 100,
     int offset = 0,
     String sortBy = '',

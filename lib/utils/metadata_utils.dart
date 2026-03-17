@@ -53,7 +53,7 @@ Future<void> writeTrackMetadata({
     );
   } catch (e, stack) {
     logger.e(
-      '[Metadata] Failed to write metadata',
+      '[Metadata] Failed to write metadata to $cachePath,title:${track.title},artist:${track.artist},album:${track.album}',
       error: e,
       stackTrace: stack,
     );

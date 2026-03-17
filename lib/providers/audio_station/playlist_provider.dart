@@ -121,7 +121,8 @@ class PlaylistDetail extends _$PlaylistDetail
   Future<SongListResponse> build({
     required String id,
     String library = 'shared',
-    String additional = 'songs,song_tag,song_audio,song_rating,sharing_info',
+    String additional =
+        'songs_song_tag,songs_song_audio,songs_song_rating,sharing_info',
     int limit = 100,
     int offset = 0,
     String sortBy = '',

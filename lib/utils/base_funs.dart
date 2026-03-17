@@ -375,3 +375,33 @@ Future<void> loadMore<T>({
     isLoadingMore.value = false;
   }
 }
+
+Future<T?> showCustomMenu<T>({
+  required BuildContext context,
+  required Offset globalPosition,
+  required List<PopupMenuEntry<T>> items,
+  bool useRootNavigator = true,
+}) {
+  final navigator = Navigator.of(context, rootNavigator: useRootNavigator);
+  final overlay = navigator.overlay!;
+  final overlayContext = overlay.context;
+  final overlayRenderBox = overlayContext.findRenderObject() as RenderBox;
+
+  final localPosition = overlayRenderBox.globalToLocal(globalPosition);
+
+  final left = localPosition.dx;
+  final top = localPosition.dy;
+
+  return showMenu<T>(
+    context: context,
+    positionBuilder: (BuildContext _, BoxConstraints constraints) {
+      return RelativeRect.fromRect(
+        Rect.fromLTWH(left, top, 0, 0),
+        Offset.zero & overlayRenderBox.size,
+      );
+    },
+    items: items,
+    elevation: 2,
+    useRootNavigator: useRootNavigator,
+  );
+}

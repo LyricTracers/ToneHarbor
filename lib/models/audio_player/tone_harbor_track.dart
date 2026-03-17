@@ -5,6 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:metadata_god/metadata_god.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -73,11 +74,11 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
       duration: Duration(milliseconds: metadata?.durationMs?.toInt() ?? 0),
       rating: 0,
       filesize: file.lengthSync(),
-      bitrate: 0,
-      channel: 0,
+      bitrate: metadata?.bitrate ?? 0,
+      channel: metadata?.channels ?? 0,
       codec: '',
       container: extension(file.path).replaceFirst('.', ''),
-      frequency: 0,
+      frequency: metadata?.sampleRate ?? 0,
       path: file.absolute.path,
     );
   }
@@ -95,6 +96,9 @@ extension ToMetaDataToneHarborTrackObject on ToneHarborTrackObject {
       album: album,
       durationMs: duration.inMilliseconds.toDouble(),
       fileSize: BigInt.from(fileLength),
+      bitrate: bitrate,
+      channels: channel,
+      sampleRate: frequency,
       picture: imageBytes != null
           ? Picture(
               data: imageBytes,

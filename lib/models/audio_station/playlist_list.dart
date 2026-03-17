@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 part 'playlist_list.freezed.dart';
 part 'playlist_list.g.dart';
@@ -92,6 +93,8 @@ extension PlaylistDetailResponseExtension on PlaylistDetailResponse {
     if (additional == null) {
       return SongListResponse(success: success, data: null);
     }
+
+    logger.i("additional:${additional}");
 
     final songData = SongData(
       songs: additional.songs ?? [],

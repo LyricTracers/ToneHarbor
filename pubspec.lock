@@ -392,6 +392,14 @@ packages:
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
     version: "3.4.1"
+  flutter_context_menu:
+    dependency: "direct main"
+    description:
+      name: flutter_context_menu
+      sha256: "7040c03fb9cb2a113282d836edadf32b6cdff67cccdf3d158e7411ecc15d7712"
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.4.2"
   flutter_hooks:
     dependency: "direct main"
     description:
@@ -790,10 +798,11 @@ packages:
   metadata_god:
     dependency: "direct main"
     description:
-      name: metadata_god
-      sha256: "2b19b7e88cf5ab7016fe8d1f868bb35a193aaef06fd96cfc7de4ec3eacc16eb0"
-      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
-    source: hosted
+      path: "."
+      ref: main
+      resolved-ref: e8098eb66cf97aa78f19d143cae7cefdb0f7f949
+      url: "https://git.nxcloud.club:12750/LyricTracers/metadata_god.git"
+    source: git
     version: "1.1.0"
   mime:
     dependency: "direct main"
