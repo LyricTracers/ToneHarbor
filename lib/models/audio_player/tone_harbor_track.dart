@@ -64,7 +64,16 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
     Metadata? metadata,
     String? art,
   }) {
-    var id = basenameWithoutExtension(file.path);
+    var id = metadata?.comment;
+    if (id == null || id.isEmpty) {
+      final baseName = basenameWithoutExtension(file.path);
+      final musicIndex = baseName.lastIndexOf('_music_');
+      if (musicIndex != -1) {
+        id = baseName.substring(musicIndex + 1);
+      } else {
+        id = baseName;
+      }
+    }
     return ToneHarborTrackObject.local(
       id: id,
       title: metadata?.title ?? id,
@@ -96,9 +105,7 @@ extension ToMetaDataToneHarborTrackObject on ToneHarborTrackObject {
       album: album,
       durationMs: duration.inMilliseconds.toDouble(),
       fileSize: BigInt.from(fileLength),
-      bitrate: bitrate,
-      channels: channel,
-      sampleRate: frequency,
+      comment: id,
       picture: imageBytes != null
           ? Picture(
               data: imageBytes,

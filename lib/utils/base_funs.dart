@@ -300,7 +300,12 @@ Future<String> getTrackCachePath(
 ) async {
   final cacheDir = await getMusicCacheDir(quality);
   final extension = quality.isTranscode ? 'mp3' : track.container;
-  return '$cacheDir/${track.id}.$extension';
+  var fileName = "${track.title}_${track.id}";
+  if (track.artist.isNotEmpty) {
+    fileName = "${track.artist}_$fileName";
+  }
+  fileName = sanitizeFilename(fileName, track.id);
+  return '$cacheDir/$fileName.$extension';
 }
 
 Future<bool> isTrackCached(
@@ -313,6 +318,30 @@ Future<bool> isTrackCached(
 
 String sanitizeCacheKey(String key) {
   return key.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
+}
+
+String sanitizeFilename(String input, String id, {String replacement = ''}) {
+  final result = input
+      // illegalRe
+      .replaceAll(RegExp(r'[\/\?<>\\:\*\|"]'), replacement)
+      // controlRe
+      .replaceAll(RegExp(r'[\x00-\x1f\x80-\x9f]'), replacement)
+      // reservedRe
+      .replaceFirst(RegExp(r'^\.+$'), replacement)
+      // windowsReservedRe
+      .replaceFirst(
+        RegExp(
+          r'^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$',
+          caseSensitive: false,
+        ),
+        replacement.isEmpty ? '_' : replacement,
+      )
+      // windowsTrailingRe
+      .replaceFirst(RegExp(r'[\. ]+$'), replacement);
+  if (result.length > 255) {
+    return id;
+  }
+  return result;
 }
 
 void showCreatePlaylistDialog(

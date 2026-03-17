@@ -800,7 +800,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: e8098eb66cf97aa78f19d143cae7cefdb0f7f949
+      resolved-ref: "922be7dd7a33e4e6c471577ea4427d6ada2064dd"
       url: "https://git.nxcloud.club:12750/LyricTracers/metadata_god.git"
     source: git
     version: "1.1.0"
