@@ -139,59 +139,6 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final entries = <ContextMenuEntry>[
-      MenuItem(
-        value: 'play',
-        label: const Text('播放'),
-        icon: const Icon(Icons.play_arrow),
-        onSelected: (value) {
-          logger.i("播放");
-        },
-      ),
-      MenuItem(
-        value: 'edit',
-        label: const Text('编辑'),
-        icon: const Icon(Icons.edit),
-        onSelected: (value) {
-          logger.i("编辑");
-        },
-      ),
-      MenuItem(
-        value: 'delete',
-        label: const Text('删除'),
-        icon: const Icon(Icons.delete),
-        onSelected: (value) {
-          logger.i("删除");
-        },
-      ),
-      const MenuDivider(),
-      MenuItem.submenu(
-        label: const Text('更多'),
-        icon: const Icon(Icons.more_horiz),
-        items: [
-          MenuItem(
-            value: 'share',
-            label: const Text('分享'),
-            icon: const Icon(Icons.share),
-            onSelected: (value) {
-              logger.i("分享");
-            },
-          ),
-          MenuItem(
-            value: 'export',
-            label: const Text('导出'),
-            icon: const Icon(Icons.file_download),
-            onSelected: (value) {
-              logger.i("导出");
-            },
-          ),
-        ],
-      ),
-    ];
-    final menu = ContextMenu(
-      entries: entries,
-      padding: const EdgeInsets.all(8.0),
-    );
     var colorScheme = getColorSchemeWhenReady(ref);
     final scrollController = useScrollController();
     var playlistsResponse = ref.watch(baseProvider);
@@ -251,7 +198,37 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                     );
                   }
                   return ContextMenuRegion(
-                    contextMenu: menu,
+                    contextMenu: ContextMenu(
+                      entriesBuilder: () {
+                        final isFavorite = true;
+                        return <ContextMenuEntry>[
+                          MenuHeader(text: playlists[index].name),
+                          MenuDivider(),
+                          MenuItem(
+                            value: playlists[index],
+                            label: Text(isFavorite ? '取消置顶' : '置顶'),
+                            icon: Icon(
+                              isFavorite
+                                  ? Icons.favorite_border
+                                  : Icons.favorite,
+                            ),
+                            onSelected: (value) {
+                              if (value == null) return;
+                              if (isFavorite) {
+                                // ref
+                                //     .read(audioPlayerStateProvider.notifier)
+                                //     .removeFavoritePlaylist(value.id);
+                              } else {
+                                // ref
+                                //     .read(audioPlayerStateProvider.notifier)
+                                //     .addFavoritePlaylist(value.id);
+                              }
+                            },
+                          ),
+                        ];
+                      },
+                      padding: const EdgeInsets.all(8.0),
+                    ),
                     child: _PlaylistItemWidget(
                       index: index,
                       playlists: playlists,

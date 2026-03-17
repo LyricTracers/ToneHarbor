@@ -22,7 +22,10 @@ dependencies:
       ref: main
       path: media_kit
   media_kit_libs_audio: ^1.0.7
-  flutter_context_menu: 0.4.2
+  flutter_context_menu: 
+    git:
+      url: https://git.nxcloud.club:12750/LyricTracers/flutter_context_menu.git
+      ref: main
   audio_service: ^0.18.18
   audio_session: ^0.2.2
   smtc_windows: ^1.1.0
