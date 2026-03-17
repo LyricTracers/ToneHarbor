@@ -26,46 +26,6 @@ import 'l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/foundation.dart';
 
-class SlideTransitionPage extends CustomTransitionPage<void> {
-  SlideTransitionPage({
-    super.key,
-    required super.child,
-    super.transitionDuration = const Duration(milliseconds: 300),
-    super.reverseTransitionDuration = const Duration(milliseconds: 300),
-  }) : super(
-         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-           return _buildSlideTransition(
-             context,
-             animation,
-             secondaryAnimation,
-             child,
-           );
-         },
-       );
-
-  static Widget _buildSlideTransition(
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    final fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: animation,
-        curve: const Interval(0, 1.0, curve: Curves.fastEaseInToSlowEaseOut),
-      ),
-    );
-
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, child) {
-        return FadeTransition(opacity: fadeAnimation, child: child);
-      },
-      child: child,
-    );
-  }
-}
-
 void main() async {
   await initialized();
   runApp(
@@ -220,7 +180,7 @@ class MyApp extends HookConsumerWidget {
           ),
           GoRoute(
             path: "/playing_detail",
-            pageBuilder: (context, state) => SlideTransitionPage(
+            pageBuilder: (context, state) => NoTransitionPage(
               key: state.pageKey,
               child: const PlayingDetailLayout(),
             ),
@@ -234,10 +194,8 @@ class MyApp extends HookConsumerWidget {
           ),
           GoRoute(
             path: '/test',
-            pageBuilder: (context, state) => SlideTransitionPage(
-              key: state.pageKey,
-              child: const TestLayout(),
-            ),
+            pageBuilder: (context, state) =>
+                NoTransitionPage(key: state.pageKey, child: const TestLayout()),
           ),
         ],
         redirect: (context, state) {
