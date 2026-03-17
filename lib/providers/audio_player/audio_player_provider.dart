@@ -302,7 +302,7 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
     int initialIndex = 0,
     bool autoPlay = false,
   }) async {
-    final medias = tracks.asMediaList().unique((a, b) => a.uri == b.uri);
+    final medias = tracks.asMediaList();
 
     if (medias.isEmpty) return;
 
