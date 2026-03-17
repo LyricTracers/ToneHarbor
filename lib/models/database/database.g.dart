@@ -493,16 +493,286 @@ class AudioPlayerStateTableCompanion
   }
 }
 
+class $FavoritePlaylistStateTableTable extends FavoritePlaylistStateTable
+    with
+        TableInfo<
+          $FavoritePlaylistStateTableTable,
+          FavoritePlaylistStateTableData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FavoritePlaylistStateTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _playlistIdMeta = const VerificationMeta(
+    'playlistId',
+  );
+  @override
+  late final GeneratedColumn<String> playlistId = GeneratedColumn<String>(
+    'playlist_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, playlistId, title];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'favorite_playlist_state_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FavoritePlaylistStateTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('playlist_id')) {
+      context.handle(
+        _playlistIdMeta,
+        playlistId.isAcceptableOrUnknown(data['playlist_id']!, _playlistIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_playlistIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FavoritePlaylistStateTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FavoritePlaylistStateTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      playlistId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}playlist_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+    );
+  }
+
+  @override
+  $FavoritePlaylistStateTableTable createAlias(String alias) {
+    return $FavoritePlaylistStateTableTable(attachedDatabase, alias);
+  }
+}
+
+class FavoritePlaylistStateTableData extends DataClass
+    implements Insertable<FavoritePlaylistStateTableData> {
+  final int id;
+  final String playlistId;
+  final String title;
+  const FavoritePlaylistStateTableData({
+    required this.id,
+    required this.playlistId,
+    required this.title,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['playlist_id'] = Variable<String>(playlistId);
+    map['title'] = Variable<String>(title);
+    return map;
+  }
+
+  FavoritePlaylistStateTableCompanion toCompanion(bool nullToAbsent) {
+    return FavoritePlaylistStateTableCompanion(
+      id: Value(id),
+      playlistId: Value(playlistId),
+      title: Value(title),
+    );
+  }
+
+  factory FavoritePlaylistStateTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FavoritePlaylistStateTableData(
+      id: serializer.fromJson<int>(json['id']),
+      playlistId: serializer.fromJson<String>(json['playlistId']),
+      title: serializer.fromJson<String>(json['title']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'playlistId': serializer.toJson<String>(playlistId),
+      'title': serializer.toJson<String>(title),
+    };
+  }
+
+  FavoritePlaylistStateTableData copyWith({
+    int? id,
+    String? playlistId,
+    String? title,
+  }) => FavoritePlaylistStateTableData(
+    id: id ?? this.id,
+    playlistId: playlistId ?? this.playlistId,
+    title: title ?? this.title,
+  );
+  FavoritePlaylistStateTableData copyWithCompanion(
+    FavoritePlaylistStateTableCompanion data,
+  ) {
+    return FavoritePlaylistStateTableData(
+      id: data.id.present ? data.id.value : this.id,
+      playlistId: data.playlistId.present
+          ? data.playlistId.value
+          : this.playlistId,
+      title: data.title.present ? data.title.value : this.title,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FavoritePlaylistStateTableData(')
+          ..write('id: $id, ')
+          ..write('playlistId: $playlistId, ')
+          ..write('title: $title')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, playlistId, title);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FavoritePlaylistStateTableData &&
+          other.id == this.id &&
+          other.playlistId == this.playlistId &&
+          other.title == this.title);
+}
+
+class FavoritePlaylistStateTableCompanion
+    extends UpdateCompanion<FavoritePlaylistStateTableData> {
+  final Value<int> id;
+  final Value<String> playlistId;
+  final Value<String> title;
+  const FavoritePlaylistStateTableCompanion({
+    this.id = const Value.absent(),
+    this.playlistId = const Value.absent(),
+    this.title = const Value.absent(),
+  });
+  FavoritePlaylistStateTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String playlistId,
+    required String title,
+  }) : playlistId = Value(playlistId),
+       title = Value(title);
+  static Insertable<FavoritePlaylistStateTableData> custom({
+    Expression<int>? id,
+    Expression<String>? playlistId,
+    Expression<String>? title,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (playlistId != null) 'playlist_id': playlistId,
+      if (title != null) 'title': title,
+    });
+  }
+
+  FavoritePlaylistStateTableCompanion copyWith({
+    Value<int>? id,
+    Value<String>? playlistId,
+    Value<String>? title,
+  }) {
+    return FavoritePlaylistStateTableCompanion(
+      id: id ?? this.id,
+      playlistId: playlistId ?? this.playlistId,
+      title: title ?? this.title,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (playlistId.present) {
+      map['playlist_id'] = Variable<String>(playlistId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FavoritePlaylistStateTableCompanion(')
+          ..write('id: $id, ')
+          ..write('playlistId: $playlistId, ')
+          ..write('title: $title')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $AudioPlayerStateTableTable audioPlayerStateTable =
       $AudioPlayerStateTableTable(this);
+  late final $FavoritePlaylistStateTableTable favoritePlaylistStateTable =
+      $FavoritePlaylistStateTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [audioPlayerStateTable];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    audioPlayerStateTable,
+    favoritePlaylistStateTable,
+  ];
 }
 
 typedef $$AudioPlayerStateTableTableCreateCompanionBuilder =
@@ -771,10 +1041,193 @@ typedef $$AudioPlayerStateTableTableProcessedTableManager =
       AudioPlayerStateTableData,
       PrefetchHooks Function()
     >;
+typedef $$FavoritePlaylistStateTableTableCreateCompanionBuilder =
+    FavoritePlaylistStateTableCompanion Function({
+      Value<int> id,
+      required String playlistId,
+      required String title,
+    });
+typedef $$FavoritePlaylistStateTableTableUpdateCompanionBuilder =
+    FavoritePlaylistStateTableCompanion Function({
+      Value<int> id,
+      Value<String> playlistId,
+      Value<String> title,
+    });
+
+class $$FavoritePlaylistStateTableTableFilterComposer
+    extends Composer<_$AppDatabase, $FavoritePlaylistStateTableTable> {
+  $$FavoritePlaylistStateTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get playlistId => $composableBuilder(
+    column: $table.playlistId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FavoritePlaylistStateTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $FavoritePlaylistStateTableTable> {
+  $$FavoritePlaylistStateTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get playlistId => $composableBuilder(
+    column: $table.playlistId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FavoritePlaylistStateTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FavoritePlaylistStateTableTable> {
+  $$FavoritePlaylistStateTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get playlistId => $composableBuilder(
+    column: $table.playlistId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+}
+
+class $$FavoritePlaylistStateTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FavoritePlaylistStateTableTable,
+          FavoritePlaylistStateTableData,
+          $$FavoritePlaylistStateTableTableFilterComposer,
+          $$FavoritePlaylistStateTableTableOrderingComposer,
+          $$FavoritePlaylistStateTableTableAnnotationComposer,
+          $$FavoritePlaylistStateTableTableCreateCompanionBuilder,
+          $$FavoritePlaylistStateTableTableUpdateCompanionBuilder,
+          (
+            FavoritePlaylistStateTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $FavoritePlaylistStateTableTable,
+              FavoritePlaylistStateTableData
+            >,
+          ),
+          FavoritePlaylistStateTableData,
+          PrefetchHooks Function()
+        > {
+  $$FavoritePlaylistStateTableTableTableManager(
+    _$AppDatabase db,
+    $FavoritePlaylistStateTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FavoritePlaylistStateTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$FavoritePlaylistStateTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$FavoritePlaylistStateTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> playlistId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+              }) => FavoritePlaylistStateTableCompanion(
+                id: id,
+                playlistId: playlistId,
+                title: title,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String playlistId,
+                required String title,
+              }) => FavoritePlaylistStateTableCompanion.insert(
+                id: id,
+                playlistId: playlistId,
+                title: title,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FavoritePlaylistStateTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FavoritePlaylistStateTableTable,
+      FavoritePlaylistStateTableData,
+      $$FavoritePlaylistStateTableTableFilterComposer,
+      $$FavoritePlaylistStateTableTableOrderingComposer,
+      $$FavoritePlaylistStateTableTableAnnotationComposer,
+      $$FavoritePlaylistStateTableTableCreateCompanionBuilder,
+      $$FavoritePlaylistStateTableTableUpdateCompanionBuilder,
+      (
+        FavoritePlaylistStateTableData,
+        BaseReferences<
+          _$AppDatabase,
+          $FavoritePlaylistStateTableTable,
+          FavoritePlaylistStateTableData
+        >,
+      ),
+      FavoritePlaylistStateTableData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
   $$AudioPlayerStateTableTableTableManager get audioPlayerStateTable =>
       $$AudioPlayerStateTableTableTableManager(_db, _db.audioPlayerStateTable);
+  $$FavoritePlaylistStateTableTableTableManager
+  get favoritePlaylistStateTable =>
+      $$FavoritePlaylistStateTableTableTableManager(
+        _db,
+        _db.favoritePlaylistStateTable,
+      );
 }

@@ -12,11 +12,12 @@ import 'package:drift/native.dart';
 part 'database.g.dart';
 
 part 'tables/audio_player_state.dart';
+part 'tables/favorite_playlist_state.dart';
 
 part 'typeconverters/string_list.dart';
 part 'typeconverters/tone_harbor_object_list.dart';
 
-@DriftDatabase(tables: [AudioPlayerStateTable])
+@DriftDatabase(tables: [AudioPlayerStateTable, FavoritePlaylistStateTable])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
   @override

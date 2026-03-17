@@ -4,7 +4,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_station/playlist_list.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -200,7 +199,13 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                   return ContextMenuRegion(
                     contextMenu: ContextMenu(
                       entriesBuilder: () {
-                        final isFavorite = true;
+                        var playlistId = playlists[index].id;
+                        var title = playlists[index].name;
+                        var favoritePlaylistNotifier = ref.read(
+                          favoritePlaylistStateProvider.notifier,
+                        );
+                        final isFavorite = favoritePlaylistNotifier
+                            .isFavoritePlaylist(playlistId);
                         return <ContextMenuEntry>[
                           MenuHeader(text: playlists[index].name),
                           MenuDivider(),
@@ -213,15 +218,15 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                                   : Icons.favorite,
                             ),
                             onSelected: (value) {
-                              if (value == null) return;
                               if (isFavorite) {
-                                // ref
-                                //     .read(audioPlayerStateProvider.notifier)
-                                //     .removeFavoritePlaylist(value.id);
+                                favoritePlaylistNotifier.removeFavoritePlaylist(
+                                  playlistId,
+                                );
                               } else {
-                                // ref
-                                //     .read(audioPlayerStateProvider.notifier)
-                                //     .addFavoritePlaylist(value.id);
+                                favoritePlaylistNotifier.addFavoritePlaylist(
+                                  playlistId,
+                                  title,
+                                );
                               }
                             },
                           ),
