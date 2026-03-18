@@ -205,7 +205,7 @@ class TestLayout extends BaseBgLayout {
 
       try {
         await ref
-            .read(songCommonProvider.notifier)
+            .read(songRatingProvider.notifier)
             .setRating(id: 'music_785331', rating: 5);
         updateRequest(
           requestId: requestId,

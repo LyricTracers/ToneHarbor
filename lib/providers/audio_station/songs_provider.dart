@@ -9,18 +9,72 @@ import 'package:toneharbor/utils/base_utils.dart';
 part 'songs_provider.dependence.dart';
 part 'songs_provider.g.dart';
 
-@riverpod
-class SongCommon extends _$SongCommon {
+void updateRating(Ref ref, SongListResponse songsResponse) {
+  var songs = songsResponse.data?.songs;
+  if (songs == null || songs.isEmpty) {
+    return;
+  }
+  var songRating = ref.read(songRatingProvider.notifier);
+  var ids = <String>[];
+  for (var song in songs) {
+    var id = song.id;
+    var rating = song.additional?.songRating?.rating ?? 0;
+    if (rating == 5) {
+      ids.add(id);
+    }
+  }
+  songRating.addFavorites(ids);
+}
+
+@keepAlive
+class SongRating extends _$SongRating {
   @override
-  void build() {
-    ref.keepAliveFor(Duration(minutes: 5));
+  Set<String> build() {
+    return <String>{};
   }
 
   Future<SetRatingResponse> setRating({
     required String id,
     int rating = 5,
   }) async {
-    return await _setRating(ref: ref, id: id, rating: rating);
+    try {
+      var result = await _setRating(ref: ref, id: id, rating: rating);
+      if (result.success) {
+        if (rating == 5) {
+          addFavorite(id);
+        } else {
+          removeFavorite(id);
+        }
+      }
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  void addFavorite(String id) {
+    if (!state.contains(id)) {
+      state = {...state, id};
+    }
+  }
+
+  void addFavorites(Iterable<String> ids) {
+    state = {...state, ...ids};
+  }
+
+  void removeFavorite(String id) {
+    if (state.contains(id)) {
+      final newState = {...state}..remove(id);
+      state = newState;
+    }
+  }
+}
+
+@riverpod
+class SongCommon extends _$SongCommon {
+  @override
+  void build() {
+    ref.keepAliveFor(Duration(minutes: 5));
   }
 
   Future<LyricsResponse> lyrics({

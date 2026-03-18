@@ -211,7 +211,7 @@ final class PlaylistDetailProvider
   }
 }
 
-String _$playlistDetailHash() => r'e6e4516fb735b2c760e934e4e412d233b92950e1';
+String _$playlistDetailHash() => r'ddffd5871377181864e4554569468f23a8bb0390';
 
 final class PlaylistDetailFamily extends $Family
     with

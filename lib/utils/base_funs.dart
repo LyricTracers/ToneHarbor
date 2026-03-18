@@ -18,6 +18,7 @@ import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/consts.dart';
 import 'package:open_file/open_file.dart';
 part 'base_funs_sp.dart';
@@ -80,6 +81,14 @@ ColorScheme getColorSchemeWhenReady(WidgetRef ref) {
     getColorSchemeProvider,
     defaultColorScheme,
   );
+}
+
+void showSnackBarError(Object e, BuildContext context, Color color) {
+  if (e is AudioStationException) {
+    showSnackBar(e.message, context, color);
+  } else if (e is Exception) {
+    showSnackBar(e.toString(), context, color);
+  }
 }
 
 void showSnackBar(String text, BuildContext context, Color color) {

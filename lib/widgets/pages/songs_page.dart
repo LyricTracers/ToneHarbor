@@ -21,6 +21,7 @@ class _SongItem extends HookConsumerWidget {
   final ValueChanged<WidgetRef> onTap;
   final AppLocalizations l10n;
   final String? activeSongId;
+  final bool isFavorite;
   const _SongItem({
     required this.index,
     required this.song,
@@ -28,6 +29,7 @@ class _SongItem extends HookConsumerWidget {
     required this.colorScheme,
     required this.l10n,
     required this.onTap,
+    required this.isFavorite,
   });
   static const double itemHeight = 66.0;
 
@@ -50,7 +52,6 @@ class _SongItem extends HookConsumerWidget {
       album = 'Unknown Album';
     }
     var isHovered = useState(false);
-    final isFavorite = song.additional?.songRating?.rating == 5;
     return MouseRegion(
       onEnter: (event) => isHovered.value = true,
       onExit: (event) => isHovered.value = false,
@@ -143,8 +144,36 @@ class _SongItem extends HookConsumerWidget {
                 ),
                 const SizedBox(width: 15),
                 IconButton(
-                  onPressed: () {
-                    logger.i('isFavorite: $isFavorite');
+                  onPressed: () async {
+                    try {
+                      ref
+                          .read(requestFlagProvider.notifier)
+                          .setRequestFlag(true);
+                      SetRatingResponse response;
+                      if (isFavorite) {
+                        response = await ref
+                            .read(songRatingProvider.notifier)
+                            .setRating(id: song.id, rating: 0);
+                      } else {
+                        response = await ref
+                            .read(songRatingProvider.notifier)
+                            .setRating(id: song.id, rating: 5);
+                      }
+                      if (response.success) {
+                        ref
+                            .read(favoriteSongsProvider(limit: 50).notifier)
+                            .invalidateCache();
+                        ref.invalidate(favoriteSongsProvider);
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        showSnackBarError(e, context, colorScheme.secondary);
+                      }
+                    } finally {
+                      ref
+                          .read(requestFlagProvider.notifier)
+                          .setRequestFlag(false);
+                    }
                   },
 
                   icon: Icon(
@@ -272,6 +301,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
       scrollController.addListener(onScroll);
       return () => scrollController.removeListener(onScroll);
     }, [scrollController]);
+    final songRating = ref.watch(songRatingProvider);
 
     return Column(
       children: [
@@ -306,6 +336,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                       activeSongId: activeSongId,
                       colorScheme: colorScheme,
                       l10n: l10n,
+                      isFavorite: songRating.contains(item.id),
                       onTap: (ref) async => {
                         await ref
                             .read(audioPlayerStateProvider.notifier)

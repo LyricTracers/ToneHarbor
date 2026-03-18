@@ -72,7 +72,7 @@ Future<SongListResponse> _sendSongRequest<T>({
       statusCode: errorCode is int ? errorCode : null,
     );
   }
-
+  updateRating(ref, result);
   return result;
 }
 
@@ -328,6 +328,7 @@ Future<SongListResponse> _getSongs({
       fromJson: (json) => SongListResponse.fromJson(json),
     );
     if (cached != null && cached.success) {
+      updateRating(ref, cached);
       return cached;
     }
   }
@@ -355,7 +356,6 @@ Future<SongListResponse> _getSongs({
     defaultError: l10n.error_getSongs_failed,
     l10n: l10n,
   );
-
   if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
@@ -585,6 +585,7 @@ Future<SongListResponse> _getAlbumSongs({
       fromJson: (json) => SongListResponse.fromJson(json),
     );
     if (cached != null && cached.success) {
+      updateRating(ref, cached);
       return cached;
     }
   }
@@ -613,7 +614,6 @@ Future<SongListResponse> _getAlbumSongs({
     defaultError: l10n.error_getAlbumSongs_failed,
     l10n: l10n,
   );
-
   if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,
@@ -656,6 +656,7 @@ Future<SongListResponse> _searchSongs({
       fromJson: (json) => SongListResponse.fromJson(json),
     );
     if (cached != null && cached.success) {
+      updateRating(ref, cached);
       return cached;
     }
   }
@@ -681,7 +682,6 @@ Future<SongListResponse> _searchSongs({
     defaultError: l10n.error_search_failed.replaceFirst('%s', title),
     l10n: l10n,
   );
-
   if (cacheDuration != null && result.success) {
     await saveToCache(
       cacheKey: cacheKey,

@@ -18,7 +18,7 @@ class HomeLayout extends BaseBgLayout {
   final String currentPath;
   const HomeLayout({
     super.key,
-    super.showLoading = false,
+    super.showLoading = true,
     required this.child,
     required this.currentPath,
   });

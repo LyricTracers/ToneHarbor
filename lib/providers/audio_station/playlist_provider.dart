@@ -147,7 +147,9 @@ class PlaylistDetail extends _$PlaylistDetail
       groupKey: groupKey,
       cacheDuration: duration,
     );
-    return result.toSongListResponse();
+    var songListResponse = result.toSongListResponse();
+    updateRating(ref, songListResponse);
+    return songListResponse;
   }
 
   @override
@@ -174,7 +176,9 @@ class PlaylistDetail extends _$PlaylistDetail
         groupKey: groupKey,
         cacheDuration: duration,
       );
-      state = AsyncData(result.toSongListResponse());
+      var songListResponse = result.toSongListResponse();
+      updateRating(ref, songListResponse);
+      state = AsyncData(songListResponse);
     } catch (e) {
       logger.e('set Sort playlists失败: $e');
       state = AsyncData(oldState!);
@@ -210,7 +214,7 @@ class PlaylistDetail extends _$PlaylistDetail
         cacheDuration: duration,
       );
       final newState = newResult.toSongListResponse();
-
+      updateRating(ref, newState);
       final newSongs = newState.data?.songs ?? [];
       final mergedSongs = [...currentSongs, ...newSongs];
 

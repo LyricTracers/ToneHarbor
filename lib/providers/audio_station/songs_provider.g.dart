@@ -9,6 +9,58 @@ part of 'songs_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(SongRating)
+final songRatingProvider = SongRatingProvider._();
+
+final class SongRatingProvider
+    extends $NotifierProvider<SongRating, Set<String>> {
+  SongRatingProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'songRatingProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$songRatingHash();
+
+  @$internal
+  @override
+  SongRating create() => SongRating();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Set<String> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Set<String>>(value),
+    );
+  }
+}
+
+String _$songRatingHash() => r'3c64461bcfb898fc42578efc20389a29b8f5918b';
+
+abstract class _$SongRating extends $Notifier<Set<String>> {
+  Set<String> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<Set<String>, Set<String>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<Set<String>, Set<String>>,
+              Set<String>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(SongCommon)
 final songCommonProvider = SongCommonProvider._();
 
@@ -40,7 +92,7 @@ final class SongCommonProvider extends $NotifierProvider<SongCommon, void> {
   }
 }
 
-String _$songCommonHash() => r'dd3b66614462684707ba227e48c4bb0d33e8c67b';
+String _$songCommonHash() => r'd8f4705b17243c7197b481454ee30e43ec63dc58';
 
 abstract class _$SongCommon extends $Notifier<void> {
   void build();
