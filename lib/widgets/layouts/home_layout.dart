@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/models/audio_player/favorite_playlist_state.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -205,31 +206,89 @@ class HomeLayout extends BaseBgLayout {
                                 final path =
                                     "/songs/${Uri.encodeComponent(item.title)}";
                                 final isSelected = path == currentPath;
-                                return _getItem(
-                                  isSelected,
-                                  colorScheme,
-                                  Icons.file_present,
-                                  item.title,
-                                  () {
-                                    context.push(
-                                      path,
-                                      extra: (
-                                        playlistDetailProvider(
-                                          id: item.playlistId,
+                                return GestureDetector(
+                                  behavior: HitTestBehavior.translucent,
+                                  onSecondaryTapDown: (detail) async {
+                                    if (isSelected) {
+                                      return;
+                                    }
+                                    await showCustomMenu<FavoritePlaylistItem>(
+                                      context: context,
+                                      globalPosition: detail.globalPosition,
+                                      items: [
+                                        PopupMenuItem(
+                                          height: 20,
+                                          enabled: false,
+                                          child: Text(
+                                            item.title,
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                            ),
+                                          ),
                                         ),
-                                        -1,
-                                        SongsPageSortAction.all,
-                                      ),
+                                        PopupMenuDivider(),
+                                        PopupMenuItem(
+                                          height: 20,
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.favorite_border_rounded,
+                                                size: 18,
+                                                color: colorScheme.onSurface
+                                                    .withValues(alpha: 0.7),
+                                              ),
+                                              SizedBox(width: 10),
+                                              Text(
+                                                l10n.no_favorite_playlist,
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: colorScheme.onSurface
+                                                      .withValues(alpha: 0.7),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          onTap: () {
+                                            ref
+                                                .read(
+                                                  favoritePlaylistStateProvider
+                                                      .notifier,
+                                                )
+                                                .removeFavoritePlaylist(
+                                                  item.playlistId,
+                                                );
+                                          },
+                                        ),
+                                      ],
                                     );
                                   },
-                                  paddingContent: EdgeInsetsGeometry.symmetric(
-                                    horizontal: 4,
-                                    vertical: 4,
+                                  child: _getItem(
+                                    isSelected,
+                                    colorScheme,
+                                    Icons.file_present,
+                                    item.title,
+                                    () {
+                                      context.push(
+                                        path,
+                                        extra: (
+                                          playlistDetailProvider(
+                                            id: item.playlistId,
+                                          ),
+                                          -1,
+                                          SongsPageSortAction.all,
+                                        ),
+                                      );
+                                    },
+                                    paddingContent:
+                                        EdgeInsetsGeometry.symmetric(
+                                          horizontal: 4,
+                                          vertical: 4,
+                                        ),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 2,
+                                    ),
+                                    offsetWidth: 2,
                                   ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 2,
-                                  ),
-                                  offsetWidth: 2,
                                 );
                               }).toList(),
                             ),
