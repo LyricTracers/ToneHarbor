@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:toneharbor/hooks/use_progress.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -14,13 +15,8 @@ import 'package:toneharbor/widgets/widgets.dart';
 enum ShowArrowType { up, down, none }
 
 class BottomPlayer extends HookConsumerWidget {
-  final VoidCallback onShowPlaylist;
   final ShowArrowType showArrowType;
-  const BottomPlayer(
-    this.onShowPlaylist, {
-    super.key,
-    this.showArrowType = ShowArrowType.up,
-  });
+  const BottomPlayer({super.key, this.showArrowType = ShowArrowType.up});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -326,7 +322,12 @@ class BottomPlayer extends HookConsumerWidget {
                       const SizedBox(width: 2),
                       IconButton(
                         icon: const Icon(Icons.playlist_play_rounded, size: 18),
-                        onPressed: onShowPlaylist,
+                        onPressed: () {
+                          logger.i("clider");
+                          ref
+                              .read(subContentProvider.notifier)
+                              .set(SubContentType.playList);
+                        },
                       ),
                       if (showArrowType != ShowArrowType.none)
                         const SizedBox(width: 2),

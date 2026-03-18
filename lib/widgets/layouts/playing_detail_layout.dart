@@ -12,14 +12,6 @@ import "package:toneharbor/widgets/pages/lyrics_content_page.dart";
 import "package:toneharbor/widgets/pages/playlist_page.dart";
 import "package:toneharbor/widgets/widgets.dart";
 
-enum PlayingSubContent {
-  none,
-  playList,
-  songInfo,
-  addToPlayLists,
-  updateLyrics,
-}
-
 class PlayingDetailLayout extends BaseBgLayout {
   const PlayingDetailLayout({super.key});
 
@@ -33,19 +25,19 @@ class PlayingDetailLayout extends BaseBgLayout {
     if (activeTrack == null) {
       return buildErrorView(ref.context, ref, colorScheme, () {});
     }
+    final subContentState = ref.watch(subContentProvider);
 
-    var playingSubContent = useState(PlayingSubContent.none);
     final animationController = useAnimationController(
       duration: const Duration(milliseconds: 100),
     );
     useEffect(() {
-      if (playingSubContent.value != PlayingSubContent.none) {
+      if (subContentState != SubContentType.none) {
         animationController.forward();
       } else {
         animationController.reverse();
       }
       return null;
-    }, [playingSubContent.value]);
+    }, [subContentState]);
     final slideAnimation =
         Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(
           CurvedAnimation(
@@ -78,8 +70,9 @@ class PlayingDetailLayout extends BaseBgLayout {
                               children: [
                                 IconButton(
                                   onPressed: () {
-                                    playingSubContent.value =
-                                        PlayingSubContent.addToPlayLists;
+                                    ref
+                                        .read(subContentProvider.notifier)
+                                        .set(SubContentType.addToPlayLists);
                                   },
                                   icon: Icon(
                                     Icons.playlist_add_rounded,
@@ -118,37 +111,35 @@ class PlayingDetailLayout extends BaseBgLayout {
                 ],
               ),
             ),
-            BottomPlayer(() {
-              playingSubContent.value = PlayingSubContent.playList;
-            }, showArrowType: ShowArrowType.down),
+            BottomPlayer(showArrowType: ShowArrowType.down),
           ],
         ),
-        if (playingSubContent.value != PlayingSubContent.none)
+        if (subContentState != SubContentType.none)
           Positioned.fill(
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
-                playingSubContent.value = PlayingSubContent.none;
+                ref.read(subContentProvider.notifier).set(SubContentType.none);
               },
               onLongPress: () {
-                playingSubContent.value = PlayingSubContent.none;
+                ref.read(subContentProvider.notifier).set(SubContentType.none);
               },
             ),
           ),
-        if (playingSubContent.value != PlayingSubContent.none)
+        if (subContentState != SubContentType.none)
           SlideTransition(
             position: slideAnimation,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                switch (playingSubContent.value) {
-                  PlayingSubContent.playList => PlaylistPage(),
-                  PlayingSubContent.songInfo => SizedBox(),
-                  PlayingSubContent.addToPlayLists => AddToPlaylistsPage([
+                switch (subContentState) {
+                  SubContentType.playList => PlaylistPage(),
+                  SubContentType.songInfo => SizedBox(),
+                  SubContentType.addToPlayLists => AddToPlaylistsPage([
                     activeTrack.id,
                   ]),
-                  PlayingSubContent.updateLyrics => SizedBox(),
-                  PlayingSubContent.none => const SizedBox(),
+                  SubContentType.updateLyrics => SizedBox(),
+                  SubContentType.none => const SizedBox(),
                 },
               ],
             ),

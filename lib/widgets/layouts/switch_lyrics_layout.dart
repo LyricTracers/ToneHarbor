@@ -29,7 +29,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
     var songId = useState(songTrackObject.id);
     var title = useState(songTrackObject.title);
     var selectedIndex = useState(-1);
-    final isPlaylistPage = useState(false);
+    final subContentState = ref.watch(subContentProvider);
     var artist = useState(
       songTrackObject.artist == "Unknown Artist" ? "" : songTrackObject.artist,
     );
@@ -101,13 +101,13 @@ class SwitchLyricsLayout extends BaseBgLayout {
     }, [artistController]);
 
     useEffect(() {
-      if (isPlaylistPage.value) {
+      if (subContentState != SubContentType.none) {
         animationController.forward();
       } else {
         animationController.reverse();
       }
       return null;
-    }, [isPlaylistPage.value]);
+    }, [subContentState]);
 
     var callBack = useCallback(() {
       if (title.value.isEmpty) {
@@ -344,27 +344,24 @@ class SwitchLyricsLayout extends BaseBgLayout {
                           : defaultLyrics.value,
                     ),
                   ),
-                  BottomPlayer(() {
-                    isPlaylistPage.value = true;
-                  }, showArrowType: ShowArrowType.none),
+                  BottomPlayer(showArrowType: ShowArrowType.none),
                 ],
               ),
             ),
           ],
         ),
-        if (isPlaylistPage.value)
+        if (subContentState == SubContentType.playList) ...[
           Positioned.fill(
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
-                isPlaylistPage.value = false;
+                ref.read(subContentProvider.notifier).set(SubContentType.none);
               },
               onLongPress: () {
-                isPlaylistPage.value = false;
+                ref.read(subContentProvider.notifier).set(SubContentType.none);
               },
             ),
           ),
-        if (isPlaylistPage.value)
           SlideTransition(
             position: slideAnimation,
             child: Row(
@@ -372,6 +369,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
               children: [PlaylistPage()],
             ),
           ),
+        ],
       ],
     );
   }

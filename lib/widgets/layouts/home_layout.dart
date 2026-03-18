@@ -27,7 +27,7 @@ class HomeLayout extends BaseBgLayout {
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
     final colorScheme = getColorSchemeWhenReady(ref);
     final l10n = ref.watch(l10nProvider);
-    final isPlaylistPage = useState(false);
+    final subContentState = ref.watch(subContentProvider);
     final allMusicPath = '/songs/${Uri.encodeComponent(l10n.all_music)}';
     final allFoldersPath = '/folders/';
     final gradientDecoration = BoxDecoration(
@@ -49,13 +49,13 @@ class HomeLayout extends BaseBgLayout {
     );
     final favoritePlaylist = ref.watch(favoritePlaylistStateProvider);
     useEffect(() {
-      if (isPlaylistPage.value) {
+      if (subContentState != SubContentType.none) {
         animationController.forward();
       } else {
         animationController.reverse();
       }
       return null;
-    }, [isPlaylistPage.value]);
+    }, [subContentState]);
     final slideAnimation =
         Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(
           CurvedAnimation(
@@ -304,27 +304,24 @@ class HomeLayout extends BaseBgLayout {
               child: Column(
                 children: [
                   Expanded(child: child),
-                  BottomPlayer(() {
-                    isPlaylistPage.value = true;
-                  }),
+                  BottomPlayer(),
                 ],
               ),
             ),
           ],
         ),
-        if (isPlaylistPage.value)
+        if (subContentState == SubContentType.playList) ...[
           Positioned.fill(
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
-                isPlaylistPage.value = false;
+                ref.read(subContentProvider.notifier).set(SubContentType.none);
               },
               onLongPress: () {
-                isPlaylistPage.value = false;
+                ref.read(subContentProvider.notifier).set(SubContentType.none);
               },
             ),
           ),
-        if (isPlaylistPage.value)
           SlideTransition(
             position: slideAnimation,
             child: Row(
@@ -332,6 +329,7 @@ class HomeLayout extends BaseBgLayout {
               children: [PlaylistPage()],
             ),
           ),
+        ],
       ],
     );
   }

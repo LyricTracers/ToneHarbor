@@ -368,3 +368,55 @@ abstract class _$AudioQualityNotifier extends $Notifier<AudioQuality> {
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(SubContent)
+final subContentProvider = SubContentProvider._();
+
+final class SubContentProvider
+    extends $NotifierProvider<SubContent, SubContentType> {
+  SubContentProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'subContentProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$subContentHash();
+
+  @$internal
+  @override
+  SubContent create() => SubContent();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SubContentType value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SubContentType>(value),
+    );
+  }
+}
+
+String _$subContentHash() => r'47566ddabec6be7489daf8d6fdfcd8430283a82a';
+
+abstract class _$SubContent extends $Notifier<SubContentType> {
+  SubContentType build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<SubContentType, SubContentType>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<SubContentType, SubContentType>,
+              SubContentType,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

@@ -158,3 +158,17 @@ class AudioQualityNotifier extends _$AudioQualityNotifier {
     await SharedPreferencesUtils.setAudioQuality(quality);
   }
 }
+
+enum SubContentType { none, playList, songInfo, addToPlayLists, updateLyrics }
+
+@keepAlive
+class SubContent extends _$SubContent {
+  @override
+  SubContentType build() {
+    return SubContentType.none;
+  }
+
+  void set(SubContentType t) {
+    state = t;
+  }
+}
