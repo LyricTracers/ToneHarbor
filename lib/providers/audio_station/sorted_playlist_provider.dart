@@ -16,10 +16,8 @@ class SortedPlaylist extends _$SortedPlaylist {
     >
     baseProvider,
   }) {
-    logger.i("SortedPlaylist:build!!!!!!!");
     final favoritePlaylistState = ref.watch(favoritePlaylistStateProvider);
     final playlistsResponse = ref.watch(baseProvider);
-    logger.i("SortedPlaylist:build!!!!!!!:${playlistsResponse.hasValue}");
     return playlistsResponse.when(
       loading: () => const SortedPlaylistState.loading(),
       error: (error, stackTrace) => const SortedPlaylistState.error(),

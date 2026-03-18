@@ -824,6 +824,18 @@ abstract class AppLocalizations {
   /// **'Cancel Collection'**
   String get no_favorite_playlist;
 
+  /// No description provided for @delete_playlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Playlists'**
+  String get delete_playlist;
+
+  /// No description provided for @ask_delete_playlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete [%s] Playlist?'**
+  String get ask_delete_playlist;
+
   /// No description provided for @song_playlist.
   ///
   /// In en, this message translates to:

@@ -122,6 +122,8 @@
   "retry": "Retry",
   "favorite_playlist": "Collect Playlists",
   "no_favorite_playlist": "Cancel Collection",
+  "delete_playlist": "Delete Playlists",
+  "ask_delete_playlist": "Delete [%s] Playlist?",
   "song_playlist": "Song PlayList",
   "unknown_title": "Unknown Title",
   "unknown_artist": "Unknown Artist",

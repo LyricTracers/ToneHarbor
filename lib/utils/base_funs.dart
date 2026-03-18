@@ -392,6 +392,41 @@ void showCreatePlaylistDialog(
   );
 }
 
+void showDeletePlaylistDialog(
+  WidgetRef ref,
+  String name,
+  String id,
+  ColorScheme colorScheme,
+  void Function(String id) ondelete,
+) {
+  var i10n = ref.read(l10nProvider);
+  showDialog(
+    context: ref.context,
+    builder: (context) => AlertDialog(
+      title: Text(
+        i10n.delete_playlist,
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      content: Text(i10n.ask_delete_playlist.replaceFirst("%s", name)),
+      actions: [
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          label: Text(i10n.cancel),
+        ),
+        ElevatedButton.icon(
+          onPressed: () {
+            ondelete(id);
+            Navigator.of(context).pop();
+          },
+          label: Text("确定"),
+        ),
+      ],
+    ),
+  );
+}
+
 Future<void> loadMore<T>({
   required WidgetRef ref,
   required ValueNotifier<bool> isLoadingMore,

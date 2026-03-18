@@ -8,7 +8,7 @@ import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_station/playlist_list.dart';
 import 'package:toneharbor/models/audio_station/sorted_playlist_state.dart';
 import 'package:toneharbor/providers/providers.dart';
-import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
 
@@ -152,6 +152,7 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
     }
 
     final isLoadingMore = useState(false);
+    final nameController = useTextEditingController();
     useEffect(() {
       void onScroll() {
         if (!scrollController.hasClients) return;
@@ -182,6 +183,56 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
       scrollController.addListener(onScroll);
       return () => scrollController.removeListener(onScroll);
     }, [scrollController]);
+
+    void callBackAddPlaylists(String name) async {
+      try {
+        ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+        var result = await ref
+            .read(playlistStateProvider.notifier)
+            .createPlaylist(name: name);
+        if (result.success) {
+          await clearCacheByGroupKey(groupKey: "playlist");
+          ref.invalidate(playlistResponseProvider);
+        }
+      } catch (e) {
+        if (context.mounted) {
+          if (e is AudioStationException) {
+            showSnackBar(e.message, context, colorScheme.secondary);
+          } else {
+            showSnackBar(e.toString(), context, colorScheme.secondary);
+          }
+        }
+      } finally {
+        ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+      }
+    }
+
+    void callBackDeletePlayLists(String id) async {
+      try {
+        ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+        var result = await ref
+            .read(playlistStateProvider.notifier)
+            .deletePlaylist(id: id);
+        if (result.success) {
+          ref
+              .read(favoritePlaylistStateProvider.notifier)
+              .removeFavoritePlaylist(id);
+          await clearCacheByGroupKey(groupKey: "playlist");
+          ref.invalidate(playlistResponseProvider);
+        }
+      } catch (e) {
+        if (context.mounted) {
+          if (e is AudioStationException) {
+            showSnackBar(e.message, context, colorScheme.secondary);
+          } else {
+            showSnackBar(e.toString(), context, colorScheme.secondary);
+          }
+        }
+      } finally {
+        ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+      }
+    }
+
     return Column(
       children: [
         _buildAppBar(context, ref, colorScheme, total),
@@ -214,6 +265,8 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                       entriesBuilder: () {
                         var playlistId = data.playlists[index].id;
                         var title = data.playlists[index].name;
+                        var personalState =
+                            data.playlists[index].library == "personal";
                         var favoritePlaylistNotifier = ref.read(
                           favoritePlaylistStateProvider.notifier,
                         );
@@ -223,7 +276,6 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                           MenuHeader(text: data.playlists[index].name),
                           MenuDivider(),
                           MenuItem(
-                            value: data.playlists[index],
                             label: Text(
                               isFavorite
                                   ? l10n.no_favorite_playlist
@@ -231,8 +283,8 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                             ),
                             icon: Icon(
                               isFavorite
-                                  ? Icons.favorite_border
-                                  : Icons.favorite,
+                                  ? Icons.favorite_border_rounded
+                                  : Icons.favorite_rounded,
                             ),
                             onSelected: (value) {
                               if (isFavorite) {
@@ -247,6 +299,32 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                               }
                             },
                           ),
+                          MenuItem(
+                            label: Text(l10n.create_playlist),
+                            icon: Icon(Icons.create_rounded),
+                            onSelected: (value) {
+                              showCreatePlaylistDialog(
+                                ref,
+                                nameController,
+                                colorScheme,
+                                callBackAddPlaylists,
+                              );
+                            },
+                          ),
+                          if (personalState)
+                            MenuItem(
+                              label: Text(l10n.delete_playlist),
+                              icon: Icon(Icons.delete_rounded),
+                              onSelected: (value) {
+                                showDeletePlaylistDialog(
+                                  ref,
+                                  title,
+                                  playlistId,
+                                  colorScheme,
+                                  callBackDeletePlayLists,
+                                );
+                              },
+                            ),
                         ];
                       },
                       padding: const EdgeInsets.all(8.0),

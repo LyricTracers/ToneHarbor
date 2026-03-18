@@ -372,6 +372,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get no_favorite_playlist => '取消收藏';
 
   @override
+  String get delete_playlist => '删除歌单';
+
+  @override
+  String get ask_delete_playlist => '确定删除[%s]歌单吗？';
+
+  @override
   String get song_playlist => '歌单';
 
   @override

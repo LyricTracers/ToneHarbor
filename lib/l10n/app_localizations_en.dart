@@ -386,6 +386,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get no_favorite_playlist => 'Cancel Collection';
 
   @override
+  String get delete_playlist => 'Delete Playlists';
+
+  @override
+  String get ask_delete_playlist => 'Delete [%s] Playlist?';
+
+  @override
   String get song_playlist => 'Song PlayList';
 
   @override
