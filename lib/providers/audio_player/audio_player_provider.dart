@@ -219,16 +219,22 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
 
     if (removeIndex == -1) return;
 
-    state = state.copyWith(
-      tracks: List.of(state.tracks)..removeAt(removeIndex),
-    );
+    final newTracks = List.of(state.tracks)..removeAt(removeIndex);
+
+    final newCurrentIndex = removeIndex < state.currentIndex
+        ? state.currentIndex - 1
+        : (removeIndex == state.currentIndex
+              ? min(state.currentIndex, newTracks.length - 1)
+              : state.currentIndex);
+
+    state = state.copyWith(tracks: newTracks, currentIndex: newCurrentIndex);
 
     await audioPlayer.removeTrack(removeIndex);
 
     await _updatePlayerState(
       AudioPlayerStateTableCompanion(
         tracks: Value(state.tracks),
-        currentIndex: Value(max(state.currentIndex, 0)),
+        currentIndex: Value(state.currentIndex),
       ),
     );
   }
