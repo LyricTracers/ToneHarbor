@@ -217,10 +217,11 @@ class HomeLayout extends BaseBgLayout {
                                       globalPosition: detail.globalPosition,
                                       items: [
                                         PopupMenuItem(
-                                          height: 20,
+                                          height: 30,
                                           enabled: false,
                                           child: Text(
                                             item.title,
+                                            maxLines: 1,
                                             style: const TextStyle(
                                               fontSize: 13,
                                             ),
@@ -228,7 +229,7 @@ class HomeLayout extends BaseBgLayout {
                                         ),
                                         PopupMenuDivider(),
                                         PopupMenuItem(
-                                          height: 20,
+                                          height: 25,
                                           child: Row(
                                             children: [
                                               Icon(
