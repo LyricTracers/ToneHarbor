@@ -261,6 +261,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get my_favorite => '我的收藏';
 
   @override
+  String get favorite => '收藏';
+
+  @override
   String get more => '查看更多';
 
   @override

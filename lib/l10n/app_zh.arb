@@ -108,6 +108,7 @@
   "input_song_artist": "输入歌曲歌手",
   "favorite_playlist": "收藏歌单",
   "no_favorite_playlist": "取消收藏",
+  "favorite": "收藏",
   "delete_playlist": "删除歌单",
   "ask_delete_playlist": "确定删除[%s]歌单吗？",
   "sync": "同步",

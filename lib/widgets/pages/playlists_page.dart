@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/playlist_list.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
@@ -16,12 +17,14 @@ class _PlaylistItemWidget extends HookConsumerWidget {
   final ColorScheme colorScheme;
   final int index;
   final bool isFavorite;
+  final AppLocalizations l10n;
 
   const _PlaylistItemWidget({
     required this.index,
     required this.playlists,
     required this.colorScheme,
     required this.isFavorite,
+    required this.l10n,
   });
   static const double itemHeight = 44.0;
 
@@ -48,7 +51,7 @@ class _PlaylistItemWidget extends HookConsumerWidget {
                   ),
                 ),
                 child: Text(
-                  "收藏",
+                  l10n.favorite,
                   style: TextStyle(
                     color: colorScheme.onPrimary,
                     fontSize: 8,
@@ -363,6 +366,7 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                       playlists: playlists,
                       colorScheme: colorScheme,
                       isFavorite: isFavorite,
+                      l10n: l10n,
                     ),
                   );
                 },

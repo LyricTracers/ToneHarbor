@@ -602,6 +602,12 @@ abstract class AppLocalizations {
   /// **'My Favorite'**
   String get my_favorite;
 
+  /// No description provided for @favorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite'**
+  String get favorite;
+
   /// No description provided for @more.
   ///
   /// In en, this message translates to:
