@@ -3,7 +3,6 @@ import "package:flutter_hooks/flutter_hooks.dart";
 import "package:go_router/go_router.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
 import "package:toneharbor/models/audio_player/tone_harbor_track.dart";
-import "package:toneharbor/providers/audio_player/lyrics_cache_provider.dart";
 import "package:toneharbor/providers/providers.dart";
 import "package:toneharbor/services/audio_player/audio_player.dart";
 import "package:toneharbor/utils/base_funs.dart";
@@ -127,7 +126,7 @@ class PlayingDetailLayout extends BaseBgLayout {
         if (playingSubContent.value != PlayingSubContent.none)
           Positioned.fill(
             child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
+              behavior: HitTestBehavior.opaque,
               onTap: () {
                 playingSubContent.value = PlayingSubContent.none;
               },

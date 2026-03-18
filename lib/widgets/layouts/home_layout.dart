@@ -315,7 +315,7 @@ class HomeLayout extends BaseBgLayout {
         if (isPlaylistPage.value)
           Positioned.fill(
             child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
+              behavior: HitTestBehavior.opaque,
               onTap: () {
                 isPlaylistPage.value = false;
               },
