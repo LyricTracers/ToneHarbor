@@ -152,7 +152,7 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
         final maxScroll = scrollController.position.maxScrollExtent;
         final currentScroll = scrollController.offset;
 
-        final state = ref.read(playlistResponseProvider());
+        final state = ref.read(baseProvider);
         final currentPlaylists = state.value?.data?.playlists ?? [];
         final currentTotal = state.value?.data?.total ?? 0;
         final currentHasMore = currentPlaylists.length < currentTotal;
