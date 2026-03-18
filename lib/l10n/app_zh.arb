@@ -106,6 +106,8 @@
   "artist": "歌手",
   "input_song_title": "输入歌曲标题",
   "input_song_artist": "输入歌曲歌手",
+  "favorite_playlist": "收藏歌单",
+  "no_favorite_playlist": "取消收藏",
   "sync": "同步",
   "restore_default": "恢复默认",
   "retry": "重试",

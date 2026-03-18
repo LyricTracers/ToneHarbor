@@ -380,6 +380,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Retry';
 
   @override
+  String get favorite_playlist => 'Collect Playlists';
+
+  @override
+  String get no_favorite_playlist => 'Cancel Collection';
+
+  @override
   String get song_playlist => 'Song PlayList';
 
   @override

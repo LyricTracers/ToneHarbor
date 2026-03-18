@@ -29,6 +29,10 @@ class FavoritePlaylistStateNotifier extends _$FavoritePlaylistStateNotifier {
   }
 
   Future<void> addFavoritePlaylist(String playlistId, String title) async {
+    if (isFavoritePlaylist(playlistId)) {
+      return;
+    }
+
     state = state.copyWith(
       playlists: [
         ...state.playlists,
@@ -49,6 +53,10 @@ class FavoritePlaylistStateNotifier extends _$FavoritePlaylistStateNotifier {
   }
 
   Future<void> removeFavoritePlaylist(String playlistId) async {
+    if (!isFavoritePlaylist(playlistId)) {
+      return;
+    }
+
     state = state.copyWith(
       playlists: state.playlists
           .where((item) => item.playlistId != playlistId)

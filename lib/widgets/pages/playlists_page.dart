@@ -4,7 +4,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_station/playlist_list.dart';
+import 'package:toneharbor/models/audio_station/sorted_playlist_state.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
@@ -140,10 +142,15 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
   Widget build(BuildContext context, WidgetRef ref) {
     var colorScheme = getColorSchemeWhenReady(ref);
     final scrollController = useScrollController();
-    var playlistsResponse = ref.watch(baseProvider);
-    final playlists = playlistsResponse.value?.data?.playlists ?? [];
-    final total = playlistsResponse.value?.data?.total ?? 0;
-    final hasMore = playlists.length < total;
+    final l10n = ref.watch(l10nProvider);
+    var sortedPlayList = ref.watch(
+      sortedPlaylistProvider(baseProvider: baseProvider),
+    );
+    var total = 0;
+    if (sortedPlayList is SortedPlaylistStateData) {
+      total = sortedPlayList.total;
+    }
+
     final isLoadingMore = useState(false);
     useEffect(() {
       void onScroll() {
@@ -152,19 +159,23 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
         final maxScroll = scrollController.position.maxScrollExtent;
         final currentScroll = scrollController.offset;
 
-        final state = ref.read(baseProvider);
-        final currentPlaylists = state.value?.data?.playlists ?? [];
-        final currentTotal = state.value?.data?.total ?? 0;
-        final currentHasMore = currentPlaylists.length < currentTotal;
+        final currentSortedPlayList = ref.read(
+          sortedPlaylistProvider(baseProvider: baseProvider),
+        );
 
-        if (currentScroll >= maxScroll * 0.8 &&
-            currentHasMore &&
-            !isLoadingMore.value) {
-          loadMore(
-            ref: ref,
-            isLoadingMore: isLoadingMore,
-            baseProvider: baseProvider,
-          );
+        if (currentSortedPlayList is SortedPlaylistStateData) {
+          final currentHasMore =
+              currentSortedPlayList.playlists.length <
+              currentSortedPlayList.total;
+          if (currentScroll >= maxScroll * 0.8 &&
+              currentHasMore &&
+              !isLoadingMore.value) {
+            loadMore(
+              ref: ref,
+              isLoadingMore: isLoadingMore,
+              baseProvider: baseProvider,
+            );
+          }
         }
       }
 
@@ -175,16 +186,18 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
       children: [
         _buildAppBar(context, ref, colorScheme, total),
         Expanded(
-          child: playlistsResponse.when(
+          child: sortedPlayList.when(
             data: (data) {
-              if (playlists.isEmpty) {
+              if (data.playlists.isEmpty) {
                 return const Center(child: Text('No playlists'));
               }
               return ListView.builder(
                 controller: scrollController,
-                itemCount: playlists.length + (hasMore ? 1 : 0),
+                itemCount:
+                    data.playlists.length +
+                    (data.playlists.length < data.total ? 1 : 0),
                 itemBuilder: (context, index) {
-                  if (index == playlists.length) {
+                  if (index == data.playlists.length) {
                     return const Padding(
                       padding: EdgeInsets.all(16),
                       child: Center(
@@ -199,19 +212,23 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                   return ContextMenuRegion(
                     contextMenu: ContextMenu(
                       entriesBuilder: () {
-                        var playlistId = playlists[index].id;
-                        var title = playlists[index].name;
+                        var playlistId = data.playlists[index].id;
+                        var title = data.playlists[index].name;
                         var favoritePlaylistNotifier = ref.read(
                           favoritePlaylistStateProvider.notifier,
                         );
                         final isFavorite = favoritePlaylistNotifier
                             .isFavoritePlaylist(playlistId);
                         return <ContextMenuEntry>[
-                          MenuHeader(text: playlists[index].name),
+                          MenuHeader(text: data.playlists[index].name),
                           MenuDivider(),
                           MenuItem(
-                            value: playlists[index],
-                            label: Text(isFavorite ? '取消置顶' : '置顶'),
+                            value: data.playlists[index],
+                            label: Text(
+                              isFavorite
+                                  ? l10n.no_favorite_playlist
+                                  : l10n.favorite_playlist,
+                            ),
                             icon: Icon(
                               isFavorite
                                   ? Icons.favorite_border
@@ -236,7 +253,7 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                     ),
                     child: _PlaylistItemWidget(
                       index: index,
-                      playlists: playlists,
+                      playlists: data.playlists,
                       colorScheme: colorScheme,
                     ),
                   );
@@ -244,9 +261,7 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
               );
             },
             loading: () => const Center(child: AudioEqualizerLoader()),
-            error: (error, stackTrace) {
-              return buildErrorView(context, ref, colorScheme, () {});
-            },
+            error: () => const SizedBox.shrink(),
           ),
         ),
       ],

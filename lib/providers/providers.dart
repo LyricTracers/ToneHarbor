@@ -5,6 +5,7 @@ export 'audio_station/folders_provider.dart';
 export 'audio_station/info_provider.dart';
 export 'audio_station/songs_provider.dart';
 export 'audio_station/playlist_provider.dart';
+export 'audio_station/sorted_playlist_provider.dart';
 export 'audio_station/download_provider.dart';
 export 'audio_station/search_provider.dart';
 export 'audio_player/favorite_playlist_provider.dart';

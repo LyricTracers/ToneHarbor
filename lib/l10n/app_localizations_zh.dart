@@ -366,6 +366,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get retry => '重试';
 
   @override
+  String get favorite_playlist => '收藏歌单';
+
+  @override
+  String get no_favorite_playlist => '取消收藏';
+
+  @override
   String get song_playlist => '歌单';
 
   @override

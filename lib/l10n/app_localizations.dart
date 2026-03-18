@@ -812,6 +812,18 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get retry;
 
+  /// No description provided for @favorite_playlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect Playlists'**
+  String get favorite_playlist;
+
+  /// No description provided for @no_favorite_playlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Collection'**
+  String get no_favorite_playlist;
+
   /// No description provided for @song_playlist.
   ///
   /// In en, this message translates to:
