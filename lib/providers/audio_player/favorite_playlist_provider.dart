@@ -76,6 +76,6 @@ class FavoritePlaylistStateNotifier extends _$FavoritePlaylistStateNotifier {
   }
 
   bool isFavoritePlaylist(String playlistId) {
-    return state.playlists.any((item) => item.playlistId == playlistId);
+    return state.containsPlaylistId(playlistId);
   }
 }

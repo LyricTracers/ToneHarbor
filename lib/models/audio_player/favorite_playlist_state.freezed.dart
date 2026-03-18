@@ -202,8 +202,8 @@ return $default(_that.playlists);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _FavoritePlaylistState implements FavoritePlaylistState {
-  const _FavoritePlaylistState({required final  List<FavoritePlaylistItem> playlists}): _playlists = playlists;
+class _FavoritePlaylistState extends FavoritePlaylistState {
+  const _FavoritePlaylistState({required final  List<FavoritePlaylistItem> playlists}): _playlists = playlists,super._();
   factory _FavoritePlaylistState.fromJson(Map<String, dynamic> json) => _$FavoritePlaylistStateFromJson(json);
 
  final  List<FavoritePlaylistItem> _playlists;

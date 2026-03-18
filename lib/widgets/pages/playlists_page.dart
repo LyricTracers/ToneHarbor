@@ -6,7 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_station/playlist_list.dart';
-import 'package:toneharbor/models/audio_station/sorted_playlist_state.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
@@ -16,11 +15,13 @@ class _PlaylistItemWidget extends HookConsumerWidget {
   final List<PlaylistInfo> playlists;
   final ColorScheme colorScheme;
   final int index;
+  final bool isFavorite;
 
   const _PlaylistItemWidget({
     required this.index,
     required this.playlists,
     required this.colorScheme,
+    required this.isFavorite,
   });
   static const double itemHeight = 44.0;
 
@@ -32,53 +33,85 @@ class _PlaylistItemWidget extends HookConsumerWidget {
     return MouseRegion(
       onEnter: (event) => isHovered.value = true,
       onExit: (event) => isHovered.value = false,
-      child: Container(
-        height: itemHeight,
-        color: isHovered.value
-            ? colorScheme.outline.withValues(alpha: .1)
-            : Colors.transparent,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () async {
-            context.push(
-              "/songs/${Uri.encodeComponent(playlistItem.name)}",
-              extra: (
-                playlistDetailProvider(id: playlistItem.id),
-                -1,
-                SongsPageSortAction.all,
-              ),
-            );
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  '${index + 1}',
-                  style: TextStyle(fontSize: 14, color: colorScheme.primary),
+      child: Stack(
+        children: [
+          if (isFavorite)
+            Positioned(
+              top: 0,
+              left: 0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary,
+                  borderRadius: const BorderRadius.only(
+                    bottomRight: Radius.circular(8),
+                  ),
                 ),
-                const SizedBox(width: 15),
-                ...[
-                  Icon(
-                    personalState
-                        ? Icons.folder_open_rounded
-                        : Icons.folder_shared_rounded,
-                    size: 20,
+                child: Text(
+                  "收藏",
+                  style: TextStyle(
+                    color: colorScheme.onPrimary,
+                    fontSize: 8,
+                    fontWeight: FontWeight.bold,
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      playlistItem.name,
-                      style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+          Container(
+            height: itemHeight,
+            color: isHovered.value
+                ? colorScheme.outline.withValues(alpha: .1)
+                : Colors.transparent,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () async {
+                context.push(
+                  "/songs/${Uri.encodeComponent(playlistItem.name)}",
+                  extra: (
+                    playlistDetailProvider(id: playlistItem.id),
+                    -1,
+                    SongsPageSortAction.all,
+                  ),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 4,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${index + 1}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: colorScheme.primary,
+                      ),
                     ),
-                  ),
-                ],
-              ],
+                    const SizedBox(width: 15),
+                    ...[
+                      Icon(
+                        personalState
+                            ? Icons.folder_open_rounded
+                            : Icons.folder_shared_rounded,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 1,
+                        child: Text(
+                          playlistItem.name,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -143,13 +176,10 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
     var colorScheme = getColorSchemeWhenReady(ref);
     final scrollController = useScrollController();
     final l10n = ref.watch(l10nProvider);
-    var sortedPlayList = ref.watch(
-      sortedPlaylistProvider(baseProvider: baseProvider),
-    );
-    var total = 0;
-    if (sortedPlayList is SortedPlaylistStateData) {
-      total = sortedPlayList.total;
-    }
+    var playlistsState = ref.watch(baseProvider);
+    final playlists = playlistsState.value?.data?.playlists ?? [];
+    final total = playlistsState.value?.data?.total ?? 0;
+    final favoritePlaylistsState = ref.watch(favoritePlaylistStateProvider);
 
     final isLoadingMore = useState(false);
     final nameController = useTextEditingController();
@@ -160,23 +190,19 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
         final maxScroll = scrollController.position.maxScrollExtent;
         final currentScroll = scrollController.offset;
 
-        final currentSortedPlayList = ref.read(
-          sortedPlaylistProvider(baseProvider: baseProvider),
-        );
+        final state = ref.read(baseProvider);
+        final currentPlaylists = state.value?.data?.playlists ?? [];
+        final currentTotal = state.value?.data?.total ?? 0;
+        final currentHasMore = currentPlaylists.length < currentTotal;
 
-        if (currentSortedPlayList is SortedPlaylistStateData) {
-          final currentHasMore =
-              currentSortedPlayList.playlists.length <
-              currentSortedPlayList.total;
-          if (currentScroll >= maxScroll * 0.8 &&
-              currentHasMore &&
-              !isLoadingMore.value) {
-            loadMore(
-              ref: ref,
-              isLoadingMore: isLoadingMore,
-              baseProvider: baseProvider,
-            );
-          }
+        if (currentScroll >= maxScroll * 0.8 &&
+            currentHasMore &&
+            !isLoadingMore.value) {
+          loadMore(
+            ref: ref,
+            isLoadingMore: isLoadingMore,
+            baseProvider: baseProvider,
+          );
         }
       }
 
@@ -237,18 +263,17 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
       children: [
         _buildAppBar(context, ref, colorScheme, total),
         Expanded(
-          child: sortedPlayList.when(
+          child: playlistsState.when(
             data: (data) {
-              if (data.playlists.isEmpty) {
+              if (playlists.isEmpty) {
                 return const Center(child: Text('No playlists'));
               }
               return ListView.builder(
                 controller: scrollController,
                 itemCount:
-                    data.playlists.length +
-                    (data.playlists.length < data.total ? 1 : 0),
+                    playlists.length + (playlists.length < total ? 1 : 0),
                 itemBuilder: (context, index) {
-                  if (index == data.playlists.length) {
+                  if (index == playlists.length) {
                     return const Padding(
                       padding: EdgeInsets.all(16),
                       child: Center(
@@ -260,20 +285,24 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                       ),
                     );
                   }
+                  final isFavorite = favoritePlaylistsState.containsPlaylistId(
+                    playlists[index].id,
+                  );
+
                   return ContextMenuRegion(
                     contextMenu: ContextMenu(
                       entriesBuilder: () {
-                        var playlistId = data.playlists[index].id;
-                        var title = data.playlists[index].name;
+                        var playlistId = playlists[index].id;
+                        var title = playlists[index].name;
                         var personalState =
-                            data.playlists[index].library == "personal";
+                            playlists[index].library == "personal";
                         var favoritePlaylistNotifier = ref.read(
                           favoritePlaylistStateProvider.notifier,
                         );
                         final isFavorite = favoritePlaylistNotifier
                             .isFavoritePlaylist(playlistId);
                         return <ContextMenuEntry>[
-                          MenuHeader(text: data.playlists[index].name),
+                          MenuHeader(text: playlists[index].name),
                           MenuDivider(),
                           MenuItem(
                             label: Text(
@@ -331,15 +360,16 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                     ),
                     child: _PlaylistItemWidget(
                       index: index,
-                      playlists: data.playlists,
+                      playlists: playlists,
                       colorScheme: colorScheme,
+                      isFavorite: isFavorite,
                     ),
                   );
                 },
               );
             },
             loading: () => const Center(child: AudioEqualizerLoader()),
-            error: () => const SizedBox.shrink(),
+            error: (error, s) => const SizedBox.shrink(),
           ),
         ),
       ],
