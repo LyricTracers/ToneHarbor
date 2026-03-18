@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/favorite_playlist_state.dart';
 import 'package:toneharbor/models/database/database.dart';
@@ -16,7 +17,11 @@ class FavoritePlaylistStateNotifier extends _$FavoritePlaylistStateNotifier {
   Future<void> _syncSavedState() async {
     final database = ref.read(appDatabaseProvider);
     final query = database.select(database.favoritePlaylistStateTable);
-    final items = await query.get();
+    final items =
+        await (query..orderBy([
+              (s) => OrderingTerm(expression: s.id, mode: OrderingMode.desc),
+            ]))
+            .get();
     final playlists = items
         .map(
           (item) => FavoritePlaylistItem(
@@ -35,8 +40,8 @@ class FavoritePlaylistStateNotifier extends _$FavoritePlaylistStateNotifier {
 
     state = state.copyWith(
       playlists: [
-        ...state.playlists,
         FavoritePlaylistItem(playlistId: playlistId, title: title),
+        ...state.playlists,
       ],
     );
 
