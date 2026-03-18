@@ -27,7 +27,6 @@ class HomeLayout extends BaseBgLayout {
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
     final colorScheme = getColorSchemeWhenReady(ref);
     final l10n = ref.watch(l10nProvider);
-    logger.i("currentPath:${currentPath}");
     final isPlaylistPage = useState(false);
     final allMusicPath = '/songs/${Uri.encodeComponent(l10n.all_music)}';
     final allFoldersPath = '/folders/';
@@ -276,7 +275,7 @@ class HomeLayout extends BaseBgLayout {
                                             id: item.playlistId,
                                           ),
                                           -1,
-                                          SongsPageSortAction.all,
+                                          SongsPageSortAction.none,
                                         ),
                                       );
                                     },

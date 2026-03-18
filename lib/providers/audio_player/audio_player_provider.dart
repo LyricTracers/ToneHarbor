@@ -168,8 +168,16 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
   }
 
   Future<void> addCollections(List<String> collectionIds) async {
+    final newCollections = collectionIds
+        .where((id) => !state.collections.contains(id))
+        .toList();
+
+    if (newCollections.isEmpty) {
+      return;
+    }
+
     state = state.copyWith(
-      collections: [...state.collections, ...collectionIds],
+      collections: [...state.collections, ...newCollections],
     );
 
     await _updatePlayerState(
@@ -178,15 +186,27 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
   }
 
   Future<void> addCollection(String collectionId) async {
-    await addCollections([collectionId]);
+    if (state.collections.contains(collectionId)) {
+      return;
+    }
+
+    state = state.copyWith(collections: [...state.collections, collectionId]);
+
+    await _updatePlayerState(
+      AudioPlayerStateTableCompanion(collections: Value(state.collections)),
+    );
   }
 
   Future<void> removeCollections(List<String> collectionIds) async {
-    state = state.copyWith(
-      collections: state.collections
-          .where((element) => !collectionIds.contains(element))
-          .toList(),
-    );
+    final newCollections = state.collections
+        .where((element) => !collectionIds.contains(element))
+        .toList();
+
+    if (newCollections.length == state.collections.length) {
+      return;
+    }
+
+    state = state.copyWith(collections: newCollections);
 
     await _updatePlayerState(
       AudioPlayerStateTableCompanion(collections: Value(state.collections)),
@@ -194,7 +214,19 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
   }
 
   Future<void> removeCollection(String collectionId) async {
-    await removeCollections([collectionId]);
+    if (!state.collections.contains(collectionId)) {
+      return;
+    }
+
+    state = state.copyWith(
+      collections: state.collections
+          .where((element) => element != collectionId)
+          .toList(),
+    );
+
+    await _updatePlayerState(
+      AudioPlayerStateTableCompanion(collections: Value(state.collections)),
+    );
   }
 
   Future<void> addTracksAtFirst(

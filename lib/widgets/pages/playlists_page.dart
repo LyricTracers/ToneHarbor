@@ -73,7 +73,7 @@ class _PlaylistItemWidget extends HookConsumerWidget {
                   extra: (
                     playlistDetailProvider(id: playlistItem.id),
                     -1,
-                    SongsPageSortAction.all,
+                    SongsPageSortAction.none,
                   ),
                 );
               },
