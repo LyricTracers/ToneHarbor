@@ -396,7 +396,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                                   },
                                 ),
                                 MenuItem(
-                                  label: Text(l10n.next_song),
+                                  label: Text(l10n.play_queue),
                                   onSelected: (value) async {
                                     await ref
                                         .read(audioPlayerStateProvider.notifier)
