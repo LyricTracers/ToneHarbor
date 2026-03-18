@@ -210,11 +210,9 @@ class PlaylistPage extends HookConsumerWidget {
                     playingText: i10n.playing,
                     deleteText: i10n.delete,
                     onTap: () => audioPlayer.jumpTo(index),
-                    onDelete: isDefault
-                        ? null
-                        : () => ref
-                              .read(audioPlayerStateProvider.notifier)
-                              .removeTrack(track.id, index: index),
+                    onDelete: () => ref
+                        .read(audioPlayerStateProvider.notifier)
+                        .removeTrack(track.id, index: index),
                   ),
                 );
               },
