@@ -26,6 +26,8 @@ class AddToPlaylistsPage extends HookConsumerWidget {
     final total = playlistsState.value?.data?.total ?? 0;
     final hasMore = playlists.length < total;
     final isLoadingMore = useState(false);
+    final l10n = ref.watch(l10nProvider);
+    final favoritePlaylistsState = ref.watch(favoritePlaylistStateProvider);
 
     useEffect(() {
       void onScroll() {
@@ -139,65 +141,103 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                         }
 
                         final playlist = playlists[index];
+                        final isFavorite = favoritePlaylistsState
+                            .containsPlaylistId(playlists[index].id);
+                        var personalState =
+                            playlists[index].library == "personal";
                         return RepaintBoundary(
-                          child: ListTile(
-                            minTileHeight: 36,
-                            contentPadding: const EdgeInsets.only(
-                              left: 10,
-                              right: 10,
-                            ),
-                            horizontalTitleGap: 10,
-                            leading: IconButton(
-                              icon: Icon(Icons.folder_rounded, size: 18),
-                              onPressed: () {},
-                              tooltip: '${index + 1}',
-                            ),
-                            title: Text(
-                              playlist.name,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            onTap: () async {
-                              ref
-                                  .read(requestFlagProvider.notifier)
-                                  .setRequestFlag(true);
-                              try {
-                                var result = await ref
-                                    .read(playlistStateProvider.notifier)
-                                    .addSongsToPlaylist(
-                                      id: playlist.id,
-                                      songIds: songIds,
-                                      skipDuplicate: skipDuplicate.value,
-                                    );
-                                if (result.success && context.mounted) {
-                                  showSnackBar(
-                                    i10n.addsong_to_playlist_success
-                                        .replaceFirst("%s", playlist.name),
-                                    context,
-                                    colorScheme.secondary,
-                                  );
-                                }
-                              } catch (e) {
-                                logger.e("Error: $e");
-                                if (context.mounted) {
-                                  if (e is AudioStationException) {
-                                    showSnackBar(
-                                      e.message,
-                                      context,
-                                      colorScheme.secondary,
-                                    );
+                          child: Stack(
+                            children: [
+                              if (isFavorite)
+                                Positioned(
+                                  top: 0,
+                                  left: 0,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.primary,
+                                      borderRadius: const BorderRadius.only(
+                                        bottomRight: Radius.circular(8),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      l10n.favorite,
+                                      style: TextStyle(
+                                        color: colorScheme.onPrimary,
+                                        fontSize: 8,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ListTile(
+                                minTileHeight: 36,
+                                contentPadding: const EdgeInsets.only(
+                                  left: 10,
+                                  right: 10,
+                                ),
+                                horizontalTitleGap: 10,
+                                leading: IconButton(
+                                  icon: Icon(
+                                    personalState
+                                        ? Icons.folder_open_rounded
+                                        : Icons.folder_shared_rounded,
+                                    size: 18,
+                                  ),
+                                  onPressed: () {},
+                                  tooltip: '${index + 1}',
+                                ),
+                                title: Text(
+                                  playlist.name,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                onTap: () async {
+                                  ref
+                                      .read(requestFlagProvider.notifier)
+                                      .setRequestFlag(true);
+                                  try {
+                                    var result = await ref
+                                        .read(playlistStateProvider.notifier)
+                                        .addSongsToPlaylist(
+                                          id: playlist.id,
+                                          songIds: songIds,
+                                          skipDuplicate: skipDuplicate.value,
+                                        );
+                                    if (result.success && context.mounted) {
+                                      showSnackBar(
+                                        i10n.addsong_to_playlist_success
+                                            .replaceFirst("%s", playlist.name),
+                                        context,
+                                        colorScheme.secondary,
+                                      );
+                                    }
+                                  } catch (e) {
+                                    logger.e("Error: $e");
+                                    if (context.mounted) {
+                                      if (e is AudioStationException) {
+                                        showSnackBar(
+                                          e.message,
+                                          context,
+                                          colorScheme.secondary,
+                                        );
+                                      }
+                                    }
+                                  } finally {
+                                    ref
+                                        .read(requestFlagProvider.notifier)
+                                        .setRequestFlag(false);
                                   }
-                                }
-                              } finally {
-                                ref
-                                    .read(requestFlagProvider.notifier)
-                                    .setRequestFlag(false);
-                              }
-                            },
+                                },
+                              ),
+                            ],
                           ),
                         );
                       },
