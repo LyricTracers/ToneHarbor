@@ -379,6 +379,35 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                                 }
                               },
                             ),
+                            MenuItem.submenu(
+                              label: Text("添加到"),
+                              icon: Icon(Icons.add_box_rounded),
+                              items: [
+                                MenuItem(
+                                  label: Text("下一首"),
+                                  onSelected: (value) async {
+                                    await ref
+                                        .read(audioPlayerStateProvider.notifier)
+                                        .addTracksAtFirst(
+                                          [item].asTrackList(),
+                                          allowDuplicates: true,
+                                        );
+                                  },
+                                ),
+                                MenuItem(
+                                  label: Text("播放队列"),
+                                  onSelected: (value) async {
+                                    await ref
+                                        .read(audioPlayerStateProvider.notifier)
+                                        .addTracks([item].asTrackList());
+                                  },
+                                ),
+                                MenuItem(
+                                  label: Text("歌单"),
+                                  onSelected: (value) {},
+                                ),
+                              ],
+                            ),
                           ];
                         },
                         padding: const EdgeInsets.all(8.0),

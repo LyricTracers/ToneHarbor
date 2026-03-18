@@ -214,7 +214,7 @@ class PlaylistPage extends HookConsumerWidget {
                         ? null
                         : () => ref
                               .read(audioPlayerStateProvider.notifier)
-                              .removeTrack(track.id),
+                              .removeTrack(track.id, index: index),
                   ),
                 );
               },

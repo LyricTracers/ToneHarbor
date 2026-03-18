@@ -213,14 +213,17 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
     );
   }
 
-  Future<void> removeTrack(String trackId) async {
-    final index = state.tracks.indexWhere((element) => element.id == trackId);
+  Future<void> removeTrack(String trackId, {int? index}) async {
+    final removeIndex =
+        index ?? state.tracks.indexWhere((element) => element.id == trackId);
 
-    if (index == -1) return;
+    if (removeIndex == -1) return;
 
-    state = state.copyWith(tracks: List.of(state.tracks)..removeAt(index));
+    state = state.copyWith(
+      tracks: List.of(state.tracks)..removeAt(removeIndex),
+    );
 
-    await audioPlayer.removeTrack(index);
+    await audioPlayer.removeTrack(removeIndex);
 
     await _updatePlayerState(
       AudioPlayerStateTableCompanion(
