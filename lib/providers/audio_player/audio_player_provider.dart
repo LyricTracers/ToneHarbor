@@ -217,15 +217,13 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
     final removeIndex =
         index ?? state.tracks.indexWhere((element) => element.id == trackId);
 
-    if (removeIndex == -1) return;
+    if (removeIndex == -1 || removeIndex >= state.tracks.length) return;
 
-    final newTracks = List.of(state.tracks)..removeAt(removeIndex);
+    final newTracks = state.tracks.toList()..removeAt(removeIndex);
 
-    final newCurrentIndex = removeIndex < state.currentIndex
-        ? state.currentIndex - 1
-        : (removeIndex == state.currentIndex
-              ? min(state.currentIndex, newTracks.length - 1)
-              : state.currentIndex);
+    final newCurrentIndex = removeIndex <= state.currentIndex
+        ? max(state.currentIndex - 1, 0)
+        : min(state.currentIndex, newTracks.length - 1);
 
     state = state.copyWith(tracks: newTracks, currentIndex: newCurrentIndex);
 
