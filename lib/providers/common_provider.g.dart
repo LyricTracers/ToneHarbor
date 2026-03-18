@@ -373,7 +373,7 @@ abstract class _$AudioQualityNotifier extends $Notifier<AudioQuality> {
 final subContentProvider = SubContentProvider._();
 
 final class SubContentProvider
-    extends $NotifierProvider<SubContent, SubContentType> {
+    extends $NotifierProvider<SubContent, SubContentData> {
   SubContentProvider._()
     : super(
         from: null,
@@ -393,27 +393,27 @@ final class SubContentProvider
   SubContent create() => SubContent();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(SubContentType value) {
+  Override overrideWithValue(SubContentData value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<SubContentType>(value),
+      providerOverride: $SyncValueProvider<SubContentData>(value),
     );
   }
 }
 
-String _$subContentHash() => r'47566ddabec6be7489daf8d6fdfcd8430283a82a';
+String _$subContentHash() => r'78eca98a9d988716b5c00eb0c19fbe94c6a85614';
 
-abstract class _$SubContent extends $Notifier<SubContentType> {
-  SubContentType build();
+abstract class _$SubContent extends $Notifier<SubContentData> {
+  SubContentData build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<SubContentType, SubContentType>;
+    final ref = this.ref as $Ref<SubContentData, SubContentData>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<SubContentType, SubContentType>,
-              SubContentType,
+              AnyNotifier<SubContentData, SubContentData>,
+              SubContentData,
               Object?,
               Object?
             >;

@@ -211,24 +211,30 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                                           songIds: songIds,
                                           skipDuplicate: skipDuplicate.value,
                                         );
-                                    if (result.success && context.mounted) {
-                                      showSnackBar(
-                                        i10n.addsong_to_playlist_success
-                                            .replaceFirst("%s", playlist.name),
-                                        context,
-                                        colorScheme.secondary,
+                                    if (result.success) {
+                                      await clearCacheByGroupKey(
+                                        groupKey: "playlist",
                                       );
-                                    }
-                                  } catch (e) {
-                                    logger.e("Error: $e");
-                                    if (context.mounted) {
-                                      if (e is AudioStationException) {
+                                      ref.invalidate(playlistDetailProvider);
+                                      if (context.mounted) {
                                         showSnackBar(
-                                          e.message,
+                                          i10n.addsong_to_playlist_success
+                                              .replaceFirst(
+                                                "%s",
+                                                playlist.name,
+                                              ),
                                           context,
                                           colorScheme.secondary,
                                         );
                                       }
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      showSnackBarError(
+                                        e,
+                                        context,
+                                        colorScheme.secondary,
+                                      );
                                     }
                                   } finally {
                                     ref

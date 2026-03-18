@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -404,7 +405,16 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                                 ),
                                 MenuItem(
                                   label: Text("歌单"),
-                                  onSelected: (value) {},
+                                  onSelected: (value) {
+                                    ref
+                                        .read(subContentProvider.notifier)
+                                        .set(
+                                          SubContentData(
+                                            type: SubContentType.addToPlayLists,
+                                            extra: item.id,
+                                          ),
+                                        );
+                                  },
                                 ),
                               ],
                             ),

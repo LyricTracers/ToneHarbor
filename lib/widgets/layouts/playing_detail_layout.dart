@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:go_router/go_router.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
+import "package:toneharbor/models/audio_player/sub_content_state.dart";
 import "package:toneharbor/models/audio_player/tone_harbor_track.dart";
 import "package:toneharbor/providers/providers.dart";
 import "package:toneharbor/services/audio_player/audio_player.dart";
@@ -31,7 +32,7 @@ class PlayingDetailLayout extends BaseBgLayout {
       duration: const Duration(milliseconds: 100),
     );
     useEffect(() {
-      if (subContentState != SubContentType.none) {
+      if (subContentState.type != SubContentType.none) {
         animationController.forward();
       } else {
         animationController.reverse();
@@ -72,7 +73,12 @@ class PlayingDetailLayout extends BaseBgLayout {
                                   onPressed: () {
                                     ref
                                         .read(subContentProvider.notifier)
-                                        .set(SubContentType.addToPlayLists);
+                                        .set(
+                                          SubContentData(
+                                            type: SubContentType.addToPlayLists,
+                                            extra: activeTrack.id,
+                                          ),
+                                        );
                                   },
                                   icon: Icon(
                                     Icons.playlist_add_rounded,
@@ -114,29 +120,33 @@ class PlayingDetailLayout extends BaseBgLayout {
             BottomPlayer(showArrowType: ShowArrowType.down),
           ],
         ),
-        if (subContentState != SubContentType.none)
+
+        if (subContentState.type != SubContentType.none) ...[
           Positioned.fill(
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
-                ref.read(subContentProvider.notifier).set(SubContentType.none);
+                ref
+                    .read(subContentProvider.notifier)
+                    .set(SubContentData(type: SubContentType.none));
               },
               onLongPress: () {
-                ref.read(subContentProvider.notifier).set(SubContentType.none);
+                ref
+                    .read(subContentProvider.notifier)
+                    .set(SubContentData(type: SubContentType.none));
               },
             ),
           ),
-        if (subContentState != SubContentType.none)
           SlideTransition(
             position: slideAnimation,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                switch (subContentState) {
+                switch (subContentState.type) {
                   SubContentType.playList => PlaylistPage(),
                   SubContentType.songInfo => SizedBox(),
                   SubContentType.addToPlayLists => AddToPlaylistsPage([
-                    activeTrack.id,
+                    subContentState.extra ?? activeTrack.id,
                   ]),
                   SubContentType.updateLyrics => SizedBox(),
                   SubContentType.none => const SizedBox(),
@@ -144,6 +154,7 @@ class PlayingDetailLayout extends BaseBgLayout {
               ],
             ),
           ),
+        ],
       ],
     );
   }

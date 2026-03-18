@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -101,7 +102,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
     }, [artistController]);
 
     useEffect(() {
-      if (subContentState != SubContentType.none) {
+      if (subContentState.type != SubContentType.none) {
         animationController.forward();
       } else {
         animationController.reverse();
@@ -350,15 +351,19 @@ class SwitchLyricsLayout extends BaseBgLayout {
             ),
           ],
         ),
-        if (subContentState == SubContentType.playList) ...[
+        if (subContentState.type == SubContentType.playList) ...[
           Positioned.fill(
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
-                ref.read(subContentProvider.notifier).set(SubContentType.none);
+                ref
+                    .read(subContentProvider.notifier)
+                    .set(SubContentData(type: SubContentType.none));
               },
               onLongPress: () {
-                ref.read(subContentProvider.notifier).set(SubContentType.none);
+                ref
+                    .read(subContentProvider.notifier)
+                    .set(SubContentData(type: SubContentType.none));
               },
             ),
           ),

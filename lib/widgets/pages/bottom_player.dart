@@ -6,6 +6,7 @@ import 'package:lyricskit/lyricskit.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:toneharbor/hooks/use_progress.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -326,7 +327,9 @@ class BottomPlayer extends HookConsumerWidget {
                           logger.i("clider");
                           ref
                               .read(subContentProvider.notifier)
-                              .set(SubContentType.playList);
+                              .set(
+                                SubContentData(type: SubContentType.playList),
+                              );
                         },
                       ),
                       if (showArrowType != ShowArrowType.none)

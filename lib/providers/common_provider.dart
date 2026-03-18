@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_utils.dart';
@@ -164,11 +165,11 @@ enum SubContentType { none, playList, songInfo, addToPlayLists, updateLyrics }
 @keepAlive
 class SubContent extends _$SubContent {
   @override
-  SubContentType build() {
-    return SubContentType.none;
+  SubContentData build() {
+    return SubContentData(type: SubContentType.none);
   }
 
-  void set(SubContentType t) {
+  void set(SubContentData t) {
     state = t;
   }
 }

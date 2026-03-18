@@ -4,10 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/favorite_playlist_state.dart';
+import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
+import 'package:toneharbor/widgets/pages/add_to_playlists_page.dart';
 import 'package:toneharbor/widgets/pages/playlist_page.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
@@ -49,7 +51,7 @@ class HomeLayout extends BaseBgLayout {
     );
     final favoritePlaylist = ref.watch(favoritePlaylistStateProvider);
     useEffect(() {
-      if (subContentState != SubContentType.none) {
+      if (subContentState.type != SubContentType.none) {
         animationController.forward();
       } else {
         animationController.reverse();
@@ -310,15 +312,19 @@ class HomeLayout extends BaseBgLayout {
             ),
           ],
         ),
-        if (subContentState == SubContentType.playList) ...[
+        if (subContentState.type != SubContentType.none) ...[
           Positioned.fill(
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
-                ref.read(subContentProvider.notifier).set(SubContentType.none);
+                ref
+                    .read(subContentProvider.notifier)
+                    .set(SubContentData(type: SubContentType.none));
               },
               onLongPress: () {
-                ref.read(subContentProvider.notifier).set(SubContentType.none);
+                ref
+                    .read(subContentProvider.notifier)
+                    .set(SubContentData(type: SubContentType.none));
               },
             ),
           ),
@@ -326,7 +332,19 @@ class HomeLayout extends BaseBgLayout {
             position: slideAnimation,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: [PlaylistPage()],
+              children: [
+                switch (subContentState.type) {
+                  SubContentType.playList => PlaylistPage(),
+                  SubContentType.addToPlayLists =>
+                    subContentState.extra != null
+                        ? AddToPlaylistsPage([subContentState.extra!])
+                        : const SizedBox.shrink(),
+                  SubContentType.songInfo => const SizedBox.shrink(),
+                  SubContentType.updateLyrics => const SizedBox.shrink(),
+                  SubContentType.none => const SizedBox.shrink(),
+                  _ => const SizedBox.shrink(),
+                },
+              ],
             ),
           ),
         ],
