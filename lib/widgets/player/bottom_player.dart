@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:toneharbor/hooks/use_progress.dart';
-import 'package:toneharbor/providers/audio_player/lyrics_cache_provider.dart';
+import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -68,7 +68,8 @@ class BottomPlayer extends HookConsumerWidget {
       return null;
     }, [activeTrack]);
 
-    final rating = activeTrack.rating;
+    final favoritePlaylist = ref.watch(songRatingProvider);
+    final rating = favoritePlaylist.contains(activeTrack.id);
 
     final artist = activeTrack.artist;
     final album = activeTrack.album;
@@ -251,18 +252,47 @@ class BottomPlayer extends HookConsumerWidget {
                       const SizedBox(width: 2),
                       IconButton(
                         icon: Icon(
-                          rating >= 5
+                          rating
                               ? Icons.favorite_rounded
                               : Icons.favorite_border_rounded,
                           size: 18,
                         ),
                         onPressed: () async {
-                          // ref.read(
-                          //   setRatingProvider(
-                          //     id: activeTrack.id,
-                          //     rating: rating >= 5 ? 0 : 5,
-                          //   ).future,
-                          // );
+                          try {
+                            ref
+                                .read(requestFlagProvider.notifier)
+                                .setRequestFlag(true);
+                            SetRatingResponse response;
+                            if (rating) {
+                              response = await ref
+                                  .read(songRatingProvider.notifier)
+                                  .setRating(id: activeTrack.id, rating: 0);
+                            } else {
+                              response = await ref
+                                  .read(songRatingProvider.notifier)
+                                  .setRating(id: activeTrack.id, rating: 5);
+                            }
+                            if (response.success) {
+                              ref
+                                  .read(
+                                    favoriteSongsProvider(limit: 50).notifier,
+                                  )
+                                  .invalidateCache();
+                              ref.invalidate(favoriteSongsProvider);
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              showSnackBarError(
+                                e,
+                                context,
+                                colorScheme.secondary,
+                              );
+                            }
+                          } finally {
+                            ref
+                                .read(requestFlagProvider.notifier)
+                                .setRequestFlag(false);
+                          }
                         },
                       ),
                       const SizedBox(width: 2),
