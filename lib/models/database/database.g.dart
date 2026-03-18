@@ -62,18 +62,6 @@ class $AudioPlayerStateTableTable extends AudioPlayerStateTable
     ),
   );
   @override
-  late final GeneratedColumnWithTypeConverter<List<String>, String>
-  collections =
-      GeneratedColumn<String>(
-        'collections',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: true,
-      ).withConverter<List<String>>(
-        $AudioPlayerStateTableTable.$convertercollections,
-      );
-  @override
   late final GeneratedColumnWithTypeConverter<
     List<ToneHarborTrackObject>,
     String
@@ -107,7 +95,6 @@ class $AudioPlayerStateTableTable extends AudioPlayerStateTable
     playing,
     loopMode,
     shuffled,
-    collections,
     tracks,
     currentIndex,
   ];
@@ -181,12 +168,6 @@ class $AudioPlayerStateTableTable extends AudioPlayerStateTable
         DriftSqlType.bool,
         data['${effectivePrefix}shuffled'],
       )!,
-      collections: $AudioPlayerStateTableTable.$convertercollections.fromSql(
-        attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}collections'],
-        )!,
-      ),
       tracks: $AudioPlayerStateTableTable.$convertertracks.fromSql(
         attachedDatabase.typeMapping.read(
           DriftSqlType.string,
@@ -207,8 +188,6 @@ class $AudioPlayerStateTableTable extends AudioPlayerStateTable
 
   static JsonTypeConverter2<PlaylistMode, String, String> $converterloopMode =
       const EnumNameConverter<PlaylistMode>(PlaylistMode.values);
-  static TypeConverter<List<String>, String> $convertercollections =
-      const StringListConverter();
   static TypeConverter<List<ToneHarborTrackObject>, String> $convertertracks =
       const ToneHarborObjectListConverter();
 }
@@ -219,7 +198,6 @@ class AudioPlayerStateTableData extends DataClass
   final bool playing;
   final PlaylistMode loopMode;
   final bool shuffled;
-  final List<String> collections;
   final List<ToneHarborTrackObject> tracks;
   final int currentIndex;
   const AudioPlayerStateTableData({
@@ -227,7 +205,6 @@ class AudioPlayerStateTableData extends DataClass
     required this.playing,
     required this.loopMode,
     required this.shuffled,
-    required this.collections,
     required this.tracks,
     required this.currentIndex,
   });
@@ -243,11 +220,6 @@ class AudioPlayerStateTableData extends DataClass
     }
     map['shuffled'] = Variable<bool>(shuffled);
     {
-      map['collections'] = Variable<String>(
-        $AudioPlayerStateTableTable.$convertercollections.toSql(collections),
-      );
-    }
-    {
       map['tracks'] = Variable<String>(
         $AudioPlayerStateTableTable.$convertertracks.toSql(tracks),
       );
@@ -262,7 +234,6 @@ class AudioPlayerStateTableData extends DataClass
       playing: Value(playing),
       loopMode: Value(loopMode),
       shuffled: Value(shuffled),
-      collections: Value(collections),
       tracks: Value(tracks),
       currentIndex: Value(currentIndex),
     );
@@ -280,7 +251,6 @@ class AudioPlayerStateTableData extends DataClass
         serializer.fromJson<String>(json['loopMode']),
       ),
       shuffled: serializer.fromJson<bool>(json['shuffled']),
-      collections: serializer.fromJson<List<String>>(json['collections']),
       tracks: serializer.fromJson<List<ToneHarborTrackObject>>(json['tracks']),
       currentIndex: serializer.fromJson<int>(json['currentIndex']),
     );
@@ -295,7 +265,6 @@ class AudioPlayerStateTableData extends DataClass
         $AudioPlayerStateTableTable.$converterloopMode.toJson(loopMode),
       ),
       'shuffled': serializer.toJson<bool>(shuffled),
-      'collections': serializer.toJson<List<String>>(collections),
       'tracks': serializer.toJson<List<ToneHarborTrackObject>>(tracks),
       'currentIndex': serializer.toJson<int>(currentIndex),
     };
@@ -306,7 +275,6 @@ class AudioPlayerStateTableData extends DataClass
     bool? playing,
     PlaylistMode? loopMode,
     bool? shuffled,
-    List<String>? collections,
     List<ToneHarborTrackObject>? tracks,
     int? currentIndex,
   }) => AudioPlayerStateTableData(
@@ -314,7 +282,6 @@ class AudioPlayerStateTableData extends DataClass
     playing: playing ?? this.playing,
     loopMode: loopMode ?? this.loopMode,
     shuffled: shuffled ?? this.shuffled,
-    collections: collections ?? this.collections,
     tracks: tracks ?? this.tracks,
     currentIndex: currentIndex ?? this.currentIndex,
   );
@@ -326,9 +293,6 @@ class AudioPlayerStateTableData extends DataClass
       playing: data.playing.present ? data.playing.value : this.playing,
       loopMode: data.loopMode.present ? data.loopMode.value : this.loopMode,
       shuffled: data.shuffled.present ? data.shuffled.value : this.shuffled,
-      collections: data.collections.present
-          ? data.collections.value
-          : this.collections,
       tracks: data.tracks.present ? data.tracks.value : this.tracks,
       currentIndex: data.currentIndex.present
           ? data.currentIndex.value
@@ -343,7 +307,6 @@ class AudioPlayerStateTableData extends DataClass
           ..write('playing: $playing, ')
           ..write('loopMode: $loopMode, ')
           ..write('shuffled: $shuffled, ')
-          ..write('collections: $collections, ')
           ..write('tracks: $tracks, ')
           ..write('currentIndex: $currentIndex')
           ..write(')'))
@@ -351,15 +314,8 @@ class AudioPlayerStateTableData extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(
-    id,
-    playing,
-    loopMode,
-    shuffled,
-    collections,
-    tracks,
-    currentIndex,
-  );
+  int get hashCode =>
+      Object.hash(id, playing, loopMode, shuffled, tracks, currentIndex);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -368,7 +324,6 @@ class AudioPlayerStateTableData extends DataClass
           other.playing == this.playing &&
           other.loopMode == this.loopMode &&
           other.shuffled == this.shuffled &&
-          other.collections == this.collections &&
           other.tracks == this.tracks &&
           other.currentIndex == this.currentIndex);
 }
@@ -379,7 +334,6 @@ class AudioPlayerStateTableCompanion
   final Value<bool> playing;
   final Value<PlaylistMode> loopMode;
   final Value<bool> shuffled;
-  final Value<List<String>> collections;
   final Value<List<ToneHarborTrackObject>> tracks;
   final Value<int> currentIndex;
   const AudioPlayerStateTableCompanion({
@@ -387,7 +341,6 @@ class AudioPlayerStateTableCompanion
     this.playing = const Value.absent(),
     this.loopMode = const Value.absent(),
     this.shuffled = const Value.absent(),
-    this.collections = const Value.absent(),
     this.tracks = const Value.absent(),
     this.currentIndex = const Value.absent(),
   });
@@ -396,19 +349,16 @@ class AudioPlayerStateTableCompanion
     required bool playing,
     required PlaylistMode loopMode,
     required bool shuffled,
-    required List<String> collections,
     this.tracks = const Value.absent(),
     this.currentIndex = const Value.absent(),
   }) : playing = Value(playing),
        loopMode = Value(loopMode),
-       shuffled = Value(shuffled),
-       collections = Value(collections);
+       shuffled = Value(shuffled);
   static Insertable<AudioPlayerStateTableData> custom({
     Expression<int>? id,
     Expression<bool>? playing,
     Expression<String>? loopMode,
     Expression<bool>? shuffled,
-    Expression<String>? collections,
     Expression<String>? tracks,
     Expression<int>? currentIndex,
   }) {
@@ -417,7 +367,6 @@ class AudioPlayerStateTableCompanion
       if (playing != null) 'playing': playing,
       if (loopMode != null) 'loop_mode': loopMode,
       if (shuffled != null) 'shuffled': shuffled,
-      if (collections != null) 'collections': collections,
       if (tracks != null) 'tracks': tracks,
       if (currentIndex != null) 'current_index': currentIndex,
     });
@@ -428,7 +377,6 @@ class AudioPlayerStateTableCompanion
     Value<bool>? playing,
     Value<PlaylistMode>? loopMode,
     Value<bool>? shuffled,
-    Value<List<String>>? collections,
     Value<List<ToneHarborTrackObject>>? tracks,
     Value<int>? currentIndex,
   }) {
@@ -437,7 +385,6 @@ class AudioPlayerStateTableCompanion
       playing: playing ?? this.playing,
       loopMode: loopMode ?? this.loopMode,
       shuffled: shuffled ?? this.shuffled,
-      collections: collections ?? this.collections,
       tracks: tracks ?? this.tracks,
       currentIndex: currentIndex ?? this.currentIndex,
     );
@@ -460,13 +407,6 @@ class AudioPlayerStateTableCompanion
     if (shuffled.present) {
       map['shuffled'] = Variable<bool>(shuffled.value);
     }
-    if (collections.present) {
-      map['collections'] = Variable<String>(
-        $AudioPlayerStateTableTable.$convertercollections.toSql(
-          collections.value,
-        ),
-      );
-    }
     if (tracks.present) {
       map['tracks'] = Variable<String>(
         $AudioPlayerStateTableTable.$convertertracks.toSql(tracks.value),
@@ -485,7 +425,6 @@ class AudioPlayerStateTableCompanion
           ..write('playing: $playing, ')
           ..write('loopMode: $loopMode, ')
           ..write('shuffled: $shuffled, ')
-          ..write('collections: $collections, ')
           ..write('tracks: $tracks, ')
           ..write('currentIndex: $currentIndex')
           ..write(')'))
@@ -781,7 +720,6 @@ typedef $$AudioPlayerStateTableTableCreateCompanionBuilder =
       required bool playing,
       required PlaylistMode loopMode,
       required bool shuffled,
-      required List<String> collections,
       Value<List<ToneHarborTrackObject>> tracks,
       Value<int> currentIndex,
     });
@@ -791,7 +729,6 @@ typedef $$AudioPlayerStateTableTableUpdateCompanionBuilder =
       Value<bool> playing,
       Value<PlaylistMode> loopMode,
       Value<bool> shuffled,
-      Value<List<String>> collections,
       Value<List<ToneHarborTrackObject>> tracks,
       Value<int> currentIndex,
     });
@@ -824,12 +761,6 @@ class $$AudioPlayerStateTableTableFilterComposer
   ColumnFilters<bool> get shuffled => $composableBuilder(
     column: $table.shuffled,
     builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnWithTypeConverterFilters<List<String>, List<String>, String>
-  get collections => $composableBuilder(
-    column: $table.collections,
-    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnWithTypeConverterFilters<
@@ -877,11 +808,6 @@ class $$AudioPlayerStateTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get collections => $composableBuilder(
-    column: $table.collections,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get tracks => $composableBuilder(
     column: $table.tracks,
     builder: (column) => ColumnOrderings(column),
@@ -913,12 +839,6 @@ class $$AudioPlayerStateTableTableAnnotationComposer
 
   GeneratedColumn<bool> get shuffled =>
       $composableBuilder(column: $table.shuffled, builder: (column) => column);
-
-  GeneratedColumnWithTypeConverter<List<String>, String> get collections =>
-      $composableBuilder(
-        column: $table.collections,
-        builder: (column) => column,
-      );
 
   GeneratedColumnWithTypeConverter<List<ToneHarborTrackObject>, String>
   get tracks =>
@@ -980,7 +900,6 @@ class $$AudioPlayerStateTableTableTableManager
                 Value<bool> playing = const Value.absent(),
                 Value<PlaylistMode> loopMode = const Value.absent(),
                 Value<bool> shuffled = const Value.absent(),
-                Value<List<String>> collections = const Value.absent(),
                 Value<List<ToneHarborTrackObject>> tracks =
                     const Value.absent(),
                 Value<int> currentIndex = const Value.absent(),
@@ -989,7 +908,6 @@ class $$AudioPlayerStateTableTableTableManager
                 playing: playing,
                 loopMode: loopMode,
                 shuffled: shuffled,
-                collections: collections,
                 tracks: tracks,
                 currentIndex: currentIndex,
               ),
@@ -999,7 +917,6 @@ class $$AudioPlayerStateTableTableTableManager
                 required bool playing,
                 required PlaylistMode loopMode,
                 required bool shuffled,
-                required List<String> collections,
                 Value<List<ToneHarborTrackObject>> tracks =
                     const Value.absent(),
                 Value<int> currentIndex = const Value.absent(),
@@ -1008,7 +925,6 @@ class $$AudioPlayerStateTableTableTableManager
                 playing: playing,
                 loopMode: loopMode,
                 shuffled: shuffled,
-                collections: collections,
                 tracks: tracks,
                 currentIndex: currentIndex,
               ),

@@ -125,14 +125,16 @@ class _SongItem extends HookConsumerWidget {
                             ),
                           ),
                           SizedBox(width: 15),
-                          Text(
-                            '$artist-$album',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: colorScheme.onSurfaceVariant,
+                          Expanded(
+                            child: Text(
+                              '$artist-$album',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
                             ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
                           ),
                         ],
                       ),

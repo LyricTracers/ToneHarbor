@@ -5,7 +5,6 @@ class AudioPlayerStateTable extends Table {
   BoolColumn get playing => boolean()();
   TextColumn get loopMode => textEnum<PlaylistMode>()();
   BoolColumn get shuffled => boolean()();
-  TextColumn get collections => text().map(const StringListConverter())();
   TextColumn get tracks => text()
       .map(const ToneHarborObjectListConverter())
       .withDefault(const Constant("[]"))();

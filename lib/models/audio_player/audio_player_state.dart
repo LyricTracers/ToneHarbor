@@ -12,7 +12,6 @@ sealed class AudioPlayerState with _$AudioPlayerState {
     required bool playing,
     required PlaylistMode loopMode,
     required bool shuffled,
-    required List<String> collections,
     @Default(0) int currentIndex,
     @Default([]) List<ToneHarborTrackObject> tracks,
   }) = _AudioPlayerState;
@@ -21,7 +20,6 @@ sealed class AudioPlayerState with _$AudioPlayerState {
     required bool playing,
     required PlaylistMode loopMode,
     required bool shuffled,
-    required List<String> collections,
     int currentIndex = 0,
     List<ToneHarborTrackObject> tracks = const [],
   }) {
@@ -31,7 +29,6 @@ sealed class AudioPlayerState with _$AudioPlayerState {
       shuffled: shuffled,
       currentIndex: currentIndex,
       tracks: tracks,
-      collections: collections,
     );
   }
 
@@ -56,9 +53,5 @@ sealed class AudioPlayerState with _$AudioPlayerState {
 
   bool containsTracks(List<ToneHarborTrackObject> tracks) {
     return this.tracks.isNotEmpty && tracks.every(containsTrack);
-  }
-
-  bool containsCollection(String collectionId) {
-    return collections.contains(collectionId);
   }
 }

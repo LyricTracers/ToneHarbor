@@ -11,9 +11,6 @@ _AudioPlayerState _$AudioPlayerStateFromJson(Map<String, dynamic> json) =>
       playing: json['playing'] as bool,
       loopMode: $enumDecode(_$PlaylistModeEnumMap, json['loopMode']),
       shuffled: json['shuffled'] as bool,
-      collections: (json['collections'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList(),
       currentIndex: (json['currentIndex'] as num?)?.toInt() ?? 0,
       tracks:
           (json['tracks'] as List<dynamic>?)
@@ -30,7 +27,6 @@ Map<String, dynamic> _$AudioPlayerStateToJson(_AudioPlayerState instance) =>
       'playing': instance.playing,
       'loopMode': _$PlaylistModeEnumMap[instance.loopMode]!,
       'shuffled': instance.shuffled,
-      'collections': instance.collections,
       'currentIndex': instance.currentIndex,
       'tracks': instance.tracks,
     };

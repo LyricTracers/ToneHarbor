@@ -10,7 +10,6 @@ import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/database/database.dart';
 import 'package:toneharbor/providers/database/database.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
-import 'package:toneharbor/utils/base_utils.dart';
 
 part 'audio_player_provider.g.dart';
 
@@ -99,7 +98,6 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
       playing: audioPlayer.isPlaying,
       shuffled: audioPlayer.isShuffled,
       tracks: [],
-      collections: [],
     );
   }
 
@@ -118,7 +116,6 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
               playing: audioPlayer.isPlaying,
               loopMode: audioPlayer.loopMode,
               shuffled: audioPlayer.isShuffled,
-              collections: <String>[],
               tracks: const Value(<ToneHarborTrackObject>[]),
               currentIndex: const Value(0),
               id: const Value(0),
@@ -151,10 +148,6 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
         autoPlay: false,
       );
     }
-
-    if (playerState.collections.isNotEmpty) {
-      state = state.copyWith(collections: playerState.collections);
-    }
   }
 
   Future<void> _updatePlayerState(
@@ -165,68 +158,6 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
     await (database.update(
       database.audioPlayerStateTable,
     )..where((tb) => tb.id.equals(0))).write(companion);
-  }
-
-  Future<void> addCollections(List<String> collectionIds) async {
-    final newCollections = collectionIds
-        .where((id) => !state.collections.contains(id))
-        .toList();
-
-    if (newCollections.isEmpty) {
-      return;
-    }
-
-    state = state.copyWith(
-      collections: [...state.collections, ...newCollections],
-    );
-
-    await _updatePlayerState(
-      AudioPlayerStateTableCompanion(collections: Value(state.collections)),
-    );
-  }
-
-  Future<void> addCollection(String collectionId) async {
-    if (state.collections.contains(collectionId)) {
-      return;
-    }
-
-    state = state.copyWith(collections: [...state.collections, collectionId]);
-
-    await _updatePlayerState(
-      AudioPlayerStateTableCompanion(collections: Value(state.collections)),
-    );
-  }
-
-  Future<void> removeCollections(List<String> collectionIds) async {
-    final newCollections = state.collections
-        .where((element) => !collectionIds.contains(element))
-        .toList();
-
-    if (newCollections.length == state.collections.length) {
-      return;
-    }
-
-    state = state.copyWith(collections: newCollections);
-
-    await _updatePlayerState(
-      AudioPlayerStateTableCompanion(collections: Value(state.collections)),
-    );
-  }
-
-  Future<void> removeCollection(String collectionId) async {
-    if (!state.collections.contains(collectionId)) {
-      return;
-    }
-
-    state = state.copyWith(
-      collections: state.collections
-          .where((element) => element != collectionId)
-          .toList(),
-    );
-
-    await _updatePlayerState(
-      AudioPlayerStateTableCompanion(collections: Value(state.collections)),
-    );
   }
 
   Future<void> addTracksAtFirst(
@@ -348,7 +279,6 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
     state = state.copyWith(
       tracks: medias.map((media) => media.track).toList(),
       currentIndex: initialIndex,
-      collections: [],
     );
 
     logger.i(
@@ -383,7 +313,6 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
       autoPlay: true,
     );
     state = state.copyWith(
-      collections: oldState.collections,
       loopMode: oldState.loopMode,
       playing: oldState.playing,
       shuffled: false,
@@ -393,7 +322,6 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
       AudioPlayerStateTableCompanion(
         tracks: Value(state.tracks),
         currentIndex: Value(state.currentIndex),
-        collections: Value(state.collections),
         loopMode: Value(state.loopMode),
         playing: Value(state.playing),
         shuffled: Value(state.shuffled),
@@ -425,7 +353,6 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
     state = state.copyWith(
       tracks: [],
       currentIndex: 0,
-      collections: [],
       loopMode: PlaylistMode.none,
       playing: false,
       shuffled: false,
@@ -435,7 +362,6 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
       AudioPlayerStateTableCompanion(
         tracks: Value(state.tracks),
         currentIndex: const Value(0),
-        collections: const Value(<String>[]),
         loopMode: const Value(PlaylistMode.none),
         playing: const Value(false),
         shuffled: const Value(false),
