@@ -165,7 +165,16 @@ class HomeLayout extends BaseBgLayout {
                         context.push('/artists');
                       },
                     ),
-
+                    SizedBox(height: 8),
+                    _getItem(
+                      currentPath == '/playlist',
+                      colorScheme,
+                      Icons.play_lesson_rounded,
+                      l10n.playlists,
+                      () {
+                        context.push('/playlist');
+                      },
+                    ),
                     SizedBox(height: 8),
                     _getItem(
                       currentPath.startsWith(allFoldersPath),
@@ -179,16 +188,6 @@ class HomeLayout extends BaseBgLayout {
                         );
                       },
                     ),
-                    SizedBox(height: 8),
-                    _getItem(
-                      currentPath == '/playlist',
-                      colorScheme,
-                      Icons.play_lesson_rounded,
-                      l10n.playlists,
-                      () {
-                        context.push('/playlist');
-                      },
-                    ),
                     if (favoritePlaylist.playlists.isNotEmpty) ...[
                       SizedBox(height: 5),
                       Divider(thickness: 1, indent: 12, endIndent: 12),
@@ -196,7 +195,7 @@ class HomeLayout extends BaseBgLayout {
                         child: SingleChildScrollView(
                           child: Padding(
                             padding: const EdgeInsets.only(
-                              left: 25,
+                              left: 12,
                               right: 12,
                               bottom: 12,
                             ),
@@ -206,51 +205,31 @@ class HomeLayout extends BaseBgLayout {
                                 final path =
                                     "/songs/${Uri.encodeComponent(item.title)}";
                                 final isSelected = path == currentPath;
-                                return Padding(
+                                return _getItem(
+                                  isSelected,
+                                  colorScheme,
+                                  Icons.file_present,
+                                  item.title,
+                                  () {
+                                    context.push(
+                                      path,
+                                      extra: (
+                                        playlistDetailProvider(
+                                          id: item.playlistId,
+                                        ),
+                                        -1,
+                                        SongsPageSortAction.all,
+                                      ),
+                                    );
+                                  },
+                                  paddingContent: EdgeInsetsGeometry.symmetric(
+                                    horizontal: 4,
+                                    vertical: 4,
+                                  ),
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 2,
                                   ),
-                                  child: InkWell(
-                                    onTap: () {
-                                      context.push(
-                                        path,
-                                        extra: (
-                                          playlistDetailProvider(
-                                            id: item.playlistId,
-                                          ),
-                                          -1,
-                                          SongsPageSortAction.all,
-                                        ),
-                                      );
-                                    },
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 4,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? colorScheme.primary.withValues(
-                                                alpha: 0.3,
-                                              )
-                                            : Colors.transparent,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        item.title,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: isSelected
-                                              ? colorScheme.primary
-                                              : colorScheme.onSurface
-                                                    .withValues(alpha: 0.8),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                  offsetWidth: 2,
                                 );
                               }).toList(),
                             ),
@@ -303,10 +282,16 @@ class HomeLayout extends BaseBgLayout {
     ColorScheme colorScheme,
     IconData icon,
     String text,
-    VoidCallback onTapCallback,
-  ) {
+    VoidCallback onTapCallback, {
+    EdgeInsetsGeometry paddingContent = const EdgeInsets.symmetric(
+      horizontal: 4,
+      vertical: 8,
+    ),
+    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 12),
+    double offsetWidth = 8,
+  }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: padding,
       child: InkWell(
         onTap: () {
           if (!targetPage) {
@@ -315,7 +300,7 @@ class HomeLayout extends BaseBgLayout {
         },
         borderRadius: BorderRadius.circular(8),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          padding: paddingContent,
           decoration: BoxDecoration(
             color: targetPage
                 ? colorScheme.primary.withValues(alpha: 0.3)
@@ -331,15 +316,21 @@ class HomeLayout extends BaseBgLayout {
                     ? colorScheme.primary
                     : colorScheme.onSurface.withValues(alpha: 0.8),
               ),
-              const SizedBox(width: 8),
-              Text(
-                text,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: targetPage ? FontWeight.w600 : FontWeight.normal,
-                  color: targetPage
-                      ? colorScheme.primary
-                      : colorScheme.onSurface.withValues(alpha: 0.8),
+              SizedBox(width: offsetWidth),
+              Expanded(
+                child: Text(
+                  text,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: targetPage
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                    color: targetPage
+                        ? colorScheme.primary
+                        : colorScheme.onSurface.withValues(alpha: 0.8),
+                  ),
                 ),
               ),
             ],
