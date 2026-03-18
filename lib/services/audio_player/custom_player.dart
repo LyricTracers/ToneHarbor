@@ -79,7 +79,7 @@ class CustomPlayer extends Player {
   Future<void> insert(int index, Media media) async {
     final addedMediaCompleter = Completer<int>();
     final playlistStream = stream.playlist.listen((event) {
-      final mediaAddedIndex = event.medias.indexWhere(
+      final mediaAddedIndex = event.medias.lastIndexWhere(
         (m) => m.uri == media.uri,
       );
       if (mediaAddedIndex != -1 && !addedMediaCompleter.isCompleted) {

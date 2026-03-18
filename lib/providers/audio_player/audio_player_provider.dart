@@ -168,23 +168,26 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
       return addTracks(tracks);
     }
 
-    final addableTracks = tracks
-        .where(
-          (track) =>
-              allowDuplicates ||
-              !state.tracks.any((element) => _compareTracks(element, track)),
-        )
-        .toList();
+    final addableTracks = allowDuplicates
+        ? tracks
+        : tracks.where(
+            (track) =>
+                !state.tracks.any((element) => _compareTracks(element, track)),
+          );
 
-    state = state.copyWith(tracks: [...addableTracks, ...state.tracks]);
+    final insertIndex = max(state.currentIndex, 0) + 1;
+    final newTracks = [
+      ...state.tracks.sublist(0, insertIndex),
+      ...addableTracks,
+      ...state.tracks.sublist(insertIndex),
+    ];
 
-    for (int i = 0; i < addableTracks.length; i++) {
-      final track = addableTracks.elementAt(i);
+    state = state.copyWith(tracks: newTracks);
 
-      await audioPlayer.addTrackAt(
-        ToneHarborMedia(track),
-        max(state.currentIndex, 0) + i + 1,
-      );
+    int i = 0;
+    for (final track in addableTracks) {
+      await audioPlayer.addTrackAt(ToneHarborMedia(track), insertIndex + i);
+      i++;
     }
 
     await _updatePlayerState(
