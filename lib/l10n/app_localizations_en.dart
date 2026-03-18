@@ -407,5 +407,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unknown_source => 'Unknown Source';
 
   @override
+  String get add_to => 'Add To';
+
+  @override
+  String get next_song => 'Next Song';
+
+  @override
+  String get play_queue => 'Play Queue';
+
+  @override
   String get save_success => 'Saved successfully';
 }

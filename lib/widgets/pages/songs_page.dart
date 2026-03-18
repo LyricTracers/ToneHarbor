@@ -381,11 +381,11 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                               },
                             ),
                             MenuItem.submenu(
-                              label: Text("添加到"),
+                              label: Text(l10n.add_to),
                               icon: Icon(Icons.add_box_rounded),
                               items: [
                                 MenuItem(
-                                  label: Text("下一首"),
+                                  label: Text(l10n.next_song),
                                   onSelected: (value) async {
                                     await ref
                                         .read(audioPlayerStateProvider.notifier)
@@ -396,7 +396,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                                   },
                                 ),
                                 MenuItem(
-                                  label: Text("播放队列"),
+                                  label: Text(l10n.next_song),
                                   onSelected: (value) async {
                                     await ref
                                         .read(audioPlayerStateProvider.notifier)
@@ -404,7 +404,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                                   },
                                 ),
                                 MenuItem(
-                                  label: Text("歌单"),
+                                  label: Text(l10n.song_playlist),
                                   onSelected: (value) {
                                     ref
                                         .read(subContentProvider.notifier)

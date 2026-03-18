@@ -866,6 +866,24 @@ abstract class AppLocalizations {
   /// **'Unknown Source'**
   String get unknown_source;
 
+  /// No description provided for @add_to.
+  ///
+  /// In en, this message translates to:
+  /// **'Add To'**
+  String get add_to;
+
+  /// No description provided for @next_song.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Song'**
+  String get next_song;
+
+  /// No description provided for @play_queue.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Queue'**
+  String get play_queue;
+
   /// No description provided for @save_success.
   ///
   /// In en, this message translates to:

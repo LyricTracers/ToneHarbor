@@ -393,5 +393,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get unknown_source => '未知来源';
 
   @override
+  String get add_to => '添加到';
+
+  @override
+  String get next_song => '下一首';
+
+  @override
+  String get play_queue => '播放队列';
+
+  @override
   String get save_success => '保存成功';
 }

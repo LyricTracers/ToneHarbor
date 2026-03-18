@@ -129,5 +129,8 @@
   "unknown_title": "Unknown Title",
   "unknown_artist": "Unknown Artist",
   "unknown_source": "Unknown Source",
+  "add_to": "Add To",
+  "next_song": "Next Song",
+  "play_queue": "Play Queue",
   "save_success": "Saved successfully"
 }
