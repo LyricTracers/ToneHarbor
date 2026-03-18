@@ -26,7 +26,7 @@ class HomeLayout extends BaseBgLayout {
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
     final colorScheme = getColorSchemeWhenReady(ref);
     final l10n = ref.watch(l10nProvider);
-
+    logger.i("currentPath:${currentPath}");
     final isPlaylistPage = useState(false);
     final allMusicPath = '/songs/${Uri.encodeComponent(l10n.all_music)}';
     final allFoldersPath = '/folders/';
@@ -47,6 +47,7 @@ class HomeLayout extends BaseBgLayout {
     final animationController = useAnimationController(
       duration: const Duration(milliseconds: 100),
     );
+    final favoritePlaylist = ref.watch(favoritePlaylistStateProvider);
     useEffect(() {
       if (isPlaylistPage.value) {
         animationController.forward();
@@ -164,16 +165,7 @@ class HomeLayout extends BaseBgLayout {
                         context.push('/artists');
                       },
                     ),
-                    SizedBox(height: 8),
-                    _getItem(
-                      currentPath == '/playlist',
-                      colorScheme,
-                      Icons.play_lesson_rounded,
-                      l10n.playlists,
-                      () {
-                        context.push('/playlist');
-                      },
-                    ),
+
                     SizedBox(height: 8),
                     _getItem(
                       currentPath.startsWith(allFoldersPath),
@@ -187,6 +179,85 @@ class HomeLayout extends BaseBgLayout {
                         );
                       },
                     ),
+                    SizedBox(height: 8),
+                    _getItem(
+                      currentPath == '/playlist',
+                      colorScheme,
+                      Icons.play_lesson_rounded,
+                      l10n.playlists,
+                      () {
+                        context.push('/playlist');
+                      },
+                    ),
+                    if (favoritePlaylist.playlists.isNotEmpty) ...[
+                      SizedBox(height: 5),
+                      Divider(thickness: 1, indent: 12, endIndent: 12),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              left: 25,
+                              right: 12,
+                              bottom: 12,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: favoritePlaylist.playlists.map((item) {
+                                final path =
+                                    "/songs/${Uri.encodeComponent(item.title)}";
+                                final isSelected = path == currentPath;
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 2,
+                                  ),
+                                  child: InkWell(
+                                    onTap: () {
+                                      context.push(
+                                        path,
+                                        extra: (
+                                          playlistDetailProvider(
+                                            id: item.playlistId,
+                                          ),
+                                          -1,
+                                          SongsPageSortAction.all,
+                                        ),
+                                      );
+                                    },
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 4,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? colorScheme.primary.withValues(
+                                                alpha: 0.3,
+                                              )
+                                            : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        item.title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: isSelected
+                                              ? colorScheme.primary
+                                              : colorScheme.onSurface
+                                                    .withValues(alpha: 0.8),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
