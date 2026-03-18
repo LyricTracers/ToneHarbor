@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -55,138 +56,126 @@ class _SongItem extends HookConsumerWidget {
     return MouseRegion(
       onEnter: (event) => isHovered.value = true,
       onExit: (event) => isHovered.value = false,
-      child: Container(
-        height: itemHeight,
-        color: isHovered.value
-            ? colorScheme.outline.withValues(alpha: .1)
-            : Colors.transparent,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onDoubleTap: () => onTap(ref),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      child: Stack(
+        children: [
+          if (isFavorite)
+            Positioned(
+              top: 0,
+              left: 0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary,
+                  borderRadius: const BorderRadius.only(
+                    bottomRight: Radius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  l10n.favorite,
+                  style: TextStyle(
+                    color: colorScheme.onPrimary,
+                    fontSize: 8,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          Container(
+            height: itemHeight,
+            color: isHovered.value
+                ? colorScheme.outline.withValues(alpha: .1)
+                : Colors.transparent,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onDoubleTap: () => onTap(ref),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 4,
+                ),
 
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                activeSongId == song.id
-                    ? SvgPicture.string(
-                        placeholderErrorIconString,
-                        width: 24,
-                        height: 24,
-                        fit: BoxFit.fitWidth,
-                        colorFilter: ColorFilter.mode(
-                          colorScheme.primary,
-                          BlendMode.srcIn,
-                        ),
-                      )
-                    : Text(
-                        '${index + 1}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: colorScheme.primary,
-                        ),
-                      ),
-                const SizedBox(width: 15),
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        song.title,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 4,
-                              vertical: 2,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    activeSongId == song.id
+                        ? SvgPicture.string(
+                            placeholderErrorIconString,
+                            width: 24,
+                            height: 24,
+                            fit: BoxFit.fitWidth,
+                            colorFilter: ColorFilter.mode(
+                              colorScheme.primary,
+                              BlendMode.srcIn,
                             ),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              '$container ${bitrate}k',
-                              style: TextStyle(
-                                fontSize: 9,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
+                          )
+                        : Text(
+                            '${index + 1}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: colorScheme.primary,
                             ),
                           ),
-                          SizedBox(width: 15),
-                          Expanded(
-                            child: Text(
-                              '$artist-$album',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
+                    const SizedBox(width: 15),
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            song.title,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
                             ),
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  '$container ${bitrate}k',
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 15),
+                              Expanded(
+                                child: Text(
+                                  '$artist-$album',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 15),
-                IconButton(
-                  onPressed: () async {
-                    try {
-                      ref
-                          .read(requestFlagProvider.notifier)
-                          .setRequestFlag(true);
-                      SetRatingResponse response;
-                      if (isFavorite) {
-                        response = await ref
-                            .read(songRatingProvider.notifier)
-                            .setRating(id: song.id, rating: 0);
-                      } else {
-                        response = await ref
-                            .read(songRatingProvider.notifier)
-                            .setRating(id: song.id, rating: 5);
-                      }
-                      if (response.success) {
-                        ref
-                            .read(favoriteSongsProvider(limit: 50).notifier)
-                            .invalidateCache();
-                        ref.invalidate(favoriteSongsProvider);
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        showSnackBarError(e, context, colorScheme.secondary);
-                      }
-                    } finally {
-                      ref
-                          .read(requestFlagProvider.notifier)
-                          .setRequestFlag(false);
-                    }
-                  },
-
-                  icon: Icon(
-                    isFavorite
-                        ? Icons.favorite_rounded
-                        : Icons.favorite_border_rounded,
-                    size: 18,
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -330,23 +319,88 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                   }
                   var item = songItems[index];
                   return RepaintBoundary(
-                    child: _SongItem(
-                      index: index,
-                      song: item,
-                      activeSongId: activeSongId,
-                      colorScheme: colorScheme,
-                      l10n: l10n,
-                      isFavorite: songRating.contains(item.id),
-                      onTap: (ref) async => {
-                        await ref
-                            .read(audioPlayerStateProvider.notifier)
-                            .load(
-                              songItems.asTrackList(),
-                              initialIndex: index,
-                              autoPlay: true,
+                    child: ContextMenuRegion(
+                      contextMenu: ContextMenu(
+                        entriesBuilder: () {
+                          var playlistId = item.id;
+                          var songRating = ref.read(songRatingProvider);
+                          var isFavorite = songRating.contains(playlistId);
+                          return <ContextMenuEntry>[
+                            MenuHeader(text: item.title),
+                            MenuDivider(),
+                            MenuItem(
+                              label: Text(
+                                isFavorite
+                                    ? l10n.no_favorite_playlist
+                                    : l10n.favorite,
+                              ),
+                              icon: Icon(
+                                isFavorite
+                                    ? Icons.favorite_border_rounded
+                                    : Icons.favorite_rounded,
+                              ),
+                              onSelected: (value) async {
+                                try {
+                                  ref
+                                      .read(requestFlagProvider.notifier)
+                                      .setRequestFlag(true);
+                                  SetRatingResponse response;
+                                  if (isFavorite) {
+                                    response = await ref
+                                        .read(songRatingProvider.notifier)
+                                        .setRating(id: playlistId, rating: 0);
+                                  } else {
+                                    response = await ref
+                                        .read(songRatingProvider.notifier)
+                                        .setRating(id: playlistId, rating: 5);
+                                  }
+                                  if (response.success) {
+                                    ref
+                                        .read(
+                                          favoriteSongsProvider(
+                                            limit: 50,
+                                          ).notifier,
+                                        )
+                                        .invalidateCache();
+                                    ref.invalidate(favoriteSongsProvider);
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    showSnackBarError(
+                                      e,
+                                      context,
+                                      colorScheme.secondary,
+                                    );
+                                  }
+                                } finally {
+                                  ref
+                                      .read(requestFlagProvider.notifier)
+                                      .setRequestFlag(false);
+                                }
+                              },
                             ),
-                        if (context.mounted) context.push("/playing_detail"),
-                      },
+                          ];
+                        },
+                        padding: const EdgeInsets.all(8.0),
+                      ),
+                      child: _SongItem(
+                        index: index,
+                        song: item,
+                        activeSongId: activeSongId,
+                        colorScheme: colorScheme,
+                        l10n: l10n,
+                        isFavorite: songRating.contains(item.id),
+                        onTap: (ref) async => {
+                          await ref
+                              .read(audioPlayerStateProvider.notifier)
+                              .load(
+                                songItems.asTrackList(),
+                                initialIndex: index,
+                                autoPlay: true,
+                              ),
+                          if (context.mounted) context.push("/playing_detail"),
+                        },
+                      ),
                     ),
                   );
                 },
