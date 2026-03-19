@@ -181,6 +181,9 @@ class DownloadManager extends _$DownloadManager {
 
     _preloadingTracks[cacheKey] = true;
 
+    final partialCachePath = '$cachePath.part';
+    final partialCacheFile = File(partialCachePath);
+
     try {
       final streamUrl = await ref.read(
         streamUrlProvider(
@@ -194,6 +197,9 @@ class DownloadManager extends _$DownloadManager {
         logger.w(
           '[DownloadManager] Stream URL is empty for track: ${track.id}',
         );
+        if (await partialCacheFile.exists()) {
+          await partialCacheFile.delete();
+        }
         return;
       }
 
@@ -203,12 +209,18 @@ class DownloadManager extends _$DownloadManager {
         logger.i(
           '[DownloadManager] Track already cached: ${track.id} at ${quality.name}',
         );
+        if (await partialCacheFile.exists()) {
+          await partialCacheFile.delete();
+        }
         return;
       }
 
       final authHeaders = await ref.read(authHeadersProvider.future);
       if (authHeaders == null) {
         logger.w('[DownloadManager] No auth headers available');
+        if (await partialCacheFile.exists()) {
+          await partialCacheFile.delete();
+        }
         Future.microtask(() async {
           await ref
               .read(audioStationCookiesInfoProvider.notifier)
@@ -225,8 +237,6 @@ class DownloadManager extends _$DownloadManager {
       final cancelToken = rhttp.CancelToken();
       _cancelTokens[cacheKey] = cancelToken;
 
-      final partialCachePath = '$cachePath.part';
-      final partialCacheFile = File(partialCachePath);
       int existingBytes = 0;
 
       if (await partialCacheFile.exists()) {
@@ -251,6 +261,9 @@ class DownloadManager extends _$DownloadManager {
         logger.w(
           '[DownloadManager] Failed to preload track: ${track.id}, status: ${response.statusCode}',
         );
+        if (await partialCacheFile.exists()) {
+          await partialCacheFile.delete();
+        }
         return;
       }
 
