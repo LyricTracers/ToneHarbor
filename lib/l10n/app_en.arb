@@ -137,6 +137,8 @@
   "favorite_limit_exceeded": "Favorite limit exceeded (max 100 songs)",
   "cancel_favorite_limit_exceeded": "Cancel favorite limit exceeded (max 100 songs)",
   "queue_limit_exceeded": "Queue limit exceeded (max 1000 songs)",
+  "selected_count": "Selected %s songs",
+  "select_all": "Select All",
   "tip_pre_song": "Already at the first song. Enable loop playback.",
   "tip_next_song": "Already at the last song. Enable loop playback.",
   "save_success": "Saved successfully"

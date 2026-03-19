@@ -25,14 +25,14 @@ class SubSongSelectionTop<T extends AsSong> extends HookConsumerWidget {
         builder: (context, ref, child) {
           final selection = ref.watch(songSelectionProvider);
           return Text(
-            '已选择 ${selection.ids.length} 首歌曲',
+            l10n.selected_count.replaceFirst('%s', '${selection.ids.length}'),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           );
         },
       ),
       actions: [
         Text(
-          '全选',
+          l10n.select_all,
           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
         ),
         Consumer(

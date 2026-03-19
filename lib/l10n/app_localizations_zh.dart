@@ -417,6 +417,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get queue_limit_exceeded => '播放队列数量超过限制（最多1000首）';
 
   @override
+  String get selected_count => '已选择 %s 首歌曲';
+
+  @override
+  String get select_all => '全选';
+
+  @override
   String get tip_pre_song => '已经是第一首了，请开启循环播放';
 
   @override

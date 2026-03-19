@@ -355,7 +355,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                     );
                   }
                   var folderItem = folderItems[index];
-                  if (folderItem.type == "folder") {
+                  if (!folderItem.isSong()) {
                     return _FolderItemWidget(
                       index: index,
                       folderItems: folderItems,

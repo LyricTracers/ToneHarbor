@@ -433,6 +433,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get queue_limit_exceeded => 'Queue limit exceeded (max 1000 songs)';
 
   @override
+  String get selected_count => 'Selected %s songs';
+
+  @override
+  String get select_all => 'Select All';
+
+  @override
   String get tip_pre_song => 'Already at the first song. Enable loop playback.';
 
   @override

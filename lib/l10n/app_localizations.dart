@@ -914,6 +914,18 @@ abstract class AppLocalizations {
   /// **'Queue limit exceeded (max 1000 songs)'**
   String get queue_limit_exceeded;
 
+  /// No description provided for @selected_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected %s songs'**
+  String get selected_count;
+
+  /// No description provided for @select_all.
+  ///
+  /// In en, this message translates to:
+  /// **'Select All'**
+  String get select_all;
+
   /// No description provided for @tip_pre_song.
   ///
   /// In en, this message translates to:
