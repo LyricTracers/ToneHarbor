@@ -5,9 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/components/song_context_menu.dart';
@@ -34,14 +36,51 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
     WidgetRef ref,
     ColorScheme colorScheme,
     int total,
+    List<Song> songs,
+    SongSelectionState songSelection,
   ) {
     final l10n = ref.watch(l10nProvider);
+
+    if (songSelection.selectionType) {
+      return AppBar(
+        automaticallyImplyLeading: false,
+        title: Text(
+          '已选择 ${songSelection.ids.length} 首歌曲',
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        actions: [
+          Text(
+            '全选',
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+          Checkbox(
+            shape: const CircleBorder(),
+            value: songSelection.ids.length == songs.length,
+            onChanged: (b) {
+              if (b == true) {
+                ref
+                    .read(songSelectionProvider.notifier)
+                    .selectAll(
+                      songs.map((song) {
+                        return song.id;
+                      }).toSet(),
+                    );
+              } else {
+                ref.read(songSelectionProvider.notifier).deSelectAll();
+              }
+            },
+          ),
+          SizedBox(width: 15),
+        ],
+      );
+    }
+
     return AppBar(
       title: Row(
         children: [
           Text(
             title,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
 
           if (total > 0)
@@ -71,6 +110,12 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
         SizedBox(width: 16),
         _buildSortAction(ref, l10n),
         IconButton(
+          onPressed: () {
+            ref.read(songSelectionProvider.notifier).toggle();
+          },
+          icon: Icon(Icons.fact_check_rounded, size: 18),
+        ),
+        IconButton(
           onPressed: () {},
           icon: Icon(Icons.settings_rounded, size: 18),
         ),
@@ -95,6 +140,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
     final activeTrack = ref.watch(audioPlayerStateProvider).activeTrack;
     final activeSongId = activeTrack?.id;
     final songRating = ref.watch(songRatingProvider);
+    final songSelectionState = ref.watch(songSelectionProvider);
 
     useEffect(() {
       void onScroll() {
@@ -128,7 +174,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
 
     return Column(
       children: [
-        _buildAppBar(ref, colorScheme, total),
+        _buildAppBar(ref, colorScheme, total, songItems, songSelectionState),
         Expanded(
           child: songs.when(
             data: (data) {
@@ -167,15 +213,25 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                         colorScheme: colorScheme,
                         l10n: l10n,
                         isFavorite: songRating.contains(item.id),
+                        selectionState: songSelectionState,
                         onTap: () async {
-                          await ref
-                              .read(audioPlayerStateProvider.notifier)
-                              .load(
-                                songItems.asTrackList(),
-                                initialIndex: index,
-                                autoPlay: true,
-                              );
-                          if (context.mounted) context.push("/playing_detail");
+                          var songSelection = ref.read(
+                            songSelectionProvider.notifier,
+                          );
+                          if (songSelection.isSelectionState) {
+                            songSelection.toggleSelection(item.id);
+                          } else {
+                            await ref
+                                .read(audioPlayerStateProvider.notifier)
+                                .load(
+                                  songItems.asTrackList(),
+                                  initialIndex: index,
+                                  autoPlay: true,
+                                );
+                            if (context.mounted) {
+                              context.push("/playing_detail");
+                            }
+                          }
                         },
                       ),
                     ),

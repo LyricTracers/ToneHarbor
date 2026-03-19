@@ -4,7 +4,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -248,6 +247,10 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
           },
           icon: Icon(Icons.sort, size: 18),
           tooltip: l10n.sort,
+        ),
+        IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.fact_check_rounded, size: 18),
         ),
         IconButton(
           onPressed: () {},

@@ -4,7 +4,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 
 class SongItem extends HookConsumerWidget {
   final int index;
@@ -13,6 +15,7 @@ class SongItem extends HookConsumerWidget {
   final AppLocalizations l10n;
   final String? activeSongId;
   final bool isFavorite;
+  final SongSelectionState selectionState;
   final Function onTap;
   const SongItem({
     super.key,
@@ -23,6 +26,10 @@ class SongItem extends HookConsumerWidget {
     required this.l10n,
     required this.isFavorite,
     required this.onTap,
+    this.selectionState = const SongSelectionState(
+      selectionType: false,
+      ids: {},
+    ),
   });
   static const double itemHeight = 66.0;
 
@@ -81,9 +88,11 @@ class SongItem extends HookConsumerWidget {
               behavior: HitTestBehavior.opaque,
               onDoubleTap: () => onTap(),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 4,
+                padding: const EdgeInsets.only(
+                  left: 15,
+                  right: 20,
+                  top: 4,
+                  bottom: 4,
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -161,6 +170,16 @@ class SongItem extends HookConsumerWidget {
                         ],
                       ),
                     ),
+                    if (selectionState.selectionType)
+                      Checkbox(
+                        shape: const CircleBorder(),
+                        value: selectionState.ids.contains(song.id),
+                        onChanged: (_) {
+                          ref
+                              .read(songSelectionProvider.notifier)
+                              .toggleSelection(song.id);
+                        },
+                      ),
                   ],
                 ),
               ),
