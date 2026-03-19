@@ -884,6 +884,36 @@ abstract class AppLocalizations {
   /// **'Play Queue'**
   String get play_queue;
 
+  /// No description provided for @download.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get download;
+
+  /// No description provided for @no_selected_songs.
+  ///
+  /// In en, this message translates to:
+  /// **'No songs selected'**
+  String get no_selected_songs;
+
+  /// No description provided for @favorite_limit_exceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite limit exceeded (max 100 songs)'**
+  String get favorite_limit_exceeded;
+
+  /// No description provided for @cancel_favorite_limit_exceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel favorite limit exceeded (max 100 songs)'**
+  String get cancel_favorite_limit_exceeded;
+
+  /// No description provided for @queue_limit_exceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Queue limit exceeded (max 1000 songs)'**
+  String get queue_limit_exceeded;
+
   /// No description provided for @tip_pre_song.
   ///
   /// In en, this message translates to:

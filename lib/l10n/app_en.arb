@@ -132,6 +132,11 @@
   "add_to": "Add To",
   "next_song": "Next Song",
   "play_queue": "Play Queue",
+  "download": "Download",
+  "no_selected_songs": "No songs selected",
+  "favorite_limit_exceeded": "Favorite limit exceeded (max 100 songs)",
+  "cancel_favorite_limit_exceeded": "Cancel favorite limit exceeded (max 100 songs)",
+  "queue_limit_exceeded": "Queue limit exceeded (max 1000 songs)",
   "tip_pre_song": "Already at the first song. Enable loop playback.",
   "tip_next_song": "Already at the last song. Enable loop playback.",
   "save_success": "Saved successfully"

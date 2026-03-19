@@ -11,6 +11,44 @@ class SubSongSelectionBottom extends HookConsumerWidget {
   final List<Song> songs;
   const SubSongSelectionBottom({super.key, required this.songs});
 
+  bool _checkIdsEmpty(Set<String> ids, BuildContext context, WidgetRef ref) {
+    if (ids.isEmpty) {
+      if (context.mounted) {
+        showSnackBar(
+          ref.read(l10nProvider).no_selected_songs,
+          context,
+          getColorSchemeWhenReady(ref).secondary,
+        );
+      }
+      return true;
+    }
+    return false;
+  }
+
+  bool _checkIdsLimit(
+    Set<String> ids,
+    int limit,
+    BuildContext context,
+    WidgetRef ref,
+    String message,
+  ) {
+    if (ids.length > limit) {
+      if (context.mounted) {
+        showSnackBar(message, context, getColorSchemeWhenReady(ref).secondary);
+      }
+      return true;
+    }
+    return false;
+  }
+
+  List<ToneHarborTrackObject> _getSelectedTracks(Set<String> ids) {
+    final songMap = <String, Song>{for (var song in songs) song.id: song};
+    return ids
+        .map((id) => songMap[id]?.asTrack())
+        .whereType<ToneHarborTrackObject>()
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = ref.watch(l10nProvider);
@@ -22,36 +60,26 @@ class SubSongSelectionBottom extends HookConsumerWidget {
         IconButton(
           onPressed: () {
             final ids = ref.read(songSelectionProvider).ids;
-            if (ids.isEmpty) {
-              if (ref.context.mounted) {
-                showSnackBar("当前没有选择的歌曲！", ref.context, colorScheme.secondary);
-              }
-              return;
-            }
+            if (_checkIdsEmpty(ids, context, ref)) return;
             ref.invalidate(songSelectionProvider);
           },
           icon: const Icon(Icons.download_rounded, size: 18),
-          tooltip: "下载",
+          tooltip: l10n.download,
         ),
         IconButton(
           onPressed: () async {
             final ids = ref.read(songSelectionProvider).ids;
-            if (ids.isEmpty) {
-              if (ref.context.mounted) {
-                showSnackBar("当前没有选择的歌曲！", ref.context, colorScheme.secondary);
-              }
+            if (_checkIdsEmpty(ids, context, ref)) return;
+            if (_checkIdsLimit(
+              ids,
+              100,
+              context,
+              ref,
+              l10n.favorite_limit_exceeded,
+            )) {
               return;
             }
-            if (ids.length > 100) {
-              if (ref.context.mounted) {
-                showSnackBar(
-                  "一次性收藏歌曲数量已经大于100！",
-                  ref.context,
-                  colorScheme.secondary,
-                );
-              }
-              return;
-            }
+
             try {
               ref.read(requestFlagProvider.notifier).setRequestFlag(true);
               final response = await ref
@@ -65,8 +93,8 @@ class SubSongSelectionBottom extends HookConsumerWidget {
                 ref.invalidate(songSelectionProvider);
               }
             } catch (e) {
-              if (ref.context.mounted) {
-                showSnackBarError(e, ref.context, colorScheme.secondary);
+              if (context.mounted) {
+                showSnackBarError(e, context, colorScheme.secondary);
               }
             } finally {
               ref.read(requestFlagProvider.notifier).setRequestFlag(false);
@@ -78,22 +106,17 @@ class SubSongSelectionBottom extends HookConsumerWidget {
         IconButton(
           onPressed: () async {
             final ids = ref.read(songSelectionProvider).ids;
-            if (ids.isEmpty) {
-              if (ref.context.mounted) {
-                showSnackBar("当前没有选择的歌曲！", ref.context, colorScheme.secondary);
-              }
+            if (_checkIdsEmpty(ids, context, ref)) return;
+            if (_checkIdsLimit(
+              ids,
+              100,
+              context,
+              ref,
+              l10n.cancel_favorite_limit_exceeded,
+            )) {
               return;
             }
-            if (ids.length > 100) {
-              if (ref.context.mounted) {
-                showSnackBar(
-                  "一次性取消收藏歌曲数量已经大于100！",
-                  ref.context,
-                  colorScheme.secondary,
-                );
-              }
-              return;
-            }
+
             try {
               ref.read(requestFlagProvider.notifier).setRequestFlag(true);
               final response = await ref
@@ -107,8 +130,8 @@ class SubSongSelectionBottom extends HookConsumerWidget {
                 ref.invalidate(songSelectionProvider);
               }
             } catch (e) {
-              if (ref.context.mounted) {
-                showSnackBarError(e, ref.context, colorScheme.secondary);
+              if (context.mounted) {
+                showSnackBarError(e, context, colorScheme.secondary);
               }
             } finally {
               ref.read(requestFlagProvider.notifier).setRequestFlag(false);
@@ -120,29 +143,18 @@ class SubSongSelectionBottom extends HookConsumerWidget {
         IconButton(
           onPressed: () async {
             final ids = ref.read(songSelectionProvider).ids;
-            if (ids.isEmpty) {
-              if (ref.context.mounted) {
-                showSnackBar("当前没有选择的歌曲！", ref.context, colorScheme.secondary);
-              }
+            if (_checkIdsEmpty(ids, context, ref)) return;
+            if (_checkIdsLimit(
+              ids,
+              1000,
+              context,
+              ref,
+              l10n.queue_limit_exceeded,
+            )) {
               return;
             }
-            if (ids.length > 1000) {
-              if (ref.context.mounted) {
-                showSnackBar(
-                  "一次性添加播放队列数量已经大于1000！",
-                  ref.context,
-                  colorScheme.secondary,
-                );
-              }
-              return;
-            }
-            final songMap = <String, Song>{
-              for (var song in songs) song.id: song,
-            };
-            final selectedTracks = ids
-                .map((id) => songMap[id]?.asTrack())
-                .whereType<ToneHarborTrackObject>()
-                .toList();
+
+            final selectedTracks = _getSelectedTracks(ids);
             await ref
                 .read(audioPlayerStateProvider.notifier)
                 .addTracksAtFirst(selectedTracks, allowDuplicates: true);
@@ -154,29 +166,18 @@ class SubSongSelectionBottom extends HookConsumerWidget {
         IconButton(
           onPressed: () async {
             final ids = ref.read(songSelectionProvider).ids;
-            if (ids.isEmpty) {
-              if (ref.context.mounted) {
-                showSnackBar("当前没有选择的歌曲！", ref.context, colorScheme.secondary);
-              }
+            if (_checkIdsEmpty(ids, context, ref)) return;
+            if (_checkIdsLimit(
+              ids,
+              1000,
+              context,
+              ref,
+              l10n.queue_limit_exceeded,
+            )) {
               return;
             }
-            if (ids.length > 1000) {
-              if (ref.context.mounted) {
-                showSnackBar(
-                  "一次性添加播放队列数量已经大于1000！",
-                  ref.context,
-                  colorScheme.secondary,
-                );
-              }
-              return;
-            }
-            final songMap = <String, Song>{
-              for (var song in songs) song.id: song,
-            };
-            final selectedTracks = ids
-                .map((id) => songMap[id]?.asTrack())
-                .whereType<ToneHarborTrackObject>()
-                .toList();
+
+            final selectedTracks = _getSelectedTracks(ids);
             await ref
                 .read(audioPlayerStateProvider.notifier)
                 .addTracks(selectedTracks);
@@ -188,22 +189,17 @@ class SubSongSelectionBottom extends HookConsumerWidget {
         IconButton(
           onPressed: () {
             final ids = ref.read(songSelectionProvider).ids;
-            if (ids.isEmpty) {
-              if (ref.context.mounted) {
-                showSnackBar("当前没有选择的歌曲！", ref.context, colorScheme.secondary);
-              }
+            if (_checkIdsEmpty(ids, context, ref)) return;
+            if (_checkIdsLimit(
+              ids,
+              100,
+              context,
+              ref,
+              l10n.cancel_favorite_limit_exceeded,
+            )) {
               return;
             }
-            if (ids.length > 100) {
-              if (ref.context.mounted) {
-                showSnackBar(
-                  "一次性取消收藏歌曲数量已经大于100！",
-                  ref.context,
-                  colorScheme.secondary,
-                );
-              }
-              return;
-            }
+
             ref
                 .read(subContentProvider.notifier)
                 .set(
@@ -216,7 +212,7 @@ class SubSongSelectionBottom extends HookConsumerWidget {
           icon: const Icon(Icons.playlist_add_rounded, size: 18),
           tooltip: l10n.song_playlist,
         ),
-        SizedBox(width: 15),
+        const SizedBox(width: 15),
       ],
     );
   }

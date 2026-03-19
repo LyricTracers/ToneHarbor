@@ -402,6 +402,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get play_queue => '播放队列';
 
   @override
+  String get download => '下载';
+
+  @override
+  String get no_selected_songs => '没有选择的歌曲';
+
+  @override
+  String get favorite_limit_exceeded => '收藏数量超过限制（最多100首）';
+
+  @override
+  String get cancel_favorite_limit_exceeded => '取消收藏数量超过限制（最多100首）';
+
+  @override
+  String get queue_limit_exceeded => '播放队列数量超过限制（最多1000首）';
+
+  @override
   String get tip_pre_song => '已经是第一首了，请开启循环播放';
 
   @override

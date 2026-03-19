@@ -416,6 +416,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get play_queue => 'Play Queue';
 
   @override
+  String get download => 'Download';
+
+  @override
+  String get no_selected_songs => 'No songs selected';
+
+  @override
+  String get favorite_limit_exceeded =>
+      'Favorite limit exceeded (max 100 songs)';
+
+  @override
+  String get cancel_favorite_limit_exceeded =>
+      'Cancel favorite limit exceeded (max 100 songs)';
+
+  @override
+  String get queue_limit_exceeded => 'Queue limit exceeded (max 1000 songs)';
+
+  @override
   String get tip_pre_song => 'Already at the first song. Enable loop playback.';
 
   @override
