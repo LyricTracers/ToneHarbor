@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
-import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
-class SubSongSelectionBottom extends HookConsumerWidget {
-  final List<Song> songs;
+class SubSongSelectionBottom<T extends AsSong> extends HookConsumerWidget {
+  final List<T> songs;
   const SubSongSelectionBottom({super.key, required this.songs});
 
   bool _checkIdsEmpty(Set<String> ids, BuildContext context, WidgetRef ref) {
@@ -42,7 +42,7 @@ class SubSongSelectionBottom extends HookConsumerWidget {
   }
 
   List<ToneHarborTrackObject> _getSelectedTracks(Set<String> ids) {
-    final songMap = <String, Song>{for (var song in songs) song.id: song};
+    final songMap = <String, T>{for (var song in songs) song.id: song};
     return ids
         .map((id) => songMap[id]?.asTrack())
         .whereType<ToneHarborTrackObject>()

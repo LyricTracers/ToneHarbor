@@ -4,25 +4,31 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
+import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/components/bread_crumb_clipper.dart';
 import 'package:toneharbor/widgets/components/song_context_menu.dart';
 import 'package:toneharbor/widgets/components/song_item.dart';
+import 'package:toneharbor/widgets/components/sub_song_selection_bottom.dart';
+import 'package:toneharbor/widgets/components/sub_song_selection_top.dart';
 
 class _FolderItemWidget extends HookConsumerWidget {
   final List<FolderItem> folderItems;
   final ColorScheme colorScheme;
   final int index;
   final List<FolderItem> lastFoldItems;
+  final SongSelectionState songSelectionState;
   const _FolderItemWidget({
     required this.index,
     required this.folderItems,
     required this.colorScheme,
     required this.lastFoldItems,
+    required this.songSelectionState,
   });
   static const double itemHeightFolder = 44.0;
 
@@ -41,13 +47,15 @@ class _FolderItemWidget extends HookConsumerWidget {
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () async {
-            context.push(
-              "/folders/${folderItem.id}",
-              extra: (
-                foldersProvider(limit: 100, id: folderItem.id),
-                [...lastFoldItems, folderItem],
-              ),
-            );
+            if (!songSelectionState.selectionType) {
+              context.push(
+                "/folders/${folderItem.id}",
+                extra: (
+                  foldersProvider(limit: 100, id: folderItem.id),
+                  [...lastFoldItems, folderItem],
+                ),
+              );
+            }
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
@@ -249,7 +257,9 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
           tooltip: l10n.sort,
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            ref.read(songSelectionProvider.notifier).toggle();
+          },
           icon: Icon(Icons.fact_check_rounded, size: 18),
         ),
         IconButton(
@@ -274,7 +284,21 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
     final activeTrack = ref.watch(audioPlayerStateProvider).activeTrack;
     final activeSongId = activeTrack?.id;
     final songRating = ref.watch(songRatingProvider);
-
+    final songSelectionState = ref.watch(
+      songSelectionProvider.select(
+        (state) => SongSelectionState(
+          selectionType: state.selectionType,
+          ids: {},
+          boxState: state.boxState,
+        ),
+      ),
+    );
+    useEffect(() {
+      Future.microtask(() {
+        ref.invalidate(songSelectionProvider);
+      });
+      return null;
+    }, []);
     useEffect(() {
       void onScroll() {
         if (!scrollController.hasClients) return;
@@ -304,7 +328,10 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
     }, [scrollController]);
     return Column(
       children: [
-        _buildAppBar(context, ref, colorScheme, total),
+        if (songSelectionState.selectionType)
+          SubSongSelectionTop(songs: folderItems),
+        if (!songSelectionState.selectionType)
+          _buildAppBar(context, ref, colorScheme, total),
         Expanded(
           child: folderResponse.when(
             data: (data) {
@@ -334,6 +361,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                       folderItems: folderItems,
                       colorScheme: colorScheme,
                       lastFoldItems: lastFoldItems,
+                      songSelectionState: songSelectionState,
                     );
                   } else {
                     var item = folderItem.asSong();
@@ -354,6 +382,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                           song: item,
                           activeSongId: activeSongId,
                           colorScheme: colorScheme,
+                          selectionState: songSelectionState,
                           l10n: l10n,
                           isFavorite: songRating.contains(item.id),
                           onTap: () async {
@@ -383,6 +412,8 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
             },
           ),
         ),
+        if (songSelectionState.selectionType)
+          SubSongSelectionBottom(songs: folderItems),
       ],
     );
   }

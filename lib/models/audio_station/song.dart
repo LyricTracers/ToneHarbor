@@ -1,4 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
+import 'package:toneharbor/models/audio_station/folder.dart';
 part 'song.freezed.dart';
 part 'song.g.dart';
 
@@ -77,7 +79,7 @@ sealed class SongAdditional with _$SongAdditional {
 }
 
 @freezed
-sealed class Song with _$Song {
+sealed class Song with _$Song, AsSong {
   const Song._();
   const factory Song({
     required String id,
@@ -87,6 +89,50 @@ sealed class Song with _$Song {
     SongAdditional? additional,
   }) = _Song;
   factory Song.fromJson(Map<String, dynamic> json) => _$SongFromJson(json);
+  @override
+  Song asSong() {
+    return this;
+  }
+
+  @override
+  ToneHarborTrackObject asTrack() {
+    var artist = additional?.songTag?.artist;
+    if (artist == null || artist.isEmpty) {
+      artist = additional?.songTag?.albumArtist;
+    }
+    if (artist == null || artist.isEmpty) {
+      artist = 'Unknown Artist';
+    }
+    var album = additional?.songTag?.album;
+    if (album == null || album.isEmpty) {
+      album = 'Unknown Album';
+    }
+    var container = additional?.songAudio?.container;
+    if (container == null || container.isEmpty) {
+      container = 'mp3';
+    }
+
+    var codec = additional?.songAudio?.codec;
+    if (codec == null || codec.isEmpty) {
+      codec = 'mp3';
+    }
+    return ToneHarborTrackObject.full(
+      id: id,
+      title: title,
+      artist: artist,
+      album: album,
+      externalUri: "",
+      duration: Duration(seconds: additional?.songAudio?.duration.toInt() ?? 0),
+      rating: additional?.songRating?.rating ?? 0,
+      filesize: additional?.songAudio?.filesize ?? 0,
+      bitrate: additional?.songAudio?.bitrate ?? 0,
+      channel: additional?.songAudio?.channel ?? 0,
+      codec: codec,
+      container: container,
+      frequency: additional?.songAudio?.frequency ?? 0,
+      platform: ToneHarborTrackPlatform.synology,
+    );
+  }
 }
 
 @freezed

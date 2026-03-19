@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 
-class SubSongSelectionTop extends HookConsumerWidget {
-  final List<Song> songs;
+class SubSongSelectionTop<T extends AsSong> extends HookConsumerWidget {
+  final List<T> songs;
   const SubSongSelectionTop({super.key, required this.songs});
 
   @override
@@ -38,15 +38,18 @@ class SubSongSelectionTop extends HookConsumerWidget {
         Consumer(
           builder: (context, ref, child) {
             final selection = ref.watch(songSelectionProvider);
+            final selectableSongs = songs
+                .where((song) => song.isSong())
+                .toList();
             return Checkbox(
               shape: const CircleBorder(),
-              value: selection.ids.length == songs.length,
+              value: selection.ids.length == selectableSongs.length,
               onChanged: (b) {
                 if (b == true) {
                   ref
                       .read(songSelectionProvider.notifier)
                       .selectAll(
-                        songs.map((song) {
+                        selectableSongs.map((song) {
                           return song.id;
                         }).toSet(),
                       );

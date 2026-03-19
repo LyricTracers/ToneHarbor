@@ -125,47 +125,6 @@ extension AsMediaListToneHarborTrackObject on Iterable<ToneHarborTrackObject> {
   }
 }
 
-extension AsToneHarborTrackObject on Song {
-  ToneHarborTrackObject asTrack() {
-    var artist = additional?.songTag?.artist;
-    if (artist == null || artist.isEmpty) {
-      artist = additional?.songTag?.albumArtist;
-    }
-    if (artist == null || artist.isEmpty) {
-      artist = 'Unknown Artist';
-    }
-    var album = additional?.songTag?.album;
-    if (album == null || album.isEmpty) {
-      album = 'Unknown Album';
-    }
-    var container = additional?.songAudio?.container;
-    if (container == null || container.isEmpty) {
-      container = 'mp3';
-    }
-
-    var codec = additional?.songAudio?.codec;
-    if (codec == null || codec.isEmpty) {
-      codec = 'mp3';
-    }
-    return ToneHarborTrackObject.full(
-      id: id,
-      title: title,
-      artist: artist,
-      album: album,
-      externalUri: "",
-      duration: Duration(seconds: additional?.songAudio?.duration.toInt() ?? 0),
-      rating: additional?.songRating?.rating ?? 0,
-      filesize: additional?.songAudio?.filesize ?? 0,
-      bitrate: additional?.songAudio?.bitrate ?? 0,
-      channel: additional?.songAudio?.channel ?? 0,
-      codec: codec,
-      container: container,
-      frequency: additional?.songAudio?.frequency ?? 0,
-      platform: ToneHarborTrackPlatform.synology,
-    );
-  }
-}
-
 extension AsToneHarborTrackObjects on Iterable<Song> {
   List<ToneHarborTrackObject> asTrackList() {
     return map((song) {

@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 part 'folder.freezed.dart';
 part 'folder.g.dart';
@@ -23,7 +24,7 @@ sealed class FolderRequest with _$FolderRequest {
 }
 
 @freezed
-sealed class FolderItem with _$FolderItem {
+sealed class FolderItem with _$FolderItem, AsSong {
   const FolderItem._();
   const factory FolderItem({
     required String id,
@@ -36,6 +37,62 @@ sealed class FolderItem with _$FolderItem {
   }) = _FolderItem;
   factory FolderItem.fromJson(Map<String, dynamic> json) =>
       _$FolderItemFromJson(json);
+
+  @override
+  bool isSong() {
+    return type != "folder";
+  }
+
+  @override
+  Song asSong() {
+    return Song(
+      id: id,
+      path: path,
+      title: title,
+      type: type,
+      additional: additional,
+    );
+  }
+
+  @override
+  ToneHarborTrackObject asTrack() {
+    var artist = additional?.songTag?.artist;
+    if (artist == null || artist.isEmpty) {
+      artist = additional?.songTag?.albumArtist;
+    }
+    if (artist == null || artist.isEmpty) {
+      artist = 'Unknown Artist';
+    }
+    var album = additional?.songTag?.album;
+    if (album == null || album.isEmpty) {
+      album = 'Unknown Album';
+    }
+    var container = additional?.songAudio?.container;
+    if (container == null || container.isEmpty) {
+      container = 'mp3';
+    }
+
+    var codec = additional?.songAudio?.codec;
+    if (codec == null || codec.isEmpty) {
+      codec = 'mp3';
+    }
+    return ToneHarborTrackObject.full(
+      id: id,
+      title: title,
+      artist: artist,
+      album: album,
+      externalUri: "",
+      duration: Duration(seconds: additional?.songAudio?.duration.toInt() ?? 0),
+      rating: additional?.songRating?.rating ?? 0,
+      filesize: additional?.songAudio?.filesize ?? 0,
+      bitrate: additional?.songAudio?.bitrate ?? 0,
+      channel: additional?.songAudio?.channel ?? 0,
+      codec: codec,
+      container: container,
+      frequency: additional?.songAudio?.frequency ?? 0,
+      platform: ToneHarborTrackPlatform.synology,
+    );
+  }
 }
 
 @freezed
@@ -64,14 +121,12 @@ sealed class FolderResponse with _$FolderResponse {
       _$FolderResponseFromJson(json);
 }
 
-extension FolderItemAsSong on FolderItem {
-  Song asSong() {
-    return Song(
-      id: id,
-      path: path,
-      title: title,
-      type: type,
-      additional: additional,
-    );
+abstract mixin class AsSong {
+  String get id;
+  bool isSong() {
+    return true;
   }
+
+  Song asSong();
+  ToneHarborTrackObject asTrack();
 }
