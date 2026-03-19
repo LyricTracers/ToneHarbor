@@ -41,7 +41,7 @@ final class SongSelectionProvider
   }
 }
 
-String _$songSelectionHash() => r'd8f9feeb1cb1f355c2acdb3e11176e02e3fac56f';
+String _$songSelectionHash() => r'e43baefc0c2cb01d19aac598f5bd0a121d7b78ad';
 
 abstract class _$SongSelection extends $Notifier<SongSelectionState> {
   SongSelectionState build();

@@ -29,6 +29,7 @@ class SongItem extends HookConsumerWidget {
     this.selectionState = const SongSelectionState(
       selectionType: false,
       ids: {},
+      boxState: AllCheckBoxState.none,
     ),
   });
   static const double itemHeight = 66.0;
@@ -52,6 +53,38 @@ class SongItem extends HookConsumerWidget {
       album = 'Unknown Album';
     }
     var isHovered = useState(false);
+    var localSelected = useState(false);
+
+    useEffect(() {
+      localSelected.value = ref
+          .read(songSelectionProvider.notifier)
+          .isSelected(song.id);
+      return null;
+    }, [selectionState.selectionType]);
+
+    useEffect(() {
+      if (selectionState.boxState == AllCheckBoxState.selectionAll ||
+          selectionState.boxState == AllCheckBoxState.deSelectionAll) {
+        localSelected.value = ref
+            .read(songSelectionProvider.notifier)
+            .isSelected(song.id);
+      }
+      return null;
+    }, [selectionState.boxState]);
+    void updateState() {
+      localSelected.value = !ref
+          .read(songSelectionProvider.notifier)
+          .isSelected(song.id);
+      var flag = localSelected.value;
+      Future.microtask(() {
+        if (flag) {
+          ref.read(songSelectionProvider.notifier).select(song.id);
+        } else {
+          ref.read(songSelectionProvider.notifier).deSelect(song.id);
+        }
+      });
+    }
+
     return MouseRegion(
       onEnter: (event) => isHovered.value = true,
       onExit: (event) => isHovered.value = false,
@@ -86,7 +119,14 @@ class SongItem extends HookConsumerWidget {
                 : Colors.transparent,
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onDoubleTap: () => onTap(),
+              onDoubleTap: () {
+                if (!selectionState.selectionType) {
+                  onTap();
+                }
+              },
+              onTap: () {
+                updateState();
+              },
               child: Padding(
                 padding: const EdgeInsets.only(
                   left: 15,
@@ -171,22 +211,11 @@ class SongItem extends HookConsumerWidget {
                       ),
                     ),
                     if (selectionState.selectionType)
-                      Consumer(
-                        builder: (context, ref, child) {
-                          final isSelected = ref.watch(
-                            songSelectionProvider.select(
-                              (state) => state.ids.contains(song.id),
-                            ),
-                          );
-                          return Checkbox(
-                            shape: const CircleBorder(),
-                            value: isSelected,
-                            onChanged: (_) {
-                              ref
-                                  .read(songSelectionProvider.notifier)
-                                  .toggleSelection(song.id);
-                            },
-                          );
+                      Checkbox(
+                        shape: const CircleBorder(),
+                        value: localSelected.value,
+                        onChanged: (_) {
+                          updateState();
                         },
                       ),
                   ],

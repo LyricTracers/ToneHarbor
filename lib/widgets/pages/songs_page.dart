@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
@@ -152,10 +153,21 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
     final songRating = ref.watch(songRatingProvider);
     final songSelectionState = ref.watch(
       songSelectionProvider.select(
-        (state) =>
-            SongSelectionState(selectionType: state.selectionType, ids: {}),
+        (state) => SongSelectionState(
+          selectionType: state.selectionType,
+          ids: {},
+          boxState: state.boxState,
+        ),
       ),
     );
+
+    useEffect(() {
+      return () {
+        Future.microtask(() {
+          ref.invalidate(songSelectionProvider);
+        });
+      };
+    }, []);
 
     useEffect(() {
       void onScroll() {
@@ -230,12 +242,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                         isFavorite: songRating.contains(item.id),
                         selectionState: songSelectionState,
                         onTap: () async {
-                          var songSelection = ref.read(
-                            songSelectionProvider.notifier,
-                          );
-                          if (songSelection.isSelectionState) {
-                            songSelection.toggleSelection(item.id);
-                          } else {
+                          {
                             await ref
                                 .read(audioPlayerStateProvider.notifier)
                                 .load(

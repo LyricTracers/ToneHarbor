@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SongSelectionState {
 
- bool get selectionType; Set<String> get ids;
+ bool get selectionType; Set<String> get ids; AllCheckBoxState get boxState;
 /// Create a copy of SongSelectionState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $SongSelectionStateCopyWith<SongSelectionState> get copyWith => _$SongSelectionS
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SongSelectionState&&(identical(other.selectionType, selectionType) || other.selectionType == selectionType)&&const DeepCollectionEquality().equals(other.ids, ids));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SongSelectionState&&(identical(other.selectionType, selectionType) || other.selectionType == selectionType)&&const DeepCollectionEquality().equals(other.ids, ids)&&(identical(other.boxState, boxState) || other.boxState == boxState));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,selectionType,const DeepCollectionEquality().hash(ids));
+int get hashCode => Object.hash(runtimeType,selectionType,const DeepCollectionEquality().hash(ids),boxState);
 
 @override
 String toString() {
-  return 'SongSelectionState(selectionType: $selectionType, ids: $ids)';
+  return 'SongSelectionState(selectionType: $selectionType, ids: $ids, boxState: $boxState)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $SongSelectionStateCopyWith<$Res>  {
   factory $SongSelectionStateCopyWith(SongSelectionState value, $Res Function(SongSelectionState) _then) = _$SongSelectionStateCopyWithImpl;
 @useResult
 $Res call({
- bool selectionType, Set<String> ids
+ bool selectionType, Set<String> ids, AllCheckBoxState boxState
 });
 
 
@@ -65,11 +65,12 @@ class _$SongSelectionStateCopyWithImpl<$Res>
 
 /// Create a copy of SongSelectionState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? selectionType = null,Object? ids = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? selectionType = null,Object? ids = null,Object? boxState = null,}) {
   return _then(_self.copyWith(
 selectionType: null == selectionType ? _self.selectionType : selectionType // ignore: cast_nullable_to_non_nullable
 as bool,ids: null == ids ? _self.ids : ids // ignore: cast_nullable_to_non_nullable
-as Set<String>,
+as Set<String>,boxState: null == boxState ? _self.boxState : boxState // ignore: cast_nullable_to_non_nullable
+as AllCheckBoxState,
   ));
 }
 
@@ -151,10 +152,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool selectionType,  Set<String> ids)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool selectionType,  Set<String> ids,  AllCheckBoxState boxState)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SongSelectionState() when $default != null:
-return $default(_that.selectionType,_that.ids);case _:
+return $default(_that.selectionType,_that.ids,_that.boxState);case _:
   return orElse();
 
 }
@@ -172,10 +173,10 @@ return $default(_that.selectionType,_that.ids);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool selectionType,  Set<String> ids)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool selectionType,  Set<String> ids,  AllCheckBoxState boxState)  $default,) {final _that = this;
 switch (_that) {
 case _SongSelectionState():
-return $default(_that.selectionType,_that.ids);}
+return $default(_that.selectionType,_that.ids,_that.boxState);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -189,10 +190,10 @@ return $default(_that.selectionType,_that.ids);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool selectionType,  Set<String> ids)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool selectionType,  Set<String> ids,  AllCheckBoxState boxState)?  $default,) {final _that = this;
 switch (_that) {
 case _SongSelectionState() when $default != null:
-return $default(_that.selectionType,_that.ids);case _:
+return $default(_that.selectionType,_that.ids,_that.boxState);case _:
   return null;
 
 }
@@ -204,7 +205,7 @@ return $default(_that.selectionType,_that.ids);case _:
 @JsonSerializable()
 
 class _SongSelectionState extends SongSelectionState {
-  const _SongSelectionState({required this.selectionType, required final  Set<String> ids}): _ids = ids,super._();
+  const _SongSelectionState({required this.selectionType, required final  Set<String> ids, required this.boxState}): _ids = ids,super._();
   factory _SongSelectionState.fromJson(Map<String, dynamic> json) => _$SongSelectionStateFromJson(json);
 
 @override final  bool selectionType;
@@ -215,6 +216,7 @@ class _SongSelectionState extends SongSelectionState {
   return EqualUnmodifiableSetView(_ids);
 }
 
+@override final  AllCheckBoxState boxState;
 
 /// Create a copy of SongSelectionState
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +231,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SongSelectionState&&(identical(other.selectionType, selectionType) || other.selectionType == selectionType)&&const DeepCollectionEquality().equals(other._ids, _ids));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SongSelectionState&&(identical(other.selectionType, selectionType) || other.selectionType == selectionType)&&const DeepCollectionEquality().equals(other._ids, _ids)&&(identical(other.boxState, boxState) || other.boxState == boxState));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,selectionType,const DeepCollectionEquality().hash(_ids));
+int get hashCode => Object.hash(runtimeType,selectionType,const DeepCollectionEquality().hash(_ids),boxState);
 
 @override
 String toString() {
-  return 'SongSelectionState(selectionType: $selectionType, ids: $ids)';
+  return 'SongSelectionState(selectionType: $selectionType, ids: $ids, boxState: $boxState)';
 }
 
 
@@ -249,7 +251,7 @@ abstract mixin class _$SongSelectionStateCopyWith<$Res> implements $SongSelectio
   factory _$SongSelectionStateCopyWith(_SongSelectionState value, $Res Function(_SongSelectionState) _then) = __$SongSelectionStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool selectionType, Set<String> ids
+ bool selectionType, Set<String> ids, AllCheckBoxState boxState
 });
 
 
@@ -266,11 +268,12 @@ class __$SongSelectionStateCopyWithImpl<$Res>
 
 /// Create a copy of SongSelectionState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? selectionType = null,Object? ids = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? selectionType = null,Object? ids = null,Object? boxState = null,}) {
   return _then(_SongSelectionState(
 selectionType: null == selectionType ? _self.selectionType : selectionType // ignore: cast_nullable_to_non_nullable
 as bool,ids: null == ids ? _self._ids : ids // ignore: cast_nullable_to_non_nullable
-as Set<String>,
+as Set<String>,boxState: null == boxState ? _self.boxState : boxState // ignore: cast_nullable_to_non_nullable
+as AllCheckBoxState,
   ));
 }
 
