@@ -368,6 +368,14 @@ Future<SongListResponse> _getSongs({
   return result;
 }
 
+Future<SetRatingResponse> _setRatings({
+  required Ref ref,
+  required Set<String> ids,
+  int rating = 5,
+}) async {
+  return _setRating(ref: ref, id: ids.join(','), rating: rating);
+}
+
 /// 设置歌曲评分
 ///
 /// [id] 歌曲 ID

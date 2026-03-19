@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/favorite_playlist_state.dart';
+import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
+import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
@@ -65,6 +67,15 @@ class HomeLayout extends BaseBgLayout {
             curve: Curves.fastEaseInToSlowEaseOut,
           ),
         );
+    var selectionTypeState = ref.watch(
+      songSelectionProvider.select((state) {
+        return SongSelectionState(
+          selectionType: state.selectionType,
+          ids: {},
+          boxState: false,
+        );
+      }),
+    );
     return Stack(
       children: [
         Row(
@@ -306,7 +317,7 @@ class HomeLayout extends BaseBgLayout {
               child: Column(
                 children: [
                   Expanded(child: child),
-                  BottomPlayer(),
+                  if (!selectionTypeState.selectionType) BottomPlayer(),
                 ],
               ),
             ),
@@ -337,7 +348,7 @@ class HomeLayout extends BaseBgLayout {
                   SubContentType.playList => PlaylistPage(),
                   SubContentType.addToPlayLists =>
                     subContentState.extra != null
-                        ? AddToPlaylistsPage([subContentState.extra!])
+                        ? AddToPlaylistsPage(subContentState.extra!)
                         : const SizedBox.shrink(),
                   SubContentType.songInfo => const SizedBox.shrink(),
                   SubContentType.updateLyrics => const SizedBox.shrink(),

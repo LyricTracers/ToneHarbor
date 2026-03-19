@@ -41,7 +41,7 @@ final class SongRatingProvider
   }
 }
 
-String _$songRatingHash() => r'3c64461bcfb898fc42578efc20389a29b8f5918b';
+String _$songRatingHash() => r'216279edced28cae3a0a7b7b2dd2174f0d7a8176';
 
 abstract class _$SongRating extends $Notifier<Set<String>> {
   Set<String> build();

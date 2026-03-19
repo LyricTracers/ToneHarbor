@@ -145,9 +145,9 @@ class PlayingDetailLayout extends BaseBgLayout {
                 switch (subContentState.type) {
                   SubContentType.playList => PlaylistPage(),
                   SubContentType.songInfo => SizedBox(),
-                  SubContentType.addToPlayLists => AddToPlaylistsPage([
+                  SubContentType.addToPlayLists => AddToPlaylistsPage(
                     subContentState.extra ?? activeTrack.id,
-                  ]),
+                  ),
                   SubContentType.updateLyrics => SizedBox(),
                   SubContentType.none => const SizedBox(),
                 },

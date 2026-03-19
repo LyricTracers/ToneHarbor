@@ -52,6 +52,25 @@ class SongRating extends _$SongRating {
     }
   }
 
+  Future<SetRatingResponse> setRatings({
+    required Set<String> ids,
+    int rating = 5,
+  }) async {
+    try {
+      var result = await _setRatings(ref: ref, ids: ids, rating: rating);
+      if (result.success) {
+        if (rating == 5) {
+          addFavorites(ids);
+        } else {
+          removeFavorites(ids);
+        }
+      }
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   void addFavorite(String id) {
     if (!state.contains(id)) {
       state = {...state, id};
@@ -60,6 +79,11 @@ class SongRating extends _$SongRating {
 
   void addFavorites(Iterable<String> ids) {
     state = {...state, ...ids};
+  }
+
+  void removeFavorites(Iterable<String> ids) {
+    final newState = {...state}..removeAll(ids);
+    state = newState;
   }
 
   void removeFavorite(String id) {

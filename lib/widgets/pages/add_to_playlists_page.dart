@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/models/audio_player/sub_content_state.dart';
+import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/excetions.dart';
@@ -10,7 +11,7 @@ import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 class AddToPlaylistsPage extends HookConsumerWidget {
   const AddToPlaylistsPage(this.songIds, {super.key});
 
-  final List<String> songIds;
+  final String songIds;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -206,9 +207,9 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                                   try {
                                     var result = await ref
                                         .read(playlistStateProvider.notifier)
-                                        .addSongsToPlaylist(
+                                        .addSongToPlaylist(
                                           id: playlist.id,
-                                          songIds: songIds,
+                                          songId: songIds,
                                           skipDuplicate: skipDuplicate.value,
                                         );
                                     if (result.success) {
@@ -216,6 +217,7 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                                         groupKey: "playlist",
                                       );
                                       ref.invalidate(playlistDetailProvider);
+                                      ref.invalidate(songSelectionProvider);
                                       if (context.mounted) {
                                         showSnackBar(
                                           i10n.addsong_to_playlist_success
@@ -227,6 +229,13 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                                           colorScheme.secondary,
                                         );
                                       }
+                                      ref
+                                          .read(subContentProvider.notifier)
+                                          .set(
+                                            SubContentData(
+                                              type: SubContentType.none,
+                                            ),
+                                          );
                                     }
                                   } catch (e) {
                                     if (context.mounted) {

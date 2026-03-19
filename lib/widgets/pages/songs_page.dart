@@ -15,6 +15,8 @@ import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/components/song_context_menu.dart';
 import 'package:toneharbor/widgets/components/song_item.dart';
+import 'package:toneharbor/widgets/components/sub_song_selection_bottom.dart';
+import 'package:toneharbor/widgets/components/sub_song_selection_top.dart';
 
 part 'songs_page_action.dart';
 
@@ -37,62 +39,8 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
     WidgetRef ref,
     ColorScheme colorScheme,
     int total,
-    List<Song> songs,
-    SongSelectionState songSelection,
   ) {
     final l10n = ref.watch(l10nProvider);
-
-    if (songSelection.selectionType) {
-      return AppBar(
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          onPressed: () {
-            ref.invalidate(songSelectionProvider);
-          },
-          icon: Icon(Icons.arrow_back_ios_sharp),
-        ),
-        centerTitle: true,
-        title: Consumer(
-          builder: (context, ref, child) {
-            final selection = ref.watch(songSelectionProvider);
-            return Text(
-              '已选择 ${selection.ids.length} 首歌曲',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            );
-          },
-        ),
-        actions: [
-          Text(
-            '全选',
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-          ),
-          Consumer(
-            builder: (context, ref, child) {
-              final selection = ref.watch(songSelectionProvider);
-              return Checkbox(
-                shape: const CircleBorder(),
-                value: selection.ids.length == songs.length,
-                onChanged: (b) {
-                  if (b == true) {
-                    ref
-                        .read(songSelectionProvider.notifier)
-                        .selectAll(
-                          songs.map((song) {
-                            return song.id;
-                          }).toSet(),
-                        );
-                  } else {
-                    ref.read(songSelectionProvider.notifier).deSelectAll();
-                  }
-                },
-              );
-            },
-          ),
-          SizedBox(width: 15),
-        ],
-      );
-    }
-
     return AppBar(
       title: Row(
         children: [
@@ -206,7 +154,10 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
 
     return Column(
       children: [
-        _buildAppBar(ref, colorScheme, total, songItems, songSelectionState),
+        if (songSelectionState.selectionType)
+          SubSongSelectionTop(songs: songItems),
+        if (!songSelectionState.selectionType)
+          _buildAppBar(ref, colorScheme, total),
         Expanded(
           child: songs.when(
             data: (data) {
@@ -232,6 +183,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                   var item = songItems[index];
                   return RepaintBoundary(
                     child: ContextMenuRegion(
+                      enableDefaultGestures: !songSelectionState.selectionType,
                       contextMenu: ContextMenu(
                         entriesBuilder: () =>
                             SongContextMenu.build(ref, colorScheme, l10n, item),
@@ -272,6 +224,8 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
             },
           ),
         ),
+        if (songSelectionState.selectionType)
+          SubSongSelectionBottom(songs: songItems),
       ],
     );
   }

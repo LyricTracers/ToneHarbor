@@ -344,9 +344,9 @@ class BottomPlayer extends HookConsumerWidget {
                       ),
                       const SizedBox(width: 2),
                       IconButton(
-                        icon: const Icon(Icons.playlist_play_rounded, size: 18),
+                        tooltip: l10n.play_queue,
+                        icon: const Icon(Icons.queue_music_rounded, size: 18),
                         onPressed: () {
-                          logger.i("clider");
                           ref
                               .read(subContentProvider.notifier)
                               .set(
