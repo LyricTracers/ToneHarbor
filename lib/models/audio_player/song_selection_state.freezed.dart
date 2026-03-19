@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SongSelectionState {
 
- bool get selectionType; Set<String> get ids; AllCheckBoxState get boxState;
+ bool get selectionType; Set<String> get ids; bool get boxState;
 /// Create a copy of SongSelectionState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $SongSelectionStateCopyWith<$Res>  {
   factory $SongSelectionStateCopyWith(SongSelectionState value, $Res Function(SongSelectionState) _then) = _$SongSelectionStateCopyWithImpl;
 @useResult
 $Res call({
- bool selectionType, Set<String> ids, AllCheckBoxState boxState
+ bool selectionType, Set<String> ids, bool boxState
 });
 
 
@@ -70,7 +70,7 @@ class _$SongSelectionStateCopyWithImpl<$Res>
 selectionType: null == selectionType ? _self.selectionType : selectionType // ignore: cast_nullable_to_non_nullable
 as bool,ids: null == ids ? _self.ids : ids // ignore: cast_nullable_to_non_nullable
 as Set<String>,boxState: null == boxState ? _self.boxState : boxState // ignore: cast_nullable_to_non_nullable
-as AllCheckBoxState,
+as bool,
   ));
 }
 
@@ -152,7 +152,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool selectionType,  Set<String> ids,  AllCheckBoxState boxState)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool selectionType,  Set<String> ids,  bool boxState)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SongSelectionState() when $default != null:
 return $default(_that.selectionType,_that.ids,_that.boxState);case _:
@@ -173,7 +173,7 @@ return $default(_that.selectionType,_that.ids,_that.boxState);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool selectionType,  Set<String> ids,  AllCheckBoxState boxState)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool selectionType,  Set<String> ids,  bool boxState)  $default,) {final _that = this;
 switch (_that) {
 case _SongSelectionState():
 return $default(_that.selectionType,_that.ids,_that.boxState);}
@@ -190,7 +190,7 @@ return $default(_that.selectionType,_that.ids,_that.boxState);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool selectionType,  Set<String> ids,  AllCheckBoxState boxState)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool selectionType,  Set<String> ids,  bool boxState)?  $default,) {final _that = this;
 switch (_that) {
 case _SongSelectionState() when $default != null:
 return $default(_that.selectionType,_that.ids,_that.boxState);case _:
@@ -216,7 +216,7 @@ class _SongSelectionState extends SongSelectionState {
   return EqualUnmodifiableSetView(_ids);
 }
 
-@override final  AllCheckBoxState boxState;
+@override final  bool boxState;
 
 /// Create a copy of SongSelectionState
 /// with the given fields replaced by the non-null parameter values.
@@ -251,7 +251,7 @@ abstract mixin class _$SongSelectionStateCopyWith<$Res> implements $SongSelectio
   factory _$SongSelectionStateCopyWith(_SongSelectionState value, $Res Function(_SongSelectionState) _then) = __$SongSelectionStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool selectionType, Set<String> ids, AllCheckBoxState boxState
+ bool selectionType, Set<String> ids, bool boxState
 });
 
 
@@ -273,7 +273,7 @@ class __$SongSelectionStateCopyWithImpl<$Res>
 selectionType: null == selectionType ? _self.selectionType : selectionType // ignore: cast_nullable_to_non_nullable
 as bool,ids: null == ids ? _self._ids : ids // ignore: cast_nullable_to_non_nullable
 as Set<String>,boxState: null == boxState ? _self.boxState : boxState // ignore: cast_nullable_to_non_nullable
-as AllCheckBoxState,
+as bool,
   ));
 }
 

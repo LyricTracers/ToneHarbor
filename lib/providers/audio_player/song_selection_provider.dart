@@ -7,11 +7,7 @@ part 'song_selection_provider.g.dart';
 class SongSelection extends _$SongSelection {
   @override
   SongSelectionState build() {
-    return SongSelectionState(
-      selectionType: false,
-      ids: {},
-      boxState: AllCheckBoxState.none,
-    );
+    return SongSelectionState(selectionType: false, ids: {}, boxState: false);
   }
 
   void toggle() {
@@ -36,14 +32,11 @@ class SongSelection extends _$SongSelection {
   }
 
   void selectAll(Set<String> allIds) {
-    state = state.copyWith(
-      ids: allIds,
-      boxState: AllCheckBoxState.selectionAll,
-    );
+    state = state.copyWith(ids: allIds, boxState: !state.boxState);
   }
 
   void deSelectAll() {
-    state = state.copyWith(ids: {}, boxState: AllCheckBoxState.deSelectionAll);
+    state = state.copyWith(ids: {}, boxState: !state.boxState);
   }
 
   bool get isSelectionState => state.selectionType;

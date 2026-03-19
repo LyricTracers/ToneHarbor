@@ -45,6 +45,13 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
     if (songSelection.selectionType) {
       return AppBar(
         automaticallyImplyLeading: false,
+        leading: IconButton(
+          onPressed: () {
+            ref.invalidate(songSelectionProvider);
+          },
+          icon: Icon(Icons.arrow_back_ios_sharp),
+        ),
+        centerTitle: true,
         title: Consumer(
           builder: (context, ref, child) {
             final selection = ref.watch(songSelectionProvider);
@@ -150,6 +157,12 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
     final isLoadingMore = useState(false);
     final activeTrack = ref.watch(audioPlayerStateProvider).activeTrack;
     final activeSongId = activeTrack?.id;
+    useEffect(() {
+      Future.microtask(() {
+        ref.invalidate(songSelectionProvider);
+      });
+      return null;
+    }, []);
     final songRating = ref.watch(songRatingProvider);
     final songSelectionState = ref.watch(
       songSelectionProvider.select(
@@ -160,14 +173,6 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
         ),
       ),
     );
-
-    useEffect(() {
-      return () {
-        Future.microtask(() {
-          ref.invalidate(songSelectionProvider);
-        });
-      };
-    }, []);
 
     useEffect(() {
       void onScroll() {

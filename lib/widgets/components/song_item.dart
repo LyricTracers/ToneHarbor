@@ -29,7 +29,7 @@ class SongItem extends HookConsumerWidget {
     this.selectionState = const SongSelectionState(
       selectionType: false,
       ids: {},
-      boxState: AllCheckBoxState.none,
+      boxState: false,
     ),
   });
   static const double itemHeight = 66.0;
@@ -63,12 +63,9 @@ class SongItem extends HookConsumerWidget {
     }, [selectionState.selectionType]);
 
     useEffect(() {
-      if (selectionState.boxState == AllCheckBoxState.selectionAll ||
-          selectionState.boxState == AllCheckBoxState.deSelectionAll) {
-        localSelected.value = ref
-            .read(songSelectionProvider.notifier)
-            .isSelected(song.id);
-      }
+      localSelected.value = ref
+          .read(songSelectionProvider.notifier)
+          .isSelected(song.id);
       return null;
     }, [selectionState.boxState]);
     void updateState() {
