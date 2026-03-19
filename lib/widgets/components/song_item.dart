@@ -171,13 +171,22 @@ class SongItem extends HookConsumerWidget {
                       ),
                     ),
                     if (selectionState.selectionType)
-                      Checkbox(
-                        shape: const CircleBorder(),
-                        value: selectionState.ids.contains(song.id),
-                        onChanged: (_) {
-                          ref
-                              .read(songSelectionProvider.notifier)
-                              .toggleSelection(song.id);
+                      Consumer(
+                        builder: (context, ref, child) {
+                          final isSelected = ref.watch(
+                            songSelectionProvider.select(
+                              (state) => state.ids.contains(song.id),
+                            ),
+                          );
+                          return Checkbox(
+                            shape: const CircleBorder(),
+                            value: isSelected,
+                            onChanged: (_) {
+                              ref
+                                  .read(songSelectionProvider.notifier)
+                                  .toggleSelection(song.id);
+                            },
+                          );
                         },
                       ),
                   ],

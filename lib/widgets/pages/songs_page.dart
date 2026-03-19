@@ -44,30 +44,40 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
     if (songSelection.selectionType) {
       return AppBar(
         automaticallyImplyLeading: false,
-        title: Text(
-          '已选择 ${songSelection.ids.length} 首歌曲',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        title: Consumer(
+          builder: (context, ref, child) {
+            final selection = ref.watch(songSelectionProvider);
+            return Text(
+              '已选择 ${selection.ids.length} 首歌曲',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            );
+          },
         ),
         actions: [
           Text(
             '全选',
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
-          Checkbox(
-            shape: const CircleBorder(),
-            value: songSelection.ids.length == songs.length,
-            onChanged: (b) {
-              if (b == true) {
-                ref
-                    .read(songSelectionProvider.notifier)
-                    .selectAll(
-                      songs.map((song) {
-                        return song.id;
-                      }).toSet(),
-                    );
-              } else {
-                ref.read(songSelectionProvider.notifier).deSelectAll();
-              }
+          Consumer(
+            builder: (context, ref, child) {
+              final selection = ref.watch(songSelectionProvider);
+              return Checkbox(
+                shape: const CircleBorder(),
+                value: selection.ids.length == songs.length,
+                onChanged: (b) {
+                  if (b == true) {
+                    ref
+                        .read(songSelectionProvider.notifier)
+                        .selectAll(
+                          songs.map((song) {
+                            return song.id;
+                          }).toSet(),
+                        );
+                  } else {
+                    ref.read(songSelectionProvider.notifier).deSelectAll();
+                  }
+                },
+              );
             },
           ),
           SizedBox(width: 15),
@@ -140,7 +150,12 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
     final activeTrack = ref.watch(audioPlayerStateProvider).activeTrack;
     final activeSongId = activeTrack?.id;
     final songRating = ref.watch(songRatingProvider);
-    final songSelectionState = ref.watch(songSelectionProvider);
+    final songSelectionState = ref.watch(
+      songSelectionProvider.select(
+        (state) =>
+            SongSelectionState(selectionType: state.selectionType, ids: {}),
+      ),
+    );
 
     useEffect(() {
       void onScroll() {
