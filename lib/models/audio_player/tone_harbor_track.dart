@@ -125,47 +125,51 @@ extension AsMediaListToneHarborTrackObject on Iterable<ToneHarborTrackObject> {
   }
 }
 
-extension AsToneHarborTrackObject on Iterable<Song> {
+extension AsToneHarborTrackObject on Song {
+  ToneHarborTrackObject asTrack() {
+    var artist = additional?.songTag?.artist;
+    if (artist == null || artist.isEmpty) {
+      artist = additional?.songTag?.albumArtist;
+    }
+    if (artist == null || artist.isEmpty) {
+      artist = 'Unknown Artist';
+    }
+    var album = additional?.songTag?.album;
+    if (album == null || album.isEmpty) {
+      album = 'Unknown Album';
+    }
+    var container = additional?.songAudio?.container;
+    if (container == null || container.isEmpty) {
+      container = 'mp3';
+    }
+
+    var codec = additional?.songAudio?.codec;
+    if (codec == null || codec.isEmpty) {
+      codec = 'mp3';
+    }
+    return ToneHarborTrackObject.full(
+      id: id,
+      title: title,
+      artist: artist,
+      album: album,
+      externalUri: "",
+      duration: Duration(seconds: additional?.songAudio?.duration.toInt() ?? 0),
+      rating: additional?.songRating?.rating ?? 0,
+      filesize: additional?.songAudio?.filesize ?? 0,
+      bitrate: additional?.songAudio?.bitrate ?? 0,
+      channel: additional?.songAudio?.channel ?? 0,
+      codec: codec,
+      container: container,
+      frequency: additional?.songAudio?.frequency ?? 0,
+      platform: ToneHarborTrackPlatform.synology,
+    );
+  }
+}
+
+extension AsToneHarborTrackObjects on Iterable<Song> {
   List<ToneHarborTrackObject> asTrackList() {
     return map((song) {
-      var artist = song.additional?.songTag?.artist;
-      if (artist == null || artist.isEmpty) {
-        artist = song.additional?.songTag?.albumArtist;
-      }
-      if (artist == null || artist.isEmpty) {
-        artist = 'Unknown Artist';
-      }
-      var album = song.additional?.songTag?.album;
-      if (album == null || album.isEmpty) {
-        album = 'Unknown Album';
-      }
-      var container = song.additional?.songAudio?.container;
-      if (container == null || container.isEmpty) {
-        container = 'mp3';
-      }
-
-      var codec = song.additional?.songAudio?.codec;
-      if (codec == null || codec.isEmpty) {
-        codec = 'mp3';
-      }
-      return ToneHarborTrackObject.full(
-        id: song.id,
-        title: song.title,
-        artist: artist,
-        album: album,
-        externalUri: "",
-        duration: Duration(
-          seconds: song.additional?.songAudio?.duration.toInt() ?? 0,
-        ),
-        rating: song.additional?.songRating?.rating ?? 0,
-        filesize: song.additional?.songAudio?.filesize ?? 0,
-        bitrate: song.additional?.songAudio?.bitrate ?? 0,
-        channel: song.additional?.songAudio?.channel ?? 0,
-        codec: codec,
-        container: container,
-        frequency: song.additional?.songAudio?.frequency ?? 0,
-        platform: ToneHarborTrackPlatform.synology,
-      );
+      return song.asTrack();
     }).toList();
   }
 }

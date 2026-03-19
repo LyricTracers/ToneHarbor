@@ -402,5 +402,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get play_queue => '播放队列';
 
   @override
+  String get tip_pre_song => '已经是第一首了，请开启循环播放';
+
+  @override
+  String get tip_next_song => '已经是最后一首了，请开启循环播放';
+
+  @override
   String get save_success => '保存成功';
 }

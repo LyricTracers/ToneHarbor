@@ -1,0 +1,90 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_context_menu/flutter_context_menu.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/models/audio_player/sub_content_state.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
+import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/utils/base_utils.dart';
+
+class SongContextMenu {
+  static List<ContextMenuEntry> build(
+    WidgetRef ref,
+    ColorScheme colorScheme,
+    AppLocalizations l10n,
+    Song item,
+  ) {
+    final itemId = item.id;
+    final itemTitle = item.title;
+
+    final songRating = ref.read(songRatingProvider);
+    final isFavorite = songRating.contains(itemId);
+
+    return <ContextMenuEntry>[
+      MenuHeader(text: itemTitle),
+      MenuDivider(),
+      MenuItem(
+        label: Text(isFavorite ? l10n.no_favorite_playlist : l10n.favorite),
+        icon: Icon(
+          isFavorite ? Icons.favorite_border_rounded : Icons.favorite_rounded,
+        ),
+        onSelected: (value) async {
+          try {
+            ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+            final response = await ref
+                .read(songRatingProvider.notifier)
+                .setRating(id: itemId, rating: isFavorite ? 0 : 5);
+            if (response.success) {
+              ref
+                  .read(favoriteSongsProvider(limit: 50).notifier)
+                  .invalidateCache();
+              ref.invalidate(favoriteSongsProvider);
+            }
+          } catch (e) {
+            if (ref.context.mounted) {
+              showSnackBarError(e, ref.context, colorScheme.secondary);
+            }
+          } finally {
+            ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+          }
+        },
+      ),
+      MenuItem.submenu(
+        label: Text(l10n.add_to),
+        icon: const Icon(Icons.add_box_rounded),
+        items: [
+          MenuItem(
+            label: Text(l10n.next_song),
+            onSelected: (value) async {
+              await ref
+                  .read(audioPlayerStateProvider.notifier)
+                  .addTrackAtFirst(item.asTrack(), allowDuplicates: true);
+            },
+          ),
+          MenuItem(
+            label: Text(l10n.play_queue),
+            onSelected: (value) async {
+              await ref
+                  .read(audioPlayerStateProvider.notifier)
+                  .addTrack(item.asTrack());
+            },
+          ),
+          MenuItem(
+            label: Text(l10n.song_playlist),
+            onSelected: (value) {
+              ref
+                  .read(subContentProvider.notifier)
+                  .set(
+                    SubContentData(
+                      type: SubContentType.addToPlayLists,
+                      extra: itemId,
+                    ),
+                  );
+            },
+          ),
+        ],
+      ),
+    ];
+  }
+}

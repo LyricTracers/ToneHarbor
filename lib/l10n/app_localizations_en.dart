@@ -416,5 +416,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get play_queue => 'Play Queue';
 
   @override
+  String get tip_pre_song => 'Already at the first song. Enable loop playback.';
+
+  @override
+  String get tip_next_song => 'Already at the last song. Enable loop playback.';
+
+  @override
   String get save_success => 'Saved successfully';
 }

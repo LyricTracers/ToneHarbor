@@ -132,5 +132,7 @@
   "add_to": "Add To",
   "next_song": "Next Song",
   "play_queue": "Play Queue",
+  "tip_pre_song": "Already at the first song. Enable loop playback.",
+  "tip_next_song": "Already at the last song. Enable loop playback.",
   "save_success": "Saved successfully"
 }

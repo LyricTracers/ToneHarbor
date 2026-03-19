@@ -160,9 +160,41 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
     )..where((tb) => tb.id.equals(0))).write(companion);
   }
 
+  Future<void> addTrackAtFirst(
+    ToneHarborTrackObject track, {
+    bool allowDuplicates = true,
+  }) async {
+    if (state.tracks.length == 1) {
+      return addTrack(track);
+    }
+
+    if (!allowDuplicates &&
+        state.tracks.any((element) => _compareTracks(element, track))) {
+      return;
+    }
+
+    final insertIndex = max(state.currentIndex, 0) + 1;
+    final newTracks = [
+      ...state.tracks.sublist(0, insertIndex),
+      track,
+      ...state.tracks.sublist(insertIndex),
+    ];
+
+    state = state.copyWith(tracks: newTracks);
+
+    await audioPlayer.addTrackAt(ToneHarborMedia(track), insertIndex);
+
+    await _updatePlayerState(
+      AudioPlayerStateTableCompanion(
+        tracks: Value(state.tracks),
+        currentIndex: Value(max(state.currentIndex, 0)),
+      ),
+    );
+  }
+
   Future<void> addTracksAtFirst(
     Iterable<ToneHarborTrackObject> tracks, {
-    bool allowDuplicates = false,
+    bool allowDuplicates = true,
   }) async {
     if (state.tracks.length == 1) {
       return addTracks(tracks);
@@ -189,6 +221,19 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
       await audioPlayer.addTrackAt(ToneHarborMedia(track), insertIndex + i);
       i++;
     }
+
+    await _updatePlayerState(
+      AudioPlayerStateTableCompanion(
+        tracks: Value(state.tracks),
+        currentIndex: Value(max(state.currentIndex, 0)),
+      ),
+    );
+  }
+
+  Future<void> addTrack(ToneHarborTrackObject track) async {
+    state = state.copyWith(tracks: [...state.tracks, track]);
+
+    await audioPlayer.addTrack(ToneHarborMedia(track));
 
     await _updatePlayerState(
       AudioPlayerStateTableCompanion(

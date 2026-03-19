@@ -42,6 +42,7 @@ class BottomPlayer extends HookConsumerWidget {
     final isBuffering = useStream(audioPlayer.bufferingStream).data ?? false;
     final currentLyrics = ref.watch(currentLyricsProvider).value;
     var currentLineLyrics = useState<String>("");
+    final l10n = ref.watch(l10nProvider);
 
     LyricsLine? currentLine;
     if (currentLyrics != null) {
@@ -160,6 +161,16 @@ class BottomPlayer extends HookConsumerWidget {
                     IconButton(
                       icon: const Icon(Icons.skip_previous_rounded),
                       onPressed: () {
+                        if (loopMode == PlaylistMode.none) {
+                          if (audioPlayer.currentIndex == 0) {
+                            showSnackBar(
+                              l10n.tip_pre_song,
+                              context,
+                              colorScheme.secondary,
+                            );
+                            return;
+                          }
+                        }
                         audioPlayer.skipToPrevious();
                       },
                     ),
@@ -184,6 +195,17 @@ class BottomPlayer extends HookConsumerWidget {
                     IconButton(
                       icon: const Icon(Icons.skip_next_rounded),
                       onPressed: () {
+                        if (loopMode == PlaylistMode.none) {
+                          if (audioPlayer.currentIndex ==
+                              audioPlayer.sources.length - 1) {
+                            showSnackBar(
+                              l10n.tip_next_song,
+                              context,
+                              colorScheme.secondary,
+                            );
+                            return;
+                          }
+                        }
                         audioPlayer.skipToNext();
                       },
                     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -10,6 +11,8 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/components/bread_crumb_clipper.dart';
+import 'package:toneharbor/widgets/components/song_context_menu.dart';
+import 'package:toneharbor/widgets/components/song_item.dart';
 
 class _FolderItemWidget extends HookConsumerWidget {
   final List<FolderItem> folderItems;
@@ -23,65 +26,29 @@ class _FolderItemWidget extends HookConsumerWidget {
     required this.lastFoldItems,
   });
   static const double itemHeightFolder = 44.0;
-  static const double itemHeightSong = 66.0;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var isHovered = useState(false);
     var folderItem = folderItems[index];
-    var isFolder = folderItem.type == "folder";
-    var bitrate = 0;
-    String container = "";
-    String artist = "";
-    String album = "";
-    var isFavorite = false;
-    if (!isFolder) {
-      isFavorite = folderItem.additional?.songRating?.rating == 5;
-      bitrate = ((folderItem.additional?.songAudio?.bitrate ?? 0) / 1000)
-          .round();
-      container = folderItem.additional?.songAudio?.container ?? '';
-      if (container.isEmpty) {
-        container = 'mp3';
-      }
-      artist = folderItem.additional?.songTag?.artist ?? '';
-      if (artist.isEmpty) {
-        artist = folderItem.additional?.songTag?.albumArtist ?? '';
-      }
-      if (artist.isEmpty) {
-        artist = 'Unknown Artist';
-      }
-      album = folderItem.additional?.songTag?.album ?? '';
-      if (album.isEmpty) {
-        album = 'Unknown Album';
-      }
-    }
     return MouseRegion(
       onEnter: (event) => isHovered.value = true,
       onExit: (event) => isHovered.value = false,
       child: Container(
-        height: isFolder ? itemHeightFolder : itemHeightSong,
+        height: itemHeightFolder,
         color: isHovered.value
             ? colorScheme.outline.withValues(alpha: .1)
             : Colors.transparent,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () async {
-            logger.i("folderItem: $folderItem");
-            if (isFolder) {
-              context.push(
-                "/folders/${folderItem.id}",
-                extra: (
-                  foldersProvider(limit: 100, id: folderItem.id),
-                  [...lastFoldItems, folderItem],
-                ),
-              );
-            } else {
-              var (tracks, targetIndex) = folderItems.asTrackList(index);
-              await ref
-                  .read(audioPlayerStateProvider.notifier)
-                  .load(tracks, initialIndex: targetIndex, autoPlay: true);
-              if (context.mounted) context.push("/playing_detail");
-            }
+            context.push(
+              "/folders/${folderItem.id}",
+              extra: (
+                foldersProvider(limit: 100, id: folderItem.id),
+                [...lastFoldItems, folderItem],
+              ),
+            );
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
@@ -93,84 +60,12 @@ class _FolderItemWidget extends HookConsumerWidget {
                   style: TextStyle(fontSize: 14, color: colorScheme.primary),
                 ),
                 const SizedBox(width: 15),
-                if (isFolder) ...[
-                  Icon(Icons.folder_rounded, size: 20),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      folderItem.title,
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ],
-                if (!isFolder) ...[
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          folderItem.title,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                '$container ${bitrate}k',
-                                style: TextStyle(
-                                  fontSize: 9,
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 15),
-                            Text(
-                              '$artist-$album',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 15),
-                  IconButton(
-                    onPressed: () {
-                      logger.i('isFavorite: $isFavorite');
-                    },
-
-                    icon: Icon(
-                      isFavorite
-                          ? Icons.favorite_rounded
-                          : Icons.favorite_border_rounded,
-                      size: 18,
-                    ),
-                  ),
-                ],
+                Icon(Icons.folder_rounded, size: 20),
+                const SizedBox(width: 10),
+                Expanded(
+                  flex: 1,
+                  child: Text(folderItem.title, style: TextStyle(fontSize: 16)),
+                ),
               ],
             ),
           ),
@@ -372,6 +267,11 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
     final folderItems = folderResponse.value?.data?.items ?? [];
     final hasMore = folderItems.length < total;
     final isLoadingMore = useState(false);
+    final l10n = ref.watch(l10nProvider);
+    final activeTrack = ref.watch(audioPlayerStateProvider).activeTrack;
+    final activeSongId = activeTrack?.id;
+    final songRating = ref.watch(songRatingProvider);
+
     useEffect(() {
       void onScroll() {
         if (!scrollController.hasClients) return;
@@ -424,12 +324,53 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                       ),
                     );
                   }
-                  return _FolderItemWidget(
-                    index: index,
-                    folderItems: folderItems,
-                    colorScheme: colorScheme,
-                    lastFoldItems: lastFoldItems,
-                  );
+                  var folderItem = folderItems[index];
+                  if (folderItem.type == "folder") {
+                    return _FolderItemWidget(
+                      index: index,
+                      folderItems: folderItems,
+                      colorScheme: colorScheme,
+                      lastFoldItems: lastFoldItems,
+                    );
+                  } else {
+                    var item = folderItem.asSong();
+                    return RepaintBoundary(
+                      child: ContextMenuRegion(
+                        contextMenu: ContextMenu(
+                          entriesBuilder: () => SongContextMenu.build(
+                            ref,
+                            colorScheme,
+                            l10n,
+                            item,
+                          ),
+                          padding: const EdgeInsets.all(8.0),
+                        ),
+                        child: SongItem(
+                          key: ValueKey(index),
+                          index: index,
+                          song: item,
+                          activeSongId: activeSongId,
+                          colorScheme: colorScheme,
+                          l10n: l10n,
+                          isFavorite: songRating.contains(item.id),
+                          onTap: () async {
+                            final (trackList, targetIndex) = folderItems
+                                .asTrackList(index);
+                            await ref
+                                .read(audioPlayerStateProvider.notifier)
+                                .load(
+                                  trackList,
+                                  initialIndex: targetIndex,
+                                  autoPlay: true,
+                                );
+                            if (context.mounted) {
+                              context.push("/playing_detail");
+                            }
+                          },
+                        ),
+                      ),
+                    );
+                  }
                 },
               );
             },

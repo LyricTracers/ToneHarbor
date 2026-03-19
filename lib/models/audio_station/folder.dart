@@ -63,3 +63,15 @@ sealed class FolderResponse with _$FolderResponse {
   factory FolderResponse.fromJson(Map<String, dynamic> json) =>
       _$FolderResponseFromJson(json);
 }
+
+extension FolderItemAsSong on FolderItem {
+  Song asSong() {
+    return Song(
+      id: id,
+      path: path,
+      title: title,
+      type: type,
+      additional: additional,
+    );
+  }
+}

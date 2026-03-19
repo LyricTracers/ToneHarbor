@@ -884,6 +884,18 @@ abstract class AppLocalizations {
   /// **'Play Queue'**
   String get play_queue;
 
+  /// No description provided for @tip_pre_song.
+  ///
+  /// In en, this message translates to:
+  /// **'Already at the first song. Enable loop playback.'**
+  String get tip_pre_song;
+
+  /// No description provided for @tip_next_song.
+  ///
+  /// In en, this message translates to:
+  /// **'Already at the last song. Enable loop playback.'**
+  String get tip_next_song;
+
   /// No description provided for @save_success.
   ///
   /// In en, this message translates to:
