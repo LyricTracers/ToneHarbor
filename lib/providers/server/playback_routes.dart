@@ -8,6 +8,7 @@ import 'package:shelf/shelf.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
+import 'package:toneharbor/providers/audio_player/cache_lock_manager.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -50,7 +51,6 @@ class ContentRangeHeader {
 
 class PlaybackRoutes {
   final Ref ref;
-  final _cachingLocks = <String, bool>{};
 
   PlaybackRoutes(this.ref);
 
@@ -238,17 +238,19 @@ class PlaybackRoutes {
     }
   }
 
-  Response _serveLocalFile(ToneHarborTrackObjectLocal track) {
+  Future<Response> _serveLocalFile(ToneHarborTrackObjectLocal track) async {
     final file = File(track.path);
-    final bytes = file.readAsBytesSync();
-    final fileLength = bytes.length;
+    if (!await file.exists()) {
+      return Response.notFound("Local file not found");
+    }
+    final fileLength = await file.length();
 
     return Response(
       200,
-      body: bytes,
+      body: file.openRead(),
       headers: {
         'content-type': _getMimeType(track.container),
-        'content-length': '${fileLength - 1}',
+        'content-length': '$fileLength',
         'accept-ranges': 'bytes',
         'content-range': 'bytes 0-${fileLength - 1}/$fileLength',
         'connection': 'close',
@@ -256,17 +258,22 @@ class PlaybackRoutes {
     );
   }
 
-  Response _serveCachedFile(File cacheFile, AudioQuality quality) {
-    final bytes = cacheFile.readAsBytesSync();
-    final fileLength = bytes.length;
+  Future<Response> _serveCachedFile(
+    File cacheFile,
+    AudioQuality quality,
+  ) async {
+    if (!await cacheFile.exists()) {
+      return Response.notFound("Cache file not found");
+    }
+    final fileLength = await cacheFile.length();
     final actualContainer = cacheFile.path.split('.').last;
 
     return Response(
       200,
-      body: bytes,
+      body: cacheFile.openRead(),
       headers: {
         'content-type': _getMimeType(actualContainer),
-        'content-length': '${fileLength - 1}',
+        'content-length': '$fileLength',
         'accept-ranges': 'bytes',
         'content-range': 'bytes 0-${fileLength - 1}/$fileLength',
         'connection': 'close',
@@ -360,7 +367,7 @@ class PlaybackRoutes {
       );
     }
 
-    final isAlreadyCaching = _cachingLocks[cacheKey] == true;
+    final isAlreadyCaching = CacheLockManager.instance.isLocked(cacheKey);
     if (isAlreadyCaching) {
       return Response(
         response.statusCode,
@@ -376,7 +383,7 @@ class PlaybackRoutes {
       );
     }
 
-    _cachingLocks[cacheKey] = true;
+    CacheLockManager.instance.lock(cacheKey);
 
     if (await trackPartialCacheFile.exists()) {
       final partLength = await trackPartialCacheFile.length();
@@ -387,7 +394,7 @@ class PlaybackRoutes {
         } else {
           await trackPartialCacheFile.delete();
         }
-        _cachingLocks.remove(cacheKey);
+        CacheLockManager.instance.unlock(cacheKey);
         return Response(
           response.statusCode,
           body: resStream,
@@ -409,9 +416,30 @@ class PlaybackRoutes {
       mode: FileMode.writeOnly,
     );
 
-    resStream.listen(
+    var lockReleased = false;
+    void releaseLock() {
+      if (!lockReleased) {
+        lockReleased = true;
+        CacheLockManager.instance.unlock(cacheKey);
+      }
+    }
+
+    final responseStreamController = StreamController<List<int>>();
+
+    var cacheFileSinkClosed = false;
+    Future<void> closeCacheFileSink() async {
+      if (!cacheFileSinkClosed) {
+        cacheFileSinkClosed = true;
+        await partialCacheFileSink.close();
+      }
+    }
+
+    final subscription = resStream.listen(
       (data) {
         partialCacheFileSink.add(data);
+        if (!responseStreamController.isClosed) {
+          responseStreamController.add(data);
+        }
       },
       onError: (e, stack) {
         logger.e(
@@ -419,18 +447,21 @@ class PlaybackRoutes {
           error: e,
           stackTrace: stack,
         );
-        partialCacheFileSink.close();
-        _cachingLocks.remove(cacheKey);
+        closeCacheFileSink();
+        responseStreamController.addError(e, stack);
+        releaseLock();
+        responseStreamController.close();
       },
       onDone: () async {
-        await partialCacheFileSink.close();
+        await closeCacheFileSink();
 
         final fileLength = await trackPartialCacheFile.length();
         if (fileLength != contentRange.total) {
           logger.w(
             '[CacheStream] Incomplete download: $fileLength != ${contentRange.total}',
           );
-          _cachingLocks.remove(cacheKey);
+          releaseLock();
+          await responseStreamController.close();
           return;
         }
 
@@ -446,14 +477,24 @@ class PlaybackRoutes {
           cachePath: cachePath,
           fileLength: fileLength,
         );
-        _cachingLocks.remove(cacheKey);
+        releaseLock();
+        await responseStreamController.close();
       },
       cancelOnError: true,
     );
 
+    responseStreamController.onCancel = () async {
+      await closeCacheFileSink();
+      subscription.cancel();
+      if (await trackPartialCacheFile.exists()) {
+        await trackPartialCacheFile.delete();
+      }
+      releaseLock();
+    };
+
     return Response(
       response.statusCode,
-      body: resStream,
+      body: responseStreamController.stream,
       headers: {
         'content-type':
             headers['content-type'] ?? _getMimeType(actualContainer),

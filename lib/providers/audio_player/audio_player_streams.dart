@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/models/audio_player/audio_player_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
-import 'package:toneharbor/providers/audio_player/preload_track_provider.dart';
+import 'package:toneharbor/providers/audio_player/download_manager.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/services/audio_services/audio_services.dart';
@@ -100,12 +100,12 @@ class AudioPlayerStreamListeners {
           return;
         }
 
-        final isPreloading = ref
-            .read(preloadTrackProvider.notifier)
-            .isPreloading(nextTrack.id, quality: quality);
-        if (isPreloading) {
+        final isDownloading = ref
+            .read(downloadManagerProvider.notifier)
+            .isDownloading(nextTrack.id);
+        if (isDownloading) {
           logger.i(
-            '[AudioPlayer] Track already preloading: ${nextTrack.title}',
+            '[AudioPlayer] Track already downloading: ${nextTrack.title}',
           );
           return;
         }
@@ -115,7 +115,7 @@ class AudioPlayerStreamListeners {
         );
 
         await ref
-            .read(preloadTrackProvider.notifier)
+            .read(downloadManagerProvider.notifier)
             .preloadNextTrack(nextTrack);
 
         lastPreloadedTrack = preloadKey;
@@ -134,7 +134,7 @@ class AudioPlayerStreamListeners {
   void dispose() {
     logger.i('[AudioPlayerStreamListeners] dispose() called');
 
-    ref.read(preloadTrackProvider.notifier).cancelAllPreloads();
+    ref.read(downloadManagerProvider.notifier).cancelAllPreloads();
 
     for (final subscription in subscriptions) {
       subscription.cancel();
