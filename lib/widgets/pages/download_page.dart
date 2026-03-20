@@ -21,25 +21,17 @@ class DownloadPage extends HookConsumerWidget {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           actions: [
-            IconButton(
+            _buildTabButton(
+              icon: Icons.download_rounded,
+              isSelected: selectedTab.value == 0,
+              colorScheme: colorScheme,
               onPressed: () => selectedTab.value = 0,
-              icon: Icon(
-                Icons.download_rounded,
-                size: 18,
-                color: selectedTab.value == 0
-                    ? colorScheme.onSurface
-                    : colorScheme.onSurface.withValues(alpha: 0.3),
-              ),
             ),
-            IconButton(
+            _buildTabButton(
+              icon: Icons.history_rounded,
+              isSelected: selectedTab.value == 1,
+              colorScheme: colorScheme,
               onPressed: () => selectedTab.value = 1,
-              icon: Icon(
-                Icons.history_rounded,
-                size: 18,
-                color: selectedTab.value == 1
-                    ? colorScheme.onSurface
-                    : colorScheme.onSurface.withValues(alpha: 0.3),
-              ),
             ),
             IconButton(
               onPressed: () {},
@@ -53,6 +45,29 @@ class DownloadPage extends HookConsumerWidget {
               ? _DownloadListTab()
               : _DownloadHistoryTab(),
         ),
+      ],
+    );
+  }
+
+  Widget _buildTabButton({
+    required IconData icon,
+    required bool isSelected,
+    required ColorScheme colorScheme,
+    required VoidCallback onPressed,
+  }) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          onPressed: onPressed,
+          icon: Icon(icon, size: 18, color: colorScheme.onSurface),
+        ),
+        if (isSelected)
+          Container(
+            height: 2,
+            width: 20,
+            decoration: BoxDecoration(color: colorScheme.primary),
+          ),
       ],
     );
   }
