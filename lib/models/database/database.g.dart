@@ -766,6 +766,27 @@ class $DownloadTaskStateTable extends DownloadTaskState
         requiredDuringInsert: true,
       ).withConverter<AudioQuality>($DownloadTaskStateTable.$converterquality);
   @override
+  late final GeneratedColumnWithTypeConverter<DownloadStatus, int> status =
+      GeneratedColumn<int>(
+        'status',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      ).withConverter<DownloadStatus>($DownloadTaskStateTable.$converterstatus);
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
   List<GeneratedColumn> get $columns => [
     trackId,
     trackTitle,
@@ -773,6 +794,8 @@ class $DownloadTaskStateTable extends DownloadTaskState
     container,
     type,
     quality,
+    status,
+    updatedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -821,11 +844,17 @@ class $DownloadTaskStateTable extends DownloadTaskState
     } else if (isInserting) {
       context.missing(_containerMeta);
     }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => const {};
+  Set<GeneratedColumn> get $primaryKey => {trackId};
   @override
   DownloadTaskStateData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -858,6 +887,16 @@ class $DownloadTaskStateTable extends DownloadTaskState
           data['${effectivePrefix}quality'],
         )!,
       ),
+      status: $DownloadTaskStateTable.$converterstatus.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}status'],
+        )!,
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
     );
   }
 
@@ -870,6 +909,8 @@ class $DownloadTaskStateTable extends DownloadTaskState
       const EnumIndexConverter<DownloadType>(DownloadType.values);
   static JsonTypeConverter2<AudioQuality, int, int> $converterquality =
       const EnumIndexConverter<AudioQuality>(AudioQuality.values);
+  static JsonTypeConverter2<DownloadStatus, int, int> $converterstatus =
+      const EnumIndexConverter<DownloadStatus>(DownloadStatus.values);
 }
 
 class DownloadTaskStateData extends DataClass
@@ -880,6 +921,8 @@ class DownloadTaskStateData extends DataClass
   final String container;
   final DownloadType type;
   final AudioQuality quality;
+  final DownloadStatus status;
+  final DateTime updatedAt;
   const DownloadTaskStateData({
     required this.trackId,
     required this.trackTitle,
@@ -887,6 +930,8 @@ class DownloadTaskStateData extends DataClass
     required this.container,
     required this.type,
     required this.quality,
+    required this.status,
+    required this.updatedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -905,6 +950,12 @@ class DownloadTaskStateData extends DataClass
         $DownloadTaskStateTable.$converterquality.toSql(quality),
       );
     }
+    {
+      map['status'] = Variable<int>(
+        $DownloadTaskStateTable.$converterstatus.toSql(status),
+      );
+    }
+    map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
 
@@ -916,6 +967,8 @@ class DownloadTaskStateData extends DataClass
       container: Value(container),
       type: Value(type),
       quality: Value(quality),
+      status: Value(status),
+      updatedAt: Value(updatedAt),
     );
   }
 
@@ -935,6 +988,10 @@ class DownloadTaskStateData extends DataClass
       quality: $DownloadTaskStateTable.$converterquality.fromJson(
         serializer.fromJson<int>(json['quality']),
       ),
+      status: $DownloadTaskStateTable.$converterstatus.fromJson(
+        serializer.fromJson<int>(json['status']),
+      ),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
   @override
@@ -951,6 +1008,10 @@ class DownloadTaskStateData extends DataClass
       'quality': serializer.toJson<int>(
         $DownloadTaskStateTable.$converterquality.toJson(quality),
       ),
+      'status': serializer.toJson<int>(
+        $DownloadTaskStateTable.$converterstatus.toJson(status),
+      ),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
 
@@ -961,6 +1022,8 @@ class DownloadTaskStateData extends DataClass
     String? container,
     DownloadType? type,
     AudioQuality? quality,
+    DownloadStatus? status,
+    DateTime? updatedAt,
   }) => DownloadTaskStateData(
     trackId: trackId ?? this.trackId,
     trackTitle: trackTitle ?? this.trackTitle,
@@ -968,6 +1031,8 @@ class DownloadTaskStateData extends DataClass
     container: container ?? this.container,
     type: type ?? this.type,
     quality: quality ?? this.quality,
+    status: status ?? this.status,
+    updatedAt: updatedAt ?? this.updatedAt,
   );
   DownloadTaskStateData copyWithCompanion(DownloadTaskStateCompanion data) {
     return DownloadTaskStateData(
@@ -981,6 +1046,8 @@ class DownloadTaskStateData extends DataClass
       container: data.container.present ? data.container.value : this.container,
       type: data.type.present ? data.type.value : this.type,
       quality: data.quality.present ? data.quality.value : this.quality,
+      status: data.status.present ? data.status.value : this.status,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
 
@@ -992,14 +1059,24 @@ class DownloadTaskStateData extends DataClass
           ..write('trackArtist: $trackArtist, ')
           ..write('container: $container, ')
           ..write('type: $type, ')
-          ..write('quality: $quality')
+          ..write('quality: $quality, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(trackId, trackTitle, trackArtist, container, type, quality);
+  int get hashCode => Object.hash(
+    trackId,
+    trackTitle,
+    trackArtist,
+    container,
+    type,
+    quality,
+    status,
+    updatedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1009,7 +1086,9 @@ class DownloadTaskStateData extends DataClass
           other.trackArtist == this.trackArtist &&
           other.container == this.container &&
           other.type == this.type &&
-          other.quality == this.quality);
+          other.quality == this.quality &&
+          other.status == this.status &&
+          other.updatedAt == this.updatedAt);
 }
 
 class DownloadTaskStateCompanion
@@ -1020,6 +1099,8 @@ class DownloadTaskStateCompanion
   final Value<String> container;
   final Value<DownloadType> type;
   final Value<AudioQuality> quality;
+  final Value<DownloadStatus> status;
+  final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const DownloadTaskStateCompanion({
     this.trackId = const Value.absent(),
@@ -1028,6 +1109,8 @@ class DownloadTaskStateCompanion
     this.container = const Value.absent(),
     this.type = const Value.absent(),
     this.quality = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DownloadTaskStateCompanion.insert({
@@ -1037,13 +1120,16 @@ class DownloadTaskStateCompanion
     required String container,
     required DownloadType type,
     required AudioQuality quality,
+    required DownloadStatus status,
+    this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : trackId = Value(trackId),
        trackTitle = Value(trackTitle),
        trackArtist = Value(trackArtist),
        container = Value(container),
        type = Value(type),
-       quality = Value(quality);
+       quality = Value(quality),
+       status = Value(status);
   static Insertable<DownloadTaskStateData> custom({
     Expression<String>? trackId,
     Expression<String>? trackTitle,
@@ -1051,6 +1137,8 @@ class DownloadTaskStateCompanion
     Expression<String>? container,
     Expression<int>? type,
     Expression<int>? quality,
+    Expression<int>? status,
+    Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1060,6 +1148,8 @@ class DownloadTaskStateCompanion
       if (container != null) 'container': container,
       if (type != null) 'type': type,
       if (quality != null) 'quality': quality,
+      if (status != null) 'status': status,
+      if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1071,6 +1161,8 @@ class DownloadTaskStateCompanion
     Value<String>? container,
     Value<DownloadType>? type,
     Value<AudioQuality>? quality,
+    Value<DownloadStatus>? status,
+    Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
     return DownloadTaskStateCompanion(
@@ -1080,6 +1172,8 @@ class DownloadTaskStateCompanion
       container: container ?? this.container,
       type: type ?? this.type,
       quality: quality ?? this.quality,
+      status: status ?? this.status,
+      updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1109,6 +1203,14 @@ class DownloadTaskStateCompanion
         $DownloadTaskStateTable.$converterquality.toSql(quality.value),
       );
     }
+    if (status.present) {
+      map['status'] = Variable<int>(
+        $DownloadTaskStateTable.$converterstatus.toSql(status.value),
+      );
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1124,6 +1226,8 @@ class DownloadTaskStateCompanion
           ..write('container: $container, ')
           ..write('type: $type, ')
           ..write('quality: $quality, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1578,6 +1682,8 @@ typedef $$DownloadTaskStateTableCreateCompanionBuilder =
       required String container,
       required DownloadType type,
       required AudioQuality quality,
+      required DownloadStatus status,
+      Value<DateTime> updatedAt,
       Value<int> rowid,
     });
 typedef $$DownloadTaskStateTableUpdateCompanionBuilder =
@@ -1588,6 +1694,8 @@ typedef $$DownloadTaskStateTableUpdateCompanionBuilder =
       Value<String> container,
       Value<DownloadType> type,
       Value<AudioQuality> quality,
+      Value<DownloadStatus> status,
+      Value<DateTime> updatedAt,
       Value<int> rowid,
     });
 
@@ -1631,6 +1739,17 @@ class $$DownloadTaskStateTableFilterComposer
         column: $table.quality,
         builder: (column) => ColumnWithTypeConverterFilters(column),
       );
+
+  ColumnWithTypeConverterFilters<DownloadStatus, DownloadStatus, int>
+  get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$DownloadTaskStateTableOrderingComposer
@@ -1671,6 +1790,16 @@ class $$DownloadTaskStateTableOrderingComposer
     column: $table.quality,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$DownloadTaskStateTableAnnotationComposer
@@ -1703,6 +1832,12 @@ class $$DownloadTaskStateTableAnnotationComposer
 
   GeneratedColumnWithTypeConverter<AudioQuality, int> get quality =>
       $composableBuilder(column: $table.quality, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<DownloadStatus, int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
 
 class $$DownloadTaskStateTableTableManager
@@ -1751,6 +1886,8 @@ class $$DownloadTaskStateTableTableManager
                 Value<String> container = const Value.absent(),
                 Value<DownloadType> type = const Value.absent(),
                 Value<AudioQuality> quality = const Value.absent(),
+                Value<DownloadStatus> status = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DownloadTaskStateCompanion(
                 trackId: trackId,
@@ -1759,6 +1896,8 @@ class $$DownloadTaskStateTableTableManager
                 container: container,
                 type: type,
                 quality: quality,
+                status: status,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -1769,6 +1908,8 @@ class $$DownloadTaskStateTableTableManager
                 required String container,
                 required DownloadType type,
                 required AudioQuality quality,
+                required DownloadStatus status,
+                Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DownloadTaskStateCompanion.insert(
                 trackId: trackId,
@@ -1777,6 +1918,8 @@ class $$DownloadTaskStateTableTableManager
                 container: container,
                 type: type,
                 quality: quality,
+                status: status,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

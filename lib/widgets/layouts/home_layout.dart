@@ -188,6 +188,7 @@ class HomeLayout extends BaseBgLayout {
                         context.push('/playlist');
                       },
                     ),
+
                     SizedBox(height: 8),
                     _getItem(
                       currentPath.startsWith(allFoldersPath),
@@ -199,6 +200,39 @@ class HomeLayout extends BaseBgLayout {
                           "${allFoldersPath}None",
                           extra: (foldersProvider(limit: 100), <FolderItem>[]),
                         );
+                      },
+                    ),
+                    SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 18),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "其他",
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.7,
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.more_horiz_rounded,
+                            size: 16,
+                            color: colorScheme.onSurface.withValues(alpha: 0.7),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    _getItem(
+                      currentPath == '/download',
+                      colorScheme,
+                      Icons.download_for_offline,
+                      "下载中心",
+                      () {
+                        context.push('/download');
                       },
                     ),
                     if (favoritePlaylist.playlists.isNotEmpty) ...[

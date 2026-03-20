@@ -15,6 +15,7 @@ import 'package:toneharbor/widgets/layouts/playing_detail_layout.dart';
 import 'package:toneharbor/widgets/layouts/switch_lyrics_layout.dart';
 import 'package:toneharbor/widgets/pages/album_page.dart';
 import 'package:toneharbor/widgets/pages/artist_page.dart';
+import 'package:toneharbor/widgets/pages/download_page.dart';
 import 'package:toneharbor/widgets/pages/folders_page.dart';
 import 'package:toneharbor/widgets/pages/playlists_page.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
@@ -162,6 +163,11 @@ class MyApp extends HookConsumerWidget {
                     baseProvider: playlistResponseProvider(),
                   ),
                 ),
+              ),
+              GoRoute(
+                path: '/download',
+                pageBuilder: (context, state) =>
+                    NoTransitionPage(child: DownloadPage()),
               ),
             ],
             builder: (context, state, child) {
