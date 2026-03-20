@@ -16,12 +16,9 @@ part 'download_manager.g.dart';
 
 enum DownloadStatus { queued, downloading, paused, completed, failed, canceled }
 
-enum DownloadType { preload, normal }
-
 class DownloadTask {
   final ToneHarborTrackObject track;
   final DownloadStatus status;
-  final DownloadType type;
   final rhttp.CancelToken cancelToken;
   final int? totalSizeBytes;
   final int downloadedBytes;
@@ -44,7 +41,6 @@ class DownloadTask {
   DownloadTask({
     required this.track,
     required this.status,
-    required this.type,
     required this.cancelToken,
     this.totalSizeBytes,
     this.downloadedBytes = 0,
@@ -60,7 +56,6 @@ class DownloadTask {
   DownloadTask copyWith({
     ToneHarborTrackObject? track,
     DownloadStatus? status,
-    DownloadType? type,
     rhttp.CancelToken? cancelToken,
     int? totalSizeBytes,
     int? downloadedBytes,
@@ -72,7 +67,6 @@ class DownloadTask {
     return DownloadTask(
       track: track ?? this.track,
       status: status ?? this.status,
-      type: type ?? this.type,
       cancelToken: cancelToken ?? this.cancelToken,
       totalSizeBytes: totalSizeBytes ?? this.totalSizeBytes,
       downloadedBytes: downloadedBytes ?? this.downloadedBytes,
@@ -97,7 +91,7 @@ class DownloadManager extends _$DownloadManager {
   static const int _maxRetries = 3;
   static const Duration _retryDelay = Duration(seconds: 2);
 
-  final _preloadingTracks = <String, bool>{};
+  final _preloadingTracks = <String>{};
   final _cancelTokens = <String, rhttp.CancelToken>{};
   final _completionController =
       StreamController<ToneHarborTrackObject>.broadcast();
@@ -132,7 +126,7 @@ class DownloadManager extends _$DownloadManager {
   }
 
   bool isDownloading(String trackId) {
-    if (_preloadingTracks.keys.any((key) => key.startsWith('${trackId}_'))) {
+    if (_preloadingTracks.any((key) => key.startsWith('${trackId}_'))) {
       return true;
     }
     return state.any(
@@ -164,11 +158,21 @@ class DownloadManager extends _$DownloadManager {
     final quality = ref.read(audioQualityProvider);
     final cacheKey = _getCacheKey(track.id, quality);
 
-    if (_preloadingTracks[cacheKey] == true) {
+    if (_preloadingTracks.contains(cacheKey)) {
       logger.i(
         '[DownloadManager] Already preloading: ${track.id} at ${quality.name}',
       );
       return;
+    }
+
+    final existingTask = state.firstWhereOrNull((e) => e.track.id == track.id);
+    if (existingTask != null) {
+      if (existingTask.status == DownloadStatus.downloading) {
+        logger.i(
+          '[DownloadManager] Track is downloading, skip preload: ${track.id}',
+        );
+        return;
+      }
     }
 
     final cachePath = await getTrackCachePath(track, quality);
@@ -179,7 +183,14 @@ class DownloadManager extends _$DownloadManager {
       return;
     }
 
-    _preloadingTracks[cacheKey] = true;
+    if (existingTask != null && existingTask.status == DownloadStatus.queued) {
+      logger.i(
+        '[DownloadManager] Track is in queue, remove from queue and preload: ${track.id}',
+      );
+      state = state.where((e) => e.track.id != track.id).toList();
+    }
+
+    _preloadingTracks.add(cacheKey);
 
     final partialCachePath = '$cachePath.part';
     final partialCacheFile = File(partialCachePath);
@@ -336,6 +347,9 @@ class DownloadManager extends _$DownloadManager {
         error: e,
         stackTrace: stack,
       );
+      if (await partialCacheFile.exists()) {
+        await partialCacheFile.delete();
+      }
     } finally {
       _preloadingTracks.remove(cacheKey);
       _cancelTokens.remove(cacheKey);
@@ -344,13 +358,22 @@ class DownloadManager extends _$DownloadManager {
   }
 
   void addToQueue(ToneHarborTrackObject track) {
+    final quality = ref.read(audioQualityProvider);
+    final cacheKey = _getCacheKey(track.id, quality);
+
+    if (_preloadingTracks.contains(cacheKey)) {
+      logger.i(
+        '[DownloadManager] Track is preloading, skip add to queue: ${track.id}',
+      );
+      return;
+    }
+
     if (state.any((element) => element.track.id == track.id)) return;
     state = [
       ...state,
       DownloadTask(
         track: track,
         status: DownloadStatus.queued,
-        type: DownloadType.normal,
         cancelToken: rhttp.CancelToken(),
       ),
     ];
@@ -358,9 +381,18 @@ class DownloadManager extends _$DownloadManager {
   }
 
   void addAllToQueue(List<ToneHarborTrackObject> tracks) {
-    final newTracks = tracks
-        .where((track) => !state.any((e) => e.track.id == track.id))
-        .toList();
+    final quality = ref.read(audioQualityProvider);
+    final newTracks = tracks.where((track) {
+      if (state.any((e) => e.track.id == track.id)) return false;
+      final cacheKey = _getCacheKey(track.id, quality);
+      if (_preloadingTracks.contains(cacheKey)) {
+        logger.i(
+          '[DownloadManager] Track is preloading, skip add to queue: ${track.id}',
+        );
+        return false;
+      }
+      return true;
+    }).toList();
     if (newTracks.isEmpty) return;
 
     state = [
@@ -369,7 +401,6 @@ class DownloadManager extends _$DownloadManager {
         (e) => DownloadTask(
           track: e,
           status: DownloadStatus.queued,
-          type: DownloadType.normal,
           cancelToken: rhttp.CancelToken(),
         ),
       ),
@@ -478,7 +509,7 @@ class DownloadManager extends _$DownloadManager {
   }
 
   void cancelPreload(String trackId) {
-    final quality = SharedPreferencesUtils.getAudioQuality();
+    final quality = ref.read(audioQualityProvider);
     final cacheKey = _getCacheKey(trackId, quality);
     final cancelToken = _cancelTokens[cacheKey];
     if (cancelToken != null && !cancelToken.isCancelled) {
@@ -624,9 +655,11 @@ class DownloadManager extends _$DownloadManager {
         '[DownloadManager] Cache locked by another process: ${task.track.id}',
       );
       _setStatus(task.track, DownloadStatus.failed);
+      _pausedTracks.remove(task.track.id);
       return;
     }
 
+    bool lockHeld = true;
     try {
       _setStatus(task.track, DownloadStatus.downloading);
       final streamUrl = await ref.read(
@@ -643,6 +676,8 @@ class DownloadManager extends _$DownloadManager {
         } else {
           _setStatus(task.track, DownloadStatus.canceled);
         }
+        CacheLockManager.instance.unlock(savePath);
+        lockHeld = false;
         return;
       }
 
@@ -664,6 +699,8 @@ class DownloadManager extends _$DownloadManager {
       if (await savePathFile.exists()) {
         _setStatus(task.track, DownloadStatus.completed);
         _completionController.add(task.track);
+        CacheLockManager.instance.unlock(savePath);
+        lockHeld = false;
         return;
       }
 
@@ -720,6 +757,8 @@ class DownloadManager extends _$DownloadManager {
 
               if (_pausedTracks.contains(task.track.id)) {
                 _setStatus(task.track, DownloadStatus.paused);
+                CacheLockManager.instance.unlock(savePath);
+                lockHeld = false;
               } else {
                 if (await partialFile.exists()) {
                   await partialFile.delete();
@@ -777,6 +816,8 @@ class DownloadManager extends _$DownloadManager {
         logger.i('[DownloadManager] Download cancelled: ${task.track.id}');
         if (_pausedTracks.contains(task.track.id)) {
           _setStatus(task.track, DownloadStatus.paused);
+          CacheLockManager.instance.unlock(savePath);
+          lockHeld = false;
         } else {
           final partialFile = File('$savePath.part');
           if (await partialFile.exists()) {
@@ -802,9 +843,15 @@ class DownloadManager extends _$DownloadManager {
         }).toList();
         await Future.delayed(_retryDelay * (task.retryCount + 1));
         _startDownloading();
+        CacheLockManager.instance.unlock(savePath);
+        lockHeld = false;
         return;
       }
 
+      final partialFile = File('$savePath.part');
+      if (await partialFile.exists()) {
+        await partialFile.delete();
+      }
       _setStatus(task.track, DownloadStatus.failed);
       logger.e(
         '[DownloadManager] Download failed after $_maxRetries retries: ${task.track.id}',
@@ -812,7 +859,9 @@ class DownloadManager extends _$DownloadManager {
         stackTrace: stack,
       );
     } finally {
-      CacheLockManager.instance.unlock(savePath);
+      if (lockHeld) {
+        CacheLockManager.instance.unlock(savePath);
+      }
     }
   }
 

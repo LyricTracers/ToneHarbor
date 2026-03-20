@@ -383,7 +383,21 @@ class PlaybackRoutes {
       );
     }
 
-    CacheLockManager.instance.lock(cacheKey);
+    if (!CacheLockManager.instance.tryLock(cacheKey)) {
+      logger.w('[PlaybackRoutes] Failed to acquire lock for: $cacheKey');
+      return Response(
+        response.statusCode,
+        body: resStream,
+        headers: {
+          'content-type':
+              headers['content-type'] ?? _getMimeType(actualContainer),
+          'content-length': headers['content-length'] ?? '',
+          'accept-ranges': 'bytes',
+          if (headers['content-range'] != null)
+            'content-range': headers['content-range']!,
+        },
+      );
+    }
 
     if (await trackPartialCacheFile.exists()) {
       final partLength = await trackPartialCacheFile.length();
@@ -436,7 +450,9 @@ class PlaybackRoutes {
 
     final subscription = resStream.listen(
       (data) {
-        partialCacheFileSink.add(data);
+        if (!cacheFileSinkClosed) {
+          partialCacheFileSink.add(data);
+        }
         if (!responseStreamController.isClosed) {
           responseStreamController.add(data);
         }
@@ -448,6 +464,9 @@ class PlaybackRoutes {
           stackTrace: stack,
         );
         closeCacheFileSink();
+        if (trackPartialCacheFile.existsSync()) {
+          trackPartialCacheFile.deleteSync();
+        }
         responseStreamController.addError(e, stack);
         releaseLock();
         responseStreamController.close();
@@ -460,6 +479,9 @@ class PlaybackRoutes {
           logger.w(
             '[CacheStream] Incomplete download: $fileLength != ${contentRange.total}',
           );
+          if (await trackPartialCacheFile.exists()) {
+            await trackPartialCacheFile.delete();
+          }
           releaseLock();
           await responseStreamController.close();
           return;
@@ -515,16 +537,17 @@ class PlaybackRoutes {
 
   Future<Response> getCoverArtist(Request request, String artistName) async {
     try {
-      var artist = Uri.decodeComponent(artistName);
       final coverUrl = await ref.read(
-        coverUrlByArtistProvider(artistName: artist).future,
+        coverUrlByArtistProvider(
+          artistName: Uri.decodeComponent(artistName),
+        ).future,
       );
 
       if (coverUrl.isEmpty) {
         return Response.notFound("Cover not found");
       }
 
-      final cacheKey = sanitizeCacheKey('$artist-');
+      final cacheKey = sanitizeCacheKey('${Uri.decodeComponent(artistName)}-');
       final imageBytes = await getCoverBytes(ref, coverUrl, cacheKey);
       if (imageBytes == null) {
         return Response.notFound("Cover not found");
