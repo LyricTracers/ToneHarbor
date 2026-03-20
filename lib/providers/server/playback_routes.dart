@@ -91,6 +91,26 @@ class PlaybackRoutes {
     return headers;
   }
 
+  Response _buildStreamResponse({
+    required int statusCode,
+    required Stream<List<int>> body,
+    required Map<String, String> headers,
+    required String actualContainer,
+  }) {
+    return Response(
+      statusCode,
+      body: body,
+      headers: {
+        'content-type':
+            headers['content-type'] ?? _getMimeType(actualContainer),
+        'content-length': headers['content-length'] ?? '',
+        'accept-ranges': 'bytes',
+        if (headers['content-range'] != null)
+          'content-range': headers['content-range']!,
+      },
+    );
+  }
+
   ToneHarborTrackObject? _getTrackById(String trackId) {
     final tracks = ref.read(audioPlayerStateProvider).tracks;
 
@@ -353,49 +373,31 @@ class PlaybackRoutes {
           }
         }
       }
-      return Response(
-        response.statusCode,
+      return _buildStreamResponse(
+        statusCode: response.statusCode,
         body: resStream,
-        headers: {
-          'content-type':
-              headers['content-type'] ?? _getMimeType(actualContainer),
-          'content-length': headers['content-length'] ?? '',
-          'accept-ranges': 'bytes',
-          if (headers['content-range'] != null)
-            'content-range': headers['content-range']!,
-        },
+        headers: headers,
+        actualContainer: actualContainer,
       );
     }
 
     final isAlreadyCaching = CacheLockManager.instance.isLocked(cacheKey);
     if (isAlreadyCaching) {
-      return Response(
-        response.statusCode,
+      return _buildStreamResponse(
+        statusCode: response.statusCode,
         body: resStream,
-        headers: {
-          'content-type':
-              headers['content-type'] ?? _getMimeType(actualContainer),
-          'content-length': headers['content-length'] ?? '',
-          'accept-ranges': 'bytes',
-          if (headers['content-range'] != null)
-            'content-range': headers['content-range']!,
-        },
+        headers: headers,
+        actualContainer: actualContainer,
       );
     }
 
     if (!CacheLockManager.instance.tryLock(cacheKey)) {
       logger.w('[PlaybackRoutes] Failed to acquire lock for: $cacheKey');
-      return Response(
-        response.statusCode,
+      return _buildStreamResponse(
+        statusCode: response.statusCode,
         body: resStream,
-        headers: {
-          'content-type':
-              headers['content-type'] ?? _getMimeType(actualContainer),
-          'content-length': headers['content-length'] ?? '',
-          'accept-ranges': 'bytes',
-          if (headers['content-range'] != null)
-            'content-range': headers['content-range']!,
-        },
+        headers: headers,
+        actualContainer: actualContainer,
       );
     }
 
@@ -409,17 +411,11 @@ class PlaybackRoutes {
           await trackPartialCacheFile.delete();
         }
         CacheLockManager.instance.unlock(cacheKey);
-        return Response(
-          response.statusCode,
+        return _buildStreamResponse(
+          statusCode: response.statusCode,
           body: resStream,
-          headers: {
-            'content-type':
-                headers['content-type'] ?? _getMimeType(actualContainer),
-            'content-length': headers['content-length'] ?? '',
-            'accept-ranges': 'bytes',
-            if (headers['content-range'] != null)
-              'content-range': headers['content-range']!,
-          },
+          headers: headers,
+          actualContainer: actualContainer,
         );
       }
       await trackPartialCacheFile.delete();
@@ -525,17 +521,11 @@ class PlaybackRoutes {
       await closeResponseStream();
     };
 
-    return Response(
-      response.statusCode,
+    return _buildStreamResponse(
+      statusCode: response.statusCode,
       body: responseStreamController.stream,
-      headers: {
-        'content-type':
-            headers['content-type'] ?? _getMimeType(actualContainer),
-        'content-length': headers['content-length'] ?? '',
-        'accept-ranges': 'bytes',
-        if (headers['content-range'] != null)
-          'content-range': headers['content-range']!,
-      },
+      headers: headers,
+      actualContainer: actualContainer,
     );
   }
 
