@@ -134,8 +134,6 @@ class AudioPlayerStreamListeners {
   void dispose() {
     logger.i('[AudioPlayerStreamListeners] dispose() called');
 
-    ref.read(downloadManagerProvider.notifier).cancelAllPreloads();
-
     for (final subscription in subscriptions) {
       subscription.cancel();
     }
