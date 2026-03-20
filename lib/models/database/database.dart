@@ -9,15 +9,24 @@ import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 import 'package:drift/native.dart';
+import 'package:toneharbor/models/audio_station/download.dart';
+import 'package:toneharbor/providers/audio_player/download_manager.dart';
 part 'database.g.dart';
 
 part 'tables/audio_player_state.dart';
 part 'tables/favorite_playlist_state.dart';
+part 'tables/download_task_state.dart';
 
 part 'typeconverters/string_list.dart';
 part 'typeconverters/tone_harbor_object_list.dart';
 
-@DriftDatabase(tables: [AudioPlayerStateTable, FavoritePlaylistStateTable])
+@DriftDatabase(
+  tables: [
+    AudioPlayerStateTable,
+    FavoritePlaylistStateTable,
+    DownloadTaskState,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
   @override
