@@ -505,7 +505,12 @@ class DownloadManager extends _$DownloadManager {
       return;
     }
     _pausedTracks.remove(track.id);
-    _setStatus(track, DownloadStatus.canceled);
+
+    if (status == DownloadStatus.downloading) {
+      task!.cancelToken.cancel();
+    } else if (status == DownloadStatus.queued) {
+      _setStatus(track, DownloadStatus.canceled);
+    }
   }
 
   void cancelPreload(String trackId) {

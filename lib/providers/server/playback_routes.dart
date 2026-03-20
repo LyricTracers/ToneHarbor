@@ -441,10 +441,18 @@ class PlaybackRoutes {
     final responseStreamController = StreamController<List<int>>();
 
     var cacheFileSinkClosed = false;
+    var responseStreamClosed = false;
     Future<void> closeCacheFileSink() async {
       if (!cacheFileSinkClosed) {
         cacheFileSinkClosed = true;
         await partialCacheFileSink.close();
+      }
+    }
+
+    Future<void> closeResponseStream() async {
+      if (!responseStreamClosed) {
+        responseStreamClosed = true;
+        await responseStreamController.close();
       }
     }
 
@@ -453,7 +461,7 @@ class PlaybackRoutes {
         if (!cacheFileSinkClosed) {
           partialCacheFileSink.add(data);
         }
-        if (!responseStreamController.isClosed) {
+        if (!responseStreamClosed) {
           responseStreamController.add(data);
         }
       },
@@ -467,9 +475,11 @@ class PlaybackRoutes {
         if (trackPartialCacheFile.existsSync()) {
           trackPartialCacheFile.deleteSync();
         }
-        responseStreamController.addError(e, stack);
+        if (!responseStreamClosed) {
+          responseStreamController.addError(e, stack);
+        }
         releaseLock();
-        responseStreamController.close();
+        closeResponseStream();
       },
       onDone: () async {
         await closeCacheFileSink();
@@ -483,7 +493,7 @@ class PlaybackRoutes {
             await trackPartialCacheFile.delete();
           }
           releaseLock();
-          await responseStreamController.close();
+          await closeResponseStream();
           return;
         }
 
@@ -500,7 +510,7 @@ class PlaybackRoutes {
           fileLength: fileLength,
         );
         releaseLock();
-        await responseStreamController.close();
+        await closeResponseStream();
       },
       cancelOnError: true,
     );
@@ -512,6 +522,7 @@ class PlaybackRoutes {
         await trackPartialCacheFile.delete();
       }
       releaseLock();
+      await closeResponseStream();
     };
 
     return Response(
