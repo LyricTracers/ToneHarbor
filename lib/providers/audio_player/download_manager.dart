@@ -152,7 +152,7 @@ class DownloadManager extends _$DownloadManager {
         album: '',
         externalUri: '',
         duration: Duration.zero,
-        filesize: 0,
+        filesize: record.fileSize,
         bitrate: 0,
         channel: 0,
         codec: '',
@@ -185,6 +185,7 @@ class DownloadManager extends _$DownloadManager {
         type: record.type,
         cancelToken: rhttp.CancelToken(),
         downloadedBytes: actualDownloadedBytes,
+        totalSizeBytes: record.fileSize,
         savePath: savePath,
       );
       restoredTasks.add(task);
@@ -216,6 +217,7 @@ class DownloadManager extends _$DownloadManager {
             trackTitle: task.track.title,
             trackArtist: task.track.artist,
             container: task.track.container,
+            fileSize: Value(task.track.filesize),
             type: task.type,
             quality: quality,
             status: task.status,
@@ -237,6 +239,7 @@ class DownloadManager extends _$DownloadManager {
             trackTitle: task.track.title,
             trackArtist: task.track.artist,
             container: task.track.container,
+            fileSize: Value(task.track.filesize),
             type: task.type,
             quality: quality,
             status: task.status,
@@ -384,6 +387,7 @@ class DownloadManager extends _$DownloadManager {
       type: DownloadType.preload,
       cancelToken: rhttp.CancelToken(),
       downloadedBytes: downloadedBytes,
+      totalSizeBytes: track.filesize,
       savePath: cachePath,
     );
 
@@ -516,6 +520,7 @@ class DownloadManager extends _$DownloadManager {
             type: DownloadType.normal,
             cancelToken: rhttp.CancelToken(),
             downloadedBytes: downloadedBytes,
+            totalSizeBytes: track.filesize,
             savePath: cachePath,
           ),
         );

@@ -774,6 +774,18 @@ class $DownloadTaskStateTable extends DownloadTaskState
         type: DriftSqlType.int,
         requiredDuringInsert: true,
       ).withConverter<DownloadStatus>($DownloadTaskStateTable.$converterstatus);
+  static const VerificationMeta _fileSizeMeta = const VerificationMeta(
+    'fileSize',
+  );
+  @override
+  late final GeneratedColumn<int> fileSize = GeneratedColumn<int>(
+    'file_size',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -795,6 +807,7 @@ class $DownloadTaskStateTable extends DownloadTaskState
     type,
     quality,
     status,
+    fileSize,
     updatedAt,
   ];
   @override
@@ -843,6 +856,12 @@ class $DownloadTaskStateTable extends DownloadTaskState
       );
     } else if (isInserting) {
       context.missing(_containerMeta);
+    }
+    if (data.containsKey('file_size')) {
+      context.handle(
+        _fileSizeMeta,
+        fileSize.isAcceptableOrUnknown(data['file_size']!, _fileSizeMeta),
+      );
     }
     if (data.containsKey('updated_at')) {
       context.handle(
@@ -893,6 +912,10 @@ class $DownloadTaskStateTable extends DownloadTaskState
           data['${effectivePrefix}status'],
         )!,
       ),
+      fileSize: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}file_size'],
+      )!,
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -922,6 +945,7 @@ class DownloadTaskStateData extends DataClass
   final DownloadType type;
   final AudioQuality quality;
   final DownloadStatus status;
+  final int fileSize;
   final DateTime updatedAt;
   const DownloadTaskStateData({
     required this.trackId,
@@ -931,6 +955,7 @@ class DownloadTaskStateData extends DataClass
     required this.type,
     required this.quality,
     required this.status,
+    required this.fileSize,
     required this.updatedAt,
   });
   @override
@@ -955,6 +980,7 @@ class DownloadTaskStateData extends DataClass
         $DownloadTaskStateTable.$converterstatus.toSql(status),
       );
     }
+    map['file_size'] = Variable<int>(fileSize);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
@@ -968,6 +994,7 @@ class DownloadTaskStateData extends DataClass
       type: Value(type),
       quality: Value(quality),
       status: Value(status),
+      fileSize: Value(fileSize),
       updatedAt: Value(updatedAt),
     );
   }
@@ -991,6 +1018,7 @@ class DownloadTaskStateData extends DataClass
       status: $DownloadTaskStateTable.$converterstatus.fromJson(
         serializer.fromJson<int>(json['status']),
       ),
+      fileSize: serializer.fromJson<int>(json['fileSize']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
@@ -1011,6 +1039,7 @@ class DownloadTaskStateData extends DataClass
       'status': serializer.toJson<int>(
         $DownloadTaskStateTable.$converterstatus.toJson(status),
       ),
+      'fileSize': serializer.toJson<int>(fileSize),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
@@ -1023,6 +1052,7 @@ class DownloadTaskStateData extends DataClass
     DownloadType? type,
     AudioQuality? quality,
     DownloadStatus? status,
+    int? fileSize,
     DateTime? updatedAt,
   }) => DownloadTaskStateData(
     trackId: trackId ?? this.trackId,
@@ -1032,6 +1062,7 @@ class DownloadTaskStateData extends DataClass
     type: type ?? this.type,
     quality: quality ?? this.quality,
     status: status ?? this.status,
+    fileSize: fileSize ?? this.fileSize,
     updatedAt: updatedAt ?? this.updatedAt,
   );
   DownloadTaskStateData copyWithCompanion(DownloadTaskStateCompanion data) {
@@ -1047,6 +1078,7 @@ class DownloadTaskStateData extends DataClass
       type: data.type.present ? data.type.value : this.type,
       quality: data.quality.present ? data.quality.value : this.quality,
       status: data.status.present ? data.status.value : this.status,
+      fileSize: data.fileSize.present ? data.fileSize.value : this.fileSize,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -1061,6 +1093,7 @@ class DownloadTaskStateData extends DataClass
           ..write('type: $type, ')
           ..write('quality: $quality, ')
           ..write('status: $status, ')
+          ..write('fileSize: $fileSize, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
@@ -1075,6 +1108,7 @@ class DownloadTaskStateData extends DataClass
     type,
     quality,
     status,
+    fileSize,
     updatedAt,
   );
   @override
@@ -1088,6 +1122,7 @@ class DownloadTaskStateData extends DataClass
           other.type == this.type &&
           other.quality == this.quality &&
           other.status == this.status &&
+          other.fileSize == this.fileSize &&
           other.updatedAt == this.updatedAt);
 }
 
@@ -1100,6 +1135,7 @@ class DownloadTaskStateCompanion
   final Value<DownloadType> type;
   final Value<AudioQuality> quality;
   final Value<DownloadStatus> status;
+  final Value<int> fileSize;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const DownloadTaskStateCompanion({
@@ -1110,6 +1146,7 @@ class DownloadTaskStateCompanion
     this.type = const Value.absent(),
     this.quality = const Value.absent(),
     this.status = const Value.absent(),
+    this.fileSize = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -1121,6 +1158,7 @@ class DownloadTaskStateCompanion
     required DownloadType type,
     required AudioQuality quality,
     required DownloadStatus status,
+    this.fileSize = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : trackId = Value(trackId),
@@ -1138,6 +1176,7 @@ class DownloadTaskStateCompanion
     Expression<int>? type,
     Expression<int>? quality,
     Expression<int>? status,
+    Expression<int>? fileSize,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
@@ -1149,6 +1188,7 @@ class DownloadTaskStateCompanion
       if (type != null) 'type': type,
       if (quality != null) 'quality': quality,
       if (status != null) 'status': status,
+      if (fileSize != null) 'file_size': fileSize,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -1162,6 +1202,7 @@ class DownloadTaskStateCompanion
     Value<DownloadType>? type,
     Value<AudioQuality>? quality,
     Value<DownloadStatus>? status,
+    Value<int>? fileSize,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
@@ -1173,6 +1214,7 @@ class DownloadTaskStateCompanion
       type: type ?? this.type,
       quality: quality ?? this.quality,
       status: status ?? this.status,
+      fileSize: fileSize ?? this.fileSize,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -1208,6 +1250,9 @@ class DownloadTaskStateCompanion
         $DownloadTaskStateTable.$converterstatus.toSql(status.value),
       );
     }
+    if (fileSize.present) {
+      map['file_size'] = Variable<int>(fileSize.value);
+    }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
@@ -1227,6 +1272,7 @@ class DownloadTaskStateCompanion
           ..write('type: $type, ')
           ..write('quality: $quality, ')
           ..write('status: $status, ')
+          ..write('fileSize: $fileSize, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -1683,6 +1729,7 @@ typedef $$DownloadTaskStateTableCreateCompanionBuilder =
       required DownloadType type,
       required AudioQuality quality,
       required DownloadStatus status,
+      Value<int> fileSize,
       Value<DateTime> updatedAt,
       Value<int> rowid,
     });
@@ -1695,6 +1742,7 @@ typedef $$DownloadTaskStateTableUpdateCompanionBuilder =
       Value<DownloadType> type,
       Value<AudioQuality> quality,
       Value<DownloadStatus> status,
+      Value<int> fileSize,
       Value<DateTime> updatedAt,
       Value<int> rowid,
     });
@@ -1744,6 +1792,11 @@ class $$DownloadTaskStateTableFilterComposer
   get status => $composableBuilder(
     column: $table.status,
     builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<int> get fileSize => $composableBuilder(
+    column: $table.fileSize,
+    builder: (column) => ColumnFilters(column),
   );
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
@@ -1796,6 +1849,11 @@ class $$DownloadTaskStateTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get fileSize => $composableBuilder(
+    column: $table.fileSize,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
@@ -1835,6 +1893,9 @@ class $$DownloadTaskStateTableAnnotationComposer
 
   GeneratedColumnWithTypeConverter<DownloadStatus, int> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get fileSize =>
+      $composableBuilder(column: $table.fileSize, builder: (column) => column);
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
@@ -1887,6 +1948,7 @@ class $$DownloadTaskStateTableTableManager
                 Value<DownloadType> type = const Value.absent(),
                 Value<AudioQuality> quality = const Value.absent(),
                 Value<DownloadStatus> status = const Value.absent(),
+                Value<int> fileSize = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DownloadTaskStateCompanion(
@@ -1897,6 +1959,7 @@ class $$DownloadTaskStateTableTableManager
                 type: type,
                 quality: quality,
                 status: status,
+                fileSize: fileSize,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -1909,6 +1972,7 @@ class $$DownloadTaskStateTableTableManager
                 required DownloadType type,
                 required AudioQuality quality,
                 required DownloadStatus status,
+                Value<int> fileSize = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DownloadTaskStateCompanion.insert(
@@ -1919,6 +1983,7 @@ class $$DownloadTaskStateTableTableManager
                 type: type,
                 quality: quality,
                 status: status,
+                fileSize: fileSize,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),

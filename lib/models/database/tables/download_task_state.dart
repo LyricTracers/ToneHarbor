@@ -8,6 +8,7 @@ class DownloadTaskState extends Table {
   IntColumn get type => intEnum<DownloadType>()();
   IntColumn get quality => intEnum<AudioQuality>()();
   IntColumn get status => intEnum<DownloadStatus>()();
+  IntColumn get fileSize => integer().withDefault(const Constant(0))();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
