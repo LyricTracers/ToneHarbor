@@ -230,7 +230,7 @@ class HomeLayout extends BaseBgLayout {
                       currentPath == '/download',
                       colorScheme,
                       Icons.download_for_offline,
-                      "下载中心",
+                      l10n.download_center,
                       () {
                         context.push('/download');
                       },
