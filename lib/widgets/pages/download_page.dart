@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/providers/audio_player/download_history_provider.dart';
 import 'package:toneharbor/providers/audio_player/download_manager.dart';
+import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
 class DownloadPage extends HookConsumerWidget {
@@ -12,12 +14,13 @@ class DownloadPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedTab = useState(0);
     final colorScheme = getColorSchemeWhenReady(ref);
+    final l10n = ref.watch(l10nProvider);
 
     return Column(
       children: [
         AppBar(
-          title: const Text(
-            "下载中心",
+          title: Text(
+            l10n.download_center,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           actions: [
@@ -45,8 +48,8 @@ class DownloadPage extends HookConsumerWidget {
         ),
         Expanded(
           child: selectedTab.value == 0
-              ? _DownloadListTab()
-              : _DownloadHistoryTab(),
+              ? _DownloadListTab(l10n: l10n)
+              : _DownloadHistoryTab(l10n: l10n),
         ),
       ],
     );
@@ -77,6 +80,10 @@ class DownloadPage extends HookConsumerWidget {
 }
 
 class _DownloadListTab extends HookConsumerWidget {
+  final AppLocalizations l10n;
+
+  const _DownloadListTab({required this.l10n});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final downloadNormalTasks = ref.watch(
@@ -101,13 +108,13 @@ class _DownloadListTab extends HookConsumerWidget {
         children: [
           if (downloadNormalTasks.isNotEmpty)
             _buildSection(
-              title: "普通下载",
+              title: l10n.normal_download,
               tasks: downloadNormalTasks,
               colorScheme: colorScheme,
             ),
           if (downloadPreloadTasks.isNotEmpty)
             _buildSection(
-              title: "预加载",
+              title: l10n.preload,
               tasks: downloadPreloadTasks,
               colorScheme: colorScheme,
             ),
@@ -124,7 +131,7 @@ class _DownloadListTab extends HookConsumerWidget {
         children: [
           Icon(Icons.download_outlined, size: 64, color: color),
           SizedBox(height: 16),
-          Text('暂无下载任务', style: TextStyle(color: color)),
+          Text(l10n.no_download_tasks, style: TextStyle(color: color)),
         ],
       ),
     );
@@ -165,6 +172,7 @@ class _DownloadListTab extends HookConsumerWidget {
             task: tasks[index],
             index: index,
             colorScheme: colorScheme,
+            l10n: l10n,
           ),
         ),
       ],
@@ -176,12 +184,14 @@ class _DownloadTaskItem extends HookConsumerWidget {
   final DownloadTask task;
   final int index;
   final ColorScheme colorScheme;
+  final AppLocalizations l10n;
 
   const _DownloadTaskItem({
     required this.task,
     super.key,
     required this.index,
     required this.colorScheme,
+    required this.l10n,
   });
 
   @override
@@ -266,22 +276,26 @@ class _DownloadTaskItem extends HookConsumerWidget {
   String _getStatusText(DownloadStatus status) {
     switch (status) {
       case DownloadStatus.queued:
-        return '排队中';
+        return l10n.status_queued;
       case DownloadStatus.downloading:
-        return '下载中';
+        return l10n.status_downloading;
       case DownloadStatus.paused:
-        return '已暂停';
+        return l10n.status_paused;
       case DownloadStatus.completed:
-        return '已完成';
+        return l10n.status_completed;
       case DownloadStatus.failed:
-        return '下载失败';
+        return l10n.status_failed;
       case DownloadStatus.canceled:
-        return '已取消';
+        return l10n.status_canceled;
     }
   }
 }
 
 class _DownloadHistoryTab extends HookConsumerWidget {
+  final AppLocalizations l10n;
+
+  const _DownloadHistoryTab({required this.l10n});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final history = ref.watch(downloadHistoryProvider());
@@ -294,7 +308,10 @@ class _DownloadHistoryTab extends HookConsumerWidget {
           children: [
             Icon(Icons.history, size: 64, color: Colors.grey),
             SizedBox(height: 16),
-            Text('暂无下载历史', style: TextStyle(color: Colors.grey)),
+            Text(
+              l10n.no_download_history,
+              style: TextStyle(color: Colors.grey),
+            ),
           ],
         ),
       );

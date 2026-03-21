@@ -141,5 +141,16 @@
   "select_all": "Select All",
   "tip_pre_song": "Already at the first song. Enable loop playback.",
   "tip_next_song": "Already at the last song. Enable loop playback.",
-  "save_success": "Saved successfully"
+  "save_success": "Saved successfully",
+  "download_center": "Download Center",
+  "normal_download": "Normal Download",
+  "preload": "Preload",
+  "no_download_tasks": "No download tasks",
+  "no_download_history": "No download history",
+  "status_queued": "Queued",
+  "status_downloading": "Downloading",
+  "status_paused": "Paused",
+  "status_completed": "Completed",
+  "status_failed": "Failed",
+  "status_canceled": "Canceled"
 }

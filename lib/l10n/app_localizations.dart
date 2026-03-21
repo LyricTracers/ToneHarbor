@@ -943,6 +943,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved successfully'**
   String get save_success;
+
+  /// No description provided for @download_center.
+  ///
+  /// In en, this message translates to:
+  /// **'Download Center'**
+  String get download_center;
+
+  /// No description provided for @normal_download.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal Download'**
+  String get normal_download;
+
+  /// No description provided for @preload.
+  ///
+  /// In en, this message translates to:
+  /// **'Preload'**
+  String get preload;
+
+  /// No description provided for @no_download_tasks.
+  ///
+  /// In en, this message translates to:
+  /// **'No download tasks'**
+  String get no_download_tasks;
+
+  /// No description provided for @no_download_history.
+  ///
+  /// In en, this message translates to:
+  /// **'No download history'**
+  String get no_download_history;
+
+  /// No description provided for @status_queued.
+  ///
+  /// In en, this message translates to:
+  /// **'Queued'**
+  String get status_queued;
+
+  /// No description provided for @status_downloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading'**
+  String get status_downloading;
+
+  /// No description provided for @status_paused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get status_paused;
+
+  /// No description provided for @status_completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get status_completed;
+
+  /// No description provided for @status_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get status_failed;
+
+  /// No description provided for @status_canceled.
+  ///
+  /// In en, this message translates to:
+  /// **'Canceled'**
+  String get status_canceled;
 }
 
 class _AppLocalizationsDelegate

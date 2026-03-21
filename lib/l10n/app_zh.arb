@@ -140,5 +140,16 @@
   "select_all": "全选",
   "tip_pre_song": "已经是第一首了，请开启循环播放",
   "tip_next_song": "已经是最后一首了，请开启循环播放",
-  "save_success": "保存成功"
+  "save_success": "保存成功",
+  "download_center": "下载中心",
+  "normal_download": "普通下载",
+  "preload": "预加载",
+  "no_download_tasks": "暂无下载任务",
+  "no_download_history": "暂无下载历史",
+  "status_queued": "排队中",
+  "status_downloading": "下载中",
+  "status_paused": "已暂停",
+  "status_completed": "已完成",
+  "status_failed": "下载失败",
+  "status_canceled": "已取消"
 }

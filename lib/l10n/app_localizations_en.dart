@@ -446,4 +446,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get save_success => 'Saved successfully';
+
+  @override
+  String get download_center => 'Download Center';
+
+  @override
+  String get normal_download => 'Normal Download';
+
+  @override
+  String get preload => 'Preload';
+
+  @override
+  String get no_download_tasks => 'No download tasks';
+
+  @override
+  String get no_download_history => 'No download history';
+
+  @override
+  String get status_queued => 'Queued';
+
+  @override
+  String get status_downloading => 'Downloading';
+
+  @override
+  String get status_paused => 'Paused';
+
+  @override
+  String get status_completed => 'Completed';
+
+  @override
+  String get status_failed => 'Failed';
+
+  @override
+  String get status_canceled => 'Canceled';
 }

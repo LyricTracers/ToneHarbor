@@ -430,4 +430,37 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get save_success => '保存成功';
+
+  @override
+  String get download_center => '下载中心';
+
+  @override
+  String get normal_download => '普通下载';
+
+  @override
+  String get preload => '预加载';
+
+  @override
+  String get no_download_tasks => '暂无下载任务';
+
+  @override
+  String get no_download_history => '暂无下载历史';
+
+  @override
+  String get status_queued => '排队中';
+
+  @override
+  String get status_downloading => '下载中';
+
+  @override
+  String get status_paused => '已暂停';
+
+  @override
+  String get status_completed => '已完成';
+
+  @override
+  String get status_failed => '下载失败';
+
+  @override
+  String get status_canceled => '已取消';
 }
