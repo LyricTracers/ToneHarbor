@@ -129,7 +129,16 @@ class DownloadManager extends _$DownloadManager {
 
   Future<void> _restoreTasks() async {
     final db = ref.read(appDatabaseProvider);
-    final savedTasks = await db.select(db.downloadTaskState).get();
+    final query = db.select(db.downloadTaskState)
+      ..where(
+        (t) =>
+            t.type.equals(DownloadType.normal.index) &
+            t.status.isNotIn([
+              DownloadStatus.completed.index,
+              DownloadStatus.canceled.index,
+            ]),
+      );
+    final savedTasks = await query.get();
 
     if (savedTasks.isEmpty) return;
 
@@ -155,11 +164,7 @@ class DownloadManager extends _$DownloadManager {
 
       final completeFile = File(savePath);
       if (await completeFile.exists()) {
-        continue;
-      }
-
-      if (record.status == DownloadStatus.completed ||
-          record.status == DownloadStatus.canceled) {
+        await _updateTaskStatusInDb(track.id, DownloadStatus.completed);
         continue;
       }
 
@@ -169,23 +174,29 @@ class DownloadManager extends _$DownloadManager {
         actualDownloadedBytes = await partFile.length();
       }
 
+      final actualStatus = record.status == DownloadStatus.downloading
+          ? DownloadStatus.queued
+          : record.status;
+
       final task = DownloadTask(
         track: track,
-        status: record.status,
+        status: actualStatus,
         type: record.type,
         cancelToken: rhttp.CancelToken(),
         downloadedBytes: actualDownloadedBytes,
         savePath: savePath,
       );
       restoredTasks.add(task);
+
+      if (record.status == DownloadStatus.downloading) {
+        await _updateTaskStatusInDb(track.id, DownloadStatus.queued);
+      }
     }
 
     if (restoredTasks.isNotEmpty) {
       state = restoredTasks;
       final hasQueuedTasks = state.any(
-        (task) =>
-            task.status == DownloadStatus.queued ||
-            task.status == DownloadStatus.downloading,
+        (task) => task.status == DownloadStatus.queued,
       );
       if (hasQueuedTasks) {
         _startDownloading();
@@ -279,23 +290,31 @@ class DownloadManager extends _$DownloadManager {
   }
 
   Future<void> cancelAllPreloads() async {
-    final trackIdsToCancel = <String>[];
+    final tasksToCancel = <DownloadTask>[];
     for (final task in state) {
       if (task.type == DownloadType.preload &&
           (task.status == DownloadStatus.downloading ||
               task.status == DownloadStatus.queued ||
               task.status == DownloadStatus.paused)) {
-        if (task.status == DownloadStatus.paused) {
-          await _deletePartFile(task.savePath);
-        } else {
+        if (task.status == DownloadStatus.downloading) {
           task.cancelToken.cancel();
         }
         _pausedTracks.remove(task.track.id);
-        trackIdsToCancel.add(task.track.id);
+        tasksToCancel.add(task);
       }
     }
 
-    if (trackIdsToCancel.isNotEmpty) {
+    if (tasksToCancel.isNotEmpty) {
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      for (final task in tasksToCancel) {
+        await _deletePartFile(task.savePath);
+        if (task.savePath != null) {
+          CacheLockManager.instance.unlock(task.savePath!);
+        }
+      }
+
+      final trackIdsToCancel = tasksToCancel.map((t) => t.track.id).toList();
       state = state
           .where((e) => !trackIdsToCancel.contains(e.track.id))
           .toList();
@@ -314,53 +333,56 @@ class DownloadManager extends _$DownloadManager {
 
     final existingTask = state.firstWhereOrNull((e) => e.track.id == track.id);
     if (existingTask != null) {
-      if (existingTask.status == DownloadStatus.downloading) {
-        logger.i(
-          '[DownloadManager] Track is downloading, skip preload: ${track.id}',
-        );
-        return;
-      }
-      if (existingTask.type == DownloadType.preload &&
-          existingTask.status == DownloadStatus.queued) {
-        logger.i(
-          '[DownloadManager] Already preloading: ${track.id} at ${quality.name}',
-        );
-        return;
-      }
-      if (existingTask.status == DownloadStatus.paused) {
-        logger.i(
-          '[DownloadManager] Track is paused, resuming preload: ${track.id}',
-        );
-        _pausedTracks.remove(track.id);
-        state = state.map((e) {
-          if (e.track.id == track.id) {
-            return e.copyWith(
-              status: DownloadStatus.queued,
-              cancelToken: rhttp.CancelToken(),
-              savePath: cachePath,
+      switch (existingTask.status) {
+        case DownloadStatus.downloading:
+          logger.i(
+            '[DownloadManager] Track is downloading, skip preload: ${track.id}',
+          );
+          return;
+
+        case DownloadStatus.queued:
+          if (existingTask.type == DownloadType.preload) {
+            logger.i(
+              '[DownloadManager] Already preloading: ${track.id} at ${quality.name}',
             );
+            return;
           }
-          return e;
-        }).toList();
-        await _updateTaskStatusInDb(track.id, DownloadStatus.queued);
-        _startDownloading();
-        return;
-      }
-      if (existingTask.status == DownloadStatus.canceled ||
-          existingTask.status == DownloadStatus.failed) {
-        logger.i(
-          '[DownloadManager] Track failed/canceled, retrying preload: ${track.id}',
-        );
-        await _deletePartFile(existingTask.savePath);
-        state = state.where((e) => e.track.id != track.id).toList();
+          logger.i(
+            '[DownloadManager] Normal task in queue, converting to preload: ${track.id}',
+          );
+          state = state.where((e) => e.track.id != track.id).toList();
+
+        case DownloadStatus.paused:
+          logger.i(
+            '[DownloadManager] Track is paused, converting to preload: ${track.id}',
+          );
+          _pausedTracks.remove(track.id);
+          state = state.where((e) => e.track.id != track.id).toList();
+
+        case DownloadStatus.canceled:
+        case DownloadStatus.failed:
+          logger.i(
+            '[DownloadManager] Track failed/canceled, retrying preload: ${track.id}',
+          );
+          await _deletePartFile(existingTask.savePath);
+          state = state.where((e) => e.track.id != track.id).toList();
+
+        case DownloadStatus.completed:
+          return;
       }
     }
+
+    final partFile = File('$cachePath.part');
+    final downloadedBytes = await partFile.exists()
+        ? await partFile.length()
+        : 0;
 
     final newTask = DownloadTask(
       track: track,
       status: DownloadStatus.queued,
       type: DownloadType.preload,
       cancelToken: rhttp.CancelToken(),
+      downloadedBytes: downloadedBytes,
       savePath: cachePath,
     );
 
@@ -371,43 +393,51 @@ class DownloadManager extends _$DownloadManager {
   }
 
   Future<void> addToQueue(ToneHarborTrackObject track) async {
+    final quality = ref.read(audioQualityProvider);
+    final cachePath = await getTrackCachePath(track, quality);
+
     final existingTask = state.firstWhereOrNull((e) => e.track.id == track.id);
     if (existingTask != null) {
-      if (existingTask.status == DownloadStatus.downloading ||
-          existingTask.status == DownloadStatus.queued) {
-        logger.i(
-          '[DownloadManager] Track is already downloading or in queue: ${track.id}',
-        );
-        return;
-      }
-      if (existingTask.status == DownloadStatus.paused) {
-        logger.i('[DownloadManager] Track is paused, resuming: ${track.id}');
-        _pausedTracks.remove(track.id);
-        state = state.map((e) {
-          if (e.track.id == track.id) {
-            return e.copyWith(
-              status: DownloadStatus.queued,
-              cancelToken: rhttp.CancelToken(),
-            );
-          }
-          return e;
-        }).toList();
-        await _updateTaskStatusInDb(track.id, DownloadStatus.queued);
-        _startDownloading();
-        return;
-      }
-      if (existingTask.status == DownloadStatus.canceled ||
-          existingTask.status == DownloadStatus.failed) {
-        await _deletePartFile(existingTask.savePath);
-        state = state.where((e) => e.track.id != track.id).toList();
+      switch (existingTask.status) {
+        case DownloadStatus.downloading:
+        case DownloadStatus.queued:
+          logger.i(
+            '[DownloadManager] Track is already downloading or in queue: ${track.id}',
+          );
+          return;
+
+        case DownloadStatus.paused:
+          logger.i(
+            '[DownloadManager] Track is paused, converting to normal: ${track.id}',
+          );
+          _pausedTracks.remove(track.id);
+          state = state.where((e) => e.track.id != track.id).toList();
+
+        case DownloadStatus.canceled:
+        case DownloadStatus.failed:
+          logger.i(
+            '[DownloadManager] Track failed/canceled, retrying: ${track.id}',
+          );
+          await _deletePartFile(existingTask.savePath);
+          state = state.where((e) => e.track.id != track.id).toList();
+
+        case DownloadStatus.completed:
+          return;
       }
     }
+
+    final partFile = File('$cachePath.part');
+    final downloadedBytes = await partFile.exists()
+        ? await partFile.length()
+        : 0;
 
     final newTask = DownloadTask(
       track: track,
       status: DownloadStatus.queued,
       type: DownloadType.normal,
       cancelToken: rhttp.CancelToken(),
+      downloadedBytes: downloadedBytes,
+      savePath: cachePath,
     );
 
     state = [...state, newTask];
@@ -416,76 +446,81 @@ class DownloadManager extends _$DownloadManager {
   }
 
   Future<void> addAllToQueue(List<ToneHarborTrackObject> tracks) async {
+    final quality = ref.read(audioQualityProvider);
+    final trackIdsToRemove = <String>[];
     final tracksToAdd = <ToneHarborTrackObject>[];
-    final tracksToResume = <String>[];
-    final tracksToRemove = <String>[];
+    final partFilesToDelete = <String?>[];
 
     for (final track in tracks) {
       final existingTask = state.firstWhereOrNull(
         (e) => e.track.id == track.id,
       );
       if (existingTask != null) {
-        if (existingTask.status == DownloadStatus.downloading ||
-            existingTask.status == DownloadStatus.queued) {
-          logger.i(
-            '[DownloadManager] Track is already downloading or in queue: ${track.id}',
-          );
-          continue;
+        switch (existingTask.status) {
+          case DownloadStatus.downloading:
+          case DownloadStatus.queued:
+            logger.i(
+              '[DownloadManager] Track is already downloading or in queue: ${track.id}',
+            );
+            continue;
+
+          case DownloadStatus.paused:
+            logger.i(
+              '[DownloadManager] Track is paused, converting to normal: ${track.id}',
+            );
+            _pausedTracks.remove(track.id);
+            trackIdsToRemove.add(track.id);
+            tracksToAdd.add(track);
+
+          case DownloadStatus.canceled:
+          case DownloadStatus.failed:
+            logger.i(
+              '[DownloadManager] Track failed/canceled, retrying: ${track.id}',
+            );
+            partFilesToDelete.add(existingTask.savePath);
+            trackIdsToRemove.add(track.id);
+            tracksToAdd.add(track);
+
+          case DownloadStatus.completed:
+            continue;
         }
-        if (existingTask.status == DownloadStatus.paused) {
-          tracksToResume.add(track.id);
-          continue;
-        }
-        if (existingTask.status == DownloadStatus.canceled ||
-            existingTask.status == DownloadStatus.failed) {
-          tracksToRemove.add(track.id);
-        }
+      } else {
+        tracksToAdd.add(track);
       }
-      tracksToAdd.add(track);
     }
 
-    if (tracksToRemove.isNotEmpty) {
-      for (final trackId in tracksToRemove) {
-        final task = state.firstWhereOrNull((e) => e.track.id == trackId);
-        if (task != null) {
-          await _deletePartFile(task.savePath);
-        }
-      }
-      state = state.where((e) => !tracksToRemove.contains(e.track.id)).toList();
+    for (final savePath in partFilesToDelete) {
+      await _deletePartFile(savePath);
     }
 
-    if (tracksToResume.isNotEmpty) {
-      for (final trackId in tracksToResume) {
-        _pausedTracks.remove(trackId);
-      }
-      state = state.map((e) {
-        if (tracksToResume.contains(e.track.id)) {
-          return e.copyWith(
-            status: DownloadStatus.queued,
-            cancelToken: rhttp.CancelToken(),
-          );
-        }
-        return e;
-      }).toList();
-      await _updateTasksStatusInDb(tracksToResume, DownloadStatus.queued);
+    if (trackIdsToRemove.isNotEmpty) {
+      state = state
+          .where((e) => !trackIdsToRemove.contains(e.track.id))
+          .toList();
     }
 
     if (tracksToAdd.isNotEmpty) {
-      final newTasks = tracksToAdd
-          .map(
-            (e) => DownloadTask(
-              track: e,
-              status: DownloadStatus.queued,
-              type: DownloadType.normal,
-              cancelToken: rhttp.CancelToken(),
-            ),
-          )
-          .toList();
+      final newTasks = <DownloadTask>[];
+      for (final track in tracksToAdd) {
+        final cachePath = await getTrackCachePath(track, quality);
+        final partFile = File('$cachePath.part');
+        final downloadedBytes = await partFile.exists()
+            ? await partFile.length()
+            : 0;
+
+        newTasks.add(
+          DownloadTask(
+            track: track,
+            status: DownloadStatus.queued,
+            type: DownloadType.normal,
+            cancelToken: rhttp.CancelToken(),
+            downloadedBytes: downloadedBytes,
+            savePath: cachePath,
+          ),
+        );
+      }
       await _insertTasksToDb(newTasks);
       state = [...state, ...newTasks];
-    }
-
-    if (tracksToAdd.isNotEmpty || tracksToResume.isNotEmpty) {
       _startDownloading();
     }
   }
@@ -612,6 +647,9 @@ class DownloadManager extends _$DownloadManager {
     if (status == DownloadStatus.downloading) {
       task!.cancelToken.cancel();
     }
+    if (task?.savePath != null) {
+      CacheLockManager.instance.unlock(task!.savePath!);
+    }
 
     _pausedTracks.remove(track.id);
     await _setStatus(track, DownloadStatus.canceled);
@@ -672,6 +710,7 @@ class DownloadManager extends _$DownloadManager {
 
       if (task.type == DownloadType.preload) {
         await _deleteTaskFromDb(track.id);
+        return;
       }
     } else {
       state = state.map((e) {
@@ -733,35 +772,11 @@ class DownloadManager extends _$DownloadManager {
     }).toList();
   }
 
-  Future<void> removeTask(ToneHarborTrackObject track) async {
-    final task = state.firstWhereOrNull((e) => e.track.id == track.id);
-    if (task != null) {
-      final wasDownloading = task.status == DownloadStatus.downloading;
-      if (wasDownloading) {
-        task.cancelToken.cancel();
-      }
-
-      if (wasDownloading) {
-        await Future.delayed(const Duration(milliseconds: 100));
-      }
-
-      await _deletePartFile(task.savePath);
-
-      task.dispose();
-      _pausedTracks.remove(track.id);
-      state = state.where((e) => e.track.id != track.id).toList();
-      await _deleteTaskFromDb(track.id);
-    }
-  }
-
   int get activeDownloadsCount =>
       state.where((e) => e.status == DownloadStatus.downloading).length;
 
   int get queuedDownloadsCount =>
       state.where((e) => e.status == DownloadStatus.queued).length;
-
-  int get completedDownloadsCount =>
-      state.where((e) => e.status == DownloadStatus.completed).length;
 
   int get pausedDownloadsCount =>
       state.where((e) => e.status == DownloadStatus.paused).length;
@@ -820,6 +835,7 @@ class DownloadManager extends _$DownloadManager {
 
       if (task.cancelToken.isCancelled) {
         if (_pausedTracks.contains(task.track.id)) {
+          _pausedTracks.remove(task.track.id);
           await _setStatus(task.track, DownloadStatus.paused);
         } else {
           await _setStatus(task.track, DownloadStatus.canceled);
@@ -902,17 +918,16 @@ class DownloadManager extends _$DownloadManager {
               await sink.close();
 
               if (_pausedTracks.contains(task.track.id)) {
+                _pausedTracks.remove(task.track.id);
                 await _setStatus(task.track, DownloadStatus.paused);
-                CacheLockManager.instance.unlock(savePath);
-                lockHeld = false;
               } else {
                 if (await partialFile.exists()) {
                   await partialFile.delete();
                 }
                 await _setStatus(task.track, DownloadStatus.canceled);
-                CacheLockManager.instance.unlock(savePath);
-                lockHeld = false;
               }
+              CacheLockManager.instance.unlock(savePath);
+              lockHeld = false;
               return;
             }
             sink.add(chunk);
@@ -939,9 +954,22 @@ class DownloadManager extends _$DownloadManager {
 
         await sink.close();
 
-        if (await partialFile.exists()) {
-          await partialFile.rename(savePath);
+        if (!await partialFile.exists()) {
+          throw Exception("Partial file not found");
         }
+
+        final partialFileSize = await partialFile.length();
+        if (partialFileSize == 0) {
+          throw Exception("Downloaded file is empty");
+        }
+
+        if (totalSize != null && partialFileSize != totalSize) {
+          throw Exception(
+            "File size mismatch: expected $totalSize, got $partialFileSize",
+          );
+        }
+
+        await partialFile.rename(savePath);
 
         if (!await savePathFile.exists()) {
           throw Exception("Failed to rename partial file to final file");
