@@ -41,7 +41,7 @@ final class DownloadManagerProvider
   }
 }
 
-String _$downloadManagerHash() => r'99632b22ed1932f1f133d82d4c91de8b37af9cf7';
+String _$downloadManagerHash() => r'8f84c2d3f18104c6ff3a3e01c39882cbd55ff8a2';
 
 abstract class _$DownloadManager extends $Notifier<List<DownloadTask>> {
   List<DownloadTask> build();

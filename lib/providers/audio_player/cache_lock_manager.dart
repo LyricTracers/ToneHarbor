@@ -28,4 +28,8 @@ class CacheLockManager {
   bool isAnyLocked(Iterable<String> cacheKeys) {
     return cacheKeys.any((key) => isLocked(key));
   }
+
+  void clearAll() {
+    _locks.clear();
+  }
 }

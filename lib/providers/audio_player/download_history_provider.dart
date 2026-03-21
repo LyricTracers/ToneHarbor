@@ -2,11 +2,14 @@ import 'package:drift/drift.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
+import 'package:toneharbor/models/database/database.dart';
 import 'package:toneharbor/providers/audio_player/download_manager.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 
 part 'download_history_provider.g.dart';
+
+enum DownloadHistoryFilter { all, completed, canceled }
 
 @riverpod
 class DownloadHistoryNotifier extends _$DownloadHistoryNotifier {
@@ -24,8 +27,7 @@ class DownloadHistoryNotifier extends _$DownloadHistoryNotifier {
 
   @override
   List<DownloadTaskRecord> build({
-    DownloadType? filterType,
-    DownloadStatus? filterStatus,
+    DownloadHistoryFilter filter = DownloadHistoryFilter.all,
   }) {
     ref.keepAliveFor(Duration(minutes: 5));
     Future.microtask(() => _loadFirstPage());
@@ -39,27 +41,29 @@ class DownloadHistoryNotifier extends _$DownloadHistoryNotifier {
     try {
       final db = ref.read(appDatabaseProvider);
 
-      final query = db.select(db.downloadTaskState)
-        ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)])
-        ..limit(defaultPageSize, offset: 0);
+      final records = await _buildQuery(
+        db,
+        limit: defaultPageSize,
+        offset: 0,
+      ).get();
 
-      if (filterType != null) {
-        query.where((t) => t.type.equals(filterType!.index));
-      }
-      if (filterStatus != null) {
-        query.where((t) => t.status.equals(filterStatus!.index));
+      final countQuery = db.downloadTaskState.trackId.count();
+      final filteredQuery = db.selectOnly(db.downloadTaskState)
+        ..addColumns([countQuery])
+        ..where(db.downloadTaskState.type.equals(DownloadType.normal.index));
+
+      if (filter == DownloadHistoryFilter.completed) {
+        filteredQuery.where(
+          db.downloadTaskState.status.equals(DownloadStatus.completed.index),
+        );
+      } else if (filter == DownloadHistoryFilter.canceled) {
+        filteredQuery.where(
+          db.downloadTaskState.status.equals(DownloadStatus.canceled.index),
+        );
       }
 
-      final records = await query.get();
-
-      final countQuery = db.select(db.downloadTaskState);
-      if (filterType != null) {
-        countQuery.where((t) => t.type.equals(filterType!.index));
-      }
-      if (filterStatus != null) {
-        countQuery.where((t) => t.status.equals(filterStatus!.index));
-      }
-      _totalRecords = await countQuery.get().then((r) => r.length);
+      final result = await filteredQuery.getSingle();
+      _totalRecords = result.read(countQuery) ?? 0;
 
       state = records.map(_mapRecordToTask).toList();
       _hasMore = state.length < _totalRecords;
@@ -68,7 +72,26 @@ class DownloadHistoryNotifier extends _$DownloadHistoryNotifier {
     }
   }
 
-  DownloadTaskRecord _mapRecordToTask(record) {
+  SimpleSelectStatement<DownloadTaskState, DownloadTaskStateData> _buildQuery(
+    AppDatabase db, {
+    required int limit,
+    required int offset,
+  }) {
+    final query = db.select(db.downloadTaskState)
+      ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)])
+      ..limit(limit, offset: offset);
+    query.where((t) => t.type.equals(DownloadType.normal.index));
+
+    if (filter == DownloadHistoryFilter.completed) {
+      query.where((t) => t.status.equals(DownloadStatus.completed.index));
+    } else if (filter == DownloadHistoryFilter.canceled) {
+      query.where((t) => t.status.equals(DownloadStatus.canceled.index));
+    }
+
+    return query;
+  }
+
+  DownloadTaskRecord _mapRecordToTask(DownloadTaskStateData record) {
     final track = ToneHarborTrackObject.full(
       id: record.trackId,
       title: record.trackTitle,
@@ -102,20 +125,11 @@ class DownloadHistoryNotifier extends _$DownloadHistoryNotifier {
       _currentPage++;
 
       final offset = _currentPage * defaultPageSize;
-      final limit = defaultPageSize;
-
-      final query = db.select(db.downloadTaskState)
-        ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)])
-        ..limit(limit, offset: offset);
-
-      if (filterType != null) {
-        query.where((t) => t.type.equals(filterType!.index));
-      }
-      if (filterStatus != null) {
-        query.where((t) => t.status.equals(filterStatus!.index));
-      }
-
-      final records = await query.get();
+      final records = await _buildQuery(
+        db,
+        limit: defaultPageSize,
+        offset: offset,
+      ).get();
 
       state = [...state, ...records.map(_mapRecordToTask)];
       _hasMore = records.length == defaultPageSize;

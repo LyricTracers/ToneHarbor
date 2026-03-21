@@ -17,8 +17,7 @@ final class DownloadHistoryNotifierProvider
         $NotifierProvider<DownloadHistoryNotifier, List<DownloadTaskRecord>> {
   DownloadHistoryNotifierProvider._({
     required DownloadHistoryNotifierFamily super.from,
-    required ({DownloadType? filterType, DownloadStatus? filterStatus})
-    super.argument,
+    required DownloadHistoryFilter super.argument,
   }) : super(
          retry: null,
          name: r'downloadHistoryProvider',
@@ -34,7 +33,7 @@ final class DownloadHistoryNotifierProvider
   String toString() {
     return r'downloadHistoryProvider'
         ''
-        '$argument';
+        '($argument)';
   }
 
   @$internal
@@ -62,7 +61,7 @@ final class DownloadHistoryNotifierProvider
 }
 
 String _$downloadHistoryNotifierHash() =>
-    r'0b1d06dfd57ad32afe9ca7b22e65b1506e121e43';
+    r'9d750b32e8f47300d8583b21bb2a24a36ce5321e';
 
 final class DownloadHistoryNotifierFamily extends $Family
     with
@@ -71,7 +70,7 @@ final class DownloadHistoryNotifierFamily extends $Family
           List<DownloadTaskRecord>,
           List<DownloadTaskRecord>,
           List<DownloadTaskRecord>,
-          ({DownloadType? filterType, DownloadStatus? filterStatus})
+          DownloadHistoryFilter
         > {
   DownloadHistoryNotifierFamily._()
     : super(
@@ -83,12 +82,8 @@ final class DownloadHistoryNotifierFamily extends $Family
       );
 
   DownloadHistoryNotifierProvider call({
-    DownloadType? filterType,
-    DownloadStatus? filterStatus,
-  }) => DownloadHistoryNotifierProvider._(
-    argument: (filterType: filterType, filterStatus: filterStatus),
-    from: this,
-  );
+    DownloadHistoryFilter filter = DownloadHistoryFilter.all,
+  }) => DownloadHistoryNotifierProvider._(argument: filter, from: this);
 
   @override
   String toString() => r'downloadHistoryProvider';
@@ -96,14 +91,11 @@ final class DownloadHistoryNotifierFamily extends $Family
 
 abstract class _$DownloadHistoryNotifier
     extends $Notifier<List<DownloadTaskRecord>> {
-  late final _$args =
-      ref.$arg as ({DownloadType? filterType, DownloadStatus? filterStatus});
-  DownloadType? get filterType => _$args.filterType;
-  DownloadStatus? get filterStatus => _$args.filterStatus;
+  late final _$args = ref.$arg as DownloadHistoryFilter;
+  DownloadHistoryFilter get filter => _$args;
 
   List<DownloadTaskRecord> build({
-    DownloadType? filterType,
-    DownloadStatus? filterStatus,
+    DownloadHistoryFilter filter = DownloadHistoryFilter.all,
   });
   @$mustCallSuper
   @override
@@ -118,12 +110,6 @@ abstract class _$DownloadHistoryNotifier
               Object?,
               Object?
             >;
-    element.handleCreate(
-      ref,
-      () => build(
-        filterType: _$args.filterType,
-        filterStatus: _$args.filterStatus,
-      ),
-    );
+    element.handleCreate(ref, () => build(filter: _$args));
   }
 }

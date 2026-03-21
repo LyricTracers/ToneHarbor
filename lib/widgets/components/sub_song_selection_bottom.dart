@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
+import 'package:toneharbor/providers/audio_player/download_manager.dart';
 import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
@@ -62,6 +63,9 @@ class SubSongSelectionBottom<T extends AsSong> extends HookConsumerWidget {
             final ids = ref.read(songSelectionProvider).ids;
             if (_checkIdsEmpty(ids, context, ref)) return;
             ref.invalidate(songSelectionProvider);
+            ref
+                .read(downloadManagerProvider.notifier)
+                .addAllToQueue(_getSelectedTracks(ids));
           },
           icon: const Icon(Icons.download_rounded, size: 18),
           tooltip: l10n.download,

@@ -118,6 +118,7 @@ class DownloadManager extends _$DownloadManager {
         }
         task.dispose();
       }
+      CacheLockManager.instance.clearAll();
       _completionController.close();
     });
 
@@ -241,6 +242,14 @@ class DownloadManager extends _$DownloadManager {
     )..where((tb) => tb.trackId.equals(trackId))).go();
   }
 
+  Future<void> _deleteTasksFromDb(List<String> trackIds) async {
+    if (trackIds.isEmpty) return;
+    final db = ref.read(appDatabaseProvider);
+    await (db.delete(
+      db.downloadTaskState,
+    )..where((tb) => tb.trackId.isIn(trackIds))).go();
+  }
+
   Future<void> _deletePartFile(String? savePath) async {
     if (savePath == null) return;
     final partialFile = File('$savePath.part');
@@ -290,7 +299,7 @@ class DownloadManager extends _$DownloadManager {
       state = state
           .where((e) => !trackIdsToCancel.contains(e.track.id))
           .toList();
-      await _updateTasksStatusInDb(trackIdsToCancel, DownloadStatus.canceled);
+      await _deleteTasksFromDb(trackIdsToCancel);
     }
   }
 
@@ -599,10 +608,8 @@ class DownloadManager extends _$DownloadManager {
         status == DownloadStatus.canceled) {
       return;
     }
-
-    if (status == DownloadStatus.paused) {
-      await _deletePartFile(task?.savePath);
-    } else if (status == DownloadStatus.downloading) {
+    await _deletePartFile(task?.savePath);
+    if (status == DownloadStatus.downloading) {
       task!.cancelToken.cancel();
     }
 
@@ -610,7 +617,7 @@ class DownloadManager extends _$DownloadManager {
     await _setStatus(track, DownloadStatus.canceled);
   }
 
-  Future<void> clearAll() async {
+  Future<void> cancelAll() async {
     final downloadingTasks = state
         .where((e) => e.status == DownloadStatus.downloading)
         .toList();
@@ -621,15 +628,29 @@ class DownloadManager extends _$DownloadManager {
 
     await Future.delayed(const Duration(milliseconds: 100));
 
-    for (final task in state) {
-      await _deletePartFile(task.savePath);
-      task.dispose();
-    }
+    final preloadTasks = state.where((e) => e.type == DownloadType.preload);
+    final normalTasks = state.where((e) => e.type == DownloadType.normal);
+
+    await Future.wait(
+      state.map((task) async {
+        await _deletePartFile(task.savePath);
+        task.dispose();
+      }),
+    );
+
     _pausedTracks.clear();
     state = [];
+    CacheLockManager.instance.clearAll();
 
-    final db = ref.read(appDatabaseProvider);
-    await db.delete(db.downloadTaskState).go();
+    await Future.wait([
+      if (normalTasks.isNotEmpty)
+        _updateTasksStatusInDb(
+          normalTasks.map((e) => e.track.id).toList(),
+          DownloadStatus.canceled,
+        ),
+      if (preloadTasks.isNotEmpty)
+        _deleteTasksFromDb(preloadTasks.map((e) => e.track.id).toList()),
+    ]);
   }
 
   Future<void> _setStatus(
@@ -648,6 +669,10 @@ class DownloadManager extends _$DownloadManager {
     if (status == DownloadStatus.completed ||
         status == DownloadStatus.canceled) {
       state = state.where((e) => e.track.id != track.id).toList();
+
+      if (task.type == DownloadType.preload) {
+        await _deleteTaskFromDb(track.id);
+      }
     } else {
       state = state.map((e) {
         if (e.track.id == track.id) {
@@ -776,11 +801,9 @@ class DownloadManager extends _$DownloadManager {
     final savePath = await getTrackCachePath(task.track, quality);
 
     if (!CacheLockManager.instance.tryLock(savePath)) {
-      logger.i(
-        '[DownloadManager] Cache locked by another process: ${task.track.id}',
+      logger.w(
+        '[DownloadManager] Cache locked by another process, skipping: ${task.track.id}',
       );
-      await _setStatus(task.track, DownloadStatus.queued);
-      _scheduleNextDownload();
       return;
     }
 
