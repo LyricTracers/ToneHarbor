@@ -991,6 +991,7 @@ class DownloadManager extends _$DownloadManager {
       if (e is rhttp.RhttpException) {
         logger.i('[DownloadManager] Download cancelled: ${task.track.id}');
         if (_pausedTracks.contains(task.track.id)) {
+          _pausedTracks.remove(task.track.id);
           await _setStatus(task.track, DownloadStatus.paused);
           CacheLockManager.instance.unlock(savePath);
           lockHeld = false;
