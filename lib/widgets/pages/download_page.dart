@@ -31,7 +31,10 @@ class DownloadPage extends HookConsumerWidget {
               icon: Icons.history_rounded,
               isSelected: selectedTab.value == 1,
               colorScheme: colorScheme,
-              onPressed: () => selectedTab.value = 1,
+              onPressed: () {
+                ref.invalidate(downloadHistoryProvider);
+                selectedTab.value = 1;
+              },
             ),
             IconButton(
               onPressed: () {},
@@ -76,47 +79,135 @@ class DownloadPage extends HookConsumerWidget {
 class _DownloadListTab extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final downloadTasks = ref.watch(downloadManagerProvider);
+    final downloadNormalTasks = ref.watch(
+      downloadManagerProvider.select(
+        (tasks) => tasks.where((t) => t.type == DownloadType.normal).toList(),
+      ),
+    );
+    final downloadPreloadTasks = ref.watch(
+      downloadManagerProvider.select(
+        (tasks) => tasks.where((t) => t.type == DownloadType.preload).toList(),
+      ),
+    );
+    final colorScheme = getColorSchemeWhenReady(ref);
 
-    if (downloadTasks.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.download_outlined, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text('暂无下载任务', style: TextStyle(color: Colors.grey)),
-          ],
-        ),
-      );
+    if (downloadNormalTasks.isEmpty && downloadPreloadTasks.isEmpty) {
+      return _buildEmptyState(colorScheme);
     }
 
-    return ListView.builder(
-      itemCount: downloadTasks.length,
-      itemBuilder: (context, index) {
-        final task = downloadTasks[index];
-        return _DownloadTaskItem(key: ValueKey(task.track.id), task: task);
-      },
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (downloadNormalTasks.isNotEmpty)
+            _buildSection(
+              title: "普通下载",
+              tasks: downloadNormalTasks,
+              colorScheme: colorScheme,
+            ),
+          if (downloadPreloadTasks.isNotEmpty)
+            _buildSection(
+              title: "预加载",
+              tasks: downloadPreloadTasks,
+              colorScheme: colorScheme,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(ColorScheme colorScheme) {
+    final color = colorScheme.onSurface.withValues(alpha: 0.5);
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.download_outlined, size: 64, color: color),
+          SizedBox(height: 16),
+          Text('暂无下载任务', style: TextStyle(color: color)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSection({
+    required String title,
+    required List<DownloadTask> tasks,
+    required ColorScheme colorScheme,
+  }) {
+    final dividerColor = colorScheme.onSurface.withValues(alpha: 0.5);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsetsGeometry.only(
+            left: 50,
+            right: 30,
+            top: 10,
+            bottom: 2,
+          ),
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 18,
+              color: colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Divider(thickness: 1, indent: 50, endIndent: 30, color: dividerColor),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: tasks.length,
+          itemBuilder: (context, index) => _DownloadTaskItem(
+            key: ValueKey(tasks[index].track.id),
+            task: tasks[index],
+            index: index,
+            colorScheme: colorScheme,
+          ),
+        ),
+      ],
     );
   }
 }
 
 class _DownloadTaskItem extends HookConsumerWidget {
   final DownloadTask task;
+  final int index;
+  final ColorScheme colorScheme;
 
-  const _DownloadTaskItem({required this.task, super.key});
+  const _DownloadTaskItem({
+    required this.task,
+    super.key,
+    required this.index,
+    required this.colorScheme,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isHovered = useState(false);
     final progress = task.totalSizeBytes != null && task.totalSizeBytes! > 0
         ? task.downloadedBytes / task.totalSizeBytes!
         : 0.0;
 
-    return ListTile(
-      leading: Icon(Icons.music_note),
-      title: Text(task.track.title),
-      subtitle: _buildSubtitle(progress),
-      trailing: _buildTrailingButton(ref),
+    return MouseRegion(
+      onEnter: (event) => isHovered.value = true,
+      onExit: (event) => isHovered.value = false,
+      child: Container(
+        color: isHovered.value
+            ? colorScheme.outline.withValues(alpha: .1)
+            : Colors.transparent,
+        child: ListTile(
+          leading: Text(
+            '${index + 1}',
+            style: TextStyle(fontSize: 14, color: colorScheme.primary),
+          ),
+          title: Text(task.track.title),
+          subtitle: _buildSubtitle(progress),
+          trailing: _buildTrailingButton(ref),
+        ),
+      ),
     );
   }
 
@@ -195,14 +286,7 @@ class _DownloadHistoryTab extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final history = ref.watch(downloadHistoryProvider());
     final historyNotifier = ref.read(downloadHistoryProvider().notifier);
-
-    useEffect(() {
-      Future.microtask(() {
-        ref.invalidate(downloadHistoryProvider);
-      });
-      return null;
-    }, []);
-
+    final colorScheme = getColorSchemeWhenReady(ref);
     if (history.isEmpty) {
       return Center(
         child: Column(
@@ -233,6 +317,8 @@ class _DownloadHistoryTab extends HookConsumerWidget {
         return _DownloadHistoryItem(
           key: ValueKey(record.track.id),
           record: record,
+          colorScheme: colorScheme,
+          index: index,
         );
       },
     );
@@ -241,16 +327,46 @@ class _DownloadHistoryTab extends HookConsumerWidget {
 
 class _DownloadHistoryItem extends HookConsumerWidget {
   final DownloadTaskRecord record;
+  final ColorScheme colorScheme;
+  final int index;
 
-  const _DownloadHistoryItem({required this.record, super.key});
+  const _DownloadHistoryItem({
+    super.key,
+    required this.record,
+    required this.colorScheme,
+    required this.index,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      leading: Icon(Icons.music_note),
-      title: Text(record.track.title),
-      subtitle: Text(record.track.artist),
-      trailing: _buildStatusIcon(),
+    final isHovered = useState(false);
+    return MouseRegion(
+      onEnter: (event) => isHovered.value = true,
+      onExit: (event) => isHovered.value = false,
+      child: Container(
+        color: isHovered.value
+            ? colorScheme.outline.withValues(alpha: .1)
+            : Colors.transparent,
+        child: ListTile(
+          minTileHeight: 56,
+          leading: Text(
+            '${index + 1}',
+            style: TextStyle(fontSize: 14, color: colorScheme.primary),
+          ),
+          title: Text(
+            record.track.title,
+            style: TextStyle(fontSize: 14, color: colorScheme.onSurface),
+          ),
+          subtitle: Text(
+            record.track.artist,
+            style: TextStyle(
+              fontSize: 12,
+              color: colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+          trailing: _buildStatusIcon(),
+        ),
+      ),
     );
   }
 
@@ -258,8 +374,6 @@ class _DownloadHistoryItem extends HookConsumerWidget {
     switch (record.status) {
       case DownloadStatus.completed:
         return Icon(Icons.check_circle, color: Colors.green);
-      case DownloadStatus.failed:
-        return Icon(Icons.error, color: Colors.red);
       case DownloadStatus.canceled:
         return Icon(Icons.cancel, color: Colors.orange);
       default:
