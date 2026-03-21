@@ -111,20 +111,21 @@ class DownloadManager extends _$DownloadManager {
 
   @override
   List<DownloadTask> build() {
-    ref.onDispose(() {
-      for (final task in state) {
-        if (task.status == DownloadStatus.downloading) {
-          task.cancelToken.cancel();
-        }
-        task.dispose();
-      }
-      CacheLockManager.instance.clearAll();
-      _completionController.close();
-    });
-
+    CacheLockManager.instance.clearAll();
+    ref.onDispose(dispose);
     _restoreTasks();
-
     return [];
+  }
+
+  void dispose() {
+    for (final task in state) {
+      if (task.status == DownloadStatus.downloading) {
+        task.cancelToken.cancel();
+      }
+      task.dispose();
+    }
+    CacheLockManager.instance.clearAll();
+    _completionController.close();
   }
 
   Future<void> _restoreTasks() async {
@@ -824,7 +825,6 @@ class DownloadManager extends _$DownloadManager {
 
     bool lockHeld = true;
     try {
-      await _setStatus(task.track, DownloadStatus.downloading);
       final streamUrl = await ref.read(
         streamUrlProvider(
           id: task.track.id,
@@ -1063,6 +1063,8 @@ class DownloadManager extends _$DownloadManager {
 
         if (queuedTask == null) break;
 
+        await _setStatus(queuedTask.track, DownloadStatus.downloading);
+
         _activePreloadDownloads++;
         _downloadTrack(queuedTask).whenComplete(() {
           _activePreloadDownloads--;
@@ -1078,6 +1080,8 @@ class DownloadManager extends _$DownloadManager {
         );
 
         if (queuedTask == null) break;
+
+        await _setStatus(queuedTask.track, DownloadStatus.downloading);
 
         _activeNormalDownloads++;
         _downloadTrack(queuedTask).whenComplete(() {

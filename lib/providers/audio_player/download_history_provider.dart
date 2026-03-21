@@ -60,6 +60,13 @@ class DownloadHistoryNotifier extends _$DownloadHistoryNotifier {
         filteredQuery.where(
           db.downloadTaskState.status.equals(DownloadStatus.canceled.index),
         );
+      } else {
+        filteredQuery.where(
+          db.downloadTaskState.status.isIn([
+            DownloadStatus.completed.index,
+            DownloadStatus.canceled.index,
+          ]),
+        );
       }
 
       final result = await filteredQuery.getSingle();
@@ -86,6 +93,13 @@ class DownloadHistoryNotifier extends _$DownloadHistoryNotifier {
       query.where((t) => t.status.equals(DownloadStatus.completed.index));
     } else if (filter == DownloadHistoryFilter.canceled) {
       query.where((t) => t.status.equals(DownloadStatus.canceled.index));
+    } else {
+      query.where(
+        (t) => t.status.isIn([
+          DownloadStatus.completed.index,
+          DownloadStatus.canceled.index,
+        ]),
+      );
     }
 
     return query;
