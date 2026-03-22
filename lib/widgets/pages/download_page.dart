@@ -264,7 +264,7 @@ class _DownloadListTab extends HookConsumerWidget {
               order[b.status] ?? 6,
             );
             if (statusCompare != 0) return statusCompare;
-            return b.progressPercentage.compareTo(a.progressPercentage);
+            return b.track.id.compareTo(a.track.id);
           });
     var downloadPreloadTasks =
         downloadTasks
@@ -283,7 +283,7 @@ class _DownloadListTab extends HookConsumerWidget {
               order[b.status] ?? 6,
             );
             if (statusCompare != 0) return statusCompare;
-            return b.progressPercentage.compareTo(a.progressPercentage);
+            return b.track.id.compareTo(a.track.id);
           });
     return SingleChildScrollView(
       child: Column(
