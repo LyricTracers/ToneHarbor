@@ -9,7 +9,6 @@ import 'package:toneharbor/providers/audio_player/download_manager.dart';
 import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
-import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 
 class DownloadPage extends HookConsumerWidget {
   const DownloadPage({super.key});
@@ -30,20 +29,20 @@ class DownloadPage extends HookConsumerWidget {
     );
     List<DownloadTask>? downloadNormalTasks;
     List<DownloadTask>? downloadPreloadTasks;
+    List<DownloadTaskRecord>? downloadTaskRecords;
     var total = 0;
     if (selectedTab.value == 0) {
-      downloadNormalTasks = ref.watch(
-        downloadManagerProvider.select(
-          (tasks) => tasks.where((t) => t.type == DownloadType.normal).toList(),
-        ),
-      );
-      downloadPreloadTasks = ref.watch(
-        downloadManagerProvider.select(
-          (tasks) =>
-              tasks.where((t) => t.type == DownloadType.preload).toList(),
-        ),
-      );
-      total = downloadNormalTasks!.length + downloadPreloadTasks!.length;
+      final downloadTasks = ref.watch(downloadManagerProvider);
+      downloadNormalTasks = downloadTasks
+          .where((element) => element.type == DownloadType.normal)
+          .toList();
+      downloadPreloadTasks = downloadTasks
+          .where((element) => element.type == DownloadType.preload)
+          .toList();
+      total = downloadNormalTasks.length + downloadPreloadTasks.length;
+    } else {
+      downloadTaskRecords = ref.watch(downloadHistoryProvider());
+      total = downloadTaskRecords!.length;
     }
 
     return Column(
@@ -145,10 +144,19 @@ class DownloadPage extends HookConsumerWidget {
           ),
         Expanded(
           child: selectedTab.value == 0
-              ? _DownloadListTab(l10n: l10n, state: songSelectionState)
-              : _DownloadHistoryTab(l10n: l10n),
+              ? _DownloadListTab(
+                  l10n: l10n,
+                  state: songSelectionState,
+                  downloadNormalTasks: downloadNormalTasks!,
+                  downloadPreloadTasks: downloadPreloadTasks!,
+                )
+              : _DownloadHistoryTab(
+                  l10n: l10n,
+                  state: songSelectionState,
+                  downloadTaskRecords: downloadTaskRecords!,
+                ),
         ),
-        if (songSelectionState.selectionType)
+        if (songSelectionState.selectionType && selectedTab.value == 0)
           AppBar(
             toolbarHeight: 70,
             automaticallyImplyLeading: false,
@@ -218,7 +226,14 @@ class DownloadPage extends HookConsumerWidget {
 class _DownloadListTab extends HookConsumerWidget {
   final AppLocalizations l10n;
   final SongSelectionState state;
-  const _DownloadListTab({required this.l10n, required this.state});
+  final List<DownloadTask> downloadPreloadTasks;
+  final List<DownloadTask> downloadNormalTasks;
+  const _DownloadListTab({
+    required this.l10n,
+    required this.state,
+    required this.downloadNormalTasks,
+    required this.downloadPreloadTasks,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -232,12 +247,44 @@ class _DownloadListTab extends HookConsumerWidget {
       return _buildEmptyState(colorScheme);
     }
 
-    var downloadNormalTasks = downloadTasks
-        .where((element) => element.type == DownloadType.normal)
-        .toList();
-    var downloadPreloadTasks = downloadTasks
-        .where((element) => element.type == DownloadType.preload)
-        .toList();
+    var downloadNormalTasks =
+        downloadTasks
+            .where((element) => element.type == DownloadType.normal)
+            .toList()
+          ..sort((a, b) {
+            final order = {
+              DownloadStatus.downloading: 0,
+              DownloadStatus.queued: 1,
+              DownloadStatus.paused: 2,
+              DownloadStatus.failed: 3,
+              DownloadStatus.canceled: 4,
+              DownloadStatus.completed: 5,
+            };
+            final statusCompare = (order[a.status] ?? 6).compareTo(
+              order[b.status] ?? 6,
+            );
+            if (statusCompare != 0) return statusCompare;
+            return b.progressPercentage.compareTo(a.progressPercentage);
+          });
+    var downloadPreloadTasks =
+        downloadTasks
+            .where((element) => element.type == DownloadType.preload)
+            .toList()
+          ..sort((a, b) {
+            final order = {
+              DownloadStatus.downloading: 0,
+              DownloadStatus.queued: 1,
+              DownloadStatus.paused: 2,
+              DownloadStatus.failed: 3,
+              DownloadStatus.canceled: 4,
+              DownloadStatus.completed: 5,
+            };
+            final statusCompare = (order[a.status] ?? 6).compareTo(
+              order[b.status] ?? 6,
+            );
+            if (statusCompare != 0) return statusCompare;
+            return b.progressPercentage.compareTo(a.progressPercentage);
+          });
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -565,8 +612,13 @@ class _DownloadTaskItem extends HookConsumerWidget {
 
 class _DownloadHistoryTab extends HookConsumerWidget {
   final AppLocalizations l10n;
-
-  const _DownloadHistoryTab({required this.l10n});
+  final SongSelectionState state;
+  final List<DownloadTaskRecord> downloadTaskRecords;
+  const _DownloadHistoryTab({
+    required this.l10n,
+    required this.state,
+    required this.downloadTaskRecords,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

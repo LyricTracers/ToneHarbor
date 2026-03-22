@@ -536,16 +536,31 @@ class DownloadManager extends _$DownloadManager {
     }
   }
 
-  Future<void> pauseList(Set<String> tracks) async {
-    for (final track in tracks) {
-      final task = state.firstWhereOrNull((e) => e.track.id == track);
+  Future<void> pauseList(Set<String> trackIds) async {
+    final pausedIds = <String>[];
+
+    for (final trackId in trackIds) {
+      final task = state.firstWhereOrNull((e) => e.track.id == trackId);
       if (task?.status == DownloadStatus.downloading ||
           task?.status == DownloadStatus.queued) {
-        _pausedTracks.add(track);
-        task!.cancelToken.cancel();
-        await _setStatus(task.track, DownloadStatus.paused);
+        _pausedTracks.add(trackId);
+        if (!task!.cancelToken.isCancelled) {
+          task.cancelToken.cancel();
+        }
+        pausedIds.add(trackId);
       }
     }
+
+    if (pausedIds.isEmpty) return;
+
+    state = state.map((e) {
+      if (pausedIds.contains(e.track.id)) {
+        return e.copyWith(status: DownloadStatus.paused);
+      }
+      return e;
+    }).toList();
+
+    await _updateTasksStatusInDb(pausedIds, DownloadStatus.paused);
   }
 
   Future<void> pause(ToneHarborTrackObject track) async {
@@ -600,17 +615,32 @@ class DownloadManager extends _$DownloadManager {
     await resumeByTrackId(track.id);
   }
 
-  void resumeList(Set<String> trackIds) async {
-    final resumed = <String>[];
-    for (final track in trackIds) {
-      final task = state.firstWhereOrNull((e) => e.track.id == track);
+  Future<void> resumeList(Set<String> trackIds) async {
+    final resumedIds = <String>[];
+
+    for (final trackId in trackIds) {
+      final task = state.firstWhereOrNull((e) => e.track.id == trackId);
       if (task?.status == DownloadStatus.paused) {
-        resumed.add(track);
+        resumedIds.add(trackId);
       }
     }
-    for (final trackId in resumed) {
-      await resumeByTrackId(trackId);
-    }
+
+    if (resumedIds.isEmpty) return;
+
+    _pausedTracks.removeAll(resumedIds);
+
+    state = state.map((e) {
+      if (resumedIds.contains(e.track.id)) {
+        return e.copyWith(
+          status: DownloadStatus.queued,
+          cancelToken: rhttp.CancelToken(),
+        );
+      }
+      return e;
+    }).toList();
+
+    await _updateTasksStatusInDb(resumedIds, DownloadStatus.queued);
+    _startDownloading();
   }
 
   void resumeAll() async {
@@ -672,6 +702,9 @@ class DownloadManager extends _$DownloadManager {
   }
 
   Future<void> cancelList(Set<String> trackIds) async {
+    final normalCanceledIds = <String>[];
+    final preloadCanceledIds = <String>[];
+
     for (final trackId in trackIds) {
       final task = state.firstWhereOrNull((e) => e.track.id == trackId);
       final status = task?.status;
@@ -680,16 +713,40 @@ class DownloadManager extends _$DownloadManager {
           status == DownloadStatus.canceled) {
         continue;
       }
+
       await _deletePartFile(task?.savePath);
-      if (status == DownloadStatus.downloading) {
-        task!.cancelToken.cancel();
+
+      if (status == DownloadStatus.downloading &&
+          !task!.cancelToken.isCancelled) {
+        task.cancelToken.cancel();
       }
+
       if (task?.savePath != null) {
         CacheLockManager.instance.unlock(task!.savePath!);
       }
 
       _pausedTracks.remove(trackId);
-      await _setStatus(task!.track, DownloadStatus.canceled);
+
+      if (task!.type == DownloadType.preload) {
+        preloadCanceledIds.add(trackId);
+      } else {
+        normalCanceledIds.add(trackId);
+      }
+    }
+
+    if (normalCanceledIds.isEmpty && preloadCanceledIds.isEmpty) return;
+
+    state = state.where((e) {
+      return !normalCanceledIds.contains(e.track.id) &&
+          !preloadCanceledIds.contains(e.track.id);
+    }).toList();
+
+    if (normalCanceledIds.isNotEmpty) {
+      await _updateTasksStatusInDb(normalCanceledIds, DownloadStatus.canceled);
+    }
+
+    if (preloadCanceledIds.isNotEmpty) {
+      await _deleteTasksFromDb(preloadCanceledIds);
     }
   }
 
