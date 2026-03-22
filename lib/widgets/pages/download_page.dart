@@ -6,10 +6,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/audio_player/download_history_provider.dart';
 import 'package:toneharbor/providers/audio_player/download_manager.dart';
 import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
 class DownloadPage extends HookConsumerWidget {
@@ -740,18 +742,38 @@ class _DownloadHistoryTab extends HookConsumerWidget {
                       final cachePath = await getTrackCachePath(track, quality);
                       final file = File(cachePath);
                       if (await file.exists()) {
-                        // todo: play local music
-                      } else {
-                        if (context.mounted) {
-                          showSnackBar(
-                            l10n.local_file_not_found.replaceFirst(
-                              '%s',
-                              track.title,
-                            ),
-                            context,
-                            colorScheme.secondary,
-                          );
+                        var fileTrack =
+                            await ToneHarborTrackObject.localTrackFromFile(
+                              file,
+                            );
+                        if (fileTrack != null) {
+                          final playlist = ref.read(audioPlayerStateProvider);
+                          final existingIndex = playlist.tracks
+                              .toList()
+                              .indexWhere((t) => t.id == fileTrack.id);
+                          if (existingIndex != -1) {
+                            await ref
+                                .read(audioPlayerStateProvider.notifier)
+                                .jumpToTrack(fileTrack);
+                          } else {
+                            await ref
+                                .read(audioPlayerStateProvider.notifier)
+                                .addTrackAtFirst(fileTrack);
+                            audioPlayer.skipToNext();
+                          }
+                          return;
                         }
+                      }
+
+                      if (context.mounted) {
+                        showSnackBar(
+                          l10n.local_file_not_found.replaceFirst(
+                            '%s',
+                            track.title,
+                          ),
+                          context,
+                          colorScheme.secondary,
+                        );
                       }
                     },
                   ),

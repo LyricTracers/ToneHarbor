@@ -61,7 +61,7 @@ final class DownloadHistoryNotifierProvider
 }
 
 String _$downloadHistoryNotifierHash() =>
-    r'bf06d9b786e4ea70e33f0f8f5ccffc4630b54f31';
+    r'861036b287924de2e039fe574ca1e6b0b82ac13a';
 
 final class DownloadHistoryNotifierFamily extends $Family
     with
