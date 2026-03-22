@@ -420,6 +420,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get selected_count => '已选择 %s 首歌曲';
 
   @override
+  String get selected_download_count => '已选择 %s 个';
+
+  @override
   String get select_all => '全选';
 
   @override

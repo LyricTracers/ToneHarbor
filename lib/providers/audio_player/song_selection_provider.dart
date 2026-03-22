@@ -14,15 +14,6 @@ class SongSelection extends _$SongSelection {
     state = state.copyWith(selectionType: !state.selectionType, ids: {});
   }
 
-  // void toggleSelection(String songId) {
-  //   final isSelected = state.ids.contains(songId);
-  //   state = state.copyWith(
-  //     ids: isSelected
-  //         ? state.ids.difference({songId})
-  //         : state.ids.union({songId}),
-  //   );
-  // }
-
   void select(String songId) {
     state = state.copyWith(ids: state.ids.union({songId}));
   }

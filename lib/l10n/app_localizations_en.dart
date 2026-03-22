@@ -436,6 +436,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selected_count => 'Selected %s songs';
 
   @override
+  String get selected_download_count => 'Selected Count Of %s';
+
+  @override
   String get select_all => 'Select All';
 
   @override

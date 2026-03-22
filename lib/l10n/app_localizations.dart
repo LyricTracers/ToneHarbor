@@ -920,6 +920,12 @@ abstract class AppLocalizations {
   /// **'Selected %s songs'**
   String get selected_count;
 
+  /// No description provided for @selected_download_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected Count Of %s'**
+  String get selected_download_count;
+
   /// No description provided for @select_all.
   ///
   /// In en, this message translates to:

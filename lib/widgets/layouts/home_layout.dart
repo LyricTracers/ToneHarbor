@@ -387,7 +387,6 @@ class HomeLayout extends BaseBgLayout {
                   SubContentType.songInfo => const SizedBox.shrink(),
                   SubContentType.updateLyrics => const SizedBox.shrink(),
                   SubContentType.none => const SizedBox.shrink(),
-                  _ => const SizedBox.shrink(),
                 },
               ],
             ),

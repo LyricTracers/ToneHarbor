@@ -137,6 +137,7 @@
   "cancel_favorite_limit_exceeded": "取消收藏数量超过限制（最多100首）",
   "queue_limit_exceeded": "播放队列数量超过限制（最多1000首）",
   "selected_count": "已选择 %s 首歌曲",
+  "selected_download_count": "已选择 %s 个",
   "select_all": "全选",
   "tip_pre_song": "已经是第一首了，请开启循环播放",
   "tip_next_song": "已经是最后一首了，请开启循环播放",
