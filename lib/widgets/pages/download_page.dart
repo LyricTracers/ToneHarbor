@@ -622,10 +622,9 @@ class _DownloadHistoryTab extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final history = ref.watch(downloadHistoryProvider());
     final historyNotifier = ref.read(downloadHistoryProvider().notifier);
     final colorScheme = getColorSchemeWhenReady(ref);
-    if (history.isEmpty) {
+    if (downloadTaskRecords.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -642,9 +641,9 @@ class _DownloadHistoryTab extends HookConsumerWidget {
     }
 
     return ListView.builder(
-      itemCount: history.length + (historyNotifier.hasMore ? 1 : 0),
+      itemCount: downloadTaskRecords.length + (historyNotifier.hasMore ? 1 : 0),
       itemBuilder: (context, index) {
-        if (index == history.length) {
+        if (index == downloadTaskRecords.length) {
           historyNotifier.loadMore();
           return Center(
             child: Padding(
@@ -654,7 +653,7 @@ class _DownloadHistoryTab extends HookConsumerWidget {
           );
         }
 
-        final record = history[index];
+        final record = downloadTaskRecords[index];
         return _DownloadHistoryItem(
           key: ValueKey(record.track.id),
           record: record,
