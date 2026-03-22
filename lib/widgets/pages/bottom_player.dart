@@ -185,9 +185,9 @@ class BottomPlayer extends HookConsumerWidget {
                           ? null
                           : () {
                               if (isPlaying) {
-                                audioPlayer.pause();
+                                audioPlayer.pauseWithFadeOut();
                               } else {
-                                audioPlayer.resume();
+                                audioPlayer.resumeWithFadeIn();
                               }
                             },
                     ),

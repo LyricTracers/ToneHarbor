@@ -8,6 +8,14 @@ class CustomPlayer extends Player {
 
   late final List<StreamSubscription> _subscriptions;
 
+  Timer? _fadeTimer;
+  double _savedVolume = 1.0;
+  bool _isFading = false;
+  Completer<void>? _fadeCompleter;
+
+  static const _fadeDuration = Duration(milliseconds: 300);
+  static const _fadeInterval = Duration(milliseconds: 16);
+
   CustomPlayer({super.configuration})
     : _playerStateStream = StreamController.broadcast() {
     nativePlayer.setProperty("network-timeout", "120");
@@ -67,6 +75,7 @@ class CustomPlayer extends Player {
 
   @override
   Future<void> dispose() async {
+    _cancelFade();
     for (var element in _subscriptions) {
       element.cancel();
     }
@@ -78,20 +87,32 @@ class CustomPlayer extends Player {
 
   Future<void> insert(int index, Media media) async {
     final addedMediaCompleter = Completer<int>();
-    final playlistStream = stream.playlist.listen((event) {
-      final mediaAddedIndex = event.medias.lastIndexWhere(
-        (m) => m.uri == media.uri,
-      );
-      if (mediaAddedIndex != -1 && !addedMediaCompleter.isCompleted) {
-        addedMediaCompleter.complete(mediaAddedIndex);
-      }
-    });
+    StreamSubscription<Playlist>? playlistStream;
+
     try {
+      playlistStream = stream.playlist.listen((event) {
+        final mediaAddedIndex = event.medias.lastIndexWhere(
+          (m) => m.uri == media.uri,
+        );
+        if (mediaAddedIndex != -1 && !addedMediaCompleter.isCompleted) {
+          addedMediaCompleter.complete(mediaAddedIndex);
+        }
+      });
+
       await add(media);
-      final mediaAddedIndex = await addedMediaCompleter.future;
+
+      final mediaAddedIndex = await addedMediaCompleter.future.timeout(
+        const Duration(seconds: 5),
+        onTimeout: () => -1,
+      );
+
+      if (mediaAddedIndex == -1) {
+        return;
+      }
+
       await move(mediaAddedIndex, index);
     } finally {
-      playlistStream.cancel();
+      await playlistStream?.cancel();
     }
   }
 
@@ -109,5 +130,93 @@ class CustomPlayer extends Player {
       'demuxer-max-back-bytes',
       sizeInBytes.toString(),
     );
+  }
+
+  Future<void> playWithFadeIn() async {
+    if (_isFading) return;
+    final currentVolume = state.volume / 100;
+    _savedVolume = currentVolume > 0 ? currentVolume : 1.0;
+    await setVolume(0);
+    await play();
+    await _fadeIn(_savedVolume);
+  }
+
+  Future<void> pauseWithFadeOut() async {
+    if (_isFading) return;
+    _savedVolume = state.volume / 100;
+    await _fadeOut();
+    await pause();
+    await setVolume(_savedVolume * 100);
+  }
+
+  Future<void> crossfadeToNext() async {
+    if (_isFading) return;
+    _savedVolume = state.volume / 100;
+    await _fadeOut();
+    await next();
+    await _fadeIn(_savedVolume);
+  }
+
+  Future<void> crossfadeToPrevious() async {
+    if (_isFading) return;
+    _savedVolume = state.volume / 100;
+    await _fadeOut();
+    await previous();
+    await _fadeIn(_savedVolume);
+  }
+
+  void _cancelFade() {
+    _fadeTimer?.cancel();
+    _fadeTimer = null;
+    if (_fadeCompleter != null && !_fadeCompleter!.isCompleted) {
+      _fadeCompleter!.complete();
+    }
+    _fadeCompleter = null;
+    _isFading = false;
+  }
+
+  Future<void> _fadeIn(double target) async {
+    return _fadeVolume(startVolume: 0, targetVolume: target);
+  }
+
+  Future<void> _fadeOut() async {
+    final startVolume = state.volume / 100;
+    return _fadeVolume(startVolume: startVolume, targetVolume: 0);
+  }
+
+  Future<void> _fadeVolume({
+    required double startVolume,
+    required double targetVolume,
+  }) async {
+    _cancelFade();
+    _isFading = true;
+    _fadeCompleter = Completer<void>();
+
+    final steps = _fadeDuration.inMilliseconds ~/ _fadeInterval.inMilliseconds;
+    if (steps <= 0 || startVolume == targetVolume) {
+      await setVolume(targetVolume * 100);
+      _isFading = false;
+      _fadeCompleter!.complete();
+      _fadeCompleter = null;
+      return;
+    }
+
+    final volumeDelta = (targetVolume - startVolume) / steps;
+    var currentStep = 0;
+
+    _fadeTimer = Timer.periodic(_fadeInterval, (timer) {
+      currentStep++;
+      final vol = (startVolume + volumeDelta * currentStep).clamp(0.0, 1.0);
+      setVolume(vol * 100);
+      if (currentStep >= steps) {
+        timer.cancel();
+        _fadeTimer = null;
+        _isFading = false;
+        _fadeCompleter?.complete();
+        _fadeCompleter = null;
+      }
+    });
+
+    return _fadeCompleter!.future;
   }
 }

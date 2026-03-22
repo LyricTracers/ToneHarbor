@@ -8,8 +8,16 @@ class ToneHarborAudioPlayer extends AudioPlayerInterface
     await _mkPlayer.pause();
   }
 
+  Future<void> pauseWithFadeOut() async {
+    await _mkPlayer.pauseWithFadeOut();
+  }
+
   Future<void> resume() async {
     await _mkPlayer.play();
+  }
+
+  Future<void> resumeWithFadeIn() async {
+    await _mkPlayer.playWithFadeIn();
   }
 
   Future<void> stop() async {
@@ -103,8 +111,16 @@ class ToneHarborAudioPlayer extends AudioPlayerInterface
     await _mkPlayer.next();
   }
 
+  Future<void> skipToNextWithCrossfade() async {
+    await _mkPlayer.crossfadeToNext();
+  }
+
   Future<void> skipToPrevious() async {
     await _mkPlayer.previous();
+  }
+
+  Future<void> skipToPreviousWithCrossfade() async {
+    await _mkPlayer.crossfadeToPrevious();
   }
 
   Future<void> jumpTo(int index) async {
