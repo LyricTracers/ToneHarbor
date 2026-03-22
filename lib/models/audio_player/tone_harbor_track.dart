@@ -59,12 +59,26 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
     required String path,
   }) = ToneHarborTrackObjectLocal;
 
-  factory ToneHarborTrackObject.localTrackFromFile(
+  static Future<ToneHarborTrackObject?> localTrackFromFile(
     File file, {
     Metadata? metadata,
-    String? art,
-  }) {
-    var id = metadata?.comment;
+  }) async {
+    if (!file.existsSync()) {
+      logger.w('[localTrackFromFile] File not found: ${file.path}');
+      return null;
+    }
+
+    Metadata? fileMetadata = metadata;
+    if (fileMetadata == null) {
+      try {
+        fileMetadata = await MetadataGod.readMetadata(file: file.path);
+      } catch (e) {
+        logger.w('[localTrackFromFile] Failed to read metadata: $e');
+        return null;
+      }
+    }
+
+    var id = fileMetadata.comment;
     if (id == null || id.isEmpty) {
       final baseName = basenameWithoutExtension(file.path);
       final musicIndex = baseName.lastIndexOf('_music_');
@@ -76,18 +90,18 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
     }
     return ToneHarborTrackObject.local(
       id: id,
-      title: metadata?.title ?? id,
-      artist: metadata?.artist ?? '',
-      album: metadata?.album ?? '',
+      title: fileMetadata.title ?? id,
+      artist: fileMetadata.artist ?? '',
+      album: fileMetadata.album ?? '',
       externalUri: "",
-      duration: Duration(milliseconds: metadata?.durationMs?.toInt() ?? 0),
+      duration: Duration(milliseconds: fileMetadata.durationMs?.toInt() ?? 0),
       rating: 0,
       filesize: file.lengthSync(),
-      bitrate: metadata?.bitrate ?? 0,
-      channel: metadata?.channels ?? 0,
+      bitrate: fileMetadata.bitrate ?? 0,
+      channel: fileMetadata.channels ?? 0,
       codec: '',
       container: extension(file.path).replaceFirst('.', ''),
-      frequency: metadata?.sampleRate ?? 0,
+      frequency: fileMetadata.sampleRate ?? 0,
       path: file.absolute.path,
     );
   }

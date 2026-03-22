@@ -79,11 +79,7 @@ Future<Uint8List?> getCoverBytes(
 
     final authHeaders = await ref.read(authHeadersProvider.future);
     if (authHeaders == null) {
-      logger.e('[Metadata] No auth headers');
-      Future.microtask(() async {
-        await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-        ref.invalidate(authTokenProvider);
-      });
+      logger.w('[Metadata] No auth headers, skipping cover download');
       return null;
     }
 

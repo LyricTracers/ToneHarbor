@@ -207,6 +207,13 @@ class MyApp extends HookConsumerWidget {
         ],
         redirect: (context, state) {
           logger.d('redirect: ${state.fullPath}');
+          final currentPath = state.uri.path;
+
+          final publicPaths = ['/login', '/playing_detail', '/test'];
+          if (publicPaths.any((path) => currentPath.startsWith(path))) {
+            return null;
+          }
+
           if (synotokenAsync.isLoading) {
             return null;
           }
