@@ -624,6 +624,20 @@ class _DownloadHistoryTab extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final historyNotifier = ref.read(downloadHistoryProvider().notifier);
     final colorScheme = getColorSchemeWhenReady(ref);
+    final scrollController = useScrollController();
+
+    useEffect(() {
+      void onScroll() {
+        if (scrollController.position.pixels >=
+            scrollController.position.maxScrollExtent - 200) {
+          historyNotifier.loadMore();
+        }
+      }
+
+      scrollController.addListener(onScroll);
+      return () => scrollController.removeListener(onScroll);
+    }, [scrollController]);
+
     if (downloadTaskRecords.isEmpty) {
       return Center(
         child: Column(
@@ -641,18 +655,9 @@ class _DownloadHistoryTab extends HookConsumerWidget {
     }
 
     return ListView.builder(
-      itemCount: downloadTaskRecords.length + (historyNotifier.hasMore ? 1 : 0),
+      controller: scrollController,
+      itemCount: downloadTaskRecords.length,
       itemBuilder: (context, index) {
-        if (index == downloadTaskRecords.length) {
-          historyNotifier.loadMore();
-          return Center(
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
-
         final record = downloadTaskRecords[index];
         return _DownloadHistoryItem(
           key: ValueKey(record.track.id),
