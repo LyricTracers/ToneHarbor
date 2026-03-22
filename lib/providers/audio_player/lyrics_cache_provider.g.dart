@@ -17,7 +17,7 @@ final class GetLyricsProvider
     with $FutureModifier<Lyrics?>, $FutureProvider<Lyrics?> {
   GetLyricsProvider._({
     required GetLyricsFamily super.from,
-    required String super.argument,
+    required ({String songId, String? title, String? artist}) super.argument,
   }) : super(
          retry: null,
          name: r'getLyricsProvider',
@@ -33,7 +33,7 @@ final class GetLyricsProvider
   String toString() {
     return r'getLyricsProvider'
         ''
-        '($argument)';
+        '$argument';
   }
 
   @$internal
@@ -43,8 +43,14 @@ final class GetLyricsProvider
 
   @override
   FutureOr<Lyrics?> create(Ref ref) {
-    final argument = this.argument as String;
-    return getLyrics(ref, songId: argument);
+    final argument =
+        this.argument as ({String songId, String? title, String? artist});
+    return getLyrics(
+      ref,
+      songId: argument.songId,
+      title: argument.title,
+      artist: argument.artist,
+    );
   }
 
   @override
@@ -58,10 +64,14 @@ final class GetLyricsProvider
   }
 }
 
-String _$getLyricsHash() => r'54a406deb1d738c03410bc1fca8b2453dc1abba7';
+String _$getLyricsHash() => r'87bccb45bf22af73a0ab471fafdd6b7183e86699';
 
 final class GetLyricsFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<Lyrics?>, String> {
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<Lyrics?>,
+          ({String songId, String? title, String? artist})
+        > {
   GetLyricsFamily._()
     : super(
         retry: null,
@@ -71,8 +81,14 @@ final class GetLyricsFamily extends $Family
         isAutoDispose: true,
       );
 
-  GetLyricsProvider call({required String songId}) =>
-      GetLyricsProvider._(argument: songId, from: this);
+  GetLyricsProvider call({
+    required String songId,
+    String? title,
+    String? artist,
+  }) => GetLyricsProvider._(
+    argument: (songId: songId, title: title, artist: artist),
+    from: this,
+  );
 
   @override
   String toString() => r'getLyricsProvider';
@@ -109,4 +125,4 @@ final class CurrentLyricsProvider
   }
 }
 
-String _$currentLyricsHash() => r'c7b0c4706fd8425541733012e17421466dc3eb03';
+String _$currentLyricsHash() => r'e169d40e4391f4a50b7a159db44d498360db537d';
