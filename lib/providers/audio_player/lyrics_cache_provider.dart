@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:lyricskit/lyricskit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -48,7 +51,9 @@ Future<Lyrics?> _requestLyrics(
         .read(songCommonProvider.notifier)
         .lyrics(id: songId);
 
-    if (lyricsResponse.success && lyricsResponse.data != null) {
+    if (lyricsResponse.success &&
+        lyricsResponse.data != null &&
+        lyricsResponse.data!.lyrics.isNotEmpty) {
       final lyricsString = lyricsResponse.data!.lyrics;
 
       final lyrics = Lyrics.fromString(lyricsString);
@@ -61,25 +66,29 @@ Future<Lyrics?> _requestLyrics(
     // ignore
   }
 
-  if (title != null && artist != null) {
+  if (title != null) {
     try {
       final searchTerm = SearchTerm(title: title, artist: artist);
-      final searchResults = await ref.read(
-        combinedSearchProvider(
-          searchTerm,
-          sorted: true,
-          baseProviderType: {
-            LyricsProviderType.netEase,
-            LyricsProviderType.qqMusicV4,
-          },
-        ).future,
-      );
+      final searchResults = await ref
+          .read(
+            combinedSearchProvider(
+              searchTerm,
+              sorted: true,
+              baseProviderType: {
+                LyricsProviderType.netEase,
+                LyricsProviderType.qqMusicV4,
+              },
+            ).future,
+          )
+          .timeout(const Duration(seconds: 10));
 
       if (searchResults.isNotEmpty) {
         final lyrics = searchResults.first;
         await lyricCache.set(songId, lyrics.toJson(), permanent: true);
         return lyrics;
       }
+    } on TimeoutException {
+      // ignore
     } catch (e) {
       // ignore
     }

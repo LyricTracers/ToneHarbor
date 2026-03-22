@@ -714,7 +714,10 @@ Future<LyricsResponse> _getLyrics({
       group: 'lyrics',
       fromJson: (json) => LyricsResponse.fromJson(json),
     );
-    if (cached != null && cached.success) {
+    if (cached != null &&
+        cached.success &&
+        cached.data != null &&
+        cached.data!.lyrics.isNotEmpty) {
       return cached;
     }
   }
@@ -736,7 +739,10 @@ Future<LyricsResponse> _getLyrics({
     l10n: l10n,
   );
 
-  if (cacheDuration != null && result.success) {
+  if (cacheDuration != null &&
+      result.success &&
+      result.data != null &&
+      result.data!.lyrics.isNotEmpty) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
