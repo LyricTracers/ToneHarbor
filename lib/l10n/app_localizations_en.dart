@@ -482,4 +482,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get status_canceled => 'Canceled';
+
+  @override
+  String get cancel_download => 'Cancel Download';
+
+  @override
+  String get pause_download => 'Pause Download';
+
+  @override
+  String get resume_download => 'Resume Download';
+
+  @override
+  String get delete_download_history => 'Delete Download History';
+
+  @override
+  String get delete_current_history => 'Delete Current History';
+
+  @override
+  String get redownload => 'Redownload';
+
+  @override
+  String get play_current_song => 'Play Current Song';
+
+  @override
+  String get local_file_not_found => 'Local file not found for %s';
 }

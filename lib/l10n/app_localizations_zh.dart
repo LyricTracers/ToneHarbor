@@ -466,4 +466,28 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get status_canceled => '已取消';
+
+  @override
+  String get cancel_download => '取消下载';
+
+  @override
+  String get pause_download => '暂停下载';
+
+  @override
+  String get resume_download => '继续下载';
+
+  @override
+  String get delete_download_history => '删除下载历史';
+
+  @override
+  String get delete_current_history => '删除当前下载历史';
+
+  @override
+  String get redownload => '重新下载';
+
+  @override
+  String get play_current_song => '播放当前歌曲';
+
+  @override
+  String get local_file_not_found => '本地未找到%s歌曲';
 }

@@ -38,6 +38,7 @@ class DownloadHistoryNotifier extends _$DownloadHistoryNotifier {
     if (_isLoading) return;
 
     _isLoading = true;
+    _currentPage = 0;
     try {
       final db = ref.read(appDatabaseProvider);
 
@@ -72,8 +73,11 @@ class DownloadHistoryNotifier extends _$DownloadHistoryNotifier {
       final result = await filteredQuery.getSingle();
       _totalRecords = result.read(countQuery) ?? 0;
 
-      state = records.map(_mapRecordToTask).toList();
-      _hasMore = state.length < _totalRecords;
+      final newRecords = records.map(_mapRecordToTask).toList();
+      state = newRecords;
+      _hasMore =
+          newRecords.length >= defaultPageSize &&
+          newRecords.length < _totalRecords;
     } finally {
       _isLoading = false;
     }
@@ -145,8 +149,9 @@ class DownloadHistoryNotifier extends _$DownloadHistoryNotifier {
         offset: offset,
       ).get();
 
-      state = [...state, ...records.map(_mapRecordToTask)];
-      _hasMore = records.length == defaultPageSize;
+      final newRecords = records.map(_mapRecordToTask).toList();
+      state = [...state, ...newRecords];
+      _hasMore = newRecords.length >= defaultPageSize;
     } finally {
       _isLoading = false;
     }
@@ -158,7 +163,7 @@ class DownloadHistoryNotifier extends _$DownloadHistoryNotifier {
     await _loadFirstPage();
   }
 
-  Future<void> deleteHistory(List<String> trackIds) async {
+  Future<void> deleteHistory(Set<String> trackIds) async {
     if (trackIds.isEmpty) return;
     final db = ref.read(appDatabaseProvider);
     await (db.delete(

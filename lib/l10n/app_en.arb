@@ -153,5 +153,13 @@
   "status_paused": "Paused",
   "status_completed": "Completed",
   "status_failed": "Failed",
-  "status_canceled": "Canceled"
+  "status_canceled": "Canceled",
+  "cancel_download": "Cancel Download",
+  "pause_download": "Pause Download",
+  "resume_download": "Resume Download",
+  "delete_download_history": "Delete Download History",
+  "delete_current_history": "Delete Current History",
+  "redownload": "Redownload",
+  "play_current_song": "Play Current Song",
+  "local_file_not_found": "Local file not found for %s"
 }

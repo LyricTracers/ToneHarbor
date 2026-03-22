@@ -1015,6 +1015,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Canceled'**
   String get status_canceled;
+
+  /// No description provided for @cancel_download.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Download'**
+  String get cancel_download;
+
+  /// No description provided for @pause_download.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause Download'**
+  String get pause_download;
+
+  /// No description provided for @resume_download.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume Download'**
+  String get resume_download;
+
+  /// No description provided for @delete_download_history.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Download History'**
+  String get delete_download_history;
+
+  /// No description provided for @delete_current_history.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Current History'**
+  String get delete_current_history;
+
+  /// No description provided for @redownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Redownload'**
+  String get redownload;
+
+  /// No description provided for @play_current_song.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Current Song'**
+  String get play_current_song;
+
+  /// No description provided for @local_file_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Local file not found for %s'**
+  String get local_file_not_found;
 }
 
 class _AppLocalizationsDelegate

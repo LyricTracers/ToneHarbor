@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -96,6 +98,14 @@ class DownloadPage extends HookConsumerWidget {
                           ref
                               .read(songSelectionProvider.notifier)
                               .selectAll(allIds);
+                        } else {
+                          ref
+                              .read(songSelectionProvider.notifier)
+                              .selectAll(
+                                downloadTaskRecords!.map((t) {
+                                  return t.track.id;
+                                }).toSet(),
+                              );
                         }
                       } else {
                         ref.read(songSelectionProvider.notifier).deSelectAll();
@@ -169,7 +179,7 @@ class DownloadPage extends HookConsumerWidget {
                   ref.invalidate(songSelectionProvider);
                 },
                 icon: Icon(Icons.cancel_rounded),
-                tooltip: "取消下载",
+                tooltip: l10n.cancel_download,
               ),
               IconButton(
                 onPressed: () {
@@ -179,7 +189,7 @@ class DownloadPage extends HookConsumerWidget {
                   ref.invalidate(songSelectionProvider);
                 },
                 icon: Icon(Icons.pause_circle_rounded),
-                tooltip: "暂停下载",
+                tooltip: l10n.pause_download,
               ),
               IconButton(
                 onPressed: () {
@@ -189,9 +199,28 @@ class DownloadPage extends HookConsumerWidget {
                   ref.invalidate(songSelectionProvider);
                 },
                 icon: Icon(Icons.play_arrow_rounded),
-                tooltip: "继续下载",
+                tooltip: l10n.resume_download,
               ),
 
+              const SizedBox(width: 15),
+            ],
+          ),
+
+        if (songSelectionState.selectionType && selectedTab.value == 1)
+          AppBar(
+            toolbarHeight: 70,
+            automaticallyImplyLeading: false,
+            actions: [
+              IconButton(
+                onPressed: () {
+                  ref
+                      .read(downloadHistoryProvider().notifier)
+                      .deleteHistory(ref.read(songSelectionProvider).ids);
+                  ref.invalidate(songSelectionProvider);
+                },
+                icon: Icon(Icons.delete_forever_rounded),
+                tooltip: l10n.delete_download_history,
+              ),
               const SizedBox(width: 15),
             ],
           ),
@@ -296,6 +325,7 @@ class _DownloadListTab extends HookConsumerWidget {
               tasks: downloadPreloadTasks,
               colorScheme: colorScheme,
               state: state,
+              l10n: l10n,
             ),
           if (downloadNormalTasks.isNotEmpty)
             _buildSection(
@@ -304,6 +334,7 @@ class _DownloadListTab extends HookConsumerWidget {
               tasks: downloadNormalTasks,
               colorScheme: colorScheme,
               state: state,
+              l10n: l10n,
             ),
         ],
       ),
@@ -330,6 +361,7 @@ class _DownloadListTab extends HookConsumerWidget {
     required List<DownloadTask> tasks,
     required ColorScheme colorScheme,
     required SongSelectionState state,
+    required AppLocalizations l10n,
   }) {
     final dividerColor = colorScheme.onSurface.withValues(alpha: 0.5);
     return Column(
@@ -365,7 +397,7 @@ class _DownloadListTab extends HookConsumerWidget {
                   MenuDivider(),
                   if (tasks[index].status == DownloadStatus.downloading)
                     MenuItem(
-                      label: Text("暂停下载"),
+                      label: Text(l10n.pause_download),
                       icon: Icon(Icons.pause_circle_rounded),
                       onSelected: (value) async {
                         ref
@@ -375,7 +407,7 @@ class _DownloadListTab extends HookConsumerWidget {
                     ),
                   if (tasks[index].status == DownloadStatus.paused)
                     MenuItem(
-                      label: Text("继续下载"),
+                      label: Text(l10n.resume_download),
                       icon: Icon(Icons.play_arrow_rounded),
                       onSelected: (value) async {
                         ref
@@ -385,7 +417,7 @@ class _DownloadListTab extends HookConsumerWidget {
                     ),
                   if (tasks[index].status == DownloadStatus.failed)
                     MenuItem(
-                      label: Text("重试"),
+                      label: Text(l10n.retry),
                       icon: Icon(Icons.restore_rounded),
                       onSelected: (value) async {
                         ref
@@ -395,7 +427,7 @@ class _DownloadListTab extends HookConsumerWidget {
                     ),
 
                   MenuItem(
-                    label: Text("取消下载"),
+                    label: Text(l10n.cancel_download),
                     icon: Icon(Icons.cancel_rounded),
                     onSelected: (value) async {
                       ref
@@ -440,10 +472,10 @@ class _DownloadTaskItem extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isHovered = useState(false);
     final progress = task.totalSizeBytes != null && task.totalSizeBytes! > 0
         ? task.downloadedBytes / task.totalSizeBytes!
         : 0.0;
+    final isHovered = useState(false);
     var localSelected = useState(false);
     useEffect(() {
       localSelected.value = ref
@@ -628,6 +660,7 @@ class _DownloadHistoryTab extends HookConsumerWidget {
 
     useEffect(() {
       void onScroll() {
+        if (!scrollController.hasClients) return;
         if (scrollController.position.pixels >=
             scrollController.position.maxScrollExtent - 200) {
           historyNotifier.loadMore();
@@ -636,7 +669,7 @@ class _DownloadHistoryTab extends HookConsumerWidget {
 
       scrollController.addListener(onScroll);
       return () => scrollController.removeListener(onScroll);
-    }, [scrollController]);
+    }, [scrollController, historyNotifier]);
 
     if (downloadTaskRecords.isEmpty) {
       return Center(
@@ -659,11 +692,80 @@ class _DownloadHistoryTab extends HookConsumerWidget {
       itemCount: downloadTaskRecords.length,
       itemBuilder: (context, index) {
         final record = downloadTaskRecords[index];
-        return _DownloadHistoryItem(
-          key: ValueKey(record.track.id),
-          record: record,
-          colorScheme: colorScheme,
-          index: index,
+        return ContextMenuRegion(
+          enableDefaultGestures: !state.selectionType,
+          contextMenu: ContextMenu(
+            entriesBuilder: () {
+              return <ContextMenuEntry<DownloadTask>>[
+                MenuHeader(text: downloadTaskRecords[index].track.title),
+                MenuDivider(),
+
+                MenuItem(
+                  label: Text(l10n.delete_current_history),
+                  icon: Icon(Icons.cancel_rounded),
+                  onSelected: (value) async {
+                    ref.read(downloadHistoryProvider().notifier).deleteHistory({
+                      downloadTaskRecords[index].track.id,
+                    });
+                  },
+                ),
+                MenuItem(
+                  label: Text(l10n.redownload),
+                  icon: Icon(Icons.download_rounded),
+                  onSelected: (value) async {
+                    var track = downloadTaskRecords[index].track;
+                    ref.read(downloadHistoryProvider().notifier).deleteHistory({
+                      track.id,
+                    });
+                    final quality = ref.read(audioQualityProvider);
+                    final cachePath = await getTrackCachePath(track, quality);
+                    final file = File(cachePath);
+                    if (await file.exists()) {
+                      await file.delete();
+                    }
+
+                    ref
+                        .read(downloadManagerProvider.notifier)
+                        .addToQueue(track);
+                  },
+                ),
+                if (downloadTaskRecords[index].status ==
+                    DownloadStatus.completed)
+                  MenuItem(
+                    label: Text(l10n.play_current_song),
+                    icon: Icon(Icons.play_circle_fill_rounded),
+                    onSelected: (value) async {
+                      var track = downloadTaskRecords[index].track;
+                      final quality = ref.read(audioQualityProvider);
+                      final cachePath = await getTrackCachePath(track, quality);
+                      final file = File(cachePath);
+                      if (await file.exists()) {
+                        // todo: play local music
+                      } else {
+                        if (context.mounted) {
+                          showSnackBar(
+                            l10n.local_file_not_found.replaceFirst(
+                              '%s',
+                              track.title,
+                            ),
+                            context,
+                            colorScheme.secondary,
+                          );
+                        }
+                      }
+                    },
+                  ),
+              ];
+            },
+            padding: const EdgeInsets.all(8.0),
+          ),
+          child: _DownloadHistoryItem(
+            key: ValueKey(record.track.id),
+            record: record,
+            colorScheme: colorScheme,
+            index: index,
+            state: state,
+          ),
         );
       },
     );
@@ -674,17 +776,47 @@ class _DownloadHistoryItem extends HookConsumerWidget {
   final DownloadTaskRecord record;
   final ColorScheme colorScheme;
   final int index;
+  final SongSelectionState state;
 
   const _DownloadHistoryItem({
     super.key,
     required this.record,
     required this.colorScheme,
     required this.index,
+    required this.state,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isHovered = useState(false);
+    var localSelected = useState(false);
+    useEffect(() {
+      localSelected.value = ref
+          .read(songSelectionProvider.notifier)
+          .isSelected(record.track.id);
+      return null;
+    }, [state.selectionType]);
+
+    useEffect(() {
+      localSelected.value = ref
+          .read(songSelectionProvider.notifier)
+          .isSelected(record.track.id);
+      return null;
+    }, [state.boxState]);
+    void updateState() {
+      localSelected.value = !ref
+          .read(songSelectionProvider.notifier)
+          .isSelected(record.track.id);
+      var flag = localSelected.value;
+      Future.microtask(() {
+        if (flag) {
+          ref.read(songSelectionProvider.notifier).select(record.track.id);
+        } else {
+          ref.read(songSelectionProvider.notifier).deSelect(record.track.id);
+        }
+      });
+    }
+
     return MouseRegion(
       onEnter: (event) => isHovered.value = true,
       onExit: (event) => isHovered.value = false,
@@ -709,7 +841,15 @@ class _DownloadHistoryItem extends HookConsumerWidget {
               color: colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
-          trailing: _buildStatusIcon(),
+          trailing: state.selectionType
+              ? Checkbox(
+                  shape: const CircleBorder(),
+                  value: localSelected.value,
+                  onChanged: (_) {
+                    updateState();
+                  },
+                )
+              : _buildStatusIcon(),
         ),
       ),
     );
