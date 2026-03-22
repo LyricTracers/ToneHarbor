@@ -87,11 +87,6 @@ Future<LyricsResponse> _sendLyricsRequest<T>({
   final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
-    Future.microtask(() async {
-      if (!ref.mounted) return;
-      await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
-    });
     return LyricsResponse(success: false);
   }
 
