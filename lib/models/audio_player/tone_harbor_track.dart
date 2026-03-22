@@ -74,34 +74,35 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
         fileMetadata = await MetadataGod.readMetadata(file: file.path);
       } catch (e) {
         logger.w('[localTrackFromFile] Failed to read metadata: $e');
-        return null;
       }
     }
 
-    var id = fileMetadata.comment;
+    final baseName = basenameWithoutExtension(file.path);
+    final musicIndex = baseName.lastIndexOf('_music_');
+
+    var id = fileMetadata?.comment;
     if (id == null || id.isEmpty) {
-      final baseName = basenameWithoutExtension(file.path);
-      final musicIndex = baseName.lastIndexOf('_music_');
-      if (musicIndex != -1) {
-        id = baseName.substring(musicIndex + 1);
-      } else {
-        id = baseName;
-      }
+      id = musicIndex != -1 ? baseName.substring(musicIndex + 1) : baseName;
     }
+
+    final titleFromFile = musicIndex != -1
+        ? baseName.substring(0, musicIndex)
+        : baseName;
+
     return ToneHarborTrackObject.local(
       id: id,
-      title: fileMetadata.title ?? id,
-      artist: fileMetadata.artist ?? '',
-      album: fileMetadata.album ?? '',
+      title: fileMetadata?.title ?? titleFromFile,
+      artist: fileMetadata?.artist ?? '',
+      album: fileMetadata?.album ?? '',
       externalUri: "",
-      duration: Duration(milliseconds: fileMetadata.durationMs?.toInt() ?? 0),
+      duration: Duration(milliseconds: fileMetadata?.durationMs?.toInt() ?? 0),
       rating: 0,
       filesize: file.lengthSync(),
-      bitrate: fileMetadata.bitrate ?? 0,
-      channel: fileMetadata.channels ?? 0,
+      bitrate: fileMetadata?.bitrate ?? 0,
+      channel: fileMetadata?.channels ?? 0,
       codec: '',
       container: extension(file.path).replaceFirst('.', ''),
-      frequency: fileMetadata.sampleRate ?? 0,
+      frequency: fileMetadata?.sampleRate ?? 0,
       path: file.absolute.path,
     );
   }
