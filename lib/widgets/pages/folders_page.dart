@@ -147,6 +147,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
     WidgetRef ref,
     ColorScheme colorScheme,
     int total,
+    TextEditingController searchController,
   ) {
     final l10n = ref.watch(l10nProvider);
     double arrowWidth = 12;
@@ -235,11 +236,29 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
       actions: [
         Container(
           constraints: BoxConstraints(maxWidth: 200, maxHeight: 35),
-          child: SearchAnchor.bar(
-            suggestionsBuilder: (context, ref) => [],
-            barHintStyle: WidgetStateProperty.all(TextStyle(fontSize: 14)),
-            barHintText: l10n.searchHint,
-            barLeading: Icon(Icons.search, size: 18),
+          child: TextField(
+            controller: searchController,
+            decoration: InputDecoration(
+              hintText: l10n.searchHint,
+              hintStyle: TextStyle(fontSize: 14),
+              prefixIcon: Icon(Icons.search, size: 18),
+              suffixIcon: IconButton(
+                icon: Icon(Icons.clear, size: 14),
+                onPressed: () {
+                  searchController.clear();
+                },
+              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
+              fillColor: colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.5,
+              ),
+            ),
+            style: TextStyle(fontSize: 14),
           ),
         ),
         SizedBox(width: 16),
@@ -275,6 +294,16 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
   Widget build(BuildContext context, WidgetRef ref) {
     var colorScheme = getColorSchemeWhenReady(ref);
     final scrollController = useScrollController();
+    final searchController = useTextEditingController();
+    final searchQuery = useState('');
+    useEffect(() {
+      void listener() {
+        searchQuery.value = searchController.text;
+      }
+
+      searchController.addListener(listener);
+      return () => searchController.removeListener(listener);
+    }, [searchController]);
     var folderResponse = ref.watch(baseProvider);
     var total = folderResponse.value?.data?.total ?? 0;
     final folderItems = folderResponse.value?.data?.items ?? [];
@@ -299,6 +328,29 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
       });
       return null;
     }, []);
+
+    final filteredItems = useMemoized(() {
+      if (searchQuery.value.isEmpty) {
+        return folderItems;
+      }
+      final query = searchQuery.value.toLowerCase();
+      return folderItems.where((item) {
+        if (item.isSong()) {
+          final song = item.asSong();
+          final artist =
+              song.additional?.songTag?.artist ??
+              song.additional?.songTag?.albumArtist ??
+              '';
+          return song.title.toLowerCase().contains(query) ||
+              artist.toLowerCase().contains(query);
+        } else {
+          return item.title.toLowerCase().contains(query);
+        }
+      }).toList();
+    }, [folderItems, searchQuery.value]);
+
+    final displayHasMore = searchQuery.value.isEmpty && hasMore;
+
     useEffect(() {
       void onScroll() {
         if (!scrollController.hasClients) return;
@@ -329,20 +381,20 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
     return Column(
       children: [
         if (songSelectionState.selectionType)
-          SubSongSelectionTop(songs: folderItems),
+          SubSongSelectionTop(songs: filteredItems),
         if (!songSelectionState.selectionType)
-          _buildAppBar(context, ref, colorScheme, total),
+          _buildAppBar(context, ref, colorScheme, total, searchController),
         Expanded(
           child: folderResponse.when(
             data: (data) {
-              if (folderItems.isEmpty) {
+              if (filteredItems.isEmpty) {
                 return const Center(child: Text('No folders'));
               }
               return ListView.builder(
                 controller: scrollController,
-                itemCount: folderItems.length + (hasMore ? 1 : 0),
+                itemCount: filteredItems.length + (displayHasMore ? 1 : 0),
                 itemBuilder: (context, index) {
-                  if (index == folderItems.length) {
+                  if (index == filteredItems.length) {
                     return const Padding(
                       padding: EdgeInsets.all(16),
                       child: Center(
@@ -354,11 +406,11 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                       ),
                     );
                   }
-                  var folderItem = folderItems[index];
+                  var folderItem = filteredItems[index];
                   if (!folderItem.isSong()) {
                     return _FolderItemWidget(
                       index: index,
-                      folderItems: folderItems,
+                      folderItems: filteredItems,
                       colorScheme: colorScheme,
                       lastFoldItems: lastFoldItems,
                       songSelectionState: songSelectionState,
@@ -377,7 +429,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                           padding: const EdgeInsets.all(8.0),
                         ),
                         child: SongItem(
-                          key: ValueKey(index),
+                          key: ValueKey(folderItem.id),
                           index: index,
                           song: item,
                           activeSongId: activeSongId,
@@ -386,7 +438,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                           l10n: l10n,
                           isFavorite: songRating.contains(item.id),
                           onTap: () async {
-                            final (trackList, targetIndex) = folderItems
+                            final (trackList, targetIndex) = filteredItems
                                 .asTrackList(index);
                             await ref
                                 .read(audioPlayerStateProvider.notifier)
@@ -413,7 +465,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
           ),
         ),
         if (songSelectionState.selectionType)
-          SubSongSelectionBottom(songs: folderItems),
+          SubSongSelectionBottom(songs: filteredItems),
       ],
     );
   }
