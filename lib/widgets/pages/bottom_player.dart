@@ -7,6 +7,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:toneharbor/hooks/use_progress.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/sub_content_state.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -268,52 +269,54 @@ class BottomPlayer extends HookConsumerWidget {
                             ),
                           ),
                         ),
-                      const SizedBox(width: 2),
-                      IconButton(
-                        icon: Icon(
-                          rating
-                              ? Icons.favorite_rounded
-                              : Icons.favorite_border_rounded,
-                          size: 18,
-                        ),
-                        onPressed: () async {
-                          try {
-                            ref
-                                .read(requestFlagProvider.notifier)
-                                .setRequestFlag(true);
-                            SetRatingResponse response;
-                            if (rating) {
-                              response = await ref
-                                  .read(songRatingProvider.notifier)
-                                  .setRating(id: activeTrack.id, rating: 0);
-                            } else {
-                              response = await ref
-                                  .read(songRatingProvider.notifier)
-                                  .setRating(id: activeTrack.id, rating: 5);
-                            }
-                            if (response.success) {
+                      if (activeTrack is! ToneHarborTrackObjectLocal) ...[
+                        const SizedBox(width: 2),
+                        IconButton(
+                          icon: Icon(
+                            rating
+                                ? Icons.favorite_rounded
+                                : Icons.favorite_border_rounded,
+                            size: 18,
+                          ),
+                          onPressed: () async {
+                            try {
                               ref
-                                  .read(
-                                    favoriteSongsProvider(limit: 50).notifier,
-                                  )
-                                  .invalidateCache();
-                              ref.invalidate(favoriteSongsProvider);
+                                  .read(requestFlagProvider.notifier)
+                                  .setRequestFlag(true);
+                              SetRatingResponse response;
+                              if (rating) {
+                                response = await ref
+                                    .read(songRatingProvider.notifier)
+                                    .setRating(id: activeTrack.id, rating: 0);
+                              } else {
+                                response = await ref
+                                    .read(songRatingProvider.notifier)
+                                    .setRating(id: activeTrack.id, rating: 5);
+                              }
+                              if (response.success) {
+                                ref
+                                    .read(
+                                      favoriteSongsProvider(limit: 50).notifier,
+                                    )
+                                    .invalidateCache();
+                                ref.invalidate(favoriteSongsProvider);
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                showSnackBarError(
+                                  e,
+                                  context,
+                                  colorScheme.secondary,
+                                );
+                              }
+                            } finally {
+                              ref
+                                  .read(requestFlagProvider.notifier)
+                                  .setRequestFlag(false);
                             }
-                          } catch (e) {
-                            if (context.mounted) {
-                              showSnackBarError(
-                                e,
-                                context,
-                                colorScheme.secondary,
-                              );
-                            }
-                          } finally {
-                            ref
-                                .read(requestFlagProvider.notifier)
-                                .setRequestFlag(false);
-                          }
-                        },
-                      ),
+                          },
+                        ),
+                      ],
                       const SizedBox(width: 2),
                       IconButton(
                         icon: Icon(
