@@ -53,11 +53,9 @@ class SearchHistoryTextField extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = useTextEditingController();
     final focusNode = useFocusNode();
-    final showHistory = useState(false);
     final historyList = ref.watch(searchHistoryProvider);
-    final overlayEntry = useState<OverlayEntry?>(null);
-    final textFieldKey = useMemoized(() => GlobalKey());
     final currentText = useState(controller.text);
+    final menuWidth = useState<double?>(null);
 
     final displayList = useMemoized(() {
       final historyData = historyList;
@@ -71,19 +69,6 @@ class SearchHistoryTextField extends HookConsumerWidget {
     }, [historyList, currentText.value, enableFilterHistory, lockItems]);
 
     useEffect(() {
-      void onFocusChanged() {
-        if (hasFocusExpand && showHistoryList && focusNode.hasFocus) {
-          showHistory.value = true;
-        }
-      }
-
-      focusNode.addListener(onFocusChanged);
-      return () {
-        focusNode.removeListener(onFocusChanged);
-      };
-    }, [focusNode]);
-
-    useEffect(() {
       void onTextChanged() {
         currentText.value = controller.text;
       }
@@ -94,248 +79,147 @@ class SearchHistoryTextField extends HookConsumerWidget {
       };
     }, [controller]);
 
-    useEffect(() {
-      if (showHistory.value && enableHistory) {
-        overlayEntry.value?.remove();
-        overlayEntry.value = null;
-
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          final renderBox =
-              textFieldKey.currentContext?.findRenderObject() as RenderBox?;
-          if (renderBox != null) {
-            final offset = renderBox.localToGlobal(Offset.zero);
-            final size = renderBox.size;
-
-            overlayEntry.value = OverlayEntry(
-              builder: (overlayContext) => _HistoryOverlay(
-                textFieldOffset: offset,
-                textFieldSize: size,
-                displayList: displayList,
-                lockItems: lockItems,
-                historyIcon: historyIcon,
-                historyIconSize: historyIconSize,
-                deleteIcon: deleteIcon,
-                deleteIconSize: deleteIconSize,
-                listTextStyle: listTextStyle,
-                listDecoration: listDecoration,
-                lockTextColor: lockTextColor,
-                showDeleteIcon: showDeleteIcon,
-                onHistoryItemSelected: (value) async {
-                  controller.text = value;
-                  currentText.value = value;
-                  if (updateSelectedHistoryItemDateTime) {
-                    await ref
-                        .read(searchHistoryProvider.notifier)
-                        .addSearch(value);
-                  }
-                  showHistory.value = false;
-                  onSubmitSearch?.call(value);
-                },
-                onRemoveHistory: (value) {
-                  ref.read(searchHistoryProvider.notifier).removeSearch(value);
-                },
-                onDismiss: () {
-                  showHistory.value = false;
-                  focusNode.unfocus();
-                },
-              ),
-            );
-
-            final overlayState = Overlay.of(textFieldKey.currentContext!);
-            overlayState.insert(overlayEntry.value!);
-          }
-        });
-      } else {
-        overlayEntry.value?.remove();
-        overlayEntry.value = null;
-      }
-
-      return () {
-        overlayEntry.value?.remove();
-        overlayEntry.value = null;
-      };
-    }, [showHistory.value, displayList]);
-
-    return TextField(
-      key: textFieldKey,
-      controller: controller,
-      focusNode: focusNode,
-      onTap: () {
-        if (hasFocusExpand && showHistoryList) {
-          showHistory.value = true;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (menuWidth.value != constraints.maxWidth) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            menuWidth.value = constraints.maxWidth;
+          });
         }
-      },
-      onSubmitted: (value) {
-        if (enableSave && value.isNotEmpty) {
-          ref.read(searchHistoryProvider.notifier).addSearch(value);
-        }
-        showHistory.value = false;
-        focusNode.unfocus();
-        onSubmitSearch?.call(value);
-      },
-      decoration: decoration?.copyWith(
-        suffixIcon: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (showHistoryIcon && enableHistory)
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: Icon(
-                  historyIcon ?? Icons.history,
-                  size: historyIconSize ?? 16,
-                ),
-              ),
 
-            if (!showHistoryIcon && controller.text.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: GestureDetector(
-                  onTap: () {
-                    controller.clear();
-                    currentText.value = '';
-                  },
-                  child: Icon(
-                    deleteIcon ?? Icons.clear,
-                    size: deleteIconSize ?? 16,
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _HistoryOverlay extends StatelessWidget {
-  final Offset textFieldOffset;
-  final Size textFieldSize;
-  final List<String> displayList;
-  final List<String>? lockItems;
-  final IconData? historyIcon;
-  final double? historyIconSize;
-  final IconData? deleteIcon;
-  final double? deleteIconSize;
-  final TextStyle? listTextStyle;
-  final BoxDecoration? listDecoration;
-  final Color? lockTextColor;
-  final bool showDeleteIcon;
-  final Function(String) onHistoryItemSelected;
-  final Function(String) onRemoveHistory;
-  final VoidCallback onDismiss;
-
-  const _HistoryOverlay({
-    required this.textFieldOffset,
-    required this.textFieldSize,
-    required this.displayList,
-    required this.lockItems,
-    required this.historyIcon,
-    required this.historyIconSize,
-    required this.deleteIcon,
-    required this.deleteIconSize,
-    required this.listTextStyle,
-    required this.listDecoration,
-    required this.lockTextColor,
-    required this.showDeleteIcon,
-    required this.onHistoryItemSelected,
-    required this.onRemoveHistory,
-    required this.onDismiss,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final itemHeight = 48.0;
-    final listHeight = displayList.length * itemHeight;
-    final maxHeight = listHeight > 300 ? 300.0 : listHeight;
-
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () {
-              onDismiss();
-            },
+        return MenuAnchor(
+          crossAxisUnconstrained: false,
+          style: MenuStyle(
+            elevation: const WidgetStatePropertyAll(4),
+            shape: WidgetStatePropertyAll(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            backgroundColor: WidgetStatePropertyAll(
+              listDecoration?.color ?? Theme.of(context).colorScheme.surface,
+            ),
+            minimumSize: menuWidth.value != null
+                ? WidgetStatePropertyAll(Size(menuWidth.value!, 0))
+                : null,
+            maximumSize: menuWidth.value != null
+                ? WidgetStatePropertyAll(
+                    Size(menuWidth.value!, double.infinity),
+                  )
+                : null,
           ),
-        ),
-        Positioned(
-          top: textFieldOffset.dy + textFieldSize.height,
-          left: textFieldOffset.dx,
-          width: textFieldSize.width,
-          height: maxHeight,
-          child: Material(
-            elevation: 4,
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              decoration:
-                  listDecoration ??
-                  BoxDecoration(borderRadius: BorderRadius.circular(8)),
-              child: ScrollConfiguration(
-                behavior: ScrollConfiguration.of(
-                  context,
-                ).copyWith(scrollbars: false),
-                child: ListView.builder(
-                  itemCount: displayList.length,
-                  itemBuilder: (context, index) {
-                    final isLockItem = index < (lockItems?.length ?? 0);
-                    final item = displayList[index];
-
-                    return InkWell(
-                      onTap: () {
-                        onHistoryItemSelected(item);
-                      },
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      child: SizedBox(
-                        height: itemHeight,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                isLockItem ? Icons.lock : Icons.history,
-                                size: historyIconSize ?? 18,
-                                color: isLockItem ? lockTextColor : null,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  item,
-                                  style: listTextStyle?.copyWith(
-                                    color: isLockItem ? lockTextColor : null,
-                                  ),
-                                ),
-                              ),
-                              if (!isLockItem && showDeleteIcon)
-                                InkWell(
-                                  onTap: () {
-                                    onRemoveHistory(item);
-                                  },
-                                  splashColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8),
-                                    child: Icon(
-                                      deleteIcon ?? Icons.close,
-                                      size: deleteIconSize ?? 18,
-                                    ),
-                                  ),
-                                ),
-                            ],
+          builder: (context, menuController, child) {
+            return TextField(
+              controller: controller,
+              focusNode: focusNode,
+              onTap: () {
+                if (hasFocusExpand &&
+                    showHistoryList &&
+                    enableHistory &&
+                    displayList.isNotEmpty) {
+                  menuController.open();
+                }
+              },
+              onChanged: (value) {
+                if (displayList.isNotEmpty) {
+                  menuController.open();
+                }
+              },
+              onSubmitted: (value) {
+                if (enableSave && value.isNotEmpty) {
+                  ref.read(searchHistoryProvider.notifier).addSearch(value);
+                }
+                menuController.close();
+                focusNode.unfocus();
+                onSubmitSearch?.call(value);
+              },
+              decoration: decoration?.copyWith(
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (showHistoryIcon && enableHistory)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Icon(
+                          historyIcon ?? Icons.history,
+                          size: historyIconSize ?? 16,
+                        ),
+                      ),
+                    if (!showHistoryIcon && controller.text.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: GestureDetector(
+                          onTap: () {
+                            controller.clear();
+                            currentText.value = '';
+                          },
+                          child: Icon(
+                            deleteIcon ?? Icons.clear,
+                            size: deleteIconSize ?? 16,
                           ),
                         ),
                       ),
-                    );
-                  },
+                  ],
                 ),
               ),
-            ),
-          ),
-        ),
-      ],
+            );
+          },
+          menuChildren: displayList.map((item) {
+            final index = displayList.indexOf(item);
+            final isLockItem = index < (lockItems?.length ?? 0);
+            return SizedBox(
+              width: menuWidth.value,
+              child: MenuItemButton(
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(
+                    listRowDecoration?.color ?? Colors.transparent,
+                  ),
+                  overlayColor: WidgetStatePropertyAll(Colors.transparent),
+                ),
+                leadingIcon: Icon(
+                  isLockItem ? Icons.lock : (historyIcon ?? Icons.history),
+                  size: historyIconSize ?? 18,
+                  color: isLockItem ? lockTextColor : null,
+                ),
+                trailingIcon: !isLockItem && showDeleteIcon
+                    ? IconButton(
+                        icon: Icon(
+                          deleteIcon ?? Icons.close,
+                          size: deleteIconSize ?? 18,
+                        ),
+                        onPressed: () {
+                          ref
+                              .read(searchHistoryProvider.notifier)
+                              .removeSearch(item);
+                        },
+                        padding: const EdgeInsets.all(8),
+                        constraints: const BoxConstraints(),
+                      )
+                    : null,
+                onPressed: () async {
+                  controller.text = item;
+                  currentText.value = item;
+                  if (updateSelectedHistoryItemDateTime) {
+                    await ref
+                        .read(searchHistoryProvider.notifier)
+                        .addSearch(item);
+                  }
+                  focusNode.unfocus();
+                  onSubmitSearch?.call(item);
+                },
+                child: Text(
+                  item,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style:
+                      listTextStyle?.copyWith(
+                        color: isLockItem ? lockTextColor : null,
+                      ) ??
+                      const TextStyle(fontSize: 14),
+                ),
+              ),
+            );
+          }).toList(),
+        );
+      },
     );
   }
 }
