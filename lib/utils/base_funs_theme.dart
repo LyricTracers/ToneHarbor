@@ -1,7 +1,7 @@
 part of 'base_funs.dart';
 
 Future<bool> saveDefaultThemeIcon(WidgetRef ref, Uint8List bytes) async {
-  final appDocDir = await getApplicationDocumentsDirectory();
+  final appDocDir = await getApplicationSupportDirectory();
   final themeDir = Directory('${appDocDir.path}/theme');
 
   if (!await themeDir.exists()) {

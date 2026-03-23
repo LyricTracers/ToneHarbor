@@ -164,7 +164,7 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
     ToneHarborTrackObject track, {
     bool allowDuplicates = true,
   }) async {
-    if (state.tracks.length == 1) {
+    if (state.tracks.isEmpty || state.tracks.length == 1) {
       return addTrack(track);
     }
 
@@ -196,7 +196,7 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
     Iterable<ToneHarborTrackObject> tracks, {
     bool allowDuplicates = true,
   }) async {
-    if (state.tracks.length == 1) {
+    if (state.tracks.isEmpty || state.tracks.length == 1) {
       return addTracks(tracks);
     }
 

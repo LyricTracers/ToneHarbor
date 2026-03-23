@@ -261,14 +261,16 @@ Future<void> initMusicCacheBaseDir() async {
     final dirs = await paths.getExternalCacheDirectories();
     _musicCacheBaseDir = join(dirs!.first.path, 'Cached Tracks');
   } else {
-    final dir = await paths.getApplicationCacheDirectory();
+    final dir = await paths.getApplicationSupportDirectory();
     _musicCacheBaseDir = join(dir.path, 'cached_tracks');
   }
 }
 
 String getMusicCacheDirSync(AudioQuality quality) {
   if (_musicCacheBaseDir == null) {
-    throw StateError('Music cache base dir not initialized. Call initMusicCacheBaseDir() first.');
+    throw StateError(
+      'Music cache base dir not initialized. Call initMusicCacheBaseDir() first.',
+    );
   }
   return join(_musicCacheBaseDir!, quality.name);
 }
@@ -287,7 +289,7 @@ Future<String> getMusicCacheDir(AudioQuality quality) async {
     return cacheDir.path;
   }
 
-  final dir = await paths.getApplicationCacheDirectory();
+  final dir = await paths.getApplicationSupportDirectory();
   final cacheDir = Directory(join(dir.path, 'cached_tracks', subDir));
   if (!await cacheDir.exists()) {
     await cacheDir.create(recursive: true);
@@ -306,7 +308,7 @@ Future<String> getCoverCacheDir() async {
     return join(dir.path, 'Cached Covers');
   }
 
-  final dir = await paths.getApplicationCacheDirectory();
+  final dir = await paths.getApplicationSupportDirectory();
   return join(dir.path, 'cached_covers');
 }
 
