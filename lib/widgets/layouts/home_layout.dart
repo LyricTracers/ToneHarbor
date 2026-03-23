@@ -209,7 +209,7 @@ class HomeLayout extends BaseBgLayout {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "其他",
+                            l10n.other,
                             style: TextStyle(
                               fontSize: 15,
                               color: colorScheme.onSurface.withValues(
@@ -242,7 +242,9 @@ class HomeLayout extends BaseBgLayout {
                       Icons.library_music_outlined,
                       l10n.local_songs,
                       () {
-                        context.push('/local_songs/${Uri.encodeComponent(l10n.local_songs)}');
+                        context.push(
+                          '/local_songs/${Uri.encodeComponent(l10n.local_songs)}',
+                        );
                       },
                     ),
                     if (favoritePlaylist.playlists.isNotEmpty) ...[

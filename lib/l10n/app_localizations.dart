@@ -1070,6 +1070,12 @@ abstract class AppLocalizations {
   /// **'Redownload'**
   String get redownload;
 
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
+
   /// No description provided for @play_current_song.
   ///
   /// In en, this message translates to:
