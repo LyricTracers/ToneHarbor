@@ -6,6 +6,7 @@ import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/providers/audio_player/download_manager.dart';
 import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
 class SubSongSelectionBottom<T extends AsSong> extends HookConsumerWidget {
@@ -221,6 +222,14 @@ class SubSongSelectionBottom<T extends AsSong> extends HookConsumerWidget {
             await ref
                 .read(audioPlayerStateProvider.notifier)
                 .addTracksAtFirst(selectedTracks, allowDuplicates: true);
+            if (!audioPlayer.isPlaying) {
+              var index =
+                  audioPlayer.currentIndex < 0 ||
+                      audioPlayer.currentIndex >= audioPlayer.sources.length
+                  ? 0
+                  : audioPlayer.currentIndex;
+              await audioPlayer.jumpTo(index);
+            }
             ref.invalidate(songSelectionProvider);
           },
           icon: const Icon(Icons.queue_play_next_rounded, size: 18),
@@ -244,6 +253,14 @@ class SubSongSelectionBottom<T extends AsSong> extends HookConsumerWidget {
             await ref
                 .read(audioPlayerStateProvider.notifier)
                 .addTracks(selectedTracks);
+            if (!audioPlayer.isPlaying) {
+              var index =
+                  audioPlayer.currentIndex < 0 ||
+                      audioPlayer.currentIndex >= audioPlayer.sources.length
+                  ? 0
+                  : audioPlayer.currentIndex;
+              await audioPlayer.jumpTo(index);
+            }
             ref.invalidate(songSelectionProvider);
           },
           icon: const Icon(Icons.queue_music_rounded, size: 18),
