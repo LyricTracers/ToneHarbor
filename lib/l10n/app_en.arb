@@ -109,6 +109,7 @@
   "sort": "sort",
   "albums": "Albums",
   "sort_name": "Order Of Title",
+  "sort_time": "Order Of Time",
   "music_house": "Music Library",
   "all_music": "Music",
   "folder": "Folder",

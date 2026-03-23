@@ -180,7 +180,7 @@ class MyApp extends HookConsumerWidget {
                       title: state.pathParameters['title'] ?? 'Local Songs',
                       baseProvider: localSongsProvider,
                       limitTotal: -1,
-                      sortAction: SongsPageSortAction.none,
+                      sortAction: SongsPageSortAction.all,
                       isLocal: true,
                     ),
                   );

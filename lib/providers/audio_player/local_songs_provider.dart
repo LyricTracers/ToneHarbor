@@ -432,16 +432,6 @@ class LocalSongs extends _$LocalSongs with ExtraProvider<SongListResponse> {
           ),
         ]);
         break;
-      case 'album':
-        query.orderBy([
-          (t) => OrderingTerm(
-            expression: t.album,
-            mode: _sortDirection == 'asc'
-                ? OrderingMode.asc
-                : OrderingMode.desc,
-          ),
-        ]);
-        break;
       default:
         query.orderBy([
           (t) => OrderingTerm(
@@ -508,8 +498,8 @@ class LocalSongs extends _$LocalSongs with ExtraProvider<SongListResponse> {
     required String sortBy,
     required String sortDirection,
   }) async {
-    _sortBy = sortBy;
-    _sortDirection = sortDirection;
+    _sortBy = sortBy.toLowerCase();
+    _sortDirection = sortDirection.toLowerCase();
     _currentPage = 0;
     _songsCache.clear();
 

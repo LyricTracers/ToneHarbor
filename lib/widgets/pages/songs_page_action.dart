@@ -1,6 +1,6 @@
 part of 'songs_page.dart';
 
-enum SongsPageSortAction { none, titleName, artistName, all }
+enum SongsPageSortAction { none, titleName, artistName, time, all }
 
 extension _SongsPageActionExtension on SongsPage {
   PopupMenuItem _getActionMenuItem(
@@ -51,6 +51,27 @@ extension _SongsPageActionExtension on SongsPage {
                         .setSort(sortBy: 'title', sortDirection: 'DESC'),
                   },
                   l10n.sort_name,
+                  Icons.arrow_downward_rounded,
+                ),
+              ],
+              if (sortAction == SongsPageSortAction.all ||
+                  sortAction == SongsPageSortAction.time) ...[
+                _getActionMenuItem(
+                  () => {
+                    ref
+                        .read(baseProvider.notifier)
+                        .setSort(sortBy: 'time', sortDirection: 'ASC'),
+                  },
+                  l10n.sort_time,
+                  Icons.arrow_upward_rounded,
+                ),
+                _getActionMenuItem(
+                  () => {
+                    ref
+                        .read(baseProvider.notifier)
+                        .setSort(sortBy: 'time', sortDirection: 'DESC'),
+                  },
+                  l10n.sort_time,
                   Icons.arrow_downward_rounded,
                 ),
               ],

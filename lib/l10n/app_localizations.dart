@@ -746,6 +746,12 @@ abstract class AppLocalizations {
   /// **'Order Of Title'**
   String get sort_name;
 
+  /// No description provided for @sort_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Of Time'**
+  String get sort_time;
+
   /// No description provided for @music_house.
   ///
   /// In en, this message translates to:
