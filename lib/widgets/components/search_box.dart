@@ -15,9 +15,8 @@ class SearchHistoryTextField extends HookConsumerWidget {
   final double? historyIconSize;
   final IconData? deleteIcon;
   final double? deleteIconSize;
-  final Offset listOffset;
   final TextStyle? listTextStyle;
-  final BoxDecoration? listRowDecoration;
+  final Color? listRowColor;
   final BoxDecoration? listDecoration;
   final List<String>? lockItems;
   final Color? lockTextColor;
@@ -38,9 +37,8 @@ class SearchHistoryTextField extends HookConsumerWidget {
     this.historyIconSize,
     this.deleteIcon,
     this.deleteIconSize,
-    this.listOffset = Offset.zero,
     this.listTextStyle,
-    this.listRowDecoration,
+    this.listRowColor,
     this.listDecoration,
     this.lockItems,
     this.lockTextColor,
@@ -56,6 +54,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
     final historyList = ref.watch(searchHistoryProvider);
     final currentText = useState(controller.text);
     final menuWidth = useState<double?>(null);
+    final menuControllerState = useState<MenuController?>(null);
 
     final displayList = useMemoized(() {
       final historyData = historyList;
@@ -107,6 +106,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
                 : null,
           ),
           builder: (context, menuController, child) {
+            menuControllerState.value = menuController;
             return TextField(
               controller: controller,
               focusNode: focusNode,
@@ -162,15 +162,16 @@ class SearchHistoryTextField extends HookConsumerWidget {
               ),
             );
           },
-          menuChildren: displayList.map((item) {
-            final index = displayList.indexOf(item);
+          menuChildren: displayList.asMap().entries.map((entry) {
+            final index = entry.key;
+            final item = entry.value;
             final isLockItem = index < (lockItems?.length ?? 0);
             return SizedBox(
               width: menuWidth.value,
               child: MenuItemButton(
                 style: ButtonStyle(
                   backgroundColor: WidgetStatePropertyAll(
-                    listRowDecoration?.color ?? Colors.transparent,
+                    listRowColor ?? Colors.transparent,
                   ),
                   overlayColor: WidgetStatePropertyAll(Colors.transparent),
                 ),
@@ -202,6 +203,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
                         .read(searchHistoryProvider.notifier)
                         .addSearch(item);
                   }
+                  menuControllerState.value?.close();
                   focusNode.unfocus();
                   onSubmitSearch?.call(item);
                 },
