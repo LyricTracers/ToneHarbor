@@ -21,6 +21,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
   final List<String>? lockItems;
   final Color? lockTextColor;
   final Function(String)? onSubmitSearch;
+  final Function(bool)? onFocusChanged;
   final bool updateSelectedHistoryItemDateTime;
   final InputDecoration? decoration;
 
@@ -43,6 +44,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
     this.lockItems,
     this.lockTextColor,
     this.onSubmitSearch,
+    this.onFocusChanged,
     this.updateSelectedHistoryItemDateTime = false,
     this.decoration,
   });
@@ -77,6 +79,17 @@ class SearchHistoryTextField extends HookConsumerWidget {
         controller.removeListener(onTextChanged);
       };
     }, [controller]);
+
+    useEffect(() {
+      void onFocusChange() {
+        onFocusChanged?.call(focusNode.hasFocus);
+      }
+
+      focusNode.addListener(onFocusChange);
+      return () {
+        focusNode.removeListener(onFocusChange);
+      };
+    }, [focusNode, onFocusChanged]);
 
     return LayoutBuilder(
       builder: (context, constraints) {

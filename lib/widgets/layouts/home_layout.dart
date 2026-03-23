@@ -104,6 +104,11 @@ class HomeLayout extends BaseBgLayout {
                             vertical: 8,
                           ),
                         ),
+                        onFocusChanged: (v) {
+                          if (v) {
+                            ref.invalidate(songSelectionProvider);
+                          }
+                        },
                         onSubmitSearch: (value) {
                           onSubmitSearch(ref, value);
                         },
