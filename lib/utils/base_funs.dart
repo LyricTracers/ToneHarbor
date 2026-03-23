@@ -19,7 +19,6 @@ import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
-import 'package:toneharbor/utils/consts.dart';
 import 'package:open_file/open_file.dart';
 part 'base_funs_sp.dart';
 part 'base_funs_theme.dart';
@@ -233,22 +232,24 @@ Widget buildErrorView(
   ColorScheme colorScheme,
   Function() onTap,
 ) {
-  return SizedBox(
+  return Expanded(
     child: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          GestureDetector(
-            onTap: onTap,
-            child: SvgPicture.asset(
-              loadingErrorIcon,
-              colorFilter: ColorFilter.mode(
-                colorScheme.onSurface.withValues(alpha: 0.5),
-                BlendMode.srcIn,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: onTap,
+              child: SvgPicture.asset(
+                loadingErrorIcon,
+                colorFilter: ColorFilter.mode(
+                  colorScheme.onSurface.withValues(alpha: 0.5),
+                  BlendMode.srcIn,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     ),
   );

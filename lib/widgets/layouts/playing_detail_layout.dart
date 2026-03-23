@@ -24,7 +24,12 @@ class PlayingDetailLayout extends BaseBgLayout {
     var size = MediaQuery.of(ref.context).size;
     double radius = size.height > size.width / 2 ? size.width / 2 : size.height;
     if (activeTrack == null) {
-      return buildErrorView(ref.context, ref, colorScheme, () {});
+      return Column(
+        children: [
+          AppBar(),
+          buildErrorView(ref.context, ref, colorScheme, () {}),
+        ],
+      );
     }
     final subContentState = ref.watch(subContentProvider);
 
