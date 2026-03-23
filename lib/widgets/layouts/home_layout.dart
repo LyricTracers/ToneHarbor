@@ -10,6 +10,7 @@ import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
 import 'package:toneharbor/widgets/pages/add_to_playlists_page.dart';
 import 'package:toneharbor/widgets/pages/playlist_page.dart';
@@ -22,7 +23,7 @@ class HomeLayout extends BaseBgLayout {
   final String currentPath;
   const HomeLayout({
     super.key,
-    super.showLoading = true,
+    super.showLoading = false,
     required this.child,
     required this.currentPath,
   });
@@ -409,6 +410,9 @@ class HomeLayout extends BaseBgLayout {
             ),
           ),
         ],
+        requestFlag
+            ? const Center(child: AudioEqualizerLoader())
+            : const SizedBox.shrink(),
       ],
     );
   }

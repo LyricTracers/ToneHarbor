@@ -7,6 +7,7 @@ import 'package:toneharbor/models/audio_station/artist.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/components/common_search_field.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
@@ -157,7 +158,7 @@ class ArtistPage extends HookConsumerWidget {
                 ),
               );
             },
-            loading: () => const Center(child: CircularProgressIndicator()),
+            loading: () => const Center(child: AudioEqualizerLoader()),
             error: (error, stackTrace) {
               return buildErrorView(context, ref, colorScheme, () {});
             },
