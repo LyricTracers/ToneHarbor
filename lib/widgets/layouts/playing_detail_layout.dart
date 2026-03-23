@@ -60,7 +60,7 @@ class PlayingDetailLayout extends BaseBgLayout {
             curve: Curves.fastEaseInToSlowEaseOut,
           ),
         );
-
+    final isLocal = activeTrack is ToneHarborTrackObjectLocal;
     return Stack(
       children: [
         Column(
@@ -84,16 +84,19 @@ class PlayingDetailLayout extends BaseBgLayout {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 IconButton(
-                                  onPressed: () {
-                                    ref
-                                        .read(subContentProvider.notifier)
-                                        .set(
-                                          SubContentData(
-                                            type: SubContentType.addToPlayLists,
-                                            extra: activeTrack.id,
-                                          ),
-                                        );
-                                  },
+                                  onPressed: isLocal
+                                      ? null
+                                      : () {
+                                          ref
+                                              .read(subContentProvider.notifier)
+                                              .set(
+                                                SubContentData(
+                                                  type: SubContentType
+                                                      .addToPlayLists,
+                                                  extra: activeTrack.id,
+                                                ),
+                                              );
+                                        },
                                   icon: Icon(
                                     Icons.playlist_add_rounded,
                                     size: 24,
