@@ -25,7 +25,11 @@ extension _SongsPageActionExtension on SongsPage {
     );
   }
 
-  Widget _buildSortAction(WidgetRef ref, AppLocalizations l10n) {
+  Widget _buildSortAction(
+    WidgetRef ref,
+    AppLocalizations l10n,
+    TextEditingController searchController,
+  ) {
     switch (sortAction) {
       case SongsPageSortAction.none:
         return SizedBox.shrink();
@@ -36,19 +40,21 @@ extension _SongsPageActionExtension on SongsPage {
               if (sortAction == SongsPageSortAction.all ||
                   sortAction == SongsPageSortAction.titleName) ...[
                 _getActionMenuItem(
-                  () => {
+                  () {
+                    searchController.clear();
                     ref
                         .read(baseProvider.notifier)
-                        .setSort(sortBy: 'title', sortDirection: 'ASC'),
+                        .setSort(sortBy: 'title', sortDirection: 'ASC');
                   },
                   l10n.sort_name,
                   Icons.arrow_upward_rounded,
                 ),
                 _getActionMenuItem(
-                  () => {
+                  () {
+                    searchController.clear();
                     ref
                         .read(baseProvider.notifier)
-                        .setSort(sortBy: 'title', sortDirection: 'DESC'),
+                        .setSort(sortBy: 'title', sortDirection: 'DESC');
                   },
                   l10n.sort_name,
                   Icons.arrow_downward_rounded,
@@ -57,19 +63,21 @@ extension _SongsPageActionExtension on SongsPage {
               if (sortAction == SongsPageSortAction.all ||
                   sortAction == SongsPageSortAction.time) ...[
                 _getActionMenuItem(
-                  () => {
+                  () {
+                    searchController.clear();
                     ref
                         .read(baseProvider.notifier)
-                        .setSort(sortBy: 'time', sortDirection: 'ASC'),
+                        .setSort(sortBy: 'time', sortDirection: 'ASC');
                   },
                   l10n.sort_time,
                   Icons.arrow_upward_rounded,
                 ),
                 _getActionMenuItem(
-                  () => {
+                  () {
+                    searchController.clear();
                     ref
                         .read(baseProvider.notifier)
-                        .setSort(sortBy: 'time', sortDirection: 'DESC'),
+                        .setSort(sortBy: 'time', sortDirection: 'DESC');
                   },
                   l10n.sort_time,
                   Icons.arrow_downward_rounded,
@@ -78,19 +86,21 @@ extension _SongsPageActionExtension on SongsPage {
               if (sortAction == SongsPageSortAction.all ||
                   sortAction == SongsPageSortAction.artistName) ...[
                 _getActionMenuItem(
-                  () => {
+                  () {
+                    searchController.clear();
                     ref
                         .read(baseProvider.notifier)
-                        .setSort(sortBy: 'artist', sortDirection: 'ASC'),
+                        .setSort(sortBy: 'artist', sortDirection: 'ASC');
                   },
                   l10n.sort_artist_name,
                   Icons.arrow_upward_rounded,
                 ),
                 _getActionMenuItem(
-                  () => {
+                  () {
+                    searchController.clear();
                     ref
                         .read(baseProvider.notifier)
-                        .setSort(sortBy: 'artist', sortDirection: 'DESC'),
+                        .setSort(sortBy: 'artist', sortDirection: 'DESC');
                   },
                   l10n.sort_artist_name,
                   Icons.arrow_downward_rounded,

@@ -69,7 +69,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
       actions: [
         CommonSearchField(searchController: searchController),
         const SizedBox(width: 16),
-        _buildSortAction(ref, l10n),
+        _buildSortAction(ref, l10n, searchController),
         IconButton(
           onPressed: () {
             ref.read(songSelectionProvider.notifier).toggle();
