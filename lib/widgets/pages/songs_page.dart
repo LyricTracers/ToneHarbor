@@ -12,6 +12,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
+import 'package:toneharbor/widgets/components/common_search_field.dart';
 import 'package:toneharbor/widgets/components/song_context_menu.dart';
 import 'package:toneharbor/widgets/components/song_item.dart';
 import 'package:toneharbor/widgets/components/sub_song_selection_bottom.dart';
@@ -40,6 +41,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
     WidgetRef ref,
     ColorScheme colorScheme,
     int total,
+    TextEditingController searchController,
   ) {
     final l10n = ref.watch(l10nProvider);
     return AppBar(
@@ -65,26 +67,18 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
         ],
       ),
       actions: [
-        Container(
-          constraints: BoxConstraints(maxWidth: 200, maxHeight: 35),
-          child: SearchAnchor.bar(
-            suggestionsBuilder: (context, ref) => [],
-            barHintStyle: WidgetStateProperty.all(TextStyle(fontSize: 14)),
-            barHintText: l10n.searchHint,
-            barLeading: Icon(Icons.search, size: 18),
-          ),
-        ),
-        SizedBox(width: 16),
+        CommonSearchField(searchController: searchController),
+        const SizedBox(width: 16),
         _buildSortAction(ref, l10n),
         IconButton(
           onPressed: () {
             ref.read(songSelectionProvider.notifier).toggle();
           },
-          icon: Icon(Icons.fact_check_rounded, size: 18),
+          icon: const Icon(Icons.fact_check_rounded, size: 18),
         ),
         IconButton(
           onPressed: () {},
-          icon: Icon(Icons.settings_rounded, size: 18),
+          icon: const Icon(Icons.settings_rounded, size: 18),
         ),
       ],
       centerTitle: false,
@@ -95,6 +89,8 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = getColorSchemeWhenReady(ref);
     final scrollController = useScrollController();
+    final searchController = useTextEditingController();
+    final searchQuery = useSearchQuery(searchController);
     final l10n = ref.watch(l10nProvider);
     var songs = ref.watch(baseProvider);
     var total = songs.value?.data?.total ?? 0;
@@ -122,6 +118,23 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
         ),
       ),
     );
+
+    final filteredItems = useMemoized(() {
+      if (searchQuery.isEmpty) {
+        return songItems;
+      }
+      final query = searchQuery.toLowerCase();
+      return songItems.where((song) {
+        final title = song.title.toLowerCase();
+        final artist = song.additional?.songTag?.artist?.toLowerCase() ?? '';
+        final album = song.additional?.songTag?.album?.toLowerCase() ?? '';
+        return title.contains(query) ||
+            artist.contains(query) ||
+            album.contains(query);
+      }).toList();
+    }, [songItems, searchQuery]);
+
+    final displayHasMore = searchQuery.isEmpty && hasMore;
 
     useEffect(() {
       void onScroll() {
@@ -156,20 +169,20 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
     return Column(
       children: [
         if (songSelectionState.selectionType)
-          SubSongSelectionTop(songs: songItems),
+          SubSongSelectionTop(songs: filteredItems),
         if (!songSelectionState.selectionType)
-          _buildAppBar(ref, colorScheme, total),
+          _buildAppBar(ref, colorScheme, total, searchController),
         Expanded(
           child: songs.when(
             data: (data) {
-              if (songItems.isEmpty) {
+              if (filteredItems.isEmpty) {
                 return const Center(child: Text('No songs'));
               }
               return ListView.builder(
                 controller: scrollController,
-                itemCount: songItems.length + (hasMore ? 1 : 0),
+                itemCount: filteredItems.length + (displayHasMore ? 1 : 0),
                 itemBuilder: (context, index) {
-                  if (index == songItems.length) {
+                  if (index == filteredItems.length) {
                     return const Padding(
                       padding: EdgeInsets.all(16),
                       child: Center(
@@ -181,7 +194,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                       ),
                     );
                   }
-                  var item = songItems[index];
+                  var item = filteredItems[index];
                   return RepaintBoundary(
                     child: ContextMenuRegion(
                       enableDefaultGestures: !songSelectionState.selectionType,
@@ -196,9 +209,9 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                         padding: const EdgeInsets.all(8.0),
                       ),
                       child: SongItem(
-                        key: ValueKey(index),
+                        key: ValueKey(item.id),
                         index: index,
-                        song: songItems[index],
+                        song: item,
                         activeSongId: activeSongId,
                         colorScheme: colorScheme,
                         l10n: l10n,
@@ -214,7 +227,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                               );
                               tracks = [];
                               initIndex = 0;
-                              for (final song in songItems) {
+                              for (final song in filteredItems) {
                                 final track = await localSongsNotifier
                                     .getLocalSongTrack(song.id);
                                 if (track != null) {
@@ -225,7 +238,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                                 }
                               }
                             } else {
-                              tracks = songItems.asTrackList();
+                              tracks = filteredItems.asTrackList();
                             }
                             if (tracks.isEmpty) return;
                             await ref
@@ -255,7 +268,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
           ),
         ),
         if (songSelectionState.selectionType)
-          SubSongSelectionBottom(songs: songItems, isLocal: isLocal),
+          SubSongSelectionBottom(songs: filteredItems, isLocal: isLocal),
       ],
     );
   }

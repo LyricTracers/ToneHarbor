@@ -7,6 +7,7 @@ import 'package:toneharbor/models/audio_station/artist.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/widgets/components/common_search_field.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class ArtistPage extends HookConsumerWidget {
@@ -17,6 +18,7 @@ class ArtistPage extends HookConsumerWidget {
     WidgetRef ref,
     ColorScheme colorScheme,
     int total,
+    TextEditingController searchController,
   ) {
     final l10n = ref.watch(l10nProvider);
     return AppBar(
@@ -24,7 +26,7 @@ class ArtistPage extends HookConsumerWidget {
         children: [
           Text(
             l10n.artist,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
 
           if (total > 0)
@@ -43,16 +45,8 @@ class ArtistPage extends HookConsumerWidget {
       ),
       centerTitle: false,
       actions: [
-        Container(
-          constraints: BoxConstraints(maxWidth: 200, maxHeight: 35),
-          child: SearchAnchor.bar(
-            suggestionsBuilder: (context, ref) => [],
-            barHintStyle: WidgetStateProperty.all(TextStyle(fontSize: 14)),
-            barHintText: l10n.searchHint,
-            barLeading: Icon(Icons.search, size: 18),
-          ),
-        ),
-        SizedBox(width: 16),
+        CommonSearchField(searchController: searchController),
+        const SizedBox(width: 16),
         IconButton(
           onPressed: () async {
             var direction = ref.read(baseProvider.notifier).extraSortDirection;
@@ -63,12 +57,12 @@ class ArtistPage extends HookConsumerWidget {
                   sortDirection: direction == "ASC" ? "DESC" : "ASC",
                 );
           },
-          icon: Icon(Icons.sort, size: 18),
+          icon: const Icon(Icons.sort, size: 18),
           tooltip: l10n.sort,
         ),
         IconButton(
           onPressed: () {},
-          icon: Icon(Icons.settings_rounded, size: 18),
+          icon: const Icon(Icons.settings_rounded, size: 18),
         ),
       ],
     );
@@ -77,12 +71,28 @@ class ArtistPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = getColorSchemeWhenReady(ref);
+    final searchController = useTextEditingController();
+    final searchQuery = useSearchQuery(searchController);
     final albums = ref.watch(baseProvider);
     var total = albums.value?.data?.total ?? 0;
     final artistItems = albums.value?.data?.artists ?? [];
     final hasMore = artistItems.length < total;
     final isLoadingMore = useState(false);
     final scrollController = useScrollController();
+
+    final filteredItems = useMemoized(() {
+      if (searchQuery.isEmpty) {
+        return artistItems;
+      }
+      final query = searchQuery.toLowerCase();
+      return artistItems.where((artist) {
+        final name = artist.name?.toLowerCase() ?? '';
+        return name.contains(query);
+      }).toList();
+    }, [artistItems, searchQuery]);
+
+    final displayHasMore = searchQuery.isEmpty && hasMore;
+
     useEffect(() {
       void onScroll() {
         if (!scrollController.hasClients) return;
@@ -113,29 +123,32 @@ class ArtistPage extends HookConsumerWidget {
 
     return Column(
       children: [
-        _buildAppBar(ref, colorScheme, total),
+        _buildAppBar(ref, colorScheme, total, searchController),
         Expanded(
           child: albums.when(
             data: (data) {
+              if (filteredItems.isEmpty) {
+                return const Center(child: Text('No artists'));
+              }
               return Padding(
                 padding: const EdgeInsets.all(16),
                 child: GridView.builder(
                   controller: scrollController,
-                  itemCount: artistItems.length + (hasMore ? 1 : 0),
-                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  itemCount: filteredItems.length + (displayHasMore ? 1 : 0),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 150,
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 16,
                     childAspectRatio: 0.75,
                   ),
                   itemBuilder: (context, index) {
-                    if (index == artistItems.length) {
+                    if (index == filteredItems.length) {
                       return const Padding(
                         padding: EdgeInsets.all(16),
                         child: Center(child: CircularProgressIndicator()),
                       );
                     }
-                    final artist = artistItems[index];
+                    final artist = filteredItems[index];
                     return _ArtistItem(
                       artist: artist,
                       colorScheme: colorScheme,

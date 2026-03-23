@@ -12,6 +12,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/components/bread_crumb_clipper.dart';
+import 'package:toneharbor/widgets/components/common_search_field.dart';
 import 'package:toneharbor/widgets/components/song_context_menu.dart';
 import 'package:toneharbor/widgets/components/song_item.dart';
 import 'package:toneharbor/widgets/components/sub_song_selection_bottom.dart';
@@ -234,34 +235,8 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
         ],
       ),
       actions: [
-        Container(
-          constraints: BoxConstraints(maxWidth: 200, maxHeight: 35),
-          child: TextField(
-            controller: searchController,
-            decoration: InputDecoration(
-              hintText: l10n.searchHint,
-              hintStyle: TextStyle(fontSize: 14),
-              prefixIcon: Icon(Icons.search, size: 18),
-              suffixIcon: IconButton(
-                icon: Icon(Icons.clear, size: 14),
-                onPressed: () {
-                  searchController.clear();
-                },
-              ),
-              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide.none,
-              ),
-              filled: true,
-              fillColor: colorScheme.surfaceContainerHighest.withValues(
-                alpha: 0.5,
-              ),
-            ),
-            style: TextStyle(fontSize: 14),
-          ),
-        ),
-        SizedBox(width: 16),
+        CommonSearchField(searchController: searchController),
+        const SizedBox(width: 16),
         IconButton(
           onPressed: () async {
             var direction = ref.read(baseProvider.notifier).extraSortDirection;
@@ -272,18 +247,18 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                   sortDirection: direction == "ASC" ? "DESC" : "ASC",
                 );
           },
-          icon: Icon(Icons.sort, size: 18),
+          icon: const Icon(Icons.sort, size: 18),
           tooltip: l10n.sort,
         ),
         IconButton(
           onPressed: () {
             ref.read(songSelectionProvider.notifier).toggle();
           },
-          icon: Icon(Icons.fact_check_rounded, size: 18),
+          icon: const Icon(Icons.fact_check_rounded, size: 18),
         ),
         IconButton(
           onPressed: () {},
-          icon: Icon(Icons.settings_rounded, size: 18),
+          icon: const Icon(Icons.settings_rounded, size: 18),
         ),
       ],
       centerTitle: false,
@@ -295,15 +270,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
     var colorScheme = getColorSchemeWhenReady(ref);
     final scrollController = useScrollController();
     final searchController = useTextEditingController();
-    final searchQuery = useState('');
-    useEffect(() {
-      void listener() {
-        searchQuery.value = searchController.text;
-      }
-
-      searchController.addListener(listener);
-      return () => searchController.removeListener(listener);
-    }, [searchController]);
+    final searchQuery = useSearchQuery(searchController);
     var folderResponse = ref.watch(baseProvider);
     var total = folderResponse.value?.data?.total ?? 0;
     final folderItems = folderResponse.value?.data?.items ?? [];
@@ -330,10 +297,10 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
     }, []);
 
     final filteredItems = useMemoized(() {
-      if (searchQuery.value.isEmpty) {
+      if (searchQuery.isEmpty) {
         return folderItems;
       }
-      final query = searchQuery.value.toLowerCase();
+      final query = searchQuery.toLowerCase();
       return folderItems.where((item) {
         if (item.isSong()) {
           final song = item.asSong();
@@ -347,9 +314,9 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
           return item.title.toLowerCase().contains(query);
         }
       }).toList();
-    }, [folderItems, searchQuery.value]);
+    }, [folderItems, searchQuery]);
 
-    final displayHasMore = searchQuery.value.isEmpty && hasMore;
+    final displayHasMore = searchQuery.isEmpty && hasMore;
 
     useEffect(() {
       void onScroll() {

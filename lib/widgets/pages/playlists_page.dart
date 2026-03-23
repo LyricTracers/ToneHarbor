@@ -4,12 +4,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/playlist_list.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
+import 'package:toneharbor/widgets/components/common_search_field.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
 
 class _PlaylistItemWidget extends HookConsumerWidget {
@@ -130,6 +130,7 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
     WidgetRef ref,
     ColorScheme colorScheme,
     int total,
+    TextEditingController searchController,
   ) {
     final l10n = ref.watch(l10nProvider);
     return AppBar(
@@ -137,7 +138,7 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
         children: [
           Text(
             l10n.playlists,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
 
           if (total > 0)
@@ -155,19 +156,11 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
         ],
       ),
       actions: [
-        Container(
-          constraints: BoxConstraints(maxWidth: 200, maxHeight: 35),
-          child: SearchAnchor.bar(
-            suggestionsBuilder: (context, ref) => [],
-            barHintStyle: WidgetStateProperty.all(TextStyle(fontSize: 14)),
-            barHintText: l10n.searchHint,
-            barLeading: Icon(Icons.search, size: 18),
-          ),
-        ),
-        SizedBox(width: 16),
+        CommonSearchField(searchController: searchController),
+        const SizedBox(width: 16),
         IconButton(
           onPressed: () {},
-          icon: Icon(Icons.settings_rounded, size: 18),
+          icon: const Icon(Icons.settings_rounded, size: 18),
         ),
       ],
       centerTitle: false,
@@ -178,6 +171,8 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
   Widget build(BuildContext context, WidgetRef ref) {
     var colorScheme = getColorSchemeWhenReady(ref);
     final scrollController = useScrollController();
+    final searchController = useTextEditingController();
+    final searchQuery = useSearchQuery(searchController);
     final l10n = ref.watch(l10nProvider);
     var playlistsState = ref.watch(baseProvider);
     final playlists = playlistsState.value?.data?.playlists ?? [];
@@ -186,6 +181,20 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
 
     final isLoadingMore = useState(false);
     final nameController = useTextEditingController();
+
+    final filteredItems = useMemoized(() {
+      if (searchQuery.isEmpty) {
+        return playlists;
+      }
+      final query = searchQuery.toLowerCase();
+      return playlists.where((playlist) {
+        final name = playlist.name.toLowerCase();
+        return name.contains(query);
+      }).toList();
+    }, [playlists, searchQuery]);
+
+    final displayHasMore = searchQuery.isEmpty && playlists.length < total;
+
     useEffect(() {
       void onScroll() {
         if (!scrollController.hasClients) return;
@@ -264,19 +273,18 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
 
     return Column(
       children: [
-        _buildAppBar(context, ref, colorScheme, total),
+        _buildAppBar(context, ref, colorScheme, total, searchController),
         Expanded(
           child: playlistsState.when(
             data: (data) {
-              if (playlists.isEmpty) {
+              if (filteredItems.isEmpty) {
                 return const Center(child: Text('No playlists'));
               }
               return ListView.builder(
                 controller: scrollController,
-                itemCount:
-                    playlists.length + (playlists.length < total ? 1 : 0),
+                itemCount: filteredItems.length + (displayHasMore ? 1 : 0),
                 itemBuilder: (context, index) {
-                  if (index == playlists.length) {
+                  if (index == filteredItems.length) {
                     return const Padding(
                       padding: EdgeInsets.all(16),
                       child: Center(
@@ -289,23 +297,23 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                     );
                   }
                   final isFavorite = favoritePlaylistsState.containsPlaylistId(
-                    playlists[index].id,
+                    filteredItems[index].id,
                   );
 
                   return ContextMenuRegion(
                     contextMenu: ContextMenu(
                       entriesBuilder: () {
-                        var playlistId = playlists[index].id;
-                        var title = playlists[index].name;
+                        var playlistId = filteredItems[index].id;
+                        var title = filteredItems[index].name;
                         var personalState =
-                            playlists[index].library == "personal";
+                            filteredItems[index].library == "personal";
                         var favoritePlaylistNotifier = ref.read(
                           favoritePlaylistStateProvider.notifier,
                         );
                         final isFavorite = favoritePlaylistNotifier
                             .isFavoritePlaylist(playlistId);
                         return <ContextMenuEntry>[
-                          MenuHeader(text: playlists[index].name),
+                          MenuHeader(text: filteredItems[index].name),
                           MenuDivider(),
                           MenuItem(
                             label: Text(
@@ -363,7 +371,7 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                     ),
                     child: _PlaylistItemWidget(
                       index: index,
-                      playlists: playlists,
+                      playlists: filteredItems,
                       colorScheme: colorScheme,
                       isFavorite: isFavorite,
                       l10n: l10n,

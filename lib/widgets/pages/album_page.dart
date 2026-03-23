@@ -7,6 +7,7 @@ import 'package:toneharbor/models/audio_station/album.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/widgets/components/common_search_field.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
@@ -20,6 +21,7 @@ class AlbumPage extends HookConsumerWidget {
     WidgetRef ref,
     ColorScheme colorScheme,
     int total,
+    TextEditingController searchController,
   ) {
     final l10n = ref.watch(l10nProvider);
     return AppBar(
@@ -27,7 +29,7 @@ class AlbumPage extends HookConsumerWidget {
         children: [
           Text(
             l10n.albums,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
 
           if (total > 0)
@@ -46,16 +48,8 @@ class AlbumPage extends HookConsumerWidget {
       ),
       centerTitle: false,
       actions: [
-        Container(
-          constraints: BoxConstraints(maxWidth: 200, maxHeight: 35),
-          child: SearchAnchor.bar(
-            suggestionsBuilder: (context, ref) => [],
-            barHintStyle: WidgetStateProperty.all(TextStyle(fontSize: 14)),
-            barHintText: l10n.searchHint,
-            barLeading: Icon(Icons.search, size: 18),
-          ),
-        ),
-        SizedBox(width: 16),
+        CommonSearchField(searchController: searchController),
+        const SizedBox(width: 16),
         IconButton(
           onPressed: () async {
             var direction = ref.read(baseProvider.notifier).extraSortDirection;
@@ -66,12 +60,12 @@ class AlbumPage extends HookConsumerWidget {
                   sortDirection: direction == "ASC" ? "DESC" : "ASC",
                 );
           },
-          icon: Icon(Icons.sort, size: 18),
+          icon: const Icon(Icons.sort, size: 18),
           tooltip: l10n.sort,
         ),
         IconButton(
           onPressed: () {},
-          icon: Icon(Icons.settings_rounded, size: 18),
+          icon: const Icon(Icons.settings_rounded, size: 18),
         ),
       ],
     );
@@ -80,12 +74,32 @@ class AlbumPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = getColorSchemeWhenReady(ref);
+    final searchController = useTextEditingController();
+    final searchQuery = useSearchQuery(searchController);
     final albums = ref.watch(baseProvider);
     var total = albums.value?.data?.total ?? 0;
     final albumItems = albums.value?.data?.albums ?? [];
     final hasMore = albumItems.length < total;
     final isLoadingMore = useState(false);
     final scrollController = useScrollController();
+
+    final filteredItems = useMemoized(() {
+      if (searchQuery.isEmpty) {
+        return albumItems;
+      }
+      final query = searchQuery.toLowerCase();
+      return albumItems.where((album) {
+        final name = album.name?.toLowerCase() ?? '';
+        final artist =
+            album.displayArtist?.toLowerCase() ??
+            album.artist?.toLowerCase() ??
+            '';
+        return name.contains(query) || artist.contains(query);
+      }).toList();
+    }, [albumItems, searchQuery]);
+
+    final displayHasMore = searchQuery.isEmpty && hasMore;
+
     useEffect(() {
       void onScroll() {
         if (!scrollController.hasClients) return;
@@ -116,29 +130,32 @@ class AlbumPage extends HookConsumerWidget {
 
     return Column(
       children: [
-        _buildAppBar(ref, colorScheme, total),
+        _buildAppBar(ref, colorScheme, total, searchController),
         Expanded(
           child: albums.when(
             data: (data) {
+              if (filteredItems.isEmpty) {
+                return const Center(child: Text('No albums'));
+              }
               return Padding(
                 padding: const EdgeInsets.all(16),
                 child: GridView.builder(
                   controller: scrollController,
-                  itemCount: albumItems.length + (hasMore ? 1 : 0),
-                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  itemCount: filteredItems.length + (displayHasMore ? 1 : 0),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 180,
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 16,
                     childAspectRatio: 0.75,
                   ),
                   itemBuilder: (context, index) {
-                    if (index == albumItems.length) {
+                    if (index == filteredItems.length) {
                       return const Padding(
                         padding: EdgeInsets.all(16),
                         child: Center(child: CircularProgressIndicator()),
                       );
                     }
-                    final album = albumItems[index];
+                    final album = filteredItems[index];
                     return _AlbumItem(album: album, colorScheme: colorScheme);
                   },
                 ),
