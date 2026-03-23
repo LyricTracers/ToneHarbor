@@ -150,7 +150,6 @@ class SubSongSelectionBottom<T extends AsSong> extends HookConsumerWidget {
             icon: const Icon(Icons.favorite_border_rounded, size: 18),
             tooltip: l10n.no_favorite_playlist,
           ),
-
           IconButton(
             onPressed: () {
               final ids = ref.read(songSelectionProvider).ids;
@@ -178,7 +177,32 @@ class SubSongSelectionBottom<T extends AsSong> extends HookConsumerWidget {
             tooltip: l10n.song_playlist,
           ),
         ],
+        if (isLocal)
+          IconButton(
+            onPressed: () async {
+              final ids = ref.read(songSelectionProvider).ids;
+              if (_checkIdsEmpty(ids, context, ref)) return;
+              if (_checkIdsLimit(
+                ids,
+                100,
+                context,
+                ref,
+                l10n.cancel_favorite_limit_exceeded,
+              )) {
+                return;
+              }
 
+              await ref
+                  .read(audioPlayerStateProvider.notifier)
+                  .removeTracks(ids);
+              await ref
+                  .read(localSongsProvider.notifier)
+                  .removeAllSongsByIds(ids);
+              ref.invalidate(songSelectionProvider);
+            },
+            icon: const Icon(Icons.delete_forever_rounded, size: 18),
+            tooltip: l10n.delete,
+          ),
         IconButton(
           onPressed: () async {
             final ids = ref.read(songSelectionProvider).ids;

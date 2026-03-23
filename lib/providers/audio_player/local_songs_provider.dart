@@ -142,6 +142,27 @@ class LocalMusicStateService {
       return false;
     }
   }
+
+  static Future<void> removeFromLocalMusicStateByIds(
+    AppDatabase db,
+    Set<String> trackIds,
+  ) async {
+    try {
+      if (trackIds.isEmpty) return;
+
+      await (db.delete(
+        db.localMusicState,
+      )..where((t) => t.trackId.isIn(trackIds))).go();
+
+      logger.i(
+        '[LocalMusicStateService] Removed ${trackIds.length} tracks from local music state',
+      );
+    } catch (e) {
+      logger.e(
+        '[LocalMusicStateService] Failed to remove from local music state: $e',
+      );
+    }
+  }
 }
 
 class LocalSong {
@@ -722,11 +743,61 @@ class LocalSongs extends _$LocalSongs with ExtraProvider<SongListResponse> {
     }
   }
 
+  Future<void> removeAllSongsByIds(Set<String> trackIds) async {
+    if (trackIds.isEmpty) return;
+
+    for (final trackId in trackIds) {
+      final removed = _songsCache.remove(trackId);
+      if (removed != null) {
+        _totalCount--;
+
+        for (final quality in removed.availableQualities) {
+          final path = removed.getPath(quality);
+          if (path.isNotEmpty) {
+            try {
+              final file = File(path);
+              if (await file.exists()) {
+                await file.delete();
+                logger.i('[LocalSongs] Deleted local file: $path');
+              }
+            } catch (e) {
+              logger.e('[LocalSongs] Failed to delete file: $path, $e');
+            }
+          }
+        }
+      }
+    }
+
+    await LocalMusicStateService.removeFromLocalMusicStateByIds(
+      ref.read(appDatabaseProvider),
+      trackIds,
+    );
+
+    await _updateStateAfterRemoveByIds(trackIds);
+  }
+
   Future<void> _updateStateAfterRemove(String trackId) async {
     final currentState = state;
     if (currentState is AsyncData<SongListResponse>) {
       final currentSongs = currentState.value.data?.songs ?? [];
       final updatedSongs = currentSongs.where((s) => s.id != trackId).toList();
+
+      state = AsyncValue.data(
+        SongListResponse(
+          success: true,
+          data: SongData(songs: updatedSongs, total: _totalCount, offset: 0),
+        ),
+      );
+    }
+  }
+
+  Future<void> _updateStateAfterRemoveByIds(Set<String> trackIds) async {
+    final currentState = state;
+    if (currentState is AsyncData<SongListResponse>) {
+      final currentSongs = currentState.value.data?.songs ?? [];
+      final updatedSongs = currentSongs
+          .where((s) => !trackIds.contains(s.id))
+          .toList();
 
       state = AsyncValue.data(
         SongListResponse(

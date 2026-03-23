@@ -320,25 +320,40 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
     );
   }
 
-  Future<void> removeTracks(Iterable<String> trackIds) async {
-    final trackIndexes = state.tracks
-        .where((element) => trackIds.any((trackId) => trackId == element.id))
-        .mapIndexed((index, element) => index);
+  Future<void> removeTracks(Set<String> trackIdSet) async {
+    final removeIndexes = <int>[];
+    for (var i = 0; i < state.tracks.length; i++) {
+      if (trackIdSet.contains(state.tracks[i].id)) {
+        removeIndexes.add(i);
+      }
+    }
 
-    final tracks = state.tracks.where(
-      (element) => !trackIds.contains(element.id),
-    );
+    if (removeIndexes.isEmpty) return;
 
-    state = state.copyWith(tracks: tracks.toList());
+    removeIndexes.sort((a, b) => b.compareTo(a));
 
-    for (final index in trackIndexes) {
-      await audioPlayer.removeTrack(index);
+    final newTracks = state.tracks.toList();
+    for (final removeIndex in removeIndexes) {
+      newTracks.removeAt(removeIndex);
+    }
+
+    final removedBeforeCurrent = removeIndexes
+        .where((i) => i < state.currentIndex)
+        .length;
+    final newCurrentIndex = newTracks.isEmpty
+        ? 0
+        : max(state.currentIndex - removedBeforeCurrent, 0);
+
+    state = state.copyWith(tracks: newTracks, currentIndex: newCurrentIndex);
+
+    for (final removeIndex in removeIndexes) {
+      await audioPlayer.removeTrack(removeIndex);
     }
 
     await _updatePlayerState(
       AudioPlayerStateTableCompanion(
         tracks: Value(state.tracks),
-        currentIndex: Value(max(state.currentIndex, 0)),
+        currentIndex: Value(state.currentIndex),
       ),
     );
   }
