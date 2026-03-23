@@ -235,6 +235,16 @@ class HomeLayout extends BaseBgLayout {
                         context.push('/download');
                       },
                     ),
+                    SizedBox(height: 8),
+                    _getItem(
+                      currentPath.startsWith('/local_songs/'),
+                      colorScheme,
+                      Icons.library_music_outlined,
+                      l10n.local_songs,
+                      () {
+                        context.push('/local_songs/${Uri.encodeComponent(l10n.local_songs)}');
+                      },
+                    ),
                     if (favoritePlaylist.playlists.isNotEmpty) ...[
                       SizedBox(height: 5),
                       Divider(thickness: 1, indent: 12, endIndent: 12),

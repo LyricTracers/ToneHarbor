@@ -282,6 +282,44 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
     );
   }
 
+  Future<void> removeAllTracksById(String trackId) async {
+    final removeIndexes = state.tracks
+        .asMap()
+        .entries
+        .where((entry) => entry.value.id == trackId)
+        .map((entry) => entry.key)
+        .toList();
+
+    if (removeIndexes.isEmpty) return;
+
+    removeIndexes.sort((a, b) => b.compareTo(a));
+
+    final newTracks = state.tracks.toList();
+    for (final removeIndex in removeIndexes) {
+      newTracks.removeAt(removeIndex);
+    }
+
+    final removedBeforeCurrent = removeIndexes
+        .where((i) => i < state.currentIndex)
+        .length;
+    final newCurrentIndex = newTracks.isEmpty
+        ? 0
+        : max(state.currentIndex - removedBeforeCurrent, 0);
+
+    state = state.copyWith(tracks: newTracks, currentIndex: newCurrentIndex);
+
+    for (final removeIndex in removeIndexes) {
+      await audioPlayer.removeTrack(removeIndex);
+    }
+
+    await _updatePlayerState(
+      AudioPlayerStateTableCompanion(
+        tracks: Value(state.tracks),
+        currentIndex: Value(state.currentIndex),
+      ),
+    );
+  }
+
   Future<void> removeTracks(Iterable<String> trackIds) async {
     final trackIndexes = state.tracks
         .where((element) => trackIds.any((trackId) => trackId == element.id))

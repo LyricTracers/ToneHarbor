@@ -170,6 +170,22 @@ class MyApp extends HookConsumerWidget {
                 pageBuilder: (context, state) =>
                     NoTransitionPage(child: DownloadPage()),
               ),
+              GoRoute(
+                path: '/local_songs/:title',
+                pageBuilder: (context, state) {
+                  ref.invalidate(localSongsProvider);
+                  return NoTransitionPage<void>(
+                    key: state.pageKey,
+                    child: SongsPage(
+                      title: state.pathParameters['title'] ?? 'Local Songs',
+                      baseProvider: localSongsProvider,
+                      limitTotal: -1,
+                      sortAction: SongsPageSortAction.none,
+                      isLocal: true,
+                    ),
+                  );
+                },
+              ),
             ],
             builder: (context, state, child) {
               final currentPath = state.uri.path;

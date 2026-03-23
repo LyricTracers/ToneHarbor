@@ -956,6 +956,24 @@ abstract class AppLocalizations {
   /// **'Download Center'**
   String get download_center;
 
+  /// No description provided for @local_songs.
+  ///
+  /// In en, this message translates to:
+  /// **'Local Songs'**
+  String get local_songs;
+
+  /// No description provided for @select_quality.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Quality'**
+  String get select_quality;
+
+  /// No description provided for @play.
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get play;
+
   /// No description provided for @normal_download.
   ///
   /// In en, this message translates to:

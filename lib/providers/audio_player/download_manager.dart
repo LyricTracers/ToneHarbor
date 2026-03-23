@@ -1091,6 +1091,11 @@ class DownloadManager extends _$DownloadManager {
 
         await _setStatus(task.track, DownloadStatus.completed);
         _completionController.add(task.track);
+        await LocalMusicStateService.addToLocalMusicState(
+          ref.read(appDatabaseProvider),
+          task.track,
+          quality,
+        );
 
         await writeTrackMetadata(
           ref: ref,

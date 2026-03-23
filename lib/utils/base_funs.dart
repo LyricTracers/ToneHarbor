@@ -254,6 +254,25 @@ Widget buildErrorView(
   );
 }
 
+String? _musicCacheBaseDir;
+
+Future<void> initMusicCacheBaseDir() async {
+  if (Platform.isAndroid) {
+    final dirs = await paths.getExternalCacheDirectories();
+    _musicCacheBaseDir = join(dirs!.first.path, 'Cached Tracks');
+  } else {
+    final dir = await paths.getApplicationCacheDirectory();
+    _musicCacheBaseDir = join(dir.path, 'cached_tracks');
+  }
+}
+
+String getMusicCacheDirSync(AudioQuality quality) {
+  if (_musicCacheBaseDir == null) {
+    throw StateError('Music cache base dir not initialized. Call initMusicCacheBaseDir() first.');
+  }
+  return join(_musicCacheBaseDir!, quality.name);
+}
+
 Future<String> getMusicCacheDir(AudioQuality quality) async {
   String subDir;
   subDir = quality.name;

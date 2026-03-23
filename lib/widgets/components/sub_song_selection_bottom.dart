@@ -10,7 +10,12 @@ import 'package:toneharbor/utils/base_utils.dart';
 
 class SubSongSelectionBottom<T extends AsSong> extends HookConsumerWidget {
   final List<T> songs;
-  const SubSongSelectionBottom({super.key, required this.songs});
+  final bool isLocal;
+  const SubSongSelectionBottom({
+    super.key,
+    required this.songs,
+    this.isLocal = false,
+  });
 
   bool _checkIdsEmpty(Set<String> ids, BuildContext context, WidgetRef ref) {
     if (ids.isEmpty) {
@@ -58,92 +63,122 @@ class SubSongSelectionBottom<T extends AsSong> extends HookConsumerWidget {
       toolbarHeight: 70,
       automaticallyImplyLeading: false,
       actions: [
-        IconButton(
-          onPressed: () {
-            final ids = ref.read(songSelectionProvider).ids;
-            if (_checkIdsEmpty(ids, context, ref)) return;
-            ref.invalidate(songSelectionProvider);
-            ref
-                .read(downloadManagerProvider.notifier)
-                .addAllToQueue(_getSelectedTracks(ids));
-          },
-          icon: const Icon(Icons.download_rounded, size: 18),
-          tooltip: l10n.download,
-        ),
-        IconButton(
-          onPressed: () async {
-            final ids = ref.read(songSelectionProvider).ids;
-            if (_checkIdsEmpty(ids, context, ref)) return;
-            if (_checkIdsLimit(
-              ids,
-              100,
-              context,
-              ref,
-              l10n.favorite_limit_exceeded,
-            )) {
-              return;
-            }
+        if (!isLocal) ...[
+          IconButton(
+            onPressed: () {
+              final ids = ref.read(songSelectionProvider).ids;
+              if (_checkIdsEmpty(ids, context, ref)) return;
+              ref.invalidate(songSelectionProvider);
+              ref
+                  .read(downloadManagerProvider.notifier)
+                  .addAllToQueue(_getSelectedTracks(ids));
+            },
+            icon: const Icon(Icons.download_rounded, size: 18),
+            tooltip: l10n.download,
+          ),
+          IconButton(
+            onPressed: () async {
+              final ids = ref.read(songSelectionProvider).ids;
+              if (_checkIdsEmpty(ids, context, ref)) return;
+              if (_checkIdsLimit(
+                ids,
+                100,
+                context,
+                ref,
+                l10n.favorite_limit_exceeded,
+              )) {
+                return;
+              }
 
-            try {
-              ref.read(requestFlagProvider.notifier).setRequestFlag(true);
-              final response = await ref
-                  .read(songRatingProvider.notifier)
-                  .setRatings(ids: ids, rating: 5);
-              if (response.success) {
-                ref
-                    .read(favoriteSongsProvider(limit: 50).notifier)
-                    .invalidateCache();
-                ref.invalidate(favoriteSongsProvider);
-                ref.invalidate(songSelectionProvider);
+              try {
+                ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+                final response = await ref
+                    .read(songRatingProvider.notifier)
+                    .setRatings(ids: ids, rating: 5);
+                if (response.success) {
+                  ref
+                      .read(favoriteSongsProvider(limit: 50).notifier)
+                      .invalidateCache();
+                  ref.invalidate(favoriteSongsProvider);
+                  ref.invalidate(songSelectionProvider);
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  showSnackBarError(e, context, colorScheme.secondary);
+                }
+              } finally {
+                ref.read(requestFlagProvider.notifier).setRequestFlag(false);
               }
-            } catch (e) {
-              if (context.mounted) {
-                showSnackBarError(e, context, colorScheme.secondary);
+            },
+            icon: const Icon(Icons.favorite_rounded, size: 18),
+            tooltip: l10n.favorite,
+          ),
+          IconButton(
+            onPressed: () async {
+              final ids = ref.read(songSelectionProvider).ids;
+              if (_checkIdsEmpty(ids, context, ref)) return;
+              if (_checkIdsLimit(
+                ids,
+                100,
+                context,
+                ref,
+                l10n.cancel_favorite_limit_exceeded,
+              )) {
+                return;
               }
-            } finally {
-              ref.read(requestFlagProvider.notifier).setRequestFlag(false);
-            }
-          },
-          icon: const Icon(Icons.favorite_rounded, size: 18),
-          tooltip: l10n.favorite,
-        ),
-        IconButton(
-          onPressed: () async {
-            final ids = ref.read(songSelectionProvider).ids;
-            if (_checkIdsEmpty(ids, context, ref)) return;
-            if (_checkIdsLimit(
-              ids,
-              100,
-              context,
-              ref,
-              l10n.cancel_favorite_limit_exceeded,
-            )) {
-              return;
-            }
 
-            try {
-              ref.read(requestFlagProvider.notifier).setRequestFlag(true);
-              final response = await ref
-                  .read(songRatingProvider.notifier)
-                  .setRatings(ids: ids, rating: 0);
-              if (response.success) {
-                ref
-                    .read(favoriteSongsProvider(limit: 50).notifier)
-                    .invalidateCache();
-                ref.invalidate(favoriteSongsProvider);
-                ref.invalidate(songSelectionProvider);
+              try {
+                ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+                final response = await ref
+                    .read(songRatingProvider.notifier)
+                    .setRatings(ids: ids, rating: 0);
+                if (response.success) {
+                  ref
+                      .read(favoriteSongsProvider(limit: 50).notifier)
+                      .invalidateCache();
+                  ref.invalidate(favoriteSongsProvider);
+                  ref.invalidate(songSelectionProvider);
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  showSnackBarError(e, context, colorScheme.secondary);
+                }
+              } finally {
+                ref.read(requestFlagProvider.notifier).setRequestFlag(false);
               }
-            } catch (e) {
-              if (context.mounted) {
-                showSnackBarError(e, context, colorScheme.secondary);
+            },
+            icon: const Icon(Icons.favorite_border_rounded, size: 18),
+            tooltip: l10n.no_favorite_playlist,
+          ),
+
+          IconButton(
+            onPressed: () {
+              final ids = ref.read(songSelectionProvider).ids;
+              if (_checkIdsEmpty(ids, context, ref)) return;
+              if (_checkIdsLimit(
+                ids,
+                100,
+                context,
+                ref,
+                l10n.cancel_favorite_limit_exceeded,
+              )) {
+                return;
               }
-            } finally {
-              ref.read(requestFlagProvider.notifier).setRequestFlag(false);
-            }
-          },
-          icon: const Icon(Icons.favorite_border_rounded, size: 18),
-          tooltip: l10n.no_favorite_playlist,
-        ),
+
+              ref
+                  .read(subContentProvider.notifier)
+                  .set(
+                    SubContentData(
+                      type: SubContentType.addToPlayLists,
+                      extra: ids.join(','),
+                    ),
+                  );
+            },
+            icon: const Icon(Icons.playlist_add_rounded, size: 18),
+            tooltip: l10n.song_playlist,
+          ),
+        ],
+
         IconButton(
           onPressed: () async {
             final ids = ref.read(songSelectionProvider).ids;
@@ -190,32 +225,7 @@ class SubSongSelectionBottom<T extends AsSong> extends HookConsumerWidget {
           icon: const Icon(Icons.queue_music_rounded, size: 18),
           tooltip: l10n.play_queue,
         ),
-        IconButton(
-          onPressed: () {
-            final ids = ref.read(songSelectionProvider).ids;
-            if (_checkIdsEmpty(ids, context, ref)) return;
-            if (_checkIdsLimit(
-              ids,
-              100,
-              context,
-              ref,
-              l10n.cancel_favorite_limit_exceeded,
-            )) {
-              return;
-            }
 
-            ref
-                .read(subContentProvider.notifier)
-                .set(
-                  SubContentData(
-                    type: SubContentType.addToPlayLists,
-                    extra: ids.join(','),
-                  ),
-                );
-          },
-          icon: const Icon(Icons.playlist_add_rounded, size: 18),
-          tooltip: l10n.song_playlist,
-        ),
         const SizedBox(width: 15),
       ],
     );

@@ -102,6 +102,9 @@ abstract class AudioPlayerInterface {
     _mkPlayer.stream.error.listen((event) {
       logger.e('[MediaKitError] $event');
     });
+    _mkPlayer.stream.log.listen((info) {
+      logger.i(info);
+    });
   }
 
   Duration get duration {

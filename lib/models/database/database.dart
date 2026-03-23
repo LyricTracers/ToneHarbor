@@ -16,6 +16,7 @@ part 'database.g.dart';
 part 'tables/audio_player_state.dart';
 part 'tables/favorite_playlist_state.dart';
 part 'tables/download_task_state.dart';
+part 'tables/local_music_state.dart';
 
 part 'typeconverters/string_list.dart';
 part 'typeconverters/tone_harbor_object_list.dart';
@@ -25,12 +26,34 @@ part 'typeconverters/tone_harbor_object_list.dart';
     AudioPlayerStateTable,
     FavoritePlaylistStateTable,
     DownloadTaskState,
+    LocalMusicState,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 4;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onCreate: (Migrator m) async {
+        await m.createAll();
+      },
+      onUpgrade: (Migrator m, int from, int to) async {
+        if (from < 2) {
+          await m.createTable(localMusicState);
+        }
+        if (from < 3) {
+          await m.dropColumn(localMusicState, 'path');
+        }
+        if (from < 4) {
+          await m.deleteTable(localMusicState.actualTableName);
+          await m.createTable(localMusicState);
+        }
+      },
+    );
+  }
 }
 
 LazyDatabase _openConnection() {

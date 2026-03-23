@@ -1280,6 +1280,738 @@ class DownloadTaskStateCompanion
   }
 }
 
+class $LocalMusicStateTable extends LocalMusicState
+    with TableInfo<$LocalMusicStateTable, LocalMusicStateData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalMusicStateTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _trackIdMeta = const VerificationMeta(
+    'trackId',
+  );
+  @override
+  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
+    'track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _qualitiesMeta = const VerificationMeta(
+    'qualities',
+  );
+  @override
+  late final GeneratedColumn<int> qualities = GeneratedColumn<int>(
+    'qualities',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _artistMeta = const VerificationMeta('artist');
+  @override
+  late final GeneratedColumn<String> artist = GeneratedColumn<String>(
+    'artist',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _albumMeta = const VerificationMeta('album');
+  @override
+  late final GeneratedColumn<String> album = GeneratedColumn<String>(
+    'album',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _containerMeta = const VerificationMeta(
+    'container',
+  );
+  @override
+  late final GeneratedColumn<String> container = GeneratedColumn<String>(
+    'container',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _durationMeta = const VerificationMeta(
+    'duration',
+  );
+  @override
+  late final GeneratedColumn<int> duration = GeneratedColumn<int>(
+    'duration',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _fileSizeMeta = const VerificationMeta(
+    'fileSize',
+  );
+  @override
+  late final GeneratedColumn<int> fileSize = GeneratedColumn<int>(
+    'file_size',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _bitrateMeta = const VerificationMeta(
+    'bitrate',
+  );
+  @override
+  late final GeneratedColumn<int> bitrate = GeneratedColumn<int>(
+    'bitrate',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _channelMeta = const VerificationMeta(
+    'channel',
+  );
+  @override
+  late final GeneratedColumn<int> channel = GeneratedColumn<int>(
+    'channel',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _codecMeta = const VerificationMeta('codec');
+  @override
+  late final GeneratedColumn<String> codec = GeneratedColumn<String>(
+    'codec',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _frequencyMeta = const VerificationMeta(
+    'frequency',
+  );
+  @override
+  late final GeneratedColumn<int> frequency = GeneratedColumn<int>(
+    'frequency',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    trackId,
+    qualities,
+    title,
+    artist,
+    album,
+    container,
+    duration,
+    fileSize,
+    bitrate,
+    channel,
+    codec,
+    frequency,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_music_state';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalMusicStateData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('track_id')) {
+      context.handle(
+        _trackIdMeta,
+        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackIdMeta);
+    }
+    if (data.containsKey('qualities')) {
+      context.handle(
+        _qualitiesMeta,
+        qualities.isAcceptableOrUnknown(data['qualities']!, _qualitiesMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_qualitiesMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('artist')) {
+      context.handle(
+        _artistMeta,
+        artist.isAcceptableOrUnknown(data['artist']!, _artistMeta),
+      );
+    }
+    if (data.containsKey('album')) {
+      context.handle(
+        _albumMeta,
+        album.isAcceptableOrUnknown(data['album']!, _albumMeta),
+      );
+    }
+    if (data.containsKey('container')) {
+      context.handle(
+        _containerMeta,
+        container.isAcceptableOrUnknown(data['container']!, _containerMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_containerMeta);
+    }
+    if (data.containsKey('duration')) {
+      context.handle(
+        _durationMeta,
+        duration.isAcceptableOrUnknown(data['duration']!, _durationMeta),
+      );
+    }
+    if (data.containsKey('file_size')) {
+      context.handle(
+        _fileSizeMeta,
+        fileSize.isAcceptableOrUnknown(data['file_size']!, _fileSizeMeta),
+      );
+    }
+    if (data.containsKey('bitrate')) {
+      context.handle(
+        _bitrateMeta,
+        bitrate.isAcceptableOrUnknown(data['bitrate']!, _bitrateMeta),
+      );
+    }
+    if (data.containsKey('channel')) {
+      context.handle(
+        _channelMeta,
+        channel.isAcceptableOrUnknown(data['channel']!, _channelMeta),
+      );
+    }
+    if (data.containsKey('codec')) {
+      context.handle(
+        _codecMeta,
+        codec.isAcceptableOrUnknown(data['codec']!, _codecMeta),
+      );
+    }
+    if (data.containsKey('frequency')) {
+      context.handle(
+        _frequencyMeta,
+        frequency.isAcceptableOrUnknown(data['frequency']!, _frequencyMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {trackId};
+  @override
+  LocalMusicStateData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalMusicStateData(
+      trackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_id'],
+      )!,
+      qualities: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}qualities'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      artist: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}artist'],
+      )!,
+      album: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}album'],
+      )!,
+      container: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}container'],
+      )!,
+      duration: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration'],
+      )!,
+      fileSize: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}file_size'],
+      )!,
+      bitrate: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}bitrate'],
+      )!,
+      channel: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}channel'],
+      )!,
+      codec: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}codec'],
+      )!,
+      frequency: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}frequency'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalMusicStateTable createAlias(String alias) {
+    return $LocalMusicStateTable(attachedDatabase, alias);
+  }
+}
+
+class LocalMusicStateData extends DataClass
+    implements Insertable<LocalMusicStateData> {
+  final String trackId;
+  final int qualities;
+  final String title;
+  final String artist;
+  final String album;
+  final String container;
+  final int duration;
+  final int fileSize;
+  final int bitrate;
+  final int channel;
+  final String codec;
+  final int frequency;
+  final DateTime updatedAt;
+  const LocalMusicStateData({
+    required this.trackId,
+    required this.qualities,
+    required this.title,
+    required this.artist,
+    required this.album,
+    required this.container,
+    required this.duration,
+    required this.fileSize,
+    required this.bitrate,
+    required this.channel,
+    required this.codec,
+    required this.frequency,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['track_id'] = Variable<String>(trackId);
+    map['qualities'] = Variable<int>(qualities);
+    map['title'] = Variable<String>(title);
+    map['artist'] = Variable<String>(artist);
+    map['album'] = Variable<String>(album);
+    map['container'] = Variable<String>(container);
+    map['duration'] = Variable<int>(duration);
+    map['file_size'] = Variable<int>(fileSize);
+    map['bitrate'] = Variable<int>(bitrate);
+    map['channel'] = Variable<int>(channel);
+    map['codec'] = Variable<String>(codec);
+    map['frequency'] = Variable<int>(frequency);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  LocalMusicStateCompanion toCompanion(bool nullToAbsent) {
+    return LocalMusicStateCompanion(
+      trackId: Value(trackId),
+      qualities: Value(qualities),
+      title: Value(title),
+      artist: Value(artist),
+      album: Value(album),
+      container: Value(container),
+      duration: Value(duration),
+      fileSize: Value(fileSize),
+      bitrate: Value(bitrate),
+      channel: Value(channel),
+      codec: Value(codec),
+      frequency: Value(frequency),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory LocalMusicStateData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalMusicStateData(
+      trackId: serializer.fromJson<String>(json['trackId']),
+      qualities: serializer.fromJson<int>(json['qualities']),
+      title: serializer.fromJson<String>(json['title']),
+      artist: serializer.fromJson<String>(json['artist']),
+      album: serializer.fromJson<String>(json['album']),
+      container: serializer.fromJson<String>(json['container']),
+      duration: serializer.fromJson<int>(json['duration']),
+      fileSize: serializer.fromJson<int>(json['fileSize']),
+      bitrate: serializer.fromJson<int>(json['bitrate']),
+      channel: serializer.fromJson<int>(json['channel']),
+      codec: serializer.fromJson<String>(json['codec']),
+      frequency: serializer.fromJson<int>(json['frequency']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'trackId': serializer.toJson<String>(trackId),
+      'qualities': serializer.toJson<int>(qualities),
+      'title': serializer.toJson<String>(title),
+      'artist': serializer.toJson<String>(artist),
+      'album': serializer.toJson<String>(album),
+      'container': serializer.toJson<String>(container),
+      'duration': serializer.toJson<int>(duration),
+      'fileSize': serializer.toJson<int>(fileSize),
+      'bitrate': serializer.toJson<int>(bitrate),
+      'channel': serializer.toJson<int>(channel),
+      'codec': serializer.toJson<String>(codec),
+      'frequency': serializer.toJson<int>(frequency),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  LocalMusicStateData copyWith({
+    String? trackId,
+    int? qualities,
+    String? title,
+    String? artist,
+    String? album,
+    String? container,
+    int? duration,
+    int? fileSize,
+    int? bitrate,
+    int? channel,
+    String? codec,
+    int? frequency,
+    DateTime? updatedAt,
+  }) => LocalMusicStateData(
+    trackId: trackId ?? this.trackId,
+    qualities: qualities ?? this.qualities,
+    title: title ?? this.title,
+    artist: artist ?? this.artist,
+    album: album ?? this.album,
+    container: container ?? this.container,
+    duration: duration ?? this.duration,
+    fileSize: fileSize ?? this.fileSize,
+    bitrate: bitrate ?? this.bitrate,
+    channel: channel ?? this.channel,
+    codec: codec ?? this.codec,
+    frequency: frequency ?? this.frequency,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  LocalMusicStateData copyWithCompanion(LocalMusicStateCompanion data) {
+    return LocalMusicStateData(
+      trackId: data.trackId.present ? data.trackId.value : this.trackId,
+      qualities: data.qualities.present ? data.qualities.value : this.qualities,
+      title: data.title.present ? data.title.value : this.title,
+      artist: data.artist.present ? data.artist.value : this.artist,
+      album: data.album.present ? data.album.value : this.album,
+      container: data.container.present ? data.container.value : this.container,
+      duration: data.duration.present ? data.duration.value : this.duration,
+      fileSize: data.fileSize.present ? data.fileSize.value : this.fileSize,
+      bitrate: data.bitrate.present ? data.bitrate.value : this.bitrate,
+      channel: data.channel.present ? data.channel.value : this.channel,
+      codec: data.codec.present ? data.codec.value : this.codec,
+      frequency: data.frequency.present ? data.frequency.value : this.frequency,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalMusicStateData(')
+          ..write('trackId: $trackId, ')
+          ..write('qualities: $qualities, ')
+          ..write('title: $title, ')
+          ..write('artist: $artist, ')
+          ..write('album: $album, ')
+          ..write('container: $container, ')
+          ..write('duration: $duration, ')
+          ..write('fileSize: $fileSize, ')
+          ..write('bitrate: $bitrate, ')
+          ..write('channel: $channel, ')
+          ..write('codec: $codec, ')
+          ..write('frequency: $frequency, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    trackId,
+    qualities,
+    title,
+    artist,
+    album,
+    container,
+    duration,
+    fileSize,
+    bitrate,
+    channel,
+    codec,
+    frequency,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalMusicStateData &&
+          other.trackId == this.trackId &&
+          other.qualities == this.qualities &&
+          other.title == this.title &&
+          other.artist == this.artist &&
+          other.album == this.album &&
+          other.container == this.container &&
+          other.duration == this.duration &&
+          other.fileSize == this.fileSize &&
+          other.bitrate == this.bitrate &&
+          other.channel == this.channel &&
+          other.codec == this.codec &&
+          other.frequency == this.frequency &&
+          other.updatedAt == this.updatedAt);
+}
+
+class LocalMusicStateCompanion extends UpdateCompanion<LocalMusicStateData> {
+  final Value<String> trackId;
+  final Value<int> qualities;
+  final Value<String> title;
+  final Value<String> artist;
+  final Value<String> album;
+  final Value<String> container;
+  final Value<int> duration;
+  final Value<int> fileSize;
+  final Value<int> bitrate;
+  final Value<int> channel;
+  final Value<String> codec;
+  final Value<int> frequency;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const LocalMusicStateCompanion({
+    this.trackId = const Value.absent(),
+    this.qualities = const Value.absent(),
+    this.title = const Value.absent(),
+    this.artist = const Value.absent(),
+    this.album = const Value.absent(),
+    this.container = const Value.absent(),
+    this.duration = const Value.absent(),
+    this.fileSize = const Value.absent(),
+    this.bitrate = const Value.absent(),
+    this.channel = const Value.absent(),
+    this.codec = const Value.absent(),
+    this.frequency = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalMusicStateCompanion.insert({
+    required String trackId,
+    required int qualities,
+    required String title,
+    this.artist = const Value.absent(),
+    this.album = const Value.absent(),
+    required String container,
+    this.duration = const Value.absent(),
+    this.fileSize = const Value.absent(),
+    this.bitrate = const Value.absent(),
+    this.channel = const Value.absent(),
+    this.codec = const Value.absent(),
+    this.frequency = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : trackId = Value(trackId),
+       qualities = Value(qualities),
+       title = Value(title),
+       container = Value(container);
+  static Insertable<LocalMusicStateData> custom({
+    Expression<String>? trackId,
+    Expression<int>? qualities,
+    Expression<String>? title,
+    Expression<String>? artist,
+    Expression<String>? album,
+    Expression<String>? container,
+    Expression<int>? duration,
+    Expression<int>? fileSize,
+    Expression<int>? bitrate,
+    Expression<int>? channel,
+    Expression<String>? codec,
+    Expression<int>? frequency,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (trackId != null) 'track_id': trackId,
+      if (qualities != null) 'qualities': qualities,
+      if (title != null) 'title': title,
+      if (artist != null) 'artist': artist,
+      if (album != null) 'album': album,
+      if (container != null) 'container': container,
+      if (duration != null) 'duration': duration,
+      if (fileSize != null) 'file_size': fileSize,
+      if (bitrate != null) 'bitrate': bitrate,
+      if (channel != null) 'channel': channel,
+      if (codec != null) 'codec': codec,
+      if (frequency != null) 'frequency': frequency,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalMusicStateCompanion copyWith({
+    Value<String>? trackId,
+    Value<int>? qualities,
+    Value<String>? title,
+    Value<String>? artist,
+    Value<String>? album,
+    Value<String>? container,
+    Value<int>? duration,
+    Value<int>? fileSize,
+    Value<int>? bitrate,
+    Value<int>? channel,
+    Value<String>? codec,
+    Value<int>? frequency,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return LocalMusicStateCompanion(
+      trackId: trackId ?? this.trackId,
+      qualities: qualities ?? this.qualities,
+      title: title ?? this.title,
+      artist: artist ?? this.artist,
+      album: album ?? this.album,
+      container: container ?? this.container,
+      duration: duration ?? this.duration,
+      fileSize: fileSize ?? this.fileSize,
+      bitrate: bitrate ?? this.bitrate,
+      channel: channel ?? this.channel,
+      codec: codec ?? this.codec,
+      frequency: frequency ?? this.frequency,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (trackId.present) {
+      map['track_id'] = Variable<String>(trackId.value);
+    }
+    if (qualities.present) {
+      map['qualities'] = Variable<int>(qualities.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (artist.present) {
+      map['artist'] = Variable<String>(artist.value);
+    }
+    if (album.present) {
+      map['album'] = Variable<String>(album.value);
+    }
+    if (container.present) {
+      map['container'] = Variable<String>(container.value);
+    }
+    if (duration.present) {
+      map['duration'] = Variable<int>(duration.value);
+    }
+    if (fileSize.present) {
+      map['file_size'] = Variable<int>(fileSize.value);
+    }
+    if (bitrate.present) {
+      map['bitrate'] = Variable<int>(bitrate.value);
+    }
+    if (channel.present) {
+      map['channel'] = Variable<int>(channel.value);
+    }
+    if (codec.present) {
+      map['codec'] = Variable<String>(codec.value);
+    }
+    if (frequency.present) {
+      map['frequency'] = Variable<int>(frequency.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalMusicStateCompanion(')
+          ..write('trackId: $trackId, ')
+          ..write('qualities: $qualities, ')
+          ..write('title: $title, ')
+          ..write('artist: $artist, ')
+          ..write('album: $album, ')
+          ..write('container: $container, ')
+          ..write('duration: $duration, ')
+          ..write('fileSize: $fileSize, ')
+          ..write('bitrate: $bitrate, ')
+          ..write('channel: $channel, ')
+          ..write('codec: $codec, ')
+          ..write('frequency: $frequency, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1289,6 +2021,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $FavoritePlaylistStateTableTable(this);
   late final $DownloadTaskStateTable downloadTaskState =
       $DownloadTaskStateTable(this);
+  late final $LocalMusicStateTable localMusicState = $LocalMusicStateTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1297,6 +2032,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     audioPlayerStateTable,
     favoritePlaylistStateTable,
     downloadTaskState,
+    localMusicState,
   ];
 }
 
@@ -2016,6 +2752,368 @@ typedef $$DownloadTaskStateTableProcessedTableManager =
       DownloadTaskStateData,
       PrefetchHooks Function()
     >;
+typedef $$LocalMusicStateTableCreateCompanionBuilder =
+    LocalMusicStateCompanion Function({
+      required String trackId,
+      required int qualities,
+      required String title,
+      Value<String> artist,
+      Value<String> album,
+      required String container,
+      Value<int> duration,
+      Value<int> fileSize,
+      Value<int> bitrate,
+      Value<int> channel,
+      Value<String> codec,
+      Value<int> frequency,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+typedef $$LocalMusicStateTableUpdateCompanionBuilder =
+    LocalMusicStateCompanion Function({
+      Value<String> trackId,
+      Value<int> qualities,
+      Value<String> title,
+      Value<String> artist,
+      Value<String> album,
+      Value<String> container,
+      Value<int> duration,
+      Value<int> fileSize,
+      Value<int> bitrate,
+      Value<int> channel,
+      Value<String> codec,
+      Value<int> frequency,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$LocalMusicStateTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalMusicStateTable> {
+  $$LocalMusicStateTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get trackId => $composableBuilder(
+    column: $table.trackId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get qualities => $composableBuilder(
+    column: $table.qualities,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get artist => $composableBuilder(
+    column: $table.artist,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get album => $composableBuilder(
+    column: $table.album,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get container => $composableBuilder(
+    column: $table.container,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get duration => $composableBuilder(
+    column: $table.duration,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get fileSize => $composableBuilder(
+    column: $table.fileSize,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get bitrate => $composableBuilder(
+    column: $table.bitrate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get channel => $composableBuilder(
+    column: $table.channel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get codec => $composableBuilder(
+    column: $table.codec,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get frequency => $composableBuilder(
+    column: $table.frequency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LocalMusicStateTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalMusicStateTable> {
+  $$LocalMusicStateTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get trackId => $composableBuilder(
+    column: $table.trackId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get qualities => $composableBuilder(
+    column: $table.qualities,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get artist => $composableBuilder(
+    column: $table.artist,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get album => $composableBuilder(
+    column: $table.album,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get container => $composableBuilder(
+    column: $table.container,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get duration => $composableBuilder(
+    column: $table.duration,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get fileSize => $composableBuilder(
+    column: $table.fileSize,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get bitrate => $composableBuilder(
+    column: $table.bitrate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get channel => $composableBuilder(
+    column: $table.channel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get codec => $composableBuilder(
+    column: $table.codec,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get frequency => $composableBuilder(
+    column: $table.frequency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LocalMusicStateTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalMusicStateTable> {
+  $$LocalMusicStateTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get trackId =>
+      $composableBuilder(column: $table.trackId, builder: (column) => column);
+
+  GeneratedColumn<int> get qualities =>
+      $composableBuilder(column: $table.qualities, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get artist =>
+      $composableBuilder(column: $table.artist, builder: (column) => column);
+
+  GeneratedColumn<String> get album =>
+      $composableBuilder(column: $table.album, builder: (column) => column);
+
+  GeneratedColumn<String> get container =>
+      $composableBuilder(column: $table.container, builder: (column) => column);
+
+  GeneratedColumn<int> get duration =>
+      $composableBuilder(column: $table.duration, builder: (column) => column);
+
+  GeneratedColumn<int> get fileSize =>
+      $composableBuilder(column: $table.fileSize, builder: (column) => column);
+
+  GeneratedColumn<int> get bitrate =>
+      $composableBuilder(column: $table.bitrate, builder: (column) => column);
+
+  GeneratedColumn<int> get channel =>
+      $composableBuilder(column: $table.channel, builder: (column) => column);
+
+  GeneratedColumn<String> get codec =>
+      $composableBuilder(column: $table.codec, builder: (column) => column);
+
+  GeneratedColumn<int> get frequency =>
+      $composableBuilder(column: $table.frequency, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$LocalMusicStateTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalMusicStateTable,
+          LocalMusicStateData,
+          $$LocalMusicStateTableFilterComposer,
+          $$LocalMusicStateTableOrderingComposer,
+          $$LocalMusicStateTableAnnotationComposer,
+          $$LocalMusicStateTableCreateCompanionBuilder,
+          $$LocalMusicStateTableUpdateCompanionBuilder,
+          (
+            LocalMusicStateData,
+            BaseReferences<
+              _$AppDatabase,
+              $LocalMusicStateTable,
+              LocalMusicStateData
+            >,
+          ),
+          LocalMusicStateData,
+          PrefetchHooks Function()
+        > {
+  $$LocalMusicStateTableTableManager(
+    _$AppDatabase db,
+    $LocalMusicStateTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalMusicStateTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalMusicStateTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocalMusicStateTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> trackId = const Value.absent(),
+                Value<int> qualities = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> artist = const Value.absent(),
+                Value<String> album = const Value.absent(),
+                Value<String> container = const Value.absent(),
+                Value<int> duration = const Value.absent(),
+                Value<int> fileSize = const Value.absent(),
+                Value<int> bitrate = const Value.absent(),
+                Value<int> channel = const Value.absent(),
+                Value<String> codec = const Value.absent(),
+                Value<int> frequency = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalMusicStateCompanion(
+                trackId: trackId,
+                qualities: qualities,
+                title: title,
+                artist: artist,
+                album: album,
+                container: container,
+                duration: duration,
+                fileSize: fileSize,
+                bitrate: bitrate,
+                channel: channel,
+                codec: codec,
+                frequency: frequency,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String trackId,
+                required int qualities,
+                required String title,
+                Value<String> artist = const Value.absent(),
+                Value<String> album = const Value.absent(),
+                required String container,
+                Value<int> duration = const Value.absent(),
+                Value<int> fileSize = const Value.absent(),
+                Value<int> bitrate = const Value.absent(),
+                Value<int> channel = const Value.absent(),
+                Value<String> codec = const Value.absent(),
+                Value<int> frequency = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalMusicStateCompanion.insert(
+                trackId: trackId,
+                qualities: qualities,
+                title: title,
+                artist: artist,
+                album: album,
+                container: container,
+                duration: duration,
+                fileSize: fileSize,
+                bitrate: bitrate,
+                channel: channel,
+                codec: codec,
+                frequency: frequency,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LocalMusicStateTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalMusicStateTable,
+      LocalMusicStateData,
+      $$LocalMusicStateTableFilterComposer,
+      $$LocalMusicStateTableOrderingComposer,
+      $$LocalMusicStateTableAnnotationComposer,
+      $$LocalMusicStateTableCreateCompanionBuilder,
+      $$LocalMusicStateTableUpdateCompanionBuilder,
+      (
+        LocalMusicStateData,
+        BaseReferences<
+          _$AppDatabase,
+          $LocalMusicStateTable,
+          LocalMusicStateData
+        >,
+      ),
+      LocalMusicStateData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2030,4 +3128,6 @@ class $AppDatabaseManager {
       );
   $$DownloadTaskStateTableTableManager get downloadTaskState =>
       $$DownloadTaskStateTableTableManager(_db, _db.downloadTaskState);
+  $$LocalMusicStateTableTableManager get localMusicState =>
+      $$LocalMusicStateTableTableManager(_db, _db.localMusicState);
 }

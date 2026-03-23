@@ -438,6 +438,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get download_center => '下载中心';
 
   @override
+  String get local_songs => '本地歌曲';
+
+  @override
+  String get select_quality => '选择音质';
+
+  @override
+  String get play => '播放';
+
+  @override
   String get normal_download => '普通下载';
 
   @override

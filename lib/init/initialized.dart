@@ -31,12 +31,13 @@ const keepAlive = Riverpod(keepAlive: true);
 Future<void> initialized() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
-  MetadataGod.initialize();
+  await MetadataGod.initialize();
   await SharedPreferencesUtils.initialize();
   await Rhttp.init();
   initLogger();
   initHttpClientWrapper();
   await initPersistentApiCache();
+  await initMusicCacheBaseDir();
   // await LyricsCacheKeyManager().initDatabase();
   defaultSongIconProvider = const AssetImage(iconPlaceholder);
   defaultColorScheme = await FrostedColorSchemeGenerator.generate(

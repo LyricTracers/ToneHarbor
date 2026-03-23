@@ -4,7 +4,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
@@ -28,12 +27,14 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
     required this.baseProvider,
     required this.limitTotal,
     this.sortAction = SongsPageSortAction.none,
+    this.isLocal = false,
   });
 
   final int limitTotal;
   final String title;
   final $AsyncNotifierProvider<T, SongListResponse> baseProvider;
   final SongsPageSortAction sortAction;
+  final bool isLocal;
 
   PreferredSizeWidget _buildAppBar(
     WidgetRef ref,
@@ -185,8 +186,13 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                     child: ContextMenuRegion(
                       enableDefaultGestures: !songSelectionState.selectionType,
                       contextMenu: ContextMenu(
-                        entriesBuilder: () =>
-                            SongContextMenu.build(ref, colorScheme, l10n, item),
+                        entriesBuilder: () => SongContextMenu.build(
+                          ref,
+                          colorScheme,
+                          l10n,
+                          item,
+                          isLocal: isLocal,
+                        ),
                         padding: const EdgeInsets.all(8.0),
                       ),
                       child: SongItem(
@@ -200,11 +206,35 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                         selectionState: songSelectionState,
                         onTap: () async {
                           {
+                            List<ToneHarborTrackObject> tracks;
+                            var initIndex = index;
+                            if (isLocal) {
+                              final localSongsNotifier = ref.read(
+                                localSongsProvider.notifier,
+                              );
+                              tracks = [];
+                              initIndex = 0;
+                              for (final song in songItems) {
+                                final track = await localSongsNotifier
+                                    .getLocalSongTrack(song.id);
+                                if (track != null) {
+                                  if (track.id == item.id) {
+                                    initIndex = tracks.length;
+                                  }
+                                  tracks.add(track);
+                                }
+                              }
+                            } else {
+                              tracks = songItems.asTrackList();
+                            }
+                            if (tracks.isEmpty) return;
                             await ref
                                 .read(audioPlayerStateProvider.notifier)
                                 .load(
-                                  songItems.asTrackList(),
-                                  initialIndex: index,
+                                  tracks,
+                                  initialIndex: initIndex < tracks.length
+                                      ? initIndex
+                                      : 0,
                                   autoPlay: true,
                                 );
                             if (context.mounted) {
@@ -225,7 +255,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
           ),
         ),
         if (songSelectionState.selectionType)
-          SubSongSelectionBottom(songs: songItems),
+          SubSongSelectionBottom(songs: songItems, isLocal: isLocal),
       ],
     );
   }

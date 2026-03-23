@@ -454,6 +454,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get download_center => 'Download Center';
 
   @override
+  String get local_songs => 'Local Songs';
+
+  @override
+  String get select_quality => 'Select Quality';
+
+  @override
+  String get play => 'Play';
+
+  @override
   String get normal_download => 'Normal Download';
 
   @override

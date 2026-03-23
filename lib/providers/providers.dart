@@ -11,6 +11,7 @@ export 'audio_player/favorite_playlist_provider.dart';
 export 'audio_player/lyrics_cache_provider.dart';
 export 'audio_player/audio_player_provider.dart';
 export 'audio_player/cover_cache_provider.dart';
+export 'audio_player/local_songs_provider.dart';
 export 'theme_data_provider.dart';
 export 'common_provider.dart';
 export 'database/database.dart';

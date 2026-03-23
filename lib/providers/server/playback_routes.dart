@@ -498,7 +498,12 @@ class PlaybackRoutes {
           await finalCacheFile.delete();
         }
         await trackPartialCacheFile.rename(cachePath);
-
+        await LocalMusicStateService.addToLocalMusicState(
+          ref.read(appDatabaseProvider),
+          track,
+          quality,
+          actualContainer: actualContainer,
+        );
         await writeTrackMetadata(
           ref: ref,
           track: track,
