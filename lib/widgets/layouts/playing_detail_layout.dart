@@ -26,7 +26,16 @@ class PlayingDetailLayout extends BaseBgLayout {
     if (activeTrack == null) {
       return Column(
         children: [
-          AppBar(),
+          AppBar(
+            automaticallyImplyLeading: false,
+            leading: IconButton(
+              onPressed: () {
+                ref.invalidate(subContentProvider);
+                ref.context.pop();
+              },
+              icon: Icon(Icons.arrow_back_ios_sharp),
+            ),
+          ),
           buildErrorView(ref.context, ref, colorScheme, () {}),
         ],
       );
