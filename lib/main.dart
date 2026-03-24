@@ -299,7 +299,9 @@ class _DesktopListener implements WindowListener, MusicPlayerListener {
   }
 
   @override
-  void onWindowClose() {}
+  void onWindowClose() {
+    windowManager.minimize();
+  }
 
   @override
   void onWindowFocus() {}
@@ -399,11 +401,12 @@ class _DesktopListener implements WindowListener, MusicPlayerListener {
 
   @override
   void onMusicPlayerFullscreen() {
-    logger.d('Music player fullscreen event');
+    windowManager.show();
+    windowManager.focus();
   }
 
   @override
   void onMusicPlayerQuit() {
-    logger.d('Music player quit event');
+    windowManager.destroy();
   }
 }
