@@ -8,6 +8,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
+import 'package:toneharbor/widgets/components/common_artists.dart';
 import 'package:toneharbor/widgets/components/common_search_field.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
@@ -185,7 +186,7 @@ class _ArtistItem extends StatelessWidget {
     return InkWell(
       onTap: () {
         context.push(
-          '/albums/$artistName',
+          '/albums/${Uri.encodeComponent(artistName)}',
           extra: albumsProvider(
             artist: artistName == 'Unknown Artist' ? '' : artistName,
           ),

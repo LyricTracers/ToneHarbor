@@ -14,30 +14,99 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MixSearchData {
 
-
+ SongListResponse? get songs; ArtistResponse? get artists; AlbumResponse? get albums;
+/// Create a copy of MixSearchData
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$MixSearchDataCopyWith<MixSearchData> get copyWith => _$MixSearchDataCopyWithImpl<MixSearchData>(this as MixSearchData, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MixSearchData);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MixSearchData&&(identical(other.songs, songs) || other.songs == songs)&&(identical(other.artists, artists) || other.artists == artists)&&(identical(other.albums, albums) || other.albums == albums));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,songs,artists,albums);
 
 @override
 String toString() {
-  return 'MixSearchData()';
+  return 'MixSearchData(songs: $songs, artists: $artists, albums: $albums)';
 }
 
 
 }
 
 /// @nodoc
-class $MixSearchDataCopyWith<$Res>  {
-$MixSearchDataCopyWith(MixSearchData _, $Res Function(MixSearchData) __);
+abstract mixin class $MixSearchDataCopyWith<$Res>  {
+  factory $MixSearchDataCopyWith(MixSearchData value, $Res Function(MixSearchData) _then) = _$MixSearchDataCopyWithImpl;
+@useResult
+$Res call({
+ SongListResponse? songs, ArtistResponse? artists, AlbumResponse? albums
+});
+
+
+$SongListResponseCopyWith<$Res>? get songs;$ArtistResponseCopyWith<$Res>? get artists;$AlbumResponseCopyWith<$Res>? get albums;
+
+}
+/// @nodoc
+class _$MixSearchDataCopyWithImpl<$Res>
+    implements $MixSearchDataCopyWith<$Res> {
+  _$MixSearchDataCopyWithImpl(this._self, this._then);
+
+  final MixSearchData _self;
+  final $Res Function(MixSearchData) _then;
+
+/// Create a copy of MixSearchData
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? songs = freezed,Object? artists = freezed,Object? albums = freezed,}) {
+  return _then(_self.copyWith(
+songs: freezed == songs ? _self.songs : songs // ignore: cast_nullable_to_non_nullable
+as SongListResponse?,artists: freezed == artists ? _self.artists : artists // ignore: cast_nullable_to_non_nullable
+as ArtistResponse?,albums: freezed == albums ? _self.albums : albums // ignore: cast_nullable_to_non_nullable
+as AlbumResponse?,
+  ));
+}
+/// Create a copy of MixSearchData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SongListResponseCopyWith<$Res>? get songs {
+    if (_self.songs == null) {
+    return null;
+  }
+
+  return $SongListResponseCopyWith<$Res>(_self.songs!, (value) {
+    return _then(_self.copyWith(songs: value));
+  });
+}/// Create a copy of MixSearchData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ArtistResponseCopyWith<$Res>? get artists {
+    if (_self.artists == null) {
+    return null;
+  }
+
+  return $ArtistResponseCopyWith<$Res>(_self.artists!, (value) {
+    return _then(_self.copyWith(artists: value));
+  });
+}/// Create a copy of MixSearchData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AlbumResponseCopyWith<$Res>? get albums {
+    if (_self.albums == null) {
+    return null;
+  }
+
+  return $AlbumResponseCopyWith<$Res>(_self.albums!, (value) {
+    return _then(_self.copyWith(albums: value));
+  });
+}
 }
 
 
@@ -55,13 +124,11 @@ extension MixSearchDataPatterns on MixSearchData {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _MixSearchDataLoading value)?  loading,TResult Function( _MixSearchDataLoaded value)?  loaded,TResult Function( _MixSearchDataError value)?  error,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MixSearchData value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _MixSearchDataLoading() when loading != null:
-return loading(_that);case _MixSearchDataLoaded() when loaded != null:
-return loaded(_that);case _MixSearchDataError() when error != null:
-return error(_that);case _:
+case _MixSearchData() when $default != null:
+return $default(_that);case _:
   return orElse();
 
 }
@@ -79,16 +146,11 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _MixSearchDataLoading value)  loading,required TResult Function( _MixSearchDataLoaded value)  loaded,required TResult Function( _MixSearchDataError value)  error,}){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MixSearchData value)  $default,){
 final _that = this;
 switch (_that) {
-case _MixSearchDataLoading():
-return loading(_that);case _MixSearchDataLoaded():
-return loaded(_that);case _MixSearchDataError():
-return error(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
+case _MixSearchData():
+return $default(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -102,13 +164,11 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _MixSearchDataLoading value)?  loading,TResult? Function( _MixSearchDataLoaded value)?  loaded,TResult? Function( _MixSearchDataError value)?  error,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MixSearchData value)?  $default,){
 final _that = this;
 switch (_that) {
-case _MixSearchDataLoading() when loading != null:
-return loading(_that);case _MixSearchDataLoaded() when loaded != null:
-return loaded(_that);case _MixSearchDataError() when error != null:
-return error(_that);case _:
+case _MixSearchData() when $default != null:
+return $default(_that);case _:
   return null;
 
 }
@@ -125,12 +185,10 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( SongListResponse? songs,  ArtistResponse? artists,  AlbumResponse? albums)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( SongListResponse? songs,  ArtistResponse? artists,  AlbumResponse? albums)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _MixSearchDataLoading() when loading != null:
-return loading();case _MixSearchDataLoaded() when loaded != null:
-return loaded(_that.songs,_that.artists,_that.albums);case _MixSearchDataError() when error != null:
-return error(_that.message);case _:
+case _MixSearchData() when $default != null:
+return $default(_that.songs,_that.artists,_that.albums);case _:
   return orElse();
 
 }
@@ -148,15 +206,10 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( SongListResponse? songs,  ArtistResponse? artists,  AlbumResponse? albums)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( SongListResponse? songs,  ArtistResponse? artists,  AlbumResponse? albums)  $default,) {final _that = this;
 switch (_that) {
-case _MixSearchDataLoading():
-return loading();case _MixSearchDataLoaded():
-return loaded(_that.songs,_that.artists,_that.albums);case _MixSearchDataError():
-return error(_that.message);case _:
-  throw StateError('Unexpected subclass');
-
-}
+case _MixSearchData():
+return $default(_that.songs,_that.artists,_that.albums);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -170,12 +223,10 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( SongListResponse? songs,  ArtistResponse? artists,  AlbumResponse? albums)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( SongListResponse? songs,  ArtistResponse? artists,  AlbumResponse? albums)?  $default,) {final _that = this;
 switch (_that) {
-case _MixSearchDataLoading() when loading != null:
-return loading();case _MixSearchDataLoaded() when loaded != null:
-return loaded(_that.songs,_that.artists,_that.albums);case _MixSearchDataError() when error != null:
-return error(_that.message);case _:
+case _MixSearchData() when $default != null:
+return $default(_that.songs,_that.artists,_that.albums);case _:
   return null;
 
 }
@@ -186,57 +237,25 @@ return error(_that.message);case _:
 /// @nodoc
 
 
-class _MixSearchDataLoading implements MixSearchData {
-  const _MixSearchDataLoading();
+class _MixSearchData implements MixSearchData {
+  const _MixSearchData({this.songs, this.artists, this.albums});
   
 
-
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MixSearchDataLoading);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'MixSearchData.loading()';
-}
-
-
-}
-
-
-
-
-/// @nodoc
-
-
-class _MixSearchDataLoaded implements MixSearchData {
-  const _MixSearchDataLoaded({this.songs, this.artists, this.albums});
-  
-
- final  SongListResponse? songs;
- final  ArtistResponse? artists;
- final  AlbumResponse? albums;
+@override final  SongListResponse? songs;
+@override final  ArtistResponse? artists;
+@override final  AlbumResponse? albums;
 
 /// Create a copy of MixSearchData
 /// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
+@override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$MixSearchDataLoadedCopyWith<_MixSearchDataLoaded> get copyWith => __$MixSearchDataLoadedCopyWithImpl<_MixSearchDataLoaded>(this, _$identity);
+_$MixSearchDataCopyWith<_MixSearchData> get copyWith => __$MixSearchDataCopyWithImpl<_MixSearchData>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MixSearchDataLoaded&&(identical(other.songs, songs) || other.songs == songs)&&(identical(other.artists, artists) || other.artists == artists)&&(identical(other.albums, albums) || other.albums == albums));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MixSearchData&&(identical(other.songs, songs) || other.songs == songs)&&(identical(other.artists, artists) || other.artists == artists)&&(identical(other.albums, albums) || other.albums == albums));
 }
 
 
@@ -245,36 +264,36 @@ int get hashCode => Object.hash(runtimeType,songs,artists,albums);
 
 @override
 String toString() {
-  return 'MixSearchData.loaded(songs: $songs, artists: $artists, albums: $albums)';
+  return 'MixSearchData(songs: $songs, artists: $artists, albums: $albums)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$MixSearchDataLoadedCopyWith<$Res> implements $MixSearchDataCopyWith<$Res> {
-  factory _$MixSearchDataLoadedCopyWith(_MixSearchDataLoaded value, $Res Function(_MixSearchDataLoaded) _then) = __$MixSearchDataLoadedCopyWithImpl;
-@useResult
+abstract mixin class _$MixSearchDataCopyWith<$Res> implements $MixSearchDataCopyWith<$Res> {
+  factory _$MixSearchDataCopyWith(_MixSearchData value, $Res Function(_MixSearchData) _then) = __$MixSearchDataCopyWithImpl;
+@override @useResult
 $Res call({
  SongListResponse? songs, ArtistResponse? artists, AlbumResponse? albums
 });
 
 
-$SongListResponseCopyWith<$Res>? get songs;$ArtistResponseCopyWith<$Res>? get artists;$AlbumResponseCopyWith<$Res>? get albums;
+@override $SongListResponseCopyWith<$Res>? get songs;@override $ArtistResponseCopyWith<$Res>? get artists;@override $AlbumResponseCopyWith<$Res>? get albums;
 
 }
 /// @nodoc
-class __$MixSearchDataLoadedCopyWithImpl<$Res>
-    implements _$MixSearchDataLoadedCopyWith<$Res> {
-  __$MixSearchDataLoadedCopyWithImpl(this._self, this._then);
+class __$MixSearchDataCopyWithImpl<$Res>
+    implements _$MixSearchDataCopyWith<$Res> {
+  __$MixSearchDataCopyWithImpl(this._self, this._then);
 
-  final _MixSearchDataLoaded _self;
-  final $Res Function(_MixSearchDataLoaded) _then;
+  final _MixSearchData _self;
+  final $Res Function(_MixSearchData) _then;
 
 /// Create a copy of MixSearchData
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? songs = freezed,Object? artists = freezed,Object? albums = freezed,}) {
-  return _then(_MixSearchDataLoaded(
+@override @pragma('vm:prefer-inline') $Res call({Object? songs = freezed,Object? artists = freezed,Object? albums = freezed,}) {
+  return _then(_MixSearchData(
 songs: freezed == songs ? _self.songs : songs // ignore: cast_nullable_to_non_nullable
 as SongListResponse?,artists: freezed == artists ? _self.artists : artists // ignore: cast_nullable_to_non_nullable
 as ArtistResponse?,albums: freezed == albums ? _self.albums : albums // ignore: cast_nullable_to_non_nullable
@@ -319,72 +338,6 @@ $AlbumResponseCopyWith<$Res>? get albums {
     return _then(_self.copyWith(albums: value));
   });
 }
-}
-
-/// @nodoc
-
-
-class _MixSearchDataError implements MixSearchData {
-  const _MixSearchDataError(this.message);
-  
-
- final  String message;
-
-/// Create a copy of MixSearchData
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$MixSearchDataErrorCopyWith<_MixSearchDataError> get copyWith => __$MixSearchDataErrorCopyWithImpl<_MixSearchDataError>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MixSearchDataError&&(identical(other.message, message) || other.message == message));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,message);
-
-@override
-String toString() {
-  return 'MixSearchData.error(message: $message)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$MixSearchDataErrorCopyWith<$Res> implements $MixSearchDataCopyWith<$Res> {
-  factory _$MixSearchDataErrorCopyWith(_MixSearchDataError value, $Res Function(_MixSearchDataError) _then) = __$MixSearchDataErrorCopyWithImpl;
-@useResult
-$Res call({
- String message
-});
-
-
-
-
-}
-/// @nodoc
-class __$MixSearchDataErrorCopyWithImpl<$Res>
-    implements _$MixSearchDataErrorCopyWith<$Res> {
-  __$MixSearchDataErrorCopyWithImpl(this._self, this._then);
-
-  final _MixSearchDataError _self;
-  final $Res Function(_MixSearchDataError) _then;
-
-/// Create a copy of MixSearchData
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
-  return _then(_MixSearchDataError(
-null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
 }
 
 // dart format on

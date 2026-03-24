@@ -16,7 +16,6 @@ import 'package:toneharbor/widgets/pages/add_to_playlists_page.dart';
 import 'package:toneharbor/widgets/pages/playlist_page.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
-part 'home_layout_logic.dart';
 
 class HomeLayout extends BaseBgLayout {
   final Widget child;
@@ -96,7 +95,7 @@ class HomeLayout extends BaseBgLayout {
                         listTextStyle: const TextStyle(fontSize: 14),
                         decoration: InputDecoration(
                           labelText: l10n.search,
-                          labelStyle: const TextStyle(fontSize: 16),
+                          labelStyle: const TextStyle(fontSize: 14),
                           hintText: l10n.searchHint,
                           hintStyle: const TextStyle(fontSize: 14),
                           prefixIcon: const Icon(Icons.search, size: 16),
@@ -111,7 +110,9 @@ class HomeLayout extends BaseBgLayout {
                           }
                         },
                         onSubmitSearch: (value) {
-                          onSubmitSearch(ref, value);
+                          var r = value.trim();
+                          if (r.isEmpty) return;
+                          context.push("/search/${Uri.encodeComponent(r)}");
                         },
                       ),
                     ),

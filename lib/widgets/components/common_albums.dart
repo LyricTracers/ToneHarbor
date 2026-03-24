@@ -49,6 +49,37 @@ class _LayoutConfig {
   );
 }
 
+class AlbumHorizontalList extends StatelessWidget {
+  const AlbumHorizontalList({super.key, required this.albums});
+
+  final List<AlbumItem> albums;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final config = _LayoutConfig.defaultConfig;
+    return SizedBox(
+      height: config.height,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.symmetric(horizontal: config.horizontalPadding),
+        itemCount: albums.length,
+        itemBuilder: (context, index) {
+          final album = albums[index];
+          return Padding(
+            padding: EdgeInsets.only(right: config.itemSpacing),
+            child: _AlbumItem(
+              album: album,
+              colorScheme: colorScheme,
+              config: config,
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
 class CommonAlbums extends ConsumerWidget {
   const CommonAlbums({
     super.key,

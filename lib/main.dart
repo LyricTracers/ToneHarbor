@@ -19,6 +19,7 @@ import 'package:toneharbor/widgets/pages/artist_page.dart';
 import 'package:toneharbor/widgets/pages/download_page.dart';
 import 'package:toneharbor/widgets/pages/folders_page.dart';
 import 'package:toneharbor/widgets/pages/playlists_page.dart';
+import 'package:toneharbor/widgets/pages/search_resulut_page.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -170,6 +171,18 @@ class MyApp extends HookConsumerWidget {
                 pageBuilder: (context, state) =>
                     NoTransitionPage(child: DownloadPage()),
               ),
+              GoRoute(
+                path: '/search/:query',
+                pageBuilder: (context, state) {
+                  return NoTransitionPage<void>(
+                    key: state.pageKey,
+                    child: SearchResulutPage(
+                      query: state.pathParameters['query'] ?? '',
+                    ),
+                  );
+                },
+              ),
+
               GoRoute(
                 path: '/local_songs/:title',
                 pageBuilder: (context, state) {

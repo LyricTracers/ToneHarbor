@@ -99,8 +99,8 @@ class SearchHistoryNotifier extends _$SearchHistoryNotifier {
     updatedHistory.remove(query);
     updatedHistory.insert(0, query);
 
-    if (updatedHistory.length > 10) {
-      updatedHistory.removeRange(10, updatedHistory.length);
+    if (updatedHistory.length > 5) {
+      updatedHistory.removeRange(5, updatedHistory.length);
     }
 
     state = updatedHistory;

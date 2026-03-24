@@ -33,7 +33,7 @@ final class LocalSongsProvider
   LocalSongs create() => LocalSongs();
 }
 
-String _$localSongsHash() => r'e73adf27a4405df200144d9a6babadbbf235fd8c';
+String _$localSongsHash() => r'25cccbfb328ed748a743acff62daf578170f81d6';
 
 abstract class _$LocalSongs extends $AsyncNotifier<SongListResponse> {
   FutureOr<SongListResponse> build();

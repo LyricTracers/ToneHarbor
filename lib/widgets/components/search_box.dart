@@ -56,7 +56,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
     final historyList = ref.watch(searchHistoryProvider);
     final currentText = useState(controller.text);
     final menuWidth = useState<double?>(null);
-    final menuControllerState = useState<MenuController?>(null);
+    final menuController = useMemoized(() => MenuController());
 
     final displayList = useMemoized(() {
       final historyData = historyList;
@@ -100,6 +100,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
         }
 
         return MenuAnchor(
+          controller: menuController,
           crossAxisUnconstrained: false,
           style: MenuStyle(
             elevation: const WidgetStatePropertyAll(4),
@@ -118,8 +119,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
                   )
                 : null,
           ),
-          builder: (context, menuController, child) {
-            menuControllerState.value = menuController;
+          builder: (context, _, child) {
             return TextField(
               controller: controller,
               focusNode: focusNode,
@@ -216,7 +216,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
                         .read(searchHistoryProvider.notifier)
                         .addSearch(item);
                   }
-                  menuControllerState.value?.close();
+                  menuController.close();
                   focusNode.unfocus();
                   onSubmitSearch?.call(item);
                 },

@@ -7,32 +7,34 @@ import 'package:toneharbor/providers/audio_station/songs_provider.dart';
 import 'package:toneharbor/providers/audio_station/artists_provider.dart';
 import 'package:toneharbor/providers/audio_station/albums_provider.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:toneharbor/utils/base_utils.dart';
 part 'search_provider.g.dart';
 part 'search_provider.freezed.dart';
 
 enum SearchType { all, songs, artists, albums }
 
 @freezed
-class MixSearchData with _$MixSearchData {
-  const factory MixSearchData.loading() = _MixSearchDataLoading;
-
-  const factory MixSearchData.loaded({
+sealed class MixSearchData with _$MixSearchData {
+  const factory MixSearchData({
     SongListResponse? songs,
     ArtistResponse? artists,
     AlbumResponse? albums,
-  }) = _MixSearchDataLoaded;
-
-  const factory MixSearchData.error(String message) = _MixSearchDataError;
+  }) = _MixSearchData;
 }
 
 @riverpod
-Future<MixSearchData> mixSearch(Ref ref, String query, SearchType type) async {
-  var link = ref.keepAlive();
-  try {
+class MixSearch extends _$MixSearch {
+  @override
+  Future<MixSearchData> build({
+    required String query,
+    SearchType type = SearchType.all,
+  }) async {
+    ref.keepAliveFor(Duration(minutes: 5));
     if (query.trim().isEmpty) {
-      return const MixSearchData.loaded();
+      return const MixSearchData();
     }
 
+    MixSearchData target;
     try {
       switch (type) {
         case SearchType.all:
@@ -42,7 +44,7 @@ Future<MixSearchData> mixSearch(Ref ref, String query, SearchType type) async {
             ref.read(searchAlbumsProvider(filter: query).future),
           ]);
 
-          return MixSearchData.loaded(
+          target = MixSearchData(
             songs: results[0] as SongListResponse,
             artists: results[1] as ArtistResponse,
             albums: results[2] as AlbumResponse,
@@ -52,25 +54,24 @@ Future<MixSearchData> mixSearch(Ref ref, String query, SearchType type) async {
           final songs = await ref.read(
             searchSongsProvider(title: query).future,
           );
-          return MixSearchData.loaded(songs: songs);
+          target = MixSearchData(songs: songs);
 
         case SearchType.artists:
           final artists = await ref.read(
             searchArtistProvider(filter: query).future,
           );
-          return MixSearchData.loaded(artists: artists);
+          target = MixSearchData(artists: artists);
 
         case SearchType.albums:
           final albums = await ref.read(
             searchAlbumsProvider(filter: query).future,
           );
-          return MixSearchData.loaded(albums: albums);
+          target = MixSearchData(albums: albums);
       }
     } catch (e) {
       logger.e('搜索失败: $e');
-      return MixSearchData.error(e.toString());
+      rethrow;
     }
-  } finally {
-    link.close();
+    return target;
   }
 }
