@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_context_menu/flutter_context_menu.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/models/audio_player/song_selection_state.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
+import 'package:toneharbor/models/audio_station/folder.dart';
+import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/components/common_albums.dart';
 import 'package:toneharbor/widgets/components/common_artists.dart';
+import 'package:toneharbor/widgets/components/song_context_menu.dart';
+import 'package:toneharbor/widgets/components/song_item.dart';
+import 'package:toneharbor/widgets/components/sub_song_selection_bottom.dart';
+import 'package:toneharbor/widgets/components/sub_song_selection_top.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class SearchResulutPage extends HookConsumerWidget {
@@ -16,28 +27,54 @@ class SearchResulutPage extends HookConsumerWidget {
     final l10n = ref.watch(l10nProvider);
     final colorScheme = getColorSchemeWhenReady(ref);
     final searchResult = ref.watch(mixSearchProvider(query: query));
+    final activeTrack = ref.watch(audioPlayerStateProvider).activeTrack;
+    final activeSongId = activeTrack?.id;
+    final songRating = ref.watch(songRatingProvider);
+    final songSelectionState = ref.watch(
+      songSelectionProvider.select(
+        (state) => SongSelectionState(
+          selectionType: state.selectionType,
+          ids: {},
+          boxState: state.boxState,
+        ),
+      ),
+    );
     return Column(
       children: [
-        AppBar(
-          centerTitle: false,
-          title: Row(
-            children: [
-              Text(
-                "${l10n.search}:",
-                style: TextStyle(color: colorScheme.onSurface, fontSize: 16),
-              ),
-              SizedBox(width: 5),
-              Text(
-                query,
-                style: TextStyle(
-                  color: colorScheme.primary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+        if (songSelectionState.selectionType)
+          SubSongSelectionTop(
+            songs: searchResult.value?.songs?.data?.songs ?? <AsSong>[],
+          ),
+        if (!songSelectionState.selectionType)
+          AppBar(
+            centerTitle: false,
+            title: Row(
+              children: [
+                Text(
+                  "${l10n.search}:",
+                  style: TextStyle(color: colorScheme.onSurface, fontSize: 16),
                 ),
+                SizedBox(width: 5),
+                Text(
+                  query,
+                  style: TextStyle(
+                    color: colorScheme.primary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  ref.read(songSelectionProvider.notifier).toggle();
+                },
+                tooltip: l10n.select_all,
+                icon: const Icon(Icons.fact_check_rounded, size: 18),
               ),
             ],
           ),
-        ),
         Expanded(
           child: searchResult.when(
             data: (data) {
@@ -49,53 +86,155 @@ class SearchResulutPage extends HookConsumerWidget {
               final artists = data.artists;
               final albums = data.albums;
               final songs = data.songs;
-              return SingleChildScrollView(
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (artists != null &&
-                          artists.data != null &&
-                          artists.data!.artists != null &&
-                          artists.data!.artists!.isNotEmpty) ...[
-                        Padding(
-                          padding: EdgeInsetsGeometry.symmetric(
-                            horizontal: 20,
-                            vertical: 20,
-                          ),
-                          child: Text(
-                            l10n.artist,
-                            style: TextStyle(
-                              color: colorScheme.secondary,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+              return Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (!songSelectionState.selectionType) ...[
+                              if (artists != null &&
+                                  artists.data != null &&
+                                  artists.data!.artists != null &&
+                                  artists.data!.artists!.isNotEmpty) ...[
+                                Padding(
+                                  padding: EdgeInsetsGeometry.symmetric(
+                                    horizontal: 20,
+                                    vertical: 20,
+                                  ),
+                                  child: Text(
+                                    l10n.artist,
+                                    style: TextStyle(
+                                      color: colorScheme.secondary,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                AritistHorizontalList(
+                                  artists: artists.data!.artists!,
+                                ),
+                              ],
+                              if (albums != null &&
+                                  albums.data != null &&
+                                  albums.data!.albums != null &&
+                                  albums.data!.albums!.isNotEmpty) ...[
+                                Padding(
+                                  padding: EdgeInsetsGeometry.symmetric(
+                                    horizontal: 20,
+                                    vertical: 20,
+                                  ),
+                                  child: Text(
+                                    l10n.albums,
+                                    style: TextStyle(
+                                      color: colorScheme.secondary,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                AlbumHorizontalList(
+                                  albums: albums.data?.albums ?? [],
+                                ),
+                              ],
+                            ],
+
+                            if (songs != null &&
+                                songs.data != null &&
+                                songs.data!.songs.isNotEmpty) ...[
+                              if (!songSelectionState.selectionType)
+                                Padding(
+                                  padding: EdgeInsetsGeometry.only(
+                                    left: 20,
+                                    top: 20,
+                                    bottom: 20,
+                                    right: 15,
+                                  ),
+                                  child: Text(
+                                    l10n.all_music,
+                                    style: TextStyle(
+                                      color: colorScheme.secondary,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: songs.data!.songs.length,
+                                itemBuilder: (context, index) {
+                                  var item = songs.data!.songs[index];
+                                  return RepaintBoundary(
+                                    child: ContextMenuRegion(
+                                      enableDefaultGestures:
+                                          !songSelectionState.selectionType,
+                                      contextMenu: ContextMenu(
+                                        entriesBuilder: () =>
+                                            SongContextMenu.build(
+                                              ref,
+                                              colorScheme,
+                                              l10n,
+                                              item,
+                                            ),
+                                        padding: const EdgeInsets.all(8.0),
+                                      ),
+                                      child: SongItem(
+                                        key: ValueKey(item.id),
+                                        index: index,
+                                        song: item,
+                                        activeSongId: activeSongId,
+                                        colorScheme: colorScheme,
+                                        l10n: l10n,
+                                        isFavorite: songRating.contains(
+                                          item.id,
+                                        ),
+                                        selectionState: songSelectionState,
+                                        onTap: () async {
+                                          {
+                                            List<ToneHarborTrackObject> tracks;
+                                            var initIndex = index;
+                                            tracks = songs.data!.songs
+                                                .asTrackList();
+                                            if (tracks.isEmpty) return;
+                                            await ref
+                                                .read(
+                                                  audioPlayerStateProvider
+                                                      .notifier,
+                                                )
+                                                .load(
+                                                  tracks,
+                                                  initialIndex:
+                                                      initIndex < tracks.length
+                                                      ? initIndex
+                                                      : 0,
+                                                  autoPlay: true,
+                                                );
+                                            if (context.mounted) {
+                                              context.push("/playing_detail");
+                                            }
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ],
                         ),
-                        AritistHorizontalList(artists: artists.data!.artists!),
-                      ],
-                      if (albums != null) ...[
-                        Padding(
-                          padding: EdgeInsetsGeometry.symmetric(
-                            horizontal: 20,
-                            vertical: 20,
-                          ),
-                          child: Text(
-                            l10n.albums,
-                            style: TextStyle(
-                              color: colorScheme.secondary,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        AlbumHorizontalList(albums: albums.data?.albums ?? []),
-                      ],
-                    ],
+                      ),
+                    ),
                   ),
-                ),
+                  if (songSelectionState.selectionType)
+                    SubSongSelectionBottom(
+                      songs: songs?.data?.songs ?? <AsSong>[],
+                    ),
+                ],
               );
             },
             loading: () => const Center(child: AudioEqualizerLoader()),
