@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
-import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -43,7 +42,7 @@ class SearchResulutPage extends HookConsumerWidget {
       children: [
         if (songSelectionState.selectionType)
           SubSongSelectionTop(
-            songs: searchResult.value?.songs?.data?.songs ?? <AsSong>[],
+            songs: searchResult.value?.songs?.data?.songs ?? <Song>[],
           ),
         if (!songSelectionState.selectionType)
           AppBar(
@@ -97,7 +96,6 @@ class SearchResulutPage extends HookConsumerWidget {
                       child: SizedBox(
                         width: double.infinity,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (!songSelectionState.selectionType) ...[
@@ -106,7 +104,7 @@ class SearchResulutPage extends HookConsumerWidget {
                                   artists.data!.artists != null &&
                                   artists.data!.artists!.isNotEmpty) ...[
                                 Padding(
-                                  padding: EdgeInsetsGeometry.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                     horizontal: 20,
                                     vertical: 20,
                                   ),
@@ -128,7 +126,7 @@ class SearchResulutPage extends HookConsumerWidget {
                                   albums.data!.albums != null &&
                                   albums.data!.albums!.isNotEmpty) ...[
                                 Padding(
-                                  padding: EdgeInsetsGeometry.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                     horizontal: 20,
                                     vertical: 20,
                                   ),
@@ -152,7 +150,7 @@ class SearchResulutPage extends HookConsumerWidget {
                                 songs.data!.songs.isNotEmpty) ...[
                               if (!songSelectionState.selectionType)
                                 Padding(
-                                  padding: EdgeInsetsGeometry.only(
+                                  padding: const EdgeInsets.only(
                                     left: 20,
                                     top: 20,
                                     bottom: 20,
@@ -199,28 +197,26 @@ class SearchResulutPage extends HookConsumerWidget {
                                         ),
                                         selectionState: songSelectionState,
                                         onTap: () async {
-                                          {
-                                            List<ToneHarborTrackObject> tracks;
-                                            var initIndex = index;
-                                            tracks = songs.data!.songs
-                                                .asTrackList();
-                                            if (tracks.isEmpty) return;
-                                            await ref
-                                                .read(
-                                                  audioPlayerStateProvider
-                                                      .notifier,
-                                                )
-                                                .load(
-                                                  tracks,
-                                                  initialIndex:
-                                                      initIndex < tracks.length
-                                                      ? initIndex
-                                                      : 0,
-                                                  autoPlay: true,
-                                                );
-                                            if (context.mounted) {
-                                              context.push("/playing_detail");
-                                            }
+                                          List<ToneHarborTrackObject> tracks;
+                                          var initIndex = index;
+                                          tracks = songs.data!.songs
+                                              .asTrackList();
+                                          if (tracks.isEmpty) return;
+                                          await ref
+                                              .read(
+                                                audioPlayerStateProvider
+                                                    .notifier,
+                                              )
+                                              .load(
+                                                tracks,
+                                                initialIndex:
+                                                    initIndex < tracks.length
+                                                    ? initIndex
+                                                    : 0,
+                                                autoPlay: true,
+                                              );
+                                          if (context.mounted) {
+                                            context.push("/playing_detail");
                                           }
                                         },
                                       ),
@@ -236,7 +232,7 @@ class SearchResulutPage extends HookConsumerWidget {
                   ),
                   if (songSelectionState.selectionType)
                     SubSongSelectionBottom(
-                      songs: songs?.data?.songs ?? <AsSong>[],
+                      songs: songs?.data?.songs ?? <Song>[],
                     ),
                 ],
               );
