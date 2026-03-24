@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -8,7 +10,6 @@ import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/album.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
-import 'package:toneharbor/providers/audio_player/download_manager.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/providers/server/server_provider.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_streams.dart';
@@ -27,7 +28,8 @@ import 'init/initialized.dart';
 import 'utils/base_utils.dart';
 import 'l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/foundation.dart';
+import 'package:tray_manager/tray_manager.dart';
+import 'package:window_manager/window_manager.dart';
 
 void main() async {
   await initialized();
@@ -52,7 +54,14 @@ class MyApp extends HookConsumerWidget {
     final synotokenAsync = ref.watch(authTokenProvider);
 
     useEffect(() {
+      if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
+        _DesktopListener(ref).initListeners();
+      }
       return () {
+        if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
+          windowManager.removeListener(_DesktopListener(ref));
+          trayManager.removeListener(_DesktopListener(ref));
+        }
         ref.read(audioPlayerStreamListenersProvider).dispose();
         audioPlayer.dispose();
       };
@@ -276,5 +285,125 @@ class MyApp extends HookConsumerWidget {
       supportedLocales: const [Locale('en'), Locale('zh')],
       routerConfig: router,
     );
+  }
+}
+
+class _DesktopListener implements WindowListener, MusicPlayerListener {
+  final WidgetRef ref;
+
+  _DesktopListener(this.ref);
+
+  void initListeners() {
+    windowManager.addListener(this);
+    trayManager.addListener(this);
+  }
+
+  @override
+  void onWindowClose() {}
+
+  @override
+  void onWindowFocus() {}
+
+  @override
+  void onWindowBlur() {}
+
+  @override
+  void onWindowMaximize() {}
+
+  @override
+  void onWindowUnmaximize() {}
+
+  @override
+  void onWindowMinimize() {}
+
+  @override
+  void onWindowRestore() {}
+
+  @override
+  void onWindowResize() {}
+
+  @override
+  void onWindowResized() {}
+
+  @override
+  void onWindowMove() {}
+
+  @override
+  void onWindowMoved() {}
+
+  @override
+  void onWindowEnterFullScreen() {}
+
+  @override
+  void onWindowLeaveFullScreen() {}
+
+  @override
+  void onWindowDocked() {}
+
+  @override
+  void onWindowUndocked() {}
+
+  @override
+  void onWindowEvent(String eventName) {}
+
+  @override
+  void onTrayIconMouseDown() {
+    if (Platform.isMacOS) {
+      trayManager.popUpMusicPlayerPopover();
+    }
+  }
+
+  @override
+  void onTrayIconMouseUp() {}
+
+  @override
+  void onTrayIconRightMouseDown() {}
+
+  @override
+  void onTrayIconRightMouseUp() {
+    logger.d('Tray icon right mouse up event');
+  }
+
+  @override
+  void onTrayMenuItemClick(MenuItem menuItem) {
+    logger.d('Tray menu item click: ${menuItem.key}');
+  }
+
+  @override
+  void onMusicPlayerPlayPause() {
+    logger.d('Music player play/pause event');
+    if (audioPlayer.isPlaying) {
+      audioPlayer.pause();
+    } else {
+      audioPlayer.resume();
+    }
+  }
+
+  @override
+  void onMusicPlayerPrevious() {
+    logger.d('Music player previous event');
+    audioPlayer.skipToPrevious();
+  }
+
+  @override
+  void onMusicPlayerNext() {
+    logger.d('Music player next event');
+    audioPlayer.skipToNext();
+  }
+
+  @override
+  void onMusicPlayerRestart() {
+    logger.d('Music player restart event');
+    audioPlayer.seek(Duration.zero);
+  }
+
+  @override
+  void onMusicPlayerFullscreen() {
+    logger.d('Music player fullscreen event');
+  }
+
+  @override
+  void onMusicPlayerQuit() {
+    logger.d('Music player quit event');
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -10,6 +11,7 @@ import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/services/audio_services/audio_services.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:tray_manager/tray_manager.dart';
 
 class AudioPlayerStreamListeners {
   final Ref ref;
@@ -25,8 +27,19 @@ class AudioPlayerStreamListeners {
     subscriptions.add(subscribeToPlaylist());
     subscriptions.add(subscribeToPosition());
     subscriptions.add(subscribeToPlayerError());
+    updateMusicPlayer();
 
     ref.onDispose(dispose);
+  }
+
+  void updateMusicPlayer() {
+    if (Platform.isMacOS) {
+      subscriptions.add(
+        audioPlayer.playingStream.listen((data) {
+          TrayManager.instance.updateMusicPlayerPlayState(data);
+        }),
+      );
+    }
   }
 
   StreamSubscription subscribeToPlaylist() {
@@ -49,6 +62,19 @@ class AudioPlayerStreamListeners {
           return;
         }
         notificationService?.addMedia(activeMedia);
+        if (Platform.isMacOS) {
+          TrayManager.instance.updateMusicPlayerInfo(
+            activeMedia.title,
+            activeMedia.artist,
+          );
+          TrayManager.instance.updateMusicPlayerArtworkFromUrl(
+            ToneHarborMedia.getCoverUrl(
+              activeMedia.id,
+              activeMedia.album,
+              activeMedia.artist,
+            ),
+          );
+        }
       } catch (e, stack) {
         logger.e(
           '[AudioPlayer] Failed to add track',
@@ -64,6 +90,12 @@ class AudioPlayerStreamListeners {
     return audioPlayer.positionStream.listen((event) async {
       final percentProgress =
           (event.inSeconds / max(audioPlayer.duration.inSeconds, 1)) * 100;
+      if (Platform.isMacOS) {
+        TrayManager.instance.updateMusicPlayerProgress(
+          event.inSeconds.toDouble(),
+          audioPlayer.duration.inSeconds.toDouble(),
+        );
+      }
       try {
         if (percentProgress < 80 ||
             audioPlayerState.currentIndex == -1 ||

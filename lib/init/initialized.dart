@@ -38,7 +38,6 @@ Future<void> initialized() async {
   initHttpClientWrapper();
   await initPersistentApiCache();
   await initMusicCacheBaseDir();
-  // await LyricsCacheKeyManager().initDatabase();
   defaultSongIconProvider = const AssetImage(iconPlaceholder);
   defaultColorScheme = await FrostedColorSchemeGenerator.generate(
     imageProvider: defaultSongIconProvider,
