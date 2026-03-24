@@ -28,8 +28,9 @@ Future<Uint8List?> fetchCoverBytes(
     }
 
     final response = await coverDownloadHttpClientWrapper.getBytes(url);
-
     final bytes = response.body;
+
+    await cacheFile.writeAsBytes(bytes);
     return bytes;
   } catch (e) {
     return null;
