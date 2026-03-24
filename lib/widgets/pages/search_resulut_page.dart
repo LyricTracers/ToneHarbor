@@ -73,6 +73,10 @@ class SearchResulutPage extends HookConsumerWidget {
                 tooltip: l10n.select_all,
                 icon: const Icon(Icons.fact_check_rounded, size: 18),
               ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.settings_rounded, size: 18),
+              ),
             ],
           ),
         Expanded(
