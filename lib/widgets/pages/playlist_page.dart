@@ -204,9 +204,6 @@ class PlaylistPage extends HookConsumerWidget {
               cacheExtent: 50,
               buildDefaultDragHandles: false,
               onReorder: (oldIndex, newIndex) {
-                if (oldIndex < newIndex) {
-                  newIndex -= 1;
-                }
                 ref
                     .read(audioPlayerStateProvider.notifier)
                     .moveTrack(oldIndex, newIndex);

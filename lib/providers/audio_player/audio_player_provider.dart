@@ -448,7 +448,7 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
     if (oldIndex == newIndex ||
         newIndex < 0 ||
         oldIndex < 0 ||
-        newIndex > state.tracks.length - 1 ||
+        newIndex > state.tracks.length ||
         oldIndex > state.tracks.length - 1) {
       return;
     }
