@@ -17,9 +17,11 @@ part 'tables/audio_player_state.dart';
 part 'tables/favorite_playlist_state.dart';
 part 'tables/download_task_state.dart';
 part 'tables/local_music_state.dart';
+part 'tables/most_play_state.dart';
 
 part 'typeconverters/string_list.dart';
 part 'typeconverters/tone_harbor_object_list.dart';
+part 'typeconverters/tone_harbor_object.dart';
 
 @DriftDatabase(
   tables: [
@@ -27,12 +29,13 @@ part 'typeconverters/tone_harbor_object_list.dart';
     FavoritePlaylistStateTable,
     DownloadTaskState,
     LocalMusicState,
+    MostPlayStateTable,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration {
@@ -50,6 +53,9 @@ class AppDatabase extends _$AppDatabase {
         if (from < 4) {
           await m.deleteTable(localMusicState.actualTableName);
           await m.createTable(localMusicState);
+        }
+        if (from < 5) {
+          await m.createTable(mostPlayStateTable);
         }
       },
     );

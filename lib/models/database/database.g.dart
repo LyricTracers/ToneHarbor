@@ -2012,6 +2012,333 @@ class LocalMusicStateCompanion extends UpdateCompanion<LocalMusicStateData> {
   }
 }
 
+class $MostPlayStateTableTable extends MostPlayStateTable
+    with TableInfo<$MostPlayStateTableTable, MostPlayStateTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MostPlayStateTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _trackIdMeta = const VerificationMeta(
+    'trackId',
+  );
+  @override
+  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
+    'track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _playCountMeta = const VerificationMeta(
+    'playCount',
+  );
+  @override
+  late final GeneratedColumn<int> playCount = GeneratedColumn<int>(
+    'play_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _lastPlayedAtMeta = const VerificationMeta(
+    'lastPlayedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastPlayedAt = GeneratedColumn<DateTime>(
+    'last_played_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<ToneHarborTrackObject, String>
+  track =
+      GeneratedColumn<String>(
+        'track',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<ToneHarborTrackObject>(
+        $MostPlayStateTableTable.$convertertrack,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    trackId,
+    playCount,
+    lastPlayedAt,
+    track,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'most_play_state_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MostPlayStateTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('track_id')) {
+      context.handle(
+        _trackIdMeta,
+        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackIdMeta);
+    }
+    if (data.containsKey('play_count')) {
+      context.handle(
+        _playCountMeta,
+        playCount.isAcceptableOrUnknown(data['play_count']!, _playCountMeta),
+      );
+    }
+    if (data.containsKey('last_played_at')) {
+      context.handle(
+        _lastPlayedAtMeta,
+        lastPlayedAt.isAcceptableOrUnknown(
+          data['last_played_at']!,
+          _lastPlayedAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {trackId};
+  @override
+  MostPlayStateTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MostPlayStateTableData(
+      trackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_id'],
+      )!,
+      playCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}play_count'],
+      )!,
+      lastPlayedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_played_at'],
+      )!,
+      track: $MostPlayStateTableTable.$convertertrack.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}track'],
+        )!,
+      ),
+    );
+  }
+
+  @override
+  $MostPlayStateTableTable createAlias(String alias) {
+    return $MostPlayStateTableTable(attachedDatabase, alias);
+  }
+
+  static TypeConverter<ToneHarborTrackObject, String> $convertertrack =
+      const ToneHarborObjectConverter();
+}
+
+class MostPlayStateTableData extends DataClass
+    implements Insertable<MostPlayStateTableData> {
+  final String trackId;
+  final int playCount;
+  final DateTime lastPlayedAt;
+  final ToneHarborTrackObject track;
+  const MostPlayStateTableData({
+    required this.trackId,
+    required this.playCount,
+    required this.lastPlayedAt,
+    required this.track,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['track_id'] = Variable<String>(trackId);
+    map['play_count'] = Variable<int>(playCount);
+    map['last_played_at'] = Variable<DateTime>(lastPlayedAt);
+    {
+      map['track'] = Variable<String>(
+        $MostPlayStateTableTable.$convertertrack.toSql(track),
+      );
+    }
+    return map;
+  }
+
+  MostPlayStateTableCompanion toCompanion(bool nullToAbsent) {
+    return MostPlayStateTableCompanion(
+      trackId: Value(trackId),
+      playCount: Value(playCount),
+      lastPlayedAt: Value(lastPlayedAt),
+      track: Value(track),
+    );
+  }
+
+  factory MostPlayStateTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MostPlayStateTableData(
+      trackId: serializer.fromJson<String>(json['trackId']),
+      playCount: serializer.fromJson<int>(json['playCount']),
+      lastPlayedAt: serializer.fromJson<DateTime>(json['lastPlayedAt']),
+      track: serializer.fromJson<ToneHarborTrackObject>(json['track']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'trackId': serializer.toJson<String>(trackId),
+      'playCount': serializer.toJson<int>(playCount),
+      'lastPlayedAt': serializer.toJson<DateTime>(lastPlayedAt),
+      'track': serializer.toJson<ToneHarborTrackObject>(track),
+    };
+  }
+
+  MostPlayStateTableData copyWith({
+    String? trackId,
+    int? playCount,
+    DateTime? lastPlayedAt,
+    ToneHarborTrackObject? track,
+  }) => MostPlayStateTableData(
+    trackId: trackId ?? this.trackId,
+    playCount: playCount ?? this.playCount,
+    lastPlayedAt: lastPlayedAt ?? this.lastPlayedAt,
+    track: track ?? this.track,
+  );
+  MostPlayStateTableData copyWithCompanion(MostPlayStateTableCompanion data) {
+    return MostPlayStateTableData(
+      trackId: data.trackId.present ? data.trackId.value : this.trackId,
+      playCount: data.playCount.present ? data.playCount.value : this.playCount,
+      lastPlayedAt: data.lastPlayedAt.present
+          ? data.lastPlayedAt.value
+          : this.lastPlayedAt,
+      track: data.track.present ? data.track.value : this.track,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MostPlayStateTableData(')
+          ..write('trackId: $trackId, ')
+          ..write('playCount: $playCount, ')
+          ..write('lastPlayedAt: $lastPlayedAt, ')
+          ..write('track: $track')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(trackId, playCount, lastPlayedAt, track);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MostPlayStateTableData &&
+          other.trackId == this.trackId &&
+          other.playCount == this.playCount &&
+          other.lastPlayedAt == this.lastPlayedAt &&
+          other.track == this.track);
+}
+
+class MostPlayStateTableCompanion
+    extends UpdateCompanion<MostPlayStateTableData> {
+  final Value<String> trackId;
+  final Value<int> playCount;
+  final Value<DateTime> lastPlayedAt;
+  final Value<ToneHarborTrackObject> track;
+  final Value<int> rowid;
+  const MostPlayStateTableCompanion({
+    this.trackId = const Value.absent(),
+    this.playCount = const Value.absent(),
+    this.lastPlayedAt = const Value.absent(),
+    this.track = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MostPlayStateTableCompanion.insert({
+    required String trackId,
+    this.playCount = const Value.absent(),
+    this.lastPlayedAt = const Value.absent(),
+    required ToneHarborTrackObject track,
+    this.rowid = const Value.absent(),
+  }) : trackId = Value(trackId),
+       track = Value(track);
+  static Insertable<MostPlayStateTableData> custom({
+    Expression<String>? trackId,
+    Expression<int>? playCount,
+    Expression<DateTime>? lastPlayedAt,
+    Expression<String>? track,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (trackId != null) 'track_id': trackId,
+      if (playCount != null) 'play_count': playCount,
+      if (lastPlayedAt != null) 'last_played_at': lastPlayedAt,
+      if (track != null) 'track': track,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MostPlayStateTableCompanion copyWith({
+    Value<String>? trackId,
+    Value<int>? playCount,
+    Value<DateTime>? lastPlayedAt,
+    Value<ToneHarborTrackObject>? track,
+    Value<int>? rowid,
+  }) {
+    return MostPlayStateTableCompanion(
+      trackId: trackId ?? this.trackId,
+      playCount: playCount ?? this.playCount,
+      lastPlayedAt: lastPlayedAt ?? this.lastPlayedAt,
+      track: track ?? this.track,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (trackId.present) {
+      map['track_id'] = Variable<String>(trackId.value);
+    }
+    if (playCount.present) {
+      map['play_count'] = Variable<int>(playCount.value);
+    }
+    if (lastPlayedAt.present) {
+      map['last_played_at'] = Variable<DateTime>(lastPlayedAt.value);
+    }
+    if (track.present) {
+      map['track'] = Variable<String>(
+        $MostPlayStateTableTable.$convertertrack.toSql(track.value),
+      );
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MostPlayStateTableCompanion(')
+          ..write('trackId: $trackId, ')
+          ..write('playCount: $playCount, ')
+          ..write('lastPlayedAt: $lastPlayedAt, ')
+          ..write('track: $track, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2024,6 +2351,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $LocalMusicStateTable localMusicState = $LocalMusicStateTable(
     this,
   );
+  late final $MostPlayStateTableTable mostPlayStateTable =
+      $MostPlayStateTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2033,6 +2362,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     favoritePlaylistStateTable,
     downloadTaskState,
     localMusicState,
+    mostPlayStateTable,
   ];
 }
 
@@ -3114,6 +3444,207 @@ typedef $$LocalMusicStateTableProcessedTableManager =
       LocalMusicStateData,
       PrefetchHooks Function()
     >;
+typedef $$MostPlayStateTableTableCreateCompanionBuilder =
+    MostPlayStateTableCompanion Function({
+      required String trackId,
+      Value<int> playCount,
+      Value<DateTime> lastPlayedAt,
+      required ToneHarborTrackObject track,
+      Value<int> rowid,
+    });
+typedef $$MostPlayStateTableTableUpdateCompanionBuilder =
+    MostPlayStateTableCompanion Function({
+      Value<String> trackId,
+      Value<int> playCount,
+      Value<DateTime> lastPlayedAt,
+      Value<ToneHarborTrackObject> track,
+      Value<int> rowid,
+    });
+
+class $$MostPlayStateTableTableFilterComposer
+    extends Composer<_$AppDatabase, $MostPlayStateTableTable> {
+  $$MostPlayStateTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get trackId => $composableBuilder(
+    column: $table.trackId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get playCount => $composableBuilder(
+    column: $table.playCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastPlayedAt => $composableBuilder(
+    column: $table.lastPlayedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<
+    ToneHarborTrackObject,
+    ToneHarborTrackObject,
+    String
+  >
+  get track => $composableBuilder(
+    column: $table.track,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+}
+
+class $$MostPlayStateTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $MostPlayStateTableTable> {
+  $$MostPlayStateTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get trackId => $composableBuilder(
+    column: $table.trackId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get playCount => $composableBuilder(
+    column: $table.playCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastPlayedAt => $composableBuilder(
+    column: $table.lastPlayedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get track => $composableBuilder(
+    column: $table.track,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MostPlayStateTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MostPlayStateTableTable> {
+  $$MostPlayStateTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get trackId =>
+      $composableBuilder(column: $table.trackId, builder: (column) => column);
+
+  GeneratedColumn<int> get playCount =>
+      $composableBuilder(column: $table.playCount, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastPlayedAt => $composableBuilder(
+    column: $table.lastPlayedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumnWithTypeConverter<ToneHarborTrackObject, String> get track =>
+      $composableBuilder(column: $table.track, builder: (column) => column);
+}
+
+class $$MostPlayStateTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MostPlayStateTableTable,
+          MostPlayStateTableData,
+          $$MostPlayStateTableTableFilterComposer,
+          $$MostPlayStateTableTableOrderingComposer,
+          $$MostPlayStateTableTableAnnotationComposer,
+          $$MostPlayStateTableTableCreateCompanionBuilder,
+          $$MostPlayStateTableTableUpdateCompanionBuilder,
+          (
+            MostPlayStateTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $MostPlayStateTableTable,
+              MostPlayStateTableData
+            >,
+          ),
+          MostPlayStateTableData,
+          PrefetchHooks Function()
+        > {
+  $$MostPlayStateTableTableTableManager(
+    _$AppDatabase db,
+    $MostPlayStateTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MostPlayStateTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MostPlayStateTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MostPlayStateTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> trackId = const Value.absent(),
+                Value<int> playCount = const Value.absent(),
+                Value<DateTime> lastPlayedAt = const Value.absent(),
+                Value<ToneHarborTrackObject> track = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MostPlayStateTableCompanion(
+                trackId: trackId,
+                playCount: playCount,
+                lastPlayedAt: lastPlayedAt,
+                track: track,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String trackId,
+                Value<int> playCount = const Value.absent(),
+                Value<DateTime> lastPlayedAt = const Value.absent(),
+                required ToneHarborTrackObject track,
+                Value<int> rowid = const Value.absent(),
+              }) => MostPlayStateTableCompanion.insert(
+                trackId: trackId,
+                playCount: playCount,
+                lastPlayedAt: lastPlayedAt,
+                track: track,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MostPlayStateTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MostPlayStateTableTable,
+      MostPlayStateTableData,
+      $$MostPlayStateTableTableFilterComposer,
+      $$MostPlayStateTableTableOrderingComposer,
+      $$MostPlayStateTableTableAnnotationComposer,
+      $$MostPlayStateTableTableCreateCompanionBuilder,
+      $$MostPlayStateTableTableUpdateCompanionBuilder,
+      (
+        MostPlayStateTableData,
+        BaseReferences<
+          _$AppDatabase,
+          $MostPlayStateTableTable,
+          MostPlayStateTableData
+        >,
+      ),
+      MostPlayStateTableData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3130,4 +3661,6 @@ class $AppDatabaseManager {
       $$DownloadTaskStateTableTableManager(_db, _db.downloadTaskState);
   $$LocalMusicStateTableTableManager get localMusicState =>
       $$LocalMusicStateTableTableManager(_db, _db.localMusicState);
+  $$MostPlayStateTableTableTableManager get mostPlayStateTable =>
+      $$MostPlayStateTableTableTableManager(_db, _db.mostPlayStateTable);
 }
