@@ -75,7 +75,7 @@ class _PlaylistItem extends StatelessWidget {
                       fontSize: 14,
                       color: colorScheme.onSurfaceVariant,
                     ),
-                    pauseOnHover: true,
+                    manualScrollOnTap: true,
                     alignment: AlignmentGeometry.centerLeft,
                   ),
                 ),

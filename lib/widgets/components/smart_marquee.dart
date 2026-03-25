@@ -106,6 +106,7 @@ class SmartMarquee extends StatefulWidget {
   final SmartMarqueeController? controller;
   final AlignmentGeometry alignment;
   final StrutStyle? strutStyle;
+  final bool manualScrollOnTap;
 
   const SmartMarquee({
     super.key,
@@ -119,6 +120,7 @@ class SmartMarquee extends StatefulWidget {
     this.controller,
     this.alignment = Alignment.center,
     this.strutStyle,
+    this.manualScrollOnTap = false,
   });
 
   @override
@@ -307,7 +309,7 @@ class _SmartMarqueeState extends State<SmartMarquee>
               height: metrics.height + 4,
               child: Align(
                 alignment: Alignment(horizontalAlignment, 0.0),
-                child: isPaused
+                child: (widget.manualScrollOnTap ? true : isPaused)
                     ? Listener(
                         onPointerDown: (event) {
                           _stopInertia();
