@@ -103,7 +103,11 @@ class _PlaylistItem extends StatelessWidget {
                 ),
                 ReorderableDragStartListener(
                   index: index,
-                  child: const Icon(Icons.drag_handle, size: 16),
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {},
+                    child: const Icon(Icons.drag_handle, size: 16),
+                  ),
                 ),
               ],
             ),
