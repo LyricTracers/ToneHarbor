@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
-import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
@@ -41,9 +40,7 @@ class SearchResulutPage extends HookConsumerWidget {
     return Column(
       children: [
         if (songSelectionState.selectionType)
-          SubSongSelectionTop(
-            songs: searchResult.value?.songs?.data?.songs ?? <Song>[],
-          ),
+          SubSongSelectionTop(songs: searchResult.value?.songs?.songs ?? []),
         if (!songSelectionState.selectionType)
           AppBar(
             centerTitle: false,
@@ -145,9 +142,7 @@ class SearchResulutPage extends HookConsumerWidget {
                               ],
                             ],
 
-                            if (songs != null &&
-                                songs.data != null &&
-                                songs.data!.songs.isNotEmpty) ...[
+                            if (songs != null && songs.songs.isNotEmpty) ...[
                               if (!songSelectionState.selectionType)
                                 Padding(
                                   padding: const EdgeInsets.only(
@@ -168,9 +163,9 @@ class SearchResulutPage extends HookConsumerWidget {
                               ListView.builder(
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
-                                itemCount: songs.data!.songs.length,
+                                itemCount: songs.songs.length,
                                 itemBuilder: (context, index) {
-                                  var item = songs.data!.songs[index];
+                                  var item = songs.songs[index];
                                   return RepaintBoundary(
                                     child: ContextMenuRegion(
                                       enableDefaultGestures:
@@ -199,8 +194,7 @@ class SearchResulutPage extends HookConsumerWidget {
                                         onTap: () async {
                                           List<ToneHarborTrackObject> tracks;
                                           var initIndex = index;
-                                          tracks = songs.data!.songs
-                                              .asTrackList();
+                                          tracks = songs.songs;
                                           if (tracks.isEmpty) return;
                                           await ref
                                               .read(
@@ -231,9 +225,7 @@ class SearchResulutPage extends HookConsumerWidget {
                     ),
                   ),
                   if (songSelectionState.selectionType)
-                    SubSongSelectionBottom(
-                      songs: songs?.data?.songs ?? <Song>[],
-                    ),
+                    SubSongSelectionBottom(songs: songs?.songs ?? []),
                 ],
               );
             },

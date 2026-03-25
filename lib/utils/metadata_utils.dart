@@ -47,7 +47,7 @@ Future<void> writeTrackMetadata({
       imageBytes: imageBytes,
     );
 
-    await MetadataGod.writeMetadata(file: cachePath, metadata: metadata);
+    await MetadataGod.writeMetadata(file: cachePath, metadata: metadata!);
     logger.i(
       '[Metadata] Wrote metadata to $cachePath,title:${track.title},artist:${track.artist},album:${track.album}',
     );

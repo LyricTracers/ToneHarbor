@@ -24,7 +24,7 @@ sealed class FolderRequest with _$FolderRequest {
 }
 
 @freezed
-sealed class FolderItem with _$FolderItem, AsSong {
+sealed class FolderItem with _$FolderItem, AsTrack {
   const FolderItem._();
   const factory FolderItem({
     required String id,
@@ -44,18 +44,10 @@ sealed class FolderItem with _$FolderItem, AsSong {
   }
 
   @override
-  Song asSong() {
-    return Song(
-      id: id,
-      path: path,
-      title: title,
-      type: type,
-      additional: additional,
-    );
-  }
-
-  @override
   ToneHarborTrackObject asTrack() {
+    if (type == "folder") {
+      return ToneHarborTrackObject.folder(id: id, title: title);
+    }
     var artist = additional?.songTag?.artist;
     if (artist == null || artist.isEmpty) {
       artist = additional?.songTag?.albumArtist;
@@ -119,14 +111,4 @@ sealed class FolderResponse with _$FolderResponse {
   }) = _FolderResponse;
   factory FolderResponse.fromJson(Map<String, dynamic> json) =>
       _$FolderResponseFromJson(json);
-}
-
-abstract mixin class AsSong {
-  String get id;
-  bool isSong() {
-    return true;
-  }
-
-  Song asSong();
-  ToneHarborTrackObject asTrack();
 }

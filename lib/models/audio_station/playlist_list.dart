@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 part 'playlist_list.freezed.dart';
 part 'playlist_list.g.dart';
@@ -82,27 +83,25 @@ sealed class PlaylistDetailResponse with _$PlaylistDetailResponse {
 }
 
 extension PlaylistDetailResponseExtension on PlaylistDetailResponse {
-  SongListResponse toSongListResponse() {
+  ToneHarborTrackObjectList toTrackObjectList() {
     if (!success || data?.playlists == null || data!.playlists!.isEmpty) {
-      return SongListResponse(success: success, data: null);
+      return ToneHarborTrackObjectListEmpty();
     }
 
     final playlist = data!.playlists!.first;
     final additional = playlist.additional;
 
     if (additional == null) {
-      return SongListResponse(success: success, data: null);
+      return ToneHarborTrackObjectListEmpty();
     }
 
-    logger.i("additional:${additional}");
-
-    final songData = SongData(
-      songs: additional.songs ?? [],
+    final songData = ToneHarborTrackObjectListData(
+      songs: additional.songs?.asTrackList() ?? [],
       offset: additional.songsOffset,
       total: additional.songsTotal,
     );
 
-    return SongListResponse(success: success, data: songData);
+    return songData;
   }
 }
 

@@ -2,8 +2,8 @@ import 'package:lyricskit/lyricskit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/playlist_list.dart';
-import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
@@ -116,9 +116,9 @@ class PlaylistResponseNotifier extends _$PlaylistResponseNotifier
 
 @riverpod
 class PlaylistDetail extends _$PlaylistDetail
-    with ExtraProvider<SongListResponse> {
+    with ExtraProvider<ToneHarborTrackObjectList> {
   @override
-  Future<SongListResponse> build({
+  Future<ToneHarborTrackObjectList> build({
     required String id,
     String library = 'shared',
     String additional =
@@ -147,7 +147,7 @@ class PlaylistDetail extends _$PlaylistDetail
       groupKey: groupKey,
       cacheDuration: duration,
     );
-    var songListResponse = result.toSongListResponse();
+    var songListResponse = result.toTrackObjectList();
     updateRating(ref, songListResponse);
     return songListResponse;
   }
@@ -176,7 +176,7 @@ class PlaylistDetail extends _$PlaylistDetail
         groupKey: groupKey,
         cacheDuration: duration,
       );
-      var songListResponse = result.toSongListResponse();
+      var songListResponse = result.toTrackObjectList();
       updateRating(ref, songListResponse);
       state = AsyncData(songListResponse);
     } catch (e) {
@@ -191,44 +191,43 @@ class PlaylistDetail extends _$PlaylistDetail
   @override
   Future<void> loadMore() async {
     if (state.value == null) return;
-    final currentData = state.value!.data;
-    if (currentData == null) return;
+    final currentData = state.value;
+    if (currentData is ToneHarborTrackObjectListEmpty) return;
 
-    final currentTotal = currentData.total ?? 0;
-    final currentSongs = currentData.songs;
+    if (currentData is ToneHarborTrackObjectListData) {
+      final currentTotal = currentData.total ?? 0;
+      final currentSongs = currentData.songs;
 
-    if (currentSongs.length >= currentTotal) return;
+      if (currentSongs.length >= currentTotal) return;
 
-    final oldState = state.value;
-    try {
-      final newResult = await _getPlaylistDetail(
-        ref: ref,
-        id: id,
-        library: library,
-        additional: additional,
-        limit: limit,
-        offset: currentSongs.length,
-        sortBy: extraSortBy,
-        sortDirection: extraSortDirection,
-        groupKey: groupKey,
-        cacheDuration: duration,
-      );
-      final newState = newResult.toSongListResponse();
-      updateRating(ref, newState);
-      final newSongs = newState.data?.songs ?? [];
-      final mergedSongs = [...currentSongs, ...newSongs];
+      final oldState = state.value;
+      try {
+        final newResult = await _getPlaylistDetail(
+          ref: ref,
+          id: id,
+          library: library,
+          additional: additional,
+          limit: limit,
+          offset: currentSongs.length,
+          sortBy: extraSortBy,
+          sortDirection: extraSortDirection,
+          groupKey: groupKey,
+          cacheDuration: duration,
+        );
+        final newState = newResult.toTrackObjectList();
+        updateRating(ref, newState);
+        if (newState is ToneHarborTrackObjectListData) {
+          final newSongs = newState.songs;
+          final mergedSongs = [...currentSongs, ...newSongs];
 
-      state = AsyncData(
-        newState.copyWith(
-          data: newState.data?.copyWith(
-            songs: mergedSongs,
-            total: currentTotal,
-          ),
-        ),
-      );
-    } catch (e) {
-      logger.e('加载更多播放列表失败: $e');
-      state = AsyncData(oldState!);
+          state = AsyncData(
+            newState.copyWith(songs: mergedSongs, total: currentTotal),
+          );
+        }
+      } catch (e) {
+        logger.e('加载更多播放列表失败: $e');
+        state = AsyncData(oldState!);
+      }
     }
   }
 }

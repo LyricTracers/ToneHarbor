@@ -15,8 +15,12 @@ ToneHarborTrackObject _$ToneHarborTrackObjectFromJson(
   Map<String, dynamic> json
 ) {
         switch (json['runtimeType']) {
-                  case 'full':
-          return _$ToneHarborTrackObjectFull.fromJson(
+                  case 'folder':
+          return ToneHarborTrackObjectFolder.fromJson(
+            json
+          );
+                case 'full':
+          return ToneHarborTrackObjectFull.fromJson(
             json
           );
                 case 'local':
@@ -38,7 +42,7 @@ ToneHarborTrackObject _$ToneHarborTrackObjectFromJson(
 /// @nodoc
 mixin _$ToneHarborTrackObject {
 
- String get id; String get title; String get artist; String get album; String get externalUri; Duration get duration; int get filesize; int get bitrate; int get channel; String get codec; String get container; int get frequency; int get rating;
+ String get id; String get title;
 /// Create a copy of ToneHarborTrackObject
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -51,16 +55,16 @@ $ToneHarborTrackObjectCopyWith<ToneHarborTrackObject> get copyWith => _$ToneHarb
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ToneHarborTrackObject&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.artist, artist) || other.artist == artist)&&(identical(other.album, album) || other.album == album)&&(identical(other.externalUri, externalUri) || other.externalUri == externalUri)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.filesize, filesize) || other.filesize == filesize)&&(identical(other.bitrate, bitrate) || other.bitrate == bitrate)&&(identical(other.channel, channel) || other.channel == channel)&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.container, container) || other.container == container)&&(identical(other.frequency, frequency) || other.frequency == frequency)&&(identical(other.rating, rating) || other.rating == rating));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ToneHarborTrackObject&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,artist,album,externalUri,duration,filesize,bitrate,channel,codec,container,frequency,rating);
+int get hashCode => Object.hash(runtimeType,id,title);
 
 @override
 String toString() {
-  return 'ToneHarborTrackObject(id: $id, title: $title, artist: $artist, album: $album, externalUri: $externalUri, duration: $duration, filesize: $filesize, bitrate: $bitrate, channel: $channel, codec: $codec, container: $container, frequency: $frequency, rating: $rating)';
+  return 'ToneHarborTrackObject(id: $id, title: $title)';
 }
 
 
@@ -71,7 +75,7 @@ abstract mixin class $ToneHarborTrackObjectCopyWith<$Res>  {
   factory $ToneHarborTrackObjectCopyWith(ToneHarborTrackObject value, $Res Function(ToneHarborTrackObject) _then) = _$ToneHarborTrackObjectCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String artist, String album, String externalUri, Duration duration, int filesize, int bitrate, int channel, String codec, String container, int frequency, int rating
+ String id, String title
 });
 
 
@@ -88,22 +92,11 @@ class _$ToneHarborTrackObjectCopyWithImpl<$Res>
 
 /// Create a copy of ToneHarborTrackObject
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? artist = null,Object? album = null,Object? externalUri = null,Object? duration = null,Object? filesize = null,Object? bitrate = null,Object? channel = null,Object? codec = null,Object? container = null,Object? frequency = null,Object? rating = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,artist: null == artist ? _self.artist : artist // ignore: cast_nullable_to_non_nullable
-as String,album: null == album ? _self.album : album // ignore: cast_nullable_to_non_nullable
-as String,externalUri: null == externalUri ? _self.externalUri : externalUri // ignore: cast_nullable_to_non_nullable
-as String,duration: null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
-as Duration,filesize: null == filesize ? _self.filesize : filesize // ignore: cast_nullable_to_non_nullable
-as int,bitrate: null == bitrate ? _self.bitrate : bitrate // ignore: cast_nullable_to_non_nullable
-as int,channel: null == channel ? _self.channel : channel // ignore: cast_nullable_to_non_nullable
-as int,codec: null == codec ? _self.codec : codec // ignore: cast_nullable_to_non_nullable
-as String,container: null == container ? _self.container : container // ignore: cast_nullable_to_non_nullable
-as String,frequency: null == frequency ? _self.frequency : frequency // ignore: cast_nullable_to_non_nullable
-as int,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
-as int,
+as String,
   ));
 }
 
@@ -124,10 +117,11 @@ extension ToneHarborTrackObjectPatterns on ToneHarborTrackObject {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _$ToneHarborTrackObjectFull value)?  full,TResult Function( ToneHarborTrackObjectLocal value)?  local,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ToneHarborTrackObjectFolder value)?  folder,TResult Function( ToneHarborTrackObjectFull value)?  full,TResult Function( ToneHarborTrackObjectLocal value)?  local,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _$ToneHarborTrackObjectFull() when full != null:
+case ToneHarborTrackObjectFolder() when folder != null:
+return folder(_that);case ToneHarborTrackObjectFull() when full != null:
 return full(_that);case ToneHarborTrackObjectLocal() when local != null:
 return local(_that);case _:
   return orElse();
@@ -147,10 +141,11 @@ return local(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _$ToneHarborTrackObjectFull value)  full,required TResult Function( ToneHarborTrackObjectLocal value)  local,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ToneHarborTrackObjectFolder value)  folder,required TResult Function( ToneHarborTrackObjectFull value)  full,required TResult Function( ToneHarborTrackObjectLocal value)  local,}){
 final _that = this;
 switch (_that) {
-case _$ToneHarborTrackObjectFull():
+case ToneHarborTrackObjectFolder():
+return folder(_that);case ToneHarborTrackObjectFull():
 return full(_that);case ToneHarborTrackObjectLocal():
 return local(_that);}
 }
@@ -166,10 +161,11 @@ return local(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _$ToneHarborTrackObjectFull value)?  full,TResult? Function( ToneHarborTrackObjectLocal value)?  local,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ToneHarborTrackObjectFolder value)?  folder,TResult? Function( ToneHarborTrackObjectFull value)?  full,TResult? Function( ToneHarborTrackObjectLocal value)?  local,}){
 final _that = this;
 switch (_that) {
-case _$ToneHarborTrackObjectFull() when full != null:
+case ToneHarborTrackObjectFolder() when folder != null:
+return folder(_that);case ToneHarborTrackObjectFull() when full != null:
 return full(_that);case ToneHarborTrackObjectLocal() when local != null:
 return local(_that);case _:
   return null;
@@ -188,9 +184,10 @@ return local(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating,  ToneHarborTrackPlatform platform)?  full,TResult Function( String id,  String title,  String artist,  String album,  String externalUri,  int filesize,  int rating,  Duration duration,  int bitrate,  int channel,  String codec,  String container,  int frequency,  String path)?  local,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String id,  String title)?  folder,TResult Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating,  ToneHarborTrackPlatform platform)?  full,TResult Function( String id,  String title,  String artist,  String album,  String externalUri,  int filesize,  int rating,  Duration duration,  int bitrate,  int channel,  String codec,  String container,  int frequency,  String path)?  local,required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _$ToneHarborTrackObjectFull() when full != null:
+case ToneHarborTrackObjectFolder() when folder != null:
+return folder(_that.id,_that.title);case ToneHarborTrackObjectFull() when full != null:
 return full(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.duration,_that.filesize,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.rating,_that.platform);case ToneHarborTrackObjectLocal() when local != null:
 return local(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.filesize,_that.rating,_that.duration,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.path);case _:
   return orElse();
@@ -210,9 +207,10 @@ return local(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating,  ToneHarborTrackPlatform platform)  full,required TResult Function( String id,  String title,  String artist,  String album,  String externalUri,  int filesize,  int rating,  Duration duration,  int bitrate,  int channel,  String codec,  String container,  int frequency,  String path)  local,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String id,  String title)  folder,required TResult Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating,  ToneHarborTrackPlatform platform)  full,required TResult Function( String id,  String title,  String artist,  String album,  String externalUri,  int filesize,  int rating,  Duration duration,  int bitrate,  int channel,  String codec,  String container,  int frequency,  String path)  local,}) {final _that = this;
 switch (_that) {
-case _$ToneHarborTrackObjectFull():
+case ToneHarborTrackObjectFolder():
+return folder(_that.id,_that.title);case ToneHarborTrackObjectFull():
 return full(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.duration,_that.filesize,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.rating,_that.platform);case ToneHarborTrackObjectLocal():
 return local(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.filesize,_that.rating,_that.duration,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.path);}
 }
@@ -228,9 +226,10 @@ return local(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating,  ToneHarborTrackPlatform platform)?  full,TResult? Function( String id,  String title,  String artist,  String album,  String externalUri,  int filesize,  int rating,  Duration duration,  int bitrate,  int channel,  String codec,  String container,  int frequency,  String path)?  local,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String id,  String title)?  folder,TResult? Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating,  ToneHarborTrackPlatform platform)?  full,TResult? Function( String id,  String title,  String artist,  String album,  String externalUri,  int filesize,  int rating,  Duration duration,  int bitrate,  int channel,  String codec,  String container,  int frequency,  String path)?  local,}) {final _that = this;
 switch (_that) {
-case _$ToneHarborTrackObjectFull() when full != null:
+case ToneHarborTrackObjectFolder() when folder != null:
+return folder(_that.id,_that.title);case ToneHarborTrackObjectFull() when full != null:
 return full(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.duration,_that.filesize,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.rating,_that.platform);case ToneHarborTrackObjectLocal() when local != null:
 return local(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.filesize,_that.rating,_that.duration,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.path);case _:
   return null;
@@ -243,23 +242,98 @@ return local(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_th
 /// @nodoc
 @JsonSerializable()
 
-class _$ToneHarborTrackObjectFull extends ToneHarborTrackObject {
-   _$ToneHarborTrackObjectFull({required this.id, required this.title, required this.artist, required this.album, required this.externalUri, required this.duration, required this.filesize, required this.bitrate, required this.channel, required this.codec, required this.container, required this.frequency, required this.rating, required this.platform, final  String? $type}): $type = $type ?? 'full',super._();
-  factory _$ToneHarborTrackObjectFull.fromJson(Map<String, dynamic> json) => _$$ToneHarborTrackObjectFullFromJson(json);
+class ToneHarborTrackObjectFolder extends ToneHarborTrackObject {
+   ToneHarborTrackObjectFolder({required this.id, required this.title, final  String? $type}): $type = $type ?? 'folder',super._();
+  factory ToneHarborTrackObjectFolder.fromJson(Map<String, dynamic> json) => _$ToneHarborTrackObjectFolderFromJson(json);
 
 @override final  String id;
 @override final  String title;
-@override final  String artist;
-@override final  String album;
-@override final  String externalUri;
-@override final  Duration duration;
-@override final  int filesize;
-@override final  int bitrate;
-@override final  int channel;
-@override final  String codec;
-@override final  String container;
-@override final  int frequency;
-@override final  int rating;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of ToneHarborTrackObject
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ToneHarborTrackObjectFolderCopyWith<ToneHarborTrackObjectFolder> get copyWith => _$ToneHarborTrackObjectFolderCopyWithImpl<ToneHarborTrackObjectFolder>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ToneHarborTrackObjectFolderToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ToneHarborTrackObjectFolder&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,title);
+
+@override
+String toString() {
+  return 'ToneHarborTrackObject.folder(id: $id, title: $title)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ToneHarborTrackObjectFolderCopyWith<$Res> implements $ToneHarborTrackObjectCopyWith<$Res> {
+  factory $ToneHarborTrackObjectFolderCopyWith(ToneHarborTrackObjectFolder value, $Res Function(ToneHarborTrackObjectFolder) _then) = _$ToneHarborTrackObjectFolderCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String title
+});
+
+
+
+
+}
+/// @nodoc
+class _$ToneHarborTrackObjectFolderCopyWithImpl<$Res>
+    implements $ToneHarborTrackObjectFolderCopyWith<$Res> {
+  _$ToneHarborTrackObjectFolderCopyWithImpl(this._self, this._then);
+
+  final ToneHarborTrackObjectFolder _self;
+  final $Res Function(ToneHarborTrackObjectFolder) _then;
+
+/// Create a copy of ToneHarborTrackObject
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,}) {
+  return _then(ToneHarborTrackObjectFolder(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class ToneHarborTrackObjectFull extends ToneHarborTrackObject {
+   ToneHarborTrackObjectFull({required this.id, required this.title, required this.artist, required this.album, required this.externalUri, required this.duration, required this.filesize, required this.bitrate, required this.channel, required this.codec, required this.container, required this.frequency, required this.rating, required this.platform, final  String? $type}): $type = $type ?? 'full',super._();
+  factory ToneHarborTrackObjectFull.fromJson(Map<String, dynamic> json) => _$ToneHarborTrackObjectFullFromJson(json);
+
+@override final  String id;
+@override final  String title;
+ final  String artist;
+ final  String album;
+ final  String externalUri;
+ final  Duration duration;
+ final  int filesize;
+ final  int bitrate;
+ final  int channel;
+ final  String codec;
+ final  String container;
+ final  int frequency;
+ final  int rating;
  final  ToneHarborTrackPlatform platform;
 
 @JsonKey(name: 'runtimeType')
@@ -270,16 +344,16 @@ final String $type;
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$$ToneHarborTrackObjectFullCopyWith<_$ToneHarborTrackObjectFull> get copyWith => __$$ToneHarborTrackObjectFullCopyWithImpl<_$ToneHarborTrackObjectFull>(this, _$identity);
+$ToneHarborTrackObjectFullCopyWith<ToneHarborTrackObjectFull> get copyWith => _$ToneHarborTrackObjectFullCopyWithImpl<ToneHarborTrackObjectFull>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$$ToneHarborTrackObjectFullToJson(this, );
+  return _$ToneHarborTrackObjectFullToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _$ToneHarborTrackObjectFull&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.artist, artist) || other.artist == artist)&&(identical(other.album, album) || other.album == album)&&(identical(other.externalUri, externalUri) || other.externalUri == externalUri)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.filesize, filesize) || other.filesize == filesize)&&(identical(other.bitrate, bitrate) || other.bitrate == bitrate)&&(identical(other.channel, channel) || other.channel == channel)&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.container, container) || other.container == container)&&(identical(other.frequency, frequency) || other.frequency == frequency)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.platform, platform) || other.platform == platform));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ToneHarborTrackObjectFull&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.artist, artist) || other.artist == artist)&&(identical(other.album, album) || other.album == album)&&(identical(other.externalUri, externalUri) || other.externalUri == externalUri)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.filesize, filesize) || other.filesize == filesize)&&(identical(other.bitrate, bitrate) || other.bitrate == bitrate)&&(identical(other.channel, channel) || other.channel == channel)&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.container, container) || other.container == container)&&(identical(other.frequency, frequency) || other.frequency == frequency)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.platform, platform) || other.platform == platform));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -295,8 +369,8 @@ String toString() {
 }
 
 /// @nodoc
-abstract mixin class _$$ToneHarborTrackObjectFullCopyWith<$Res> implements $ToneHarborTrackObjectCopyWith<$Res> {
-  factory _$$ToneHarborTrackObjectFullCopyWith(_$ToneHarborTrackObjectFull value, $Res Function(_$ToneHarborTrackObjectFull) _then) = __$$ToneHarborTrackObjectFullCopyWithImpl;
+abstract mixin class $ToneHarborTrackObjectFullCopyWith<$Res> implements $ToneHarborTrackObjectCopyWith<$Res> {
+  factory $ToneHarborTrackObjectFullCopyWith(ToneHarborTrackObjectFull value, $Res Function(ToneHarborTrackObjectFull) _then) = _$ToneHarborTrackObjectFullCopyWithImpl;
 @override @useResult
 $Res call({
  String id, String title, String artist, String album, String externalUri, Duration duration, int filesize, int bitrate, int channel, String codec, String container, int frequency, int rating, ToneHarborTrackPlatform platform
@@ -307,17 +381,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$$ToneHarborTrackObjectFullCopyWithImpl<$Res>
-    implements _$$ToneHarborTrackObjectFullCopyWith<$Res> {
-  __$$ToneHarborTrackObjectFullCopyWithImpl(this._self, this._then);
+class _$ToneHarborTrackObjectFullCopyWithImpl<$Res>
+    implements $ToneHarborTrackObjectFullCopyWith<$Res> {
+  _$ToneHarborTrackObjectFullCopyWithImpl(this._self, this._then);
 
-  final _$ToneHarborTrackObjectFull _self;
-  final $Res Function(_$ToneHarborTrackObjectFull) _then;
+  final ToneHarborTrackObjectFull _self;
+  final $Res Function(ToneHarborTrackObjectFull) _then;
 
 /// Create a copy of ToneHarborTrackObject
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? artist = null,Object? album = null,Object? externalUri = null,Object? duration = null,Object? filesize = null,Object? bitrate = null,Object? channel = null,Object? codec = null,Object? container = null,Object? frequency = null,Object? rating = null,Object? platform = null,}) {
-  return _then(_$ToneHarborTrackObjectFull(
+  return _then(ToneHarborTrackObjectFull(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,artist: null == artist ? _self.artist : artist // ignore: cast_nullable_to_non_nullable
@@ -348,17 +422,17 @@ class ToneHarborTrackObjectLocal extends ToneHarborTrackObject {
 
 @override final  String id;
 @override final  String title;
-@override final  String artist;
-@override final  String album;
-@override final  String externalUri;
-@override final  int filesize;
-@override final  int rating;
-@override final  Duration duration;
-@override final  int bitrate;
-@override final  int channel;
-@override final  String codec;
-@override final  String container;
-@override final  int frequency;
+ final  String artist;
+ final  String album;
+ final  String externalUri;
+ final  int filesize;
+ final  int rating;
+ final  Duration duration;
+ final  int bitrate;
+ final  int channel;
+ final  String codec;
+ final  String container;
+ final  int frequency;
  final  String path;
 
 @JsonKey(name: 'runtimeType')
@@ -432,6 +506,314 @@ as String,container: null == container ? _self.container : container // ignore: 
 as String,frequency: null == frequency ? _self.frequency : frequency // ignore: cast_nullable_to_non_nullable
 as int,path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
 as String,
+  ));
+}
+
+
+}
+
+ToneHarborTrackObjectList _$ToneHarborTrackObjectListFromJson(
+  Map<String, dynamic> json
+) {
+        switch (json['runtimeType']) {
+                  case 'empty':
+          return ToneHarborTrackObjectListEmpty.fromJson(
+            json
+          );
+                case 'data':
+          return ToneHarborTrackObjectListData.fromJson(
+            json
+          );
+        
+          default:
+            throw CheckedFromJsonException(
+  json,
+  'runtimeType',
+  'ToneHarborTrackObjectList',
+  'Invalid union type "${json['runtimeType']}"!'
+);
+        }
+      
+}
+
+/// @nodoc
+mixin _$ToneHarborTrackObjectList {
+
+
+
+  /// Serializes this ToneHarborTrackObjectList to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ToneHarborTrackObjectList);
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ToneHarborTrackObjectList()';
+}
+
+
+}
+
+/// @nodoc
+class $ToneHarborTrackObjectListCopyWith<$Res>  {
+$ToneHarborTrackObjectListCopyWith(ToneHarborTrackObjectList _, $Res Function(ToneHarborTrackObjectList) __);
+}
+
+
+/// Adds pattern-matching-related methods to [ToneHarborTrackObjectList].
+extension ToneHarborTrackObjectListPatterns on ToneHarborTrackObjectList {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ToneHarborTrackObjectListEmpty value)?  empty,TResult Function( ToneHarborTrackObjectListData value)?  data,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case ToneHarborTrackObjectListEmpty() when empty != null:
+return empty(_that);case ToneHarborTrackObjectListData() when data != null:
+return data(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ToneHarborTrackObjectListEmpty value)  empty,required TResult Function( ToneHarborTrackObjectListData value)  data,}){
+final _that = this;
+switch (_that) {
+case ToneHarborTrackObjectListEmpty():
+return empty(_that);case ToneHarborTrackObjectListData():
+return data(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ToneHarborTrackObjectListEmpty value)?  empty,TResult? Function( ToneHarborTrackObjectListData value)?  data,}){
+final _that = this;
+switch (_that) {
+case ToneHarborTrackObjectListEmpty() when empty != null:
+return empty(_that);case ToneHarborTrackObjectListData() when data != null:
+return data(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  empty,TResult Function( List<ToneHarborTrackObject> songs,  int? offset,  int? total)?  data,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case ToneHarborTrackObjectListEmpty() when empty != null:
+return empty();case ToneHarborTrackObjectListData() when data != null:
+return data(_that.songs,_that.offset,_that.total);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  empty,required TResult Function( List<ToneHarborTrackObject> songs,  int? offset,  int? total)  data,}) {final _that = this;
+switch (_that) {
+case ToneHarborTrackObjectListEmpty():
+return empty();case ToneHarborTrackObjectListData():
+return data(_that.songs,_that.offset,_that.total);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  empty,TResult? Function( List<ToneHarborTrackObject> songs,  int? offset,  int? total)?  data,}) {final _that = this;
+switch (_that) {
+case ToneHarborTrackObjectListEmpty() when empty != null:
+return empty();case ToneHarborTrackObjectListData() when data != null:
+return data(_that.songs,_that.offset,_that.total);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class ToneHarborTrackObjectListEmpty extends ToneHarborTrackObjectList {
+  const ToneHarborTrackObjectListEmpty({final  String? $type}): $type = $type ?? 'empty',super._();
+  factory ToneHarborTrackObjectListEmpty.fromJson(Map<String, dynamic> json) => _$ToneHarborTrackObjectListEmptyFromJson(json);
+
+
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ToneHarborTrackObjectListEmptyToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ToneHarborTrackObjectListEmpty);
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ToneHarborTrackObjectList.empty()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+@JsonSerializable()
+
+class ToneHarborTrackObjectListData extends ToneHarborTrackObjectList {
+  const ToneHarborTrackObjectListData({required final  List<ToneHarborTrackObject> songs, this.offset, this.total, final  String? $type}): _songs = songs,$type = $type ?? 'data',super._();
+  factory ToneHarborTrackObjectListData.fromJson(Map<String, dynamic> json) => _$ToneHarborTrackObjectListDataFromJson(json);
+
+ final  List<ToneHarborTrackObject> _songs;
+ List<ToneHarborTrackObject> get songs {
+  if (_songs is EqualUnmodifiableListView) return _songs;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_songs);
+}
+
+ final  int? offset;
+ final  int? total;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of ToneHarborTrackObjectList
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ToneHarborTrackObjectListDataCopyWith<ToneHarborTrackObjectListData> get copyWith => _$ToneHarborTrackObjectListDataCopyWithImpl<ToneHarborTrackObjectListData>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ToneHarborTrackObjectListDataToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ToneHarborTrackObjectListData&&const DeepCollectionEquality().equals(other._songs, _songs)&&(identical(other.offset, offset) || other.offset == offset)&&(identical(other.total, total) || other.total == total));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_songs),offset,total);
+
+@override
+String toString() {
+  return 'ToneHarborTrackObjectList.data(songs: $songs, offset: $offset, total: $total)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ToneHarborTrackObjectListDataCopyWith<$Res> implements $ToneHarborTrackObjectListCopyWith<$Res> {
+  factory $ToneHarborTrackObjectListDataCopyWith(ToneHarborTrackObjectListData value, $Res Function(ToneHarborTrackObjectListData) _then) = _$ToneHarborTrackObjectListDataCopyWithImpl;
+@useResult
+$Res call({
+ List<ToneHarborTrackObject> songs, int? offset, int? total
+});
+
+
+
+
+}
+/// @nodoc
+class _$ToneHarborTrackObjectListDataCopyWithImpl<$Res>
+    implements $ToneHarborTrackObjectListDataCopyWith<$Res> {
+  _$ToneHarborTrackObjectListDataCopyWithImpl(this._self, this._then);
+
+  final ToneHarborTrackObjectListData _self;
+  final $Res Function(ToneHarborTrackObjectListData) _then;
+
+/// Create a copy of ToneHarborTrackObjectList
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? songs = null,Object? offset = freezed,Object? total = freezed,}) {
+  return _then(ToneHarborTrackObjectListData(
+songs: null == songs ? _self._songs : songs // ignore: cast_nullable_to_non_nullable
+as List<ToneHarborTrackObject>,offset: freezed == offset ? _self.offset : offset // ignore: cast_nullable_to_non_nullable
+as int?,total: freezed == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

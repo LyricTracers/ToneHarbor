@@ -260,30 +260,22 @@ class LocalSong {
     );
   }
 
-  Song toSong() {
-    return Song(
+  ToneHarborTrackObject toLocalTrack() {
+    return ToneHarborTrackObject.local(
       id: id,
-      path: path,
       title: title,
-      type: 'file',
-      additional: SongAdditional(
-        songTag: SongTag(
-          album: album.isEmpty ? null : album,
-          artist: artist.isEmpty ? null : artist,
-          disc: 1,
-          track: 1,
-          year: 0,
-        ),
-        songAudio: SongAudio(
-          bitrate: bitrate,
-          channel: channel,
-          codec: codec,
-          container: container,
-          duration: duration ~/ 1000,
-          filesize: fileSize,
-          frequency: frequency,
-        ),
-      ),
+      artist: artist,
+      album: album,
+      externalUri: "",
+      duration: Duration(milliseconds: duration),
+      rating: 0,
+      filesize: fileSize,
+      bitrate: bitrate,
+      channel: channel,
+      codec: codec,
+      container: container,
+      frequency: frequency,
+      path: path,
     );
   }
 
@@ -336,7 +328,8 @@ class LocalSong {
 }
 
 @riverpod
-class LocalSongs extends _$LocalSongs with ExtraProvider<SongListResponse> {
+class LocalSongs extends _$LocalSongs
+    with ExtraProvider<ToneHarborTrackObjectList> {
   static const int _pageSize = 50;
   int _currentPage = 0;
   bool _isLoadingMore = false;
@@ -347,7 +340,7 @@ class LocalSongs extends _$LocalSongs with ExtraProvider<SongListResponse> {
   final Map<String, LocalSong> _songsCache = {};
 
   @override
-  Future<SongListResponse> build() async {
+  Future<ToneHarborTrackObjectList> build() async {
     _currentPage = 0;
     _isLoadingMore = false;
     _songsCache.clear();
@@ -356,7 +349,7 @@ class LocalSongs extends _$LocalSongs with ExtraProvider<SongListResponse> {
     return await _loadInitialSongs();
   }
 
-  Future<SongListResponse> _loadInitialSongs() async {
+  Future<ToneHarborTrackObjectList> _loadInitialSongs() async {
     try {
       final db = ref.read(appDatabaseProvider);
 
@@ -368,33 +361,24 @@ class LocalSongs extends _$LocalSongs with ExtraProvider<SongListResponse> {
       _totalCount = dbCount;
 
       if (dbCount == 0) {
-        return SongListResponse(
-          success: true,
-          data: SongData(songs: [], total: 0, offset: 0),
-        );
+        return ToneHarborTrackObjectListEmpty();
       }
 
       final songs = await _loadPageFromDatabase(db, 0, _pageSize);
       _currentPage = 1;
 
-      return SongListResponse(
-        success: true,
-        data: SongData(
-          songs: songs.map((e) => e.toSong()).toList(),
-          total: _totalCount,
-          offset: 0,
-        ),
+      return ToneHarborTrackObjectList.data(
+        songs: songs,
+        total: _totalCount,
+        offset: 0,
       );
     } catch (e) {
       logger.e('[LocalSongs] Failed to load songs: $e');
-      return SongListResponse(
-        success: false,
-        data: SongData(songs: [], total: 0, offset: 0),
-      );
+      return ToneHarborTrackObjectListEmpty();
     }
   }
 
-  Future<List<LocalSong>> _loadPageFromDatabase(
+  Future<List<ToneHarborTrackObject>> _loadPageFromDatabase(
     AppDatabase db,
     int offset,
     int limit,
@@ -447,11 +431,12 @@ class LocalSongs extends _$LocalSongs with ExtraProvider<SongListResponse> {
 
     final records = await query.get();
 
-    final result = <LocalSong>[];
+    final result = <ToneHarborTrackObject>[];
     for (final record in records) {
       final song = LocalSong.fromDb(record);
+      final localTrack = song.toLocalTrack();
       _songsCache[song.id] = song;
-      result.add(song);
+      result.add(localTrack);
     }
 
     return result;
@@ -462,7 +447,7 @@ class LocalSongs extends _$LocalSongs with ExtraProvider<SongListResponse> {
     if (_isLoadingMore) return;
 
     final currentState = state;
-    if (currentState is! AsyncData<SongListResponse>) return;
+    if (currentState is! AsyncData<ToneHarborTrackObjectList>) return;
 
     var currentCount = _currentPage * _pageSize;
     if (currentCount >= _totalCount) return;
@@ -478,14 +463,15 @@ class LocalSongs extends _$LocalSongs with ExtraProvider<SongListResponse> {
         return;
       }
 
-      final currentSongs = currentState.value.data?.songs ?? [];
-      final allSongs = [...currentSongs, ...newSongs.map((e) => e.toSong())];
+      final currentSongs = currentState.value.songs;
+      final allSongs = [...currentSongs, ...newSongs];
       _currentPage++;
 
       state = AsyncValue.data(
-        SongListResponse(
-          success: true,
-          data: SongData(songs: allSongs, total: _totalCount, offset: 0),
+        ToneHarborTrackObjectList.data(
+          songs: allSongs,
+          total: _totalCount,
+          offset: 0,
         ),
       );
     } finally {
@@ -508,13 +494,10 @@ class LocalSongs extends _$LocalSongs with ExtraProvider<SongListResponse> {
     _currentPage = 1;
 
     state = AsyncValue.data(
-      SongListResponse(
-        success: true,
-        data: SongData(
-          songs: songs.map((e) => e.toSong()).toList(),
-          total: _totalCount,
-          offset: 0,
-        ),
+      ToneHarborTrackObjectList.data(
+        songs: songs,
+        total: _totalCount,
+        offset: 0,
       ),
     );
   }
@@ -558,23 +541,15 @@ class LocalSongs extends _$LocalSongs with ExtraProvider<SongListResponse> {
       final songs = await _loadPageFromDatabase(db, 0, _pageSize);
       _currentPage = 1;
       state = AsyncValue.data(
-        SongListResponse(
-          success: true,
-          data: SongData(
-            songs: songs.map((e) => e.toSong()).toList(),
-            total: _totalCount,
-            offset: 0,
-          ),
+        ToneHarborTrackObjectList.data(
+          songs: songs,
+          total: _totalCount,
+          offset: 0,
         ),
       );
     } catch (e) {
       logger.e('[LocalSongs] Failed to refresh: $e');
-      state = AsyncValue.data(
-        SongListResponse(
-          success: false,
-          data: SongData(songs: [], total: 0, offset: 0),
-        ),
-      );
+      state = AsyncValue.data(ToneHarborTrackObjectListEmpty());
     }
   }
 
@@ -616,21 +591,22 @@ class LocalSongs extends _$LocalSongs with ExtraProvider<SongListResponse> {
 
   void _updateSongInState(String trackId) {
     final currentState = state;
-    if (currentState is AsyncData<SongListResponse>) {
-      final currentSongs = currentState.value.data?.songs ?? [];
-      final updatedSong = _songsCache[trackId]?.toSong();
+    if (currentState is AsyncData<ToneHarborTrackObjectList>) {
+      final currentSongs = currentState.value.songs;
+      final updatedSong = _songsCache[trackId]?.toTrack();
       if (updatedSong == null) return;
 
       final index = currentSongs.indexWhere((s) => s.id == trackId);
       if (index == -1) return;
 
-      final updatedSongs = List<Song>.from(currentSongs);
+      final updatedSongs = List<ToneHarborTrackObject>.from(currentSongs);
       updatedSongs[index] = updatedSong;
 
       state = AsyncValue.data(
-        SongListResponse(
-          success: true,
-          data: SongData(songs: updatedSongs, total: _totalCount, offset: 0),
+        ToneHarborTrackObjectList.data(
+          songs: updatedSongs,
+          total: _totalCount,
+          offset: 0,
         ),
       );
     }
@@ -642,13 +618,10 @@ class LocalSongs extends _$LocalSongs with ExtraProvider<SongListResponse> {
     _currentPage = 1;
 
     state = AsyncValue.data(
-      SongListResponse(
-        success: true,
-        data: SongData(
-          songs: songs.map((e) => e.toSong()).toList(),
-          total: _totalCount,
-          offset: 0,
-        ),
+      ToneHarborTrackObjectList.data(
+        songs: songs,
+        total: _totalCount,
+        offset: 0,
       ),
     );
   }
@@ -768,14 +741,15 @@ class LocalSongs extends _$LocalSongs with ExtraProvider<SongListResponse> {
 
   Future<void> _updateStateAfterRemove(String trackId) async {
     final currentState = state;
-    if (currentState is AsyncData<SongListResponse>) {
-      final currentSongs = currentState.value.data?.songs ?? [];
+    if (currentState is AsyncData<ToneHarborTrackObjectList>) {
+      final currentSongs = currentState.value.songs;
       final updatedSongs = currentSongs.where((s) => s.id != trackId).toList();
 
       state = AsyncValue.data(
-        SongListResponse(
-          success: true,
-          data: SongData(songs: updatedSongs, total: _totalCount, offset: 0),
+        ToneHarborTrackObjectList.data(
+          songs: updatedSongs,
+          total: _totalCount,
+          offset: 0,
         ),
       );
     }
@@ -783,16 +757,17 @@ class LocalSongs extends _$LocalSongs with ExtraProvider<SongListResponse> {
 
   Future<void> _updateStateAfterRemoveByIds(Set<String> trackIds) async {
     final currentState = state;
-    if (currentState is AsyncData<SongListResponse>) {
-      final currentSongs = currentState.value.data?.songs ?? [];
+    if (currentState is AsyncData<ToneHarborTrackObjectList>) {
+      final currentSongs = currentState.value.songs;
       final updatedSongs = currentSongs
           .where((s) => !trackIds.contains(s.id))
           .toList();
 
       state = AsyncValue.data(
-        SongListResponse(
-          success: true,
-          data: SongData(songs: updatedSongs, total: _totalCount, offset: 0),
+        ToneHarborTrackObjectList.data(
+          songs: updatedSongs,
+          total: _totalCount,
+          offset: 0,
         ),
       );
     }

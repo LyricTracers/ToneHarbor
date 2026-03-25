@@ -13,7 +13,7 @@ part of 'local_songs_provider.dart';
 final localSongsProvider = LocalSongsProvider._();
 
 final class LocalSongsProvider
-    extends $AsyncNotifierProvider<LocalSongs, SongListResponse> {
+    extends $AsyncNotifierProvider<LocalSongs, ToneHarborTrackObjectList> {
   LocalSongsProvider._()
     : super(
         from: null,
@@ -33,20 +33,27 @@ final class LocalSongsProvider
   LocalSongs create() => LocalSongs();
 }
 
-String _$localSongsHash() => r'25cccbfb328ed748a743acff62daf578170f81d6';
+String _$localSongsHash() => r'887a0b2ce5d3fa8fbbf88d4f3925a6ac8db14cbd';
 
-abstract class _$LocalSongs extends $AsyncNotifier<SongListResponse> {
-  FutureOr<SongListResponse> build();
+abstract class _$LocalSongs extends $AsyncNotifier<ToneHarborTrackObjectList> {
+  FutureOr<ToneHarborTrackObjectList> build();
   @$mustCallSuper
   @override
   void runBuild() {
     final ref =
-        this.ref as $Ref<AsyncValue<SongListResponse>, SongListResponse>;
+        this.ref
+            as $Ref<
+              AsyncValue<ToneHarborTrackObjectList>,
+              ToneHarborTrackObjectList
+            >;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<SongListResponse>, SongListResponse>,
-              AsyncValue<SongListResponse>,
+              AnyNotifier<
+                AsyncValue<ToneHarborTrackObjectList>,
+                ToneHarborTrackObjectList
+              >,
+              AsyncValue<ToneHarborTrackObjectList>,
               Object?,
               Object?
             >;

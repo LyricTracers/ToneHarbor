@@ -89,10 +89,10 @@ class RecommendPageDailySongs extends ConsumerWidget {
   Widget _buildSongList(
     BuildContext context,
     WidgetRef ref,
-    SongListResponse response,
+    ToneHarborTrackObjectList response,
     ColorScheme colorScheme,
   ) {
-    final songs = response.data?.songs ?? [];
+    final songs = response.songs;
     if (songs.isEmpty) {
       return const Center(child: Text('No songs'));
     }
@@ -123,7 +123,7 @@ class RecommendPageDailySongs extends ConsumerWidget {
   Widget _buildSongGrid(
     BuildContext context,
     WidgetRef ref,
-    List<Song> songs,
+    List<ToneHarborTrackObject> songs,
     ColorScheme colorScheme,
     _LayoutConfig config,
     int columns,
@@ -141,7 +141,7 @@ class RecommendPageDailySongs extends ConsumerWidget {
           ) {
             ref
                 .read(audioPlayerStateProvider.notifier)
-                .load(songs.asTrackList(), initialIndex: index, autoPlay: true);
+                .load(songs, initialIndex: index, autoPlay: true);
           }),
         ),
       );
@@ -193,22 +193,12 @@ class RecommendPageDailySongs extends ConsumerWidget {
   Widget _buildSongItem(
     BuildContext context,
     WidgetRef ref,
-    Song song,
+    ToneHarborTrackObject song,
     ColorScheme colorScheme,
     Function(WidgetRef ref) onTap,
   ) {
-    var albumName = song.additional?.songTag?.album ?? '';
-    var artistName = song.additional?.songTag?.artist ?? '';
-    if (artistName.isEmpty) {
-      artistName = song.additional?.songTag?.albumArtist ?? '';
-    }
-    if (artistName.isEmpty) {
-      artistName = 'Unknown Artist';
-    }
-
-    if (albumName.isEmpty) {
-      albumName = 'Unknown Album';
-    }
+    var albumName = song.album;
+    var artistName = song.artist;
     final songTitle = song.title;
     final config = _SongItemConfig.defaultConfig;
 

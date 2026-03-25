@@ -13,7 +13,8 @@ part of 'most_player_provider.dart';
 final mostPlayerProvider = MostPlayerNotifierFamily._();
 
 final class MostPlayerNotifierProvider
-    extends $AsyncNotifierProvider<MostPlayerNotifier, SongListResponse> {
+    extends
+        $AsyncNotifierProvider<MostPlayerNotifier, ToneHarborTrackObjectList> {
   MostPlayerNotifierProvider._({
     required MostPlayerNotifierFamily super.from,
     required String super.argument,
@@ -51,15 +52,15 @@ final class MostPlayerNotifierProvider
 }
 
 String _$mostPlayerNotifierHash() =>
-    r'15eb55de9c9daf066289f6e540fb6a2ea4ac5e6a';
+    r'cf36817cdab9adffa6579d429da8a43f99b015f7';
 
 final class MostPlayerNotifierFamily extends $Family
     with
         $ClassFamilyOverride<
           MostPlayerNotifier,
-          AsyncValue<SongListResponse>,
-          SongListResponse,
-          FutureOr<SongListResponse>,
+          AsyncValue<ToneHarborTrackObjectList>,
+          ToneHarborTrackObjectList,
+          FutureOr<ToneHarborTrackObjectList>,
           String
         > {
   MostPlayerNotifierFamily._()
@@ -78,21 +79,29 @@ final class MostPlayerNotifierFamily extends $Family
   String toString() => r'mostPlayerProvider';
 }
 
-abstract class _$MostPlayerNotifier extends $AsyncNotifier<SongListResponse> {
+abstract class _$MostPlayerNotifier
+    extends $AsyncNotifier<ToneHarborTrackObjectList> {
   late final _$args = ref.$arg as String;
   String get sortDirection => _$args;
 
-  FutureOr<SongListResponse> build({String sortDirection = 'desc'});
+  FutureOr<ToneHarborTrackObjectList> build({String sortDirection = 'desc'});
   @$mustCallSuper
   @override
   void runBuild() {
     final ref =
-        this.ref as $Ref<AsyncValue<SongListResponse>, SongListResponse>;
+        this.ref
+            as $Ref<
+              AsyncValue<ToneHarborTrackObjectList>,
+              ToneHarborTrackObjectList
+            >;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<SongListResponse>, SongListResponse>,
-              AsyncValue<SongListResponse>,
+              AnyNotifier<
+                AsyncValue<ToneHarborTrackObjectList>,
+                ToneHarborTrackObjectList
+              >,
+              AsyncValue<ToneHarborTrackObjectList>,
               Object?,
               Object?
             >;

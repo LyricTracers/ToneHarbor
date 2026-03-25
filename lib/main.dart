@@ -96,8 +96,8 @@ class MyApp extends HookConsumerWidget {
                       state.extra
                           as (
                             $AsyncNotifierProvider<
-                              ExtraProvider<SongListResponse>,
-                              SongListResponse
+                              ExtraProvider<ToneHarborTrackObjectList>,
+                              ToneHarborTrackObjectList
                             >,
                             int,
                             SongsPageSortAction,
@@ -123,7 +123,7 @@ class MyApp extends HookConsumerWidget {
                               ExtraProvider<FolderResponse>,
                               FolderResponse
                             >,
-                            List<FolderItem>,
+                            List<ToneHarborTrackObject>,
                           );
                   var id = state.pathParameters['id'];
                   if (id == null || id == 'None') {

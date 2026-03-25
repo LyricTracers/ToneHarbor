@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/audio_station/songs_provider.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
 
@@ -25,6 +26,7 @@ Future<Lyrics?> currentLyrics(Ref ref) async {
   if (activeTrack == null) {
     return null;
   }
+
   final songId = activeTrack.id;
   return await _requestLyrics(
     ref,

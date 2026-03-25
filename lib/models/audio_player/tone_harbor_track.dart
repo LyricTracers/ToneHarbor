@@ -6,7 +6,6 @@ import 'package:metadata_god/metadata_god.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart';
 import 'package:toneharbor/init/initialized.dart';
-import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 
@@ -16,9 +15,21 @@ part 'tone_harbor_track.g.dart';
 
 enum ToneHarborTrackPlatform { synology, local }
 
+abstract mixin class AsTrack {
+  String get id;
+  ToneHarborTrackObject asTrack();
+  bool isSong() {
+    return true;
+  }
+}
+
 @freezed
 sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
   const ToneHarborTrackObject._();
+  factory ToneHarborTrackObject.folder({
+    required String id,
+    required String title,
+  }) = ToneHarborTrackObjectFolder;
   factory ToneHarborTrackObject.full({
     required String id,
     required String title,
@@ -34,13 +45,9 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
     required int frequency,
     required int rating,
     required ToneHarborTrackPlatform platform,
-  }) = _$ToneHarborTrackObjectFull;
+  }) = ToneHarborTrackObjectFull;
   factory ToneHarborTrackObject.fromJson(Map<String, dynamic> json) =>
-      _$ToneHarborTrackObjectFromJson(
-        json.containsKey("path")
-            ? {...json, "runtimeType": "local"}
-            : {...json, "runtimeType": "full"},
-      );
+      _$ToneHarborTrackObjectFromJson(json);
 
   factory ToneHarborTrackObject.local({
     required String id,
@@ -108,48 +115,162 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
   }
 }
 
-extension ToMetaDataToneHarborTrackObject on ToneHarborTrackObject {
-  Metadata toMetadata({
+extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
+  bool get isFolder => this is ToneHarborTrackObjectFolder;
+  bool get isSong =>
+      this is ToneHarborTrackObjectFull || this is ToneHarborTrackObjectLocal;
+
+  String get artist {
+    if (this is ToneHarborTrackObjectFull) {
+      return (this as ToneHarborTrackObjectFull).artist;
+    } else if (this is ToneHarborTrackObjectLocal) {
+      return (this as ToneHarborTrackObjectLocal).artist;
+    }
+    return '';
+  }
+
+  String get album {
+    if (this is ToneHarborTrackObjectFull) {
+      return (this as ToneHarborTrackObjectFull).album;
+    } else if (this is ToneHarborTrackObjectLocal) {
+      return (this as ToneHarborTrackObjectLocal).album;
+    }
+    return '';
+  }
+
+  Duration get duration {
+    if (this is ToneHarborTrackObjectFull) {
+      return (this as ToneHarborTrackObjectFull).duration;
+    } else if (this is ToneHarborTrackObjectLocal) {
+      return (this as ToneHarborTrackObjectLocal).duration;
+    }
+    return Duration.zero;
+  }
+
+  int get filesize {
+    if (this is ToneHarborTrackObjectFull) {
+      return (this as ToneHarborTrackObjectFull).filesize;
+    } else if (this is ToneHarborTrackObjectLocal) {
+      return (this as ToneHarborTrackObjectLocal).filesize;
+    }
+    return 0;
+  }
+
+  int get channel {
+    if (this is ToneHarborTrackObjectFull) {
+      return (this as ToneHarborTrackObjectFull).channel;
+    } else if (this is ToneHarborTrackObjectLocal) {
+      return (this as ToneHarborTrackObjectLocal).channel;
+    }
+    return 0;
+  }
+
+  int get rating {
+    if (this is ToneHarborTrackObjectFull) {
+      return (this as ToneHarborTrackObjectFull).rating;
+    } else if (this is ToneHarborTrackObjectLocal) {
+      return (this as ToneHarborTrackObjectLocal).rating;
+    }
+    return 0;
+  }
+
+  int get bitrate {
+    if (this is ToneHarborTrackObjectFull) {
+      return (this as ToneHarborTrackObjectFull).bitrate;
+    } else if (this is ToneHarborTrackObjectLocal) {
+      return (this as ToneHarborTrackObjectLocal).bitrate;
+    }
+    return 0;
+  }
+
+  int get frequency {
+    if (this is ToneHarborTrackObjectFull) {
+      return (this as ToneHarborTrackObjectFull).frequency;
+    } else if (this is ToneHarborTrackObjectLocal) {
+      return (this as ToneHarborTrackObjectLocal).frequency;
+    }
+    return 0;
+  }
+
+  String get container {
+    if (this is ToneHarborTrackObjectFull) {
+      return (this as ToneHarborTrackObjectFull).container;
+    } else if (this is ToneHarborTrackObjectLocal) {
+      return (this as ToneHarborTrackObjectLocal).container;
+    }
+    return '';
+  }
+
+  String get codec {
+    if (this is ToneHarborTrackObjectFull) {
+      return (this as ToneHarborTrackObjectFull).codec;
+    } else if (this is ToneHarborTrackObjectLocal) {
+      return (this as ToneHarborTrackObjectLocal).codec;
+    }
+    return '';
+  }
+
+  Metadata? toMetadata({
     required int fileLength,
     Uint8List? imageBytes,
     String? mimeType,
   }) {
-    return Metadata(
-      title: title,
-      artist: artist,
-      album: album,
-      durationMs: duration.inMilliseconds.toDouble(),
-      fileSize: BigInt.from(fileLength),
-      comment: id,
-      picture: imageBytes != null
-          ? Picture(
-              data: imageBytes,
-              mimeType:
-                  mimeType ??
-                  lookupMimeType("", headerBytes: imageBytes) ??
-                  "image/jpeg",
-            )
-          : null,
-    );
+    if (this is ToneHarborTrackObjectFull ||
+        this is ToneHarborTrackObjectLocal) {
+      return _createMetadata(
+        id: id,
+        title: title,
+        artist: artist,
+        album: album,
+        duration: duration,
+        fileLength: fileLength,
+      );
+    }
+    return null;
   }
+}
+
+Metadata _createMetadata({
+  required String id,
+  required String title,
+  required String artist,
+  required String album,
+  required Duration duration,
+  required int fileLength,
+  Uint8List? imageBytes,
+  String? mimeType,
+}) {
+  return Metadata(
+    title: title,
+    artist: artist,
+    album: album,
+    durationMs: duration.inMilliseconds.toDouble(),
+    fileSize: BigInt.from(fileLength),
+    comment: id,
+    picture: imageBytes != null
+        ? Picture(
+            data: imageBytes,
+            mimeType:
+                mimeType ??
+                lookupMimeType("", headerBytes: imageBytes) ??
+                "image/jpeg",
+          )
+        : null,
+  );
 }
 
 extension AsMediaListToneHarborTrackObject on Iterable<ToneHarborTrackObject> {
   List<ToneHarborMedia> asMediaList() {
-    return map((track) => ToneHarborMedia(track)).toList();
+    var result = <ToneHarborMedia>[];
+    for (var track in this) {
+      if (track.isSong) {
+        result.add(ToneHarborMedia(track));
+      }
+    }
+    return result;
   }
-}
 
-extension AsToneHarborTrackObjects on Iterable<Song> {
-  List<ToneHarborTrackObject> asTrackList() {
-    return map((song) {
-      return song.asTrack();
-    }).toList();
-  }
-}
-
-extension FolderAsToneHarborTrackObject on Iterable<FolderItem> {
-  (List<ToneHarborTrackObject>, int) asTrackList(int initIndex) {
+  (List<ToneHarborTrackObject>, int) asTrackSongList(int initIndex) {
     var tracks = <ToneHarborTrackObject>[];
     var index = initIndex;
     int i = 0;
@@ -157,52 +278,56 @@ extension FolderAsToneHarborTrackObject on Iterable<FolderItem> {
       if (i == initIndex) {
         index = tracks.length;
       }
-      if (item.type != 'folder') {
-        var artist = item.additional?.songTag?.artist;
-        if (artist == null || artist.isEmpty) {
-          artist = item.additional?.songTag?.albumArtist;
-        }
-        if (artist == null || artist.isEmpty) {
-          artist = 'Unknown Artist';
-        }
-        var album = item.additional?.songTag?.album;
-        if (album == null || album.isEmpty) {
-          album = 'Unknown Album';
-        }
-        var container = item.additional?.songAudio?.container;
-        if (container == null || container.isEmpty) {
-          container = 'mp3';
-        }
-
-        var codec = item.additional?.songAudio?.codec;
-        if (codec == null || codec.isEmpty) {
-          codec = 'mp3';
-        }
-
-        tracks.add(
-          ToneHarborTrackObject.full(
-            id: item.id,
-            title: item.title,
-            artist: artist,
-            album: album,
-            externalUri: "",
-            duration: Duration(
-              seconds: item.additional?.songAudio?.duration.toInt() ?? 0,
-            ),
-            rating: item.additional?.songRating?.rating ?? 0,
-            filesize: item.additional?.songAudio?.filesize ?? 0,
-            bitrate: item.additional?.songAudio?.bitrate ?? 0,
-            channel: item.additional?.songAudio?.channel ?? 0,
-            codec: codec,
-            container: container,
-            frequency: item.additional?.songAudio?.frequency ?? 0,
-            platform: ToneHarborTrackPlatform.synology,
-          ),
-        );
+      if (item.isSong) {
+        tracks.add(item);
       }
-
       i++;
     });
     return (tracks, index);
+  }
+}
+
+extension AsToneHarborTrackObjects on Iterable<AsTrack> {
+  List<ToneHarborTrackObject> asTrackList() {
+    return map((song) {
+      return song.asTrack();
+    }).toList();
+  }
+}
+
+@freezed
+sealed class ToneHarborTrackObjectList with _$ToneHarborTrackObjectList {
+  const ToneHarborTrackObjectList._();
+  const factory ToneHarborTrackObjectList.empty() =
+      ToneHarborTrackObjectListEmpty;
+  const factory ToneHarborTrackObjectList.data({
+    required List<ToneHarborTrackObject> songs,
+    int? offset,
+    int? total,
+  }) = ToneHarborTrackObjectListData;
+  factory ToneHarborTrackObjectList.fromJson(Map<String, dynamic> json) =>
+      _$ToneHarborTrackObjectListFromJson(json);
+}
+
+extension ToneHarborTrackObjectListExtension on ToneHarborTrackObjectList {
+  int get offset =>
+      when(empty: () => 0, data: (songs, offset, total) => offset ?? 0);
+  int get total =>
+      when(empty: () => 0, data: (songs, offset, total) => total ?? 0);
+  List<ToneHarborTrackObject> get songs =>
+      when(empty: () => [], data: (songs, offset, total) => songs);
+}
+
+extension AsToneHarborTrackObjectListResponse on SongListResponse {
+  ToneHarborTrackObjectList asTrackObjectList() {
+    if (!success || data == null || data?.songs == null) {
+      return ToneHarborTrackObjectListEmpty();
+    }
+
+    return ToneHarborTrackObjectList.data(
+      songs: data!.songs.asTrackList(),
+      offset: data!.offset,
+      total: data!.total,
+    );
   }
 }

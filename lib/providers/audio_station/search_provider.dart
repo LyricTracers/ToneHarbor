@@ -1,25 +1,21 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
-import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/artist.dart';
 import 'package:toneharbor/models/audio_station/album.dart';
 import 'package:toneharbor/providers/audio_station/songs_provider.dart';
 import 'package:toneharbor/providers/audio_station/artists_provider.dart';
 import 'package:toneharbor/providers/audio_station/albums_provider.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 part 'search_provider.g.dart';
-part 'search_provider.freezed.dart';
 
 enum SearchType { all, songs, artists, albums }
 
-@freezed
-sealed class MixSearchData with _$MixSearchData {
-  const factory MixSearchData({
-    SongListResponse? songs,
-    ArtistResponse? artists,
-    AlbumResponse? albums,
-  }) = _MixSearchData;
+class MixSearchData {
+  final ToneHarborTrackObjectList? songs;
+  final ArtistResponse? artists;
+  final AlbumResponse? albums;
+  const MixSearchData({this.songs, this.artists, this.albums});
 }
 
 @riverpod
@@ -45,7 +41,7 @@ class MixSearch extends _$MixSearch {
           ]);
 
           target = MixSearchData(
-            songs: results[0] as SongListResponse,
+            songs: results[0] as ToneHarborTrackObjectList,
             artists: results[1] as ArtistResponse,
             albums: results[2] as AlbumResponse,
           );

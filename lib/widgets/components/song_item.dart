@@ -5,12 +5,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
-import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 
 class SongItem extends HookConsumerWidget {
   final int index;
-  final Song song;
+  final ToneHarborTrackObject song;
   final ColorScheme colorScheme;
   final AppLocalizations l10n;
   final String? activeSongId;
@@ -36,22 +36,11 @@ class SongItem extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bitrate = ((song.additional?.songAudio?.bitrate ?? 0) / 1000).round();
-    var container = song.additional?.songAudio?.container;
-    if (container == null || container.isEmpty) {
-      container = 'mp3';
-    }
-    var artist = song.additional?.songTag?.artist;
-    if (artist == null || artist.isEmpty) {
-      artist = song.additional?.songTag?.albumArtist;
-    }
-    if (artist == null || artist.isEmpty) {
-      artist = 'Unknown Artist';
-    }
-    var album = song.additional?.songTag?.album;
-    if (album == null || album.isEmpty) {
-      album = 'Unknown Album';
-    }
+    final bitrate = (song.bitrate / 1000).round();
+    var container = song.container;
+    var artist = song.artist;
+    var album = song.album;
+
     var isHovered = useState(false);
     var localSelected = useState(false);
 

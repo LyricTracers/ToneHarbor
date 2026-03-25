@@ -6,9 +6,25 @@ part of 'tone_harbor_track.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$ToneHarborTrackObjectFull _$$ToneHarborTrackObjectFullFromJson(
+ToneHarborTrackObjectFolder _$ToneHarborTrackObjectFolderFromJson(
   Map<String, dynamic> json,
-) => _$ToneHarborTrackObjectFull(
+) => ToneHarborTrackObjectFolder(
+  id: json['id'] as String,
+  title: json['title'] as String,
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$ToneHarborTrackObjectFolderToJson(
+  ToneHarborTrackObjectFolder instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'title': instance.title,
+  'runtimeType': instance.$type,
+};
+
+ToneHarborTrackObjectFull _$ToneHarborTrackObjectFullFromJson(
+  Map<String, dynamic> json,
+) => ToneHarborTrackObjectFull(
   id: json['id'] as String,
   title: json['title'] as String,
   artist: json['artist'] as String,
@@ -26,8 +42,8 @@ _$ToneHarborTrackObjectFull _$$ToneHarborTrackObjectFullFromJson(
   $type: json['runtimeType'] as String?,
 );
 
-Map<String, dynamic> _$$ToneHarborTrackObjectFullToJson(
-  _$ToneHarborTrackObjectFull instance,
+Map<String, dynamic> _$ToneHarborTrackObjectFullToJson(
+  ToneHarborTrackObjectFull instance,
 ) => <String, dynamic>{
   'id': instance.id,
   'title': instance.title,
@@ -88,5 +104,33 @@ Map<String, dynamic> _$ToneHarborTrackObjectLocalToJson(
   'container': instance.container,
   'frequency': instance.frequency,
   'path': instance.path,
+  'runtimeType': instance.$type,
+};
+
+ToneHarborTrackObjectListEmpty _$ToneHarborTrackObjectListEmptyFromJson(
+  Map<String, dynamic> json,
+) => ToneHarborTrackObjectListEmpty($type: json['runtimeType'] as String?);
+
+Map<String, dynamic> _$ToneHarborTrackObjectListEmptyToJson(
+  ToneHarborTrackObjectListEmpty instance,
+) => <String, dynamic>{'runtimeType': instance.$type};
+
+ToneHarborTrackObjectListData _$ToneHarborTrackObjectListDataFromJson(
+  Map<String, dynamic> json,
+) => ToneHarborTrackObjectListData(
+  songs: (json['songs'] as List<dynamic>)
+      .map((e) => ToneHarborTrackObject.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  offset: (json['offset'] as num?)?.toInt(),
+  total: (json['total'] as num?)?.toInt(),
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$ToneHarborTrackObjectListDataToJson(
+  ToneHarborTrackObjectListData instance,
+) => <String, dynamic>{
+  'songs': instance.songs,
+  'offset': instance.offset,
+  'total': instance.total,
   'runtimeType': instance.$type,
 };

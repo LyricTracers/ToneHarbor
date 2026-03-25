@@ -165,7 +165,7 @@ abstract class _$PlaylistResponseNotifier
 final playlistDetailProvider = PlaylistDetailFamily._();
 
 final class PlaylistDetailProvider
-    extends $AsyncNotifierProvider<PlaylistDetail, SongListResponse> {
+    extends $AsyncNotifierProvider<PlaylistDetail, ToneHarborTrackObjectList> {
   PlaylistDetailProvider._({
     required PlaylistDetailFamily super.from,
     required ({
@@ -211,15 +211,15 @@ final class PlaylistDetailProvider
   }
 }
 
-String _$playlistDetailHash() => r'ddffd5871377181864e4554569468f23a8bb0390';
+String _$playlistDetailHash() => r'94e85a2c1bc00b97a25cb613795ae98899099de2';
 
 final class PlaylistDetailFamily extends $Family
     with
         $ClassFamilyOverride<
           PlaylistDetail,
-          AsyncValue<SongListResponse>,
-          SongListResponse,
-          FutureOr<SongListResponse>,
+          AsyncValue<ToneHarborTrackObjectList>,
+          ToneHarborTrackObjectList,
+          FutureOr<ToneHarborTrackObjectList>,
           ({
             String id,
             String library,
@@ -265,7 +265,8 @@ final class PlaylistDetailFamily extends $Family
   String toString() => r'playlistDetailProvider';
 }
 
-abstract class _$PlaylistDetail extends $AsyncNotifier<SongListResponse> {
+abstract class _$PlaylistDetail
+    extends $AsyncNotifier<ToneHarborTrackObjectList> {
   late final _$args =
       ref.$arg
           as ({
@@ -285,7 +286,7 @@ abstract class _$PlaylistDetail extends $AsyncNotifier<SongListResponse> {
   String get sortBy => _$args.sortBy;
   String get sortDirection => _$args.sortDirection;
 
-  FutureOr<SongListResponse> build({
+  FutureOr<ToneHarborTrackObjectList> build({
     required String id,
     String library = 'shared',
     String additional =
@@ -299,12 +300,19 @@ abstract class _$PlaylistDetail extends $AsyncNotifier<SongListResponse> {
   @override
   void runBuild() {
     final ref =
-        this.ref as $Ref<AsyncValue<SongListResponse>, SongListResponse>;
+        this.ref
+            as $Ref<
+              AsyncValue<ToneHarborTrackObjectList>,
+              ToneHarborTrackObjectList
+            >;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<SongListResponse>, SongListResponse>,
-              AsyncValue<SongListResponse>,
+              AnyNotifier<
+                AsyncValue<ToneHarborTrackObjectList>,
+                ToneHarborTrackObjectList
+              >,
+              AsyncValue<ToneHarborTrackObjectList>,
               Object?,
               Object?
             >;

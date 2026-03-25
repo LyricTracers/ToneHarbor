@@ -54,7 +54,7 @@ class CommonSongs extends ConsumerWidget {
     required this.limit,
   });
 
-  final AsyncValue<SongListResponse> songs;
+  final AsyncValue<ToneHarborTrackObjectList> songs;
   final Function() onErrorTap;
   final int limit;
 
@@ -63,8 +63,7 @@ class CommonSongs extends ConsumerWidget {
     final colorScheme = getColorSchemeWhenReady(ref);
 
     return songs.when(
-      data: (data) =>
-          _buildHorizontalList(context, data.data?.songs ?? [], colorScheme),
+      data: (data) => _buildHorizontalList(context, data.songs, colorScheme),
       loading: () => _buildShimmerLoading(context, colorScheme),
       error: (error, stackTrace) {
         return buildErrorView(context, ref, colorScheme, onErrorTap);
@@ -74,7 +73,7 @@ class CommonSongs extends ConsumerWidget {
 
   Widget _buildHorizontalList(
     BuildContext context,
-    List<Song> songs,
+    List<ToneHarborTrackObject> songs,
     ColorScheme colorScheme,
   ) {
     final config = _LayoutConfig.defaultConfig;
@@ -96,11 +95,7 @@ class CommonSongs extends ConsumerWidget {
               onTap: (ref) {
                 ref
                     .read(audioPlayerStateProvider.notifier)
-                    .load(
-                      songs.asTrackList(),
-                      initialIndex: index,
-                      autoPlay: true,
-                    );
+                    .load(songs, initialIndex: index, autoPlay: true);
               },
             ),
           );
@@ -140,22 +135,16 @@ class _SongItem extends ConsumerWidget {
     required this.onTap,
   });
 
-  final Song song;
+  final ToneHarborTrackObject song;
   final ColorScheme colorScheme;
   final _LayoutConfig config;
   final Function(WidgetRef ref) onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final songTitle = song.title.isNotEmpty ? song.title : 'Unknown Song';
-    final artistName = song.additional?.songTag?.artist?.isNotEmpty == true
-        ? song.additional!.songTag!.artist!
-        : (song.additional?.songTag?.albumArtist?.isNotEmpty == true)
-        ? song.additional!.songTag!.albumArtist!
-        : 'Unknown Artist';
-    final albumName = song.additional?.songTag?.album?.isNotEmpty == true
-        ? song.additional!.songTag!.album!
-        : 'Unknown Album';
+    final songTitle = song.title;
+    final artistName = song.artist;
+    final albumName = song.album;
 
     return InkWell(
       onTap: () => onTap(ref),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
@@ -56,7 +57,7 @@ class TestLayout extends BaseBgLayout {
         updateRequest(
           requestId: requestId,
           status: 'success',
-          response: '获取成功，歌曲数量: ${result?.data?.total ?? 0}',
+          response: '获取成功，歌曲数量: ${result.total}',
         );
       } catch (e) {
         final errorMessage = formatErrorMessage(e);
@@ -85,7 +86,7 @@ class TestLayout extends BaseBgLayout {
         updateRequest(
           requestId: requestId,
           status: 'success',
-          response: '获取成功，歌曲数量: ${result.data?.total ?? 0}',
+          response: '获取成功，歌曲数量: ${result.songs.length}',
         );
       } catch (e) {
         final errorMessage = formatErrorMessage(e);

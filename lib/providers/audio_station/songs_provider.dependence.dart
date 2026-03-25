@@ -1,7 +1,7 @@
 part of 'songs_provider.dart';
 
 /// 发送歌曲请求并处理响应
-Future<SongListResponse> _sendSongRequest<T>({
+Future<ToneHarborTrackObjectList> _sendSongRequest<T>({
   required Ref ref,
   required T request,
   required Map<String, dynamic> Function() toJson,
@@ -17,7 +17,7 @@ Future<SongListResponse> _sendSongRequest<T>({
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
       ref.invalidate(authTokenProvider);
     });
-    return SongListResponse(success: false);
+    return ToneHarborTrackObjectListEmpty();
   }
   logger.d('发送歌曲请求: $request');
 
@@ -72,8 +72,9 @@ Future<SongListResponse> _sendSongRequest<T>({
       statusCode: errorCode is int ? errorCode : null,
     );
   }
-  updateRating(ref, result);
-  return result;
+  final trackObjectList = result.asTrackObjectList();
+  updateRating(ref, trackObjectList);
+  return trackObjectList;
 }
 
 /// 发送歌词请求并处理响应
@@ -300,7 +301,7 @@ Future<SongInfoResponse> _sendSongInfoRequest<T>({
 /// [artist] 艺术家名称，可选
 /// [songRatingMeq] 评分大于等于，可选，用于获取收藏歌曲
 /// [cacheDuration] 缓存时长，不传则不使用缓存
-Future<SongListResponse> _getSongs({
+Future<ToneHarborTrackObjectList> _getSongs({
   required Ref ref,
   int limit = 100,
   int offset = 0,
@@ -317,12 +318,12 @@ Future<SongListResponse> _getSongs({
       'getSongs:$limit:$offset:$library:$sortBy:$sortDirection:$additional:$artist:$songRatingMeq';
 
   if (cacheDuration != null) {
-    final cached = await getFromCache<SongListResponse>(
+    final cached = await getFromCache<ToneHarborTrackObjectList>(
       cacheKey: cacheKey,
       group: group,
-      fromJson: (json) => SongListResponse.fromJson(json),
+      fromJson: (json) => ToneHarborTrackObjectList.fromJson(json),
     );
-    if (cached != null && cached.success) {
+    if (cached != null && cached is ToneHarborTrackObjectListData) {
       updateRating(ref, cached);
       return cached;
     }
@@ -351,7 +352,7 @@ Future<SongListResponse> _getSongs({
     defaultError: l10n.error_getSongs_failed,
     l10n: l10n,
   );
-  if (cacheDuration != null && result.success) {
+  if (cacheDuration != null && result is ToneHarborTrackObjectListData) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
@@ -564,7 +565,7 @@ Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
 /// [additional] 额外信息，默认 'song_tag,song_audio,song_rating'
 /// [artist] 艺术家
 /// [cacheDuration] 缓存时长，不传则不使用缓存
-Future<SongListResponse> _getAlbumSongs({
+Future<ToneHarborTrackObjectList> _getAlbumSongs({
   required Ref ref,
   required String album,
   required String albumArtist,
@@ -582,12 +583,12 @@ Future<SongListResponse> _getAlbumSongs({
       'getAlbumSongs:$album:$albumArtist:$limit:$offset:$library:$sortBy:$sortDirection:$additional:$artist';
 
   if (cacheDuration != null) {
-    final cached = await getFromCache<SongListResponse>(
+    final cached = await getFromCache<ToneHarborTrackObjectList>(
       cacheKey: cacheKey,
       group: groupKey,
-      fromJson: (json) => SongListResponse.fromJson(json),
+      fromJson: (json) => ToneHarborTrackObjectList.fromJson(json),
     );
-    if (cached != null && cached.success) {
+    if (cached != null && cached is ToneHarborTrackObjectListData) {
       updateRating(ref, cached);
       return cached;
     }
@@ -617,7 +618,7 @@ Future<SongListResponse> _getAlbumSongs({
     defaultError: l10n.error_getAlbumSongs_failed,
     l10n: l10n,
   );
-  if (cacheDuration != null && result.success) {
+  if (cacheDuration != null && result is ToneHarborTrackObjectListData) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),
@@ -638,7 +639,7 @@ Future<SongListResponse> _getAlbumSongs({
 /// [sortDirection] 排序方向，默认 'asc'
 /// [additional] 额外信息，默认 'song_tag,song_audio,song_rating'
 /// [cacheDuration] 缓存时长，不传则不使用缓存
-Future<SongListResponse> _searchSongs({
+Future<ToneHarborTrackObjectList> _searchSongs({
   required Ref ref,
   required String title,
   String library = 'all',
@@ -653,12 +654,12 @@ Future<SongListResponse> _searchSongs({
       'searchSongs:$title:$library:$limit:$offset:$sortDirection:$additional';
 
   if (cacheDuration != null) {
-    final cached = await getFromCache<SongListResponse>(
+    final cached = await getFromCache<ToneHarborTrackObjectList>(
       cacheKey: cacheKey,
       group: groupKey,
-      fromJson: (json) => SongListResponse.fromJson(json),
+      fromJson: (json) => ToneHarborTrackObjectList.fromJson(json),
     );
-    if (cached != null && cached.success) {
+    if (cached != null && cached is ToneHarborTrackObjectListData) {
       updateRating(ref, cached);
       return cached;
     }
@@ -685,7 +686,7 @@ Future<SongListResponse> _searchSongs({
     defaultError: l10n.error_search_failed.replaceFirst('%s', title),
     l10n: l10n,
   );
-  if (cacheDuration != null && result.success) {
+  if (cacheDuration != null && result is ToneHarborTrackObjectListData) {
     await saveToCache(
       cacheKey: cacheKey,
       jsonBody: result.toJson(),

@@ -7,7 +7,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
-import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -20,7 +19,7 @@ import 'package:toneharbor/widgets/components/sub_song_selection_top.dart';
 
 part 'songs_page_action.dart';
 
-class SongsPage<T extends ExtraProvider<SongListResponse>>
+class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
     extends HookConsumerWidget {
   const SongsPage({
     super.key,
@@ -33,7 +32,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
 
   final int limitTotal;
   final String title;
-  final $AsyncNotifierProvider<T, SongListResponse> baseProvider;
+  final $AsyncNotifierProvider<T, ToneHarborTrackObjectList> baseProvider;
   final SongsPageSortAction sortAction;
   final bool isLocal;
 
@@ -93,11 +92,11 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
     final searchQuery = useSearchQuery(searchController);
     final l10n = ref.watch(l10nProvider);
     var songs = ref.watch(baseProvider);
-    var total = songs.value?.data?.total ?? 0;
+    var total = songs.value?.total ?? 0;
     if (limitTotal > 0 && total > limitTotal) {
       total = limitTotal;
     }
-    final songItems = songs.value?.data?.songs ?? [];
+    final songItems = songs.value?.songs ?? [];
     final hasMore = songItems.length < total;
     final isLoadingMore = useState(false);
     final activeTrack = ref.watch(audioPlayerStateProvider).activeTrack;
@@ -126,8 +125,8 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
       final query = searchQuery.toLowerCase();
       return songItems.where((song) {
         final title = song.title.toLowerCase();
-        final artist = song.additional?.songTag?.artist?.toLowerCase() ?? '';
-        final album = song.additional?.songTag?.album?.toLowerCase() ?? '';
+        final artist = song.artist.toLowerCase();
+        final album = song.album.toLowerCase();
         return title.contains(query) ||
             artist.contains(query) ||
             album.contains(query);
@@ -144,9 +143,9 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
         final currentScroll = scrollController.offset;
 
         final state = ref.read(baseProvider);
-        final currentSongs = state.value?.data?.songs ?? [];
-        var currentTotal = state.value?.data?.total ?? 0;
-        if (limitTotal > 0 && total > limitTotal) {
+        final currentSongs = state.value?.songs ?? [];
+        var currentTotal = state.value?.total ?? 0;
+        if (limitTotal > 0 && currentTotal > limitTotal) {
           currentTotal = limitTotal;
         }
         final currentHasMore = currentSongs.length < currentTotal;
@@ -238,7 +237,7 @@ class SongsPage<T extends ExtraProvider<SongListResponse>>
                                 }
                               }
                             } else {
-                              tracks = filteredItems.asTrackList();
+                              tracks = filteredItems;
                             }
                             if (tracks.isEmpty) return;
                             await ref

@@ -79,7 +79,7 @@ sealed class SongAdditional with _$SongAdditional {
 }
 
 @freezed
-sealed class Song with _$Song, AsSong {
+sealed class Song with _$Song, AsTrack {
   const Song._();
   const factory Song({
     required String id,
@@ -89,10 +89,6 @@ sealed class Song with _$Song, AsSong {
     SongAdditional? additional,
   }) = _Song;
   factory Song.fromJson(Map<String, dynamic> json) => _$SongFromJson(json);
-  @override
-  Song asSong() {
-    return this;
-  }
 
   @override
   ToneHarborTrackObject asTrack() {

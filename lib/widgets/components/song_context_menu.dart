@@ -3,7 +3,8 @@ import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/sub_content_state.dart';
-import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
+
 import 'package:toneharbor/providers/audio_player/download_manager.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
@@ -13,7 +14,7 @@ class SongContextMenu {
     WidgetRef ref,
     ColorScheme colorScheme,
     AppLocalizations l10n,
-    Song item, {
+    ToneHarborTrackObject item, {
     bool isLocal = false,
   }) {
     final itemId = item.id;
@@ -126,9 +127,7 @@ class SongContextMenu {
           label: Text(l10n.download),
           icon: Icon(Icons.download_rounded),
           onSelected: (value) async {
-            ref
-                .read(downloadManagerProvider.notifier)
-                .addToQueue(item.asTrack());
+            ref.read(downloadManagerProvider.notifier).addToQueue(item);
           },
         ),
         MenuItem.submenu(
@@ -140,7 +139,7 @@ class SongContextMenu {
               onSelected: (value) async {
                 await ref
                     .read(audioPlayerStateProvider.notifier)
-                    .addTrackAtFirst(item.asTrack(), allowDuplicates: true);
+                    .addTrackAtFirst(item, allowDuplicates: true);
               },
             ),
             MenuItem(
@@ -148,7 +147,7 @@ class SongContextMenu {
               onSelected: (value) async {
                 await ref
                     .read(audioPlayerStateProvider.notifier)
-                    .addTrack(item.asTrack());
+                    .addTrack(item);
               },
             ),
             MenuItem(

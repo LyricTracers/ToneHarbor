@@ -116,7 +116,7 @@ abstract class _$SongCommon extends $Notifier<void> {
 final randomSongsProvider = RandomSongsFamily._();
 
 final class RandomSongsProvider
-    extends $AsyncNotifierProvider<RandomSongs, SongListResponse> {
+    extends $AsyncNotifierProvider<RandomSongs, ToneHarborTrackObjectList> {
   RandomSongsProvider._({
     required RandomSongsFamily super.from,
     required ({
@@ -160,15 +160,15 @@ final class RandomSongsProvider
   }
 }
 
-String _$randomSongsHash() => r'bb60eb9212f59af623b5fa501b0444279a33cb5b';
+String _$randomSongsHash() => r'8d031afb1a14453c93b89aedd496cb1a12240115';
 
 final class RandomSongsFamily extends $Family
     with
         $ClassFamilyOverride<
           RandomSongs,
-          AsyncValue<SongListResponse>,
-          SongListResponse,
-          FutureOr<SongListResponse>,
+          AsyncValue<ToneHarborTrackObjectList>,
+          ToneHarborTrackObjectList,
+          FutureOr<ToneHarborTrackObjectList>,
           ({
             int limit,
             int offset,
@@ -207,7 +207,7 @@ final class RandomSongsFamily extends $Family
   String toString() => r'randomSongsProvider';
 }
 
-abstract class _$RandomSongs extends $AsyncNotifier<SongListResponse> {
+abstract class _$RandomSongs extends $AsyncNotifier<ToneHarborTrackObjectList> {
   late final _$args =
       ref.$arg
           as ({
@@ -223,7 +223,7 @@ abstract class _$RandomSongs extends $AsyncNotifier<SongListResponse> {
   String get additional => _$args.additional;
   Duration? get cacheDuration => _$args.cacheDuration;
 
-  FutureOr<SongListResponse> build({
+  FutureOr<ToneHarborTrackObjectList> build({
     int limit = 100,
     int offset = 0,
     String library = 'shared',
@@ -234,12 +234,19 @@ abstract class _$RandomSongs extends $AsyncNotifier<SongListResponse> {
   @override
   void runBuild() {
     final ref =
-        this.ref as $Ref<AsyncValue<SongListResponse>, SongListResponse>;
+        this.ref
+            as $Ref<
+              AsyncValue<ToneHarborTrackObjectList>,
+              ToneHarborTrackObjectList
+            >;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<SongListResponse>, SongListResponse>,
-              AsyncValue<SongListResponse>,
+              AnyNotifier<
+                AsyncValue<ToneHarborTrackObjectList>,
+                ToneHarborTrackObjectList
+              >,
+              AsyncValue<ToneHarborTrackObjectList>,
               Object?,
               Object?
             >;
@@ -260,7 +267,7 @@ abstract class _$RandomSongs extends $AsyncNotifier<SongListResponse> {
 final favoriteSongsProvider = FavoriteSongsFamily._();
 
 final class FavoriteSongsProvider
-    extends $AsyncNotifierProvider<FavoriteSongs, SongListResponse> {
+    extends $AsyncNotifierProvider<FavoriteSongs, ToneHarborTrackObjectList> {
   FavoriteSongsProvider._({
     required FavoriteSongsFamily super.from,
     required ({
@@ -306,15 +313,15 @@ final class FavoriteSongsProvider
   }
 }
 
-String _$favoriteSongsHash() => r'016f514cd5aeba31293dd79bd1d031238c75d6cf';
+String _$favoriteSongsHash() => r'fe1932796f3c92afa50acbac062652d2ec6cdfb0';
 
 final class FavoriteSongsFamily extends $Family
     with
         $ClassFamilyOverride<
           FavoriteSongs,
-          AsyncValue<SongListResponse>,
-          SongListResponse,
-          FutureOr<SongListResponse>,
+          AsyncValue<ToneHarborTrackObjectList>,
+          ToneHarborTrackObjectList,
+          FutureOr<ToneHarborTrackObjectList>,
           ({
             int limit,
             int offset,
@@ -359,7 +366,8 @@ final class FavoriteSongsFamily extends $Family
   String toString() => r'favoriteSongsProvider';
 }
 
-abstract class _$FavoriteSongs extends $AsyncNotifier<SongListResponse> {
+abstract class _$FavoriteSongs
+    extends $AsyncNotifier<ToneHarborTrackObjectList> {
   late final _$args =
       ref.$arg
           as ({
@@ -379,7 +387,7 @@ abstract class _$FavoriteSongs extends $AsyncNotifier<SongListResponse> {
   String get additional => _$args.additional;
   Duration? get cacheDuration => _$args.cacheDuration;
 
-  FutureOr<SongListResponse> build({
+  FutureOr<ToneHarborTrackObjectList> build({
     int limit = 100,
     int offset = 0,
     String library = 'shared',
@@ -392,12 +400,19 @@ abstract class _$FavoriteSongs extends $AsyncNotifier<SongListResponse> {
   @override
   void runBuild() {
     final ref =
-        this.ref as $Ref<AsyncValue<SongListResponse>, SongListResponse>;
+        this.ref
+            as $Ref<
+              AsyncValue<ToneHarborTrackObjectList>,
+              ToneHarborTrackObjectList
+            >;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<SongListResponse>, SongListResponse>,
-              AsyncValue<SongListResponse>,
+              AnyNotifier<
+                AsyncValue<ToneHarborTrackObjectList>,
+                ToneHarborTrackObjectList
+              >,
+              AsyncValue<ToneHarborTrackObjectList>,
               Object?,
               Object?
             >;
@@ -420,7 +435,7 @@ abstract class _$FavoriteSongs extends $AsyncNotifier<SongListResponse> {
 final artistSongsProvider = ArtistSongsFamily._();
 
 final class ArtistSongsProvider
-    extends $AsyncNotifierProvider<ArtistSongs, SongListResponse> {
+    extends $AsyncNotifierProvider<ArtistSongs, ToneHarborTrackObjectList> {
   ArtistSongsProvider._({
     required ArtistSongsFamily super.from,
     required ({String artist, int limit, int offset, Duration? cacheDuration})
@@ -458,15 +473,15 @@ final class ArtistSongsProvider
   }
 }
 
-String _$artistSongsHash() => r'a158471afce601365cc869f1baec4c73a6fd6cbf';
+String _$artistSongsHash() => r'ef98efeac162ebabe93e5d4498c206f677c1cbce';
 
 final class ArtistSongsFamily extends $Family
     with
         $ClassFamilyOverride<
           ArtistSongs,
-          AsyncValue<SongListResponse>,
-          SongListResponse,
-          FutureOr<SongListResponse>,
+          AsyncValue<ToneHarborTrackObjectList>,
+          ToneHarborTrackObjectList,
+          FutureOr<ToneHarborTrackObjectList>,
           ({String artist, int limit, int offset, Duration? cacheDuration})
         > {
   ArtistSongsFamily._()
@@ -497,7 +512,7 @@ final class ArtistSongsFamily extends $Family
   String toString() => r'artistSongsProvider';
 }
 
-abstract class _$ArtistSongs extends $AsyncNotifier<SongListResponse> {
+abstract class _$ArtistSongs extends $AsyncNotifier<ToneHarborTrackObjectList> {
   late final _$args =
       ref.$arg
           as ({String artist, int limit, int offset, Duration? cacheDuration});
@@ -506,7 +521,7 @@ abstract class _$ArtistSongs extends $AsyncNotifier<SongListResponse> {
   int get offset => _$args.offset;
   Duration? get cacheDuration => _$args.cacheDuration;
 
-  FutureOr<SongListResponse> build({
+  FutureOr<ToneHarborTrackObjectList> build({
     required String artist,
     int limit = 100,
     int offset = 0,
@@ -516,12 +531,19 @@ abstract class _$ArtistSongs extends $AsyncNotifier<SongListResponse> {
   @override
   void runBuild() {
     final ref =
-        this.ref as $Ref<AsyncValue<SongListResponse>, SongListResponse>;
+        this.ref
+            as $Ref<
+              AsyncValue<ToneHarborTrackObjectList>,
+              ToneHarborTrackObjectList
+            >;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<SongListResponse>, SongListResponse>,
-              AsyncValue<SongListResponse>,
+              AnyNotifier<
+                AsyncValue<ToneHarborTrackObjectList>,
+                ToneHarborTrackObjectList
+              >,
+              AsyncValue<ToneHarborTrackObjectList>,
               Object?,
               Object?
             >;
@@ -543,11 +565,13 @@ final searchSongsProvider = SearchSongsFamily._();
 final class SearchSongsProvider
     extends
         $FunctionalProvider<
-          AsyncValue<SongListResponse>,
-          SongListResponse,
-          FutureOr<SongListResponse>
+          AsyncValue<ToneHarborTrackObjectList>,
+          ToneHarborTrackObjectList,
+          FutureOr<ToneHarborTrackObjectList>
         >
-    with $FutureModifier<SongListResponse>, $FutureProvider<SongListResponse> {
+    with
+        $FutureModifier<ToneHarborTrackObjectList>,
+        $FutureProvider<ToneHarborTrackObjectList> {
   SearchSongsProvider._({
     required SearchSongsFamily super.from,
     required ({
@@ -581,12 +605,12 @@ final class SearchSongsProvider
 
   @$internal
   @override
-  $FutureProviderElement<SongListResponse> $createElement(
+  $FutureProviderElement<ToneHarborTrackObjectList> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<SongListResponse> create(Ref ref) {
+  FutureOr<ToneHarborTrackObjectList> create(Ref ref) {
     final argument =
         this.argument
             as ({
@@ -623,12 +647,12 @@ final class SearchSongsProvider
   }
 }
 
-String _$searchSongsHash() => r'9dd01b36c82dc497c2f5c8ffdb666e7bd7b883be';
+String _$searchSongsHash() => r'180ad3d4cc5b45cce2cfc001d91f7ea256555512';
 
 final class SearchSongsFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<SongListResponse>,
+          FutureOr<ToneHarborTrackObjectList>,
           ({
             String title,
             String library,
@@ -680,7 +704,7 @@ final class SearchSongsFamily extends $Family
 final albumSongsProvider = AlbumSongsFamily._();
 
 final class AlbumSongsProvider
-    extends $AsyncNotifierProvider<AlbumSongs, SongListResponse> {
+    extends $AsyncNotifierProvider<AlbumSongs, ToneHarborTrackObjectList> {
   AlbumSongsProvider._({
     required AlbumSongsFamily super.from,
     required ({
@@ -729,15 +753,15 @@ final class AlbumSongsProvider
   }
 }
 
-String _$albumSongsHash() => r'ab3f99ac1915a8f7879e1e335f38a67a42a10eb1';
+String _$albumSongsHash() => r'4045c9a12e1dd13a7c6093bcb10a85a29e1adaa5';
 
 final class AlbumSongsFamily extends $Family
     with
         $ClassFamilyOverride<
           AlbumSongs,
-          AsyncValue<SongListResponse>,
-          SongListResponse,
-          FutureOr<SongListResponse>,
+          AsyncValue<ToneHarborTrackObjectList>,
+          ToneHarborTrackObjectList,
+          FutureOr<ToneHarborTrackObjectList>,
           ({
             String album,
             String albumArtist,
@@ -791,7 +815,7 @@ final class AlbumSongsFamily extends $Family
   String toString() => r'albumSongsProvider';
 }
 
-abstract class _$AlbumSongs extends $AsyncNotifier<SongListResponse> {
+abstract class _$AlbumSongs extends $AsyncNotifier<ToneHarborTrackObjectList> {
   late final _$args =
       ref.$arg
           as ({
@@ -817,7 +841,7 @@ abstract class _$AlbumSongs extends $AsyncNotifier<SongListResponse> {
   String? get artist => _$args.artist;
   Duration? get cacheDuration => _$args.cacheDuration;
 
-  FutureOr<SongListResponse> build({
+  FutureOr<ToneHarborTrackObjectList> build({
     required String album,
     required String albumArtist,
     int limit = 100,
@@ -833,12 +857,19 @@ abstract class _$AlbumSongs extends $AsyncNotifier<SongListResponse> {
   @override
   void runBuild() {
     final ref =
-        this.ref as $Ref<AsyncValue<SongListResponse>, SongListResponse>;
+        this.ref
+            as $Ref<
+              AsyncValue<ToneHarborTrackObjectList>,
+              ToneHarborTrackObjectList
+            >;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<SongListResponse>, SongListResponse>,
-              AsyncValue<SongListResponse>,
+              AnyNotifier<
+                AsyncValue<ToneHarborTrackObjectList>,
+                ToneHarborTrackObjectList
+              >,
+              AsyncValue<ToneHarborTrackObjectList>,
               Object?,
               Object?
             >;
@@ -864,7 +895,7 @@ abstract class _$AlbumSongs extends $AsyncNotifier<SongListResponse> {
 final songsProvider = SongsFamily._();
 
 final class SongsProvider
-    extends $AsyncNotifierProvider<Songs, SongListResponse> {
+    extends $AsyncNotifierProvider<Songs, ToneHarborTrackObjectList> {
   SongsProvider._({
     required SongsFamily super.from,
     required ({
@@ -912,15 +943,15 @@ final class SongsProvider
   }
 }
 
-String _$songsHash() => r'fee786e46af5ebc6b0359bd8c8971fb6761cc284';
+String _$songsHash() => r'50c880ea7d4d7e34325d64504a191d1fcbcda398';
 
 final class SongsFamily extends $Family
     with
         $ClassFamilyOverride<
           Songs,
-          AsyncValue<SongListResponse>,
-          SongListResponse,
-          FutureOr<SongListResponse>,
+          AsyncValue<ToneHarborTrackObjectList>,
+          ToneHarborTrackObjectList,
+          FutureOr<ToneHarborTrackObjectList>,
           ({
             int limit,
             int offset,
@@ -971,7 +1002,7 @@ final class SongsFamily extends $Family
   String toString() => r'songsProvider';
 }
 
-abstract class _$Songs extends $AsyncNotifier<SongListResponse> {
+abstract class _$Songs extends $AsyncNotifier<ToneHarborTrackObjectList> {
   late final _$args =
       ref.$arg
           as ({
@@ -995,7 +1026,7 @@ abstract class _$Songs extends $AsyncNotifier<SongListResponse> {
   Duration? get cacheDuration => _$args.cacheDuration;
   String get group => _$args.group;
 
-  FutureOr<SongListResponse> build({
+  FutureOr<ToneHarborTrackObjectList> build({
     int limit = 100,
     int offset = 0,
     String library = 'shared',
@@ -1010,12 +1041,19 @@ abstract class _$Songs extends $AsyncNotifier<SongListResponse> {
   @override
   void runBuild() {
     final ref =
-        this.ref as $Ref<AsyncValue<SongListResponse>, SongListResponse>;
+        this.ref
+            as $Ref<
+              AsyncValue<ToneHarborTrackObjectList>,
+              ToneHarborTrackObjectList
+            >;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<SongListResponse>, SongListResponse>,
-              AsyncValue<SongListResponse>,
+              AnyNotifier<
+                AsyncValue<ToneHarborTrackObjectList>,
+                ToneHarborTrackObjectList
+              >,
+              AsyncValue<ToneHarborTrackObjectList>,
               Object?,
               Object?
             >;

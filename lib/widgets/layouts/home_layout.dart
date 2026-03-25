@@ -6,6 +6,7 @@ import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/favorite_playlist_state.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/sub_content_state.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -205,7 +206,10 @@ class HomeLayout extends BaseBgLayout {
                       () {
                         context.push(
                           "${allFoldersPath}None",
-                          extra: (foldersProvider(limit: 100), <FolderItem>[]),
+                          extra: (
+                            foldersProvider(limit: 100),
+                            <ToneHarborTrackObject>[],
+                          ),
                         );
                       },
                     ),

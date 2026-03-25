@@ -19,10 +19,10 @@ import 'package:toneharbor/widgets/components/sub_song_selection_bottom.dart';
 import 'package:toneharbor/widgets/components/sub_song_selection_top.dart';
 
 class _FolderItemWidget extends HookConsumerWidget {
-  final List<FolderItem> folderItems;
+  final List<ToneHarborTrackObject> folderItems;
   final ColorScheme colorScheme;
   final int index;
-  final List<FolderItem> lastFoldItems;
+  final List<ToneHarborTrackObject> lastFoldItems;
   final SongSelectionState songSelectionState;
   const _FolderItemWidget({
     required this.index,
@@ -134,7 +134,7 @@ class _BreadCrumbItem extends HookConsumerWidget {
 class FoldersPage<T extends ExtraProvider<FolderResponse>>
     extends HookConsumerWidget {
   final String currentId;
-  final List<FolderItem> lastFoldItems;
+  final List<ToneHarborTrackObject> lastFoldItems;
   final $AsyncNotifierProvider<T, FolderResponse> baseProvider;
   const FoldersPage({
     super.key,
@@ -175,7 +175,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                               "/folders/None",
                               extra: (
                                 foldersProvider(limit: 100),
-                                <FolderItem>[],
+                                <ToneHarborTrackObject>[],
                               ),
                             );
                           },
@@ -273,7 +273,8 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
     final searchQuery = useSearchQuery(searchController);
     var folderResponse = ref.watch(baseProvider);
     var total = folderResponse.value?.data?.total ?? 0;
-    final folderItems = folderResponse.value?.data?.items ?? [];
+    final folderItems =
+        (folderResponse.value?.data?.items)?.asTrackList() ?? [];
     final hasMore = folderItems.length < total;
     final isLoadingMore = useState(false);
     final l10n = ref.watch(l10nProvider);
@@ -302,14 +303,10 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
       }
       final query = searchQuery.toLowerCase();
       return folderItems.where((item) {
-        if (item.isSong()) {
-          final song = item.asSong();
-          final artist =
-              song.additional?.songTag?.artist ??
-              song.additional?.songTag?.albumArtist ??
-              '';
+        if (item.isSong) {
+          final song = item as ToneHarborTrackObjectFull;
           return song.title.toLowerCase().contains(query) ||
-              artist.toLowerCase().contains(query);
+              song.artist.toLowerCase().contains(query);
         } else {
           return item.title.toLowerCase().contains(query);
         }
@@ -374,7 +371,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                     );
                   }
                   var folderItem = filteredItems[index];
-                  if (!folderItem.isSong()) {
+                  if (!folderItem.isSong) {
                     return _FolderItemWidget(
                       index: index,
                       folderItems: filteredItems,
@@ -383,7 +380,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                       songSelectionState: songSelectionState,
                     );
                   } else {
-                    var item = folderItem.asSong();
+                    var item = folderItem;
                     return RepaintBoundary(
                       child: ContextMenuRegion(
                         contextMenu: ContextMenu(
@@ -406,7 +403,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                           isFavorite: songRating.contains(item.id),
                           onTap: () async {
                             final (trackList, targetIndex) = filteredItems
-                                .asTrackList(index);
+                                .asTrackSongList(index);
                             await ref
                                 .read(audioPlayerStateProvider.notifier)
                                 .load(

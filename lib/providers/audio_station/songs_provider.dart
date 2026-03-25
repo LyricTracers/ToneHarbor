@@ -2,6 +2,7 @@ import 'package:rhttp/rhttp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
@@ -9,16 +10,19 @@ import 'package:toneharbor/utils/base_utils.dart';
 part 'songs_provider.dependence.dart';
 part 'songs_provider.g.dart';
 
-void updateRating(Ref ref, SongListResponse songsResponse) {
-  var songs = songsResponse.data?.songs;
-  if (songs == null || songs.isEmpty) {
+void updateRating(Ref ref, ToneHarborTrackObjectList songsResponse) {
+  if (songsResponse is! ToneHarborTrackObjectListData) {
+    return;
+  }
+  var songs = songsResponse.songs;
+  if (songs.isEmpty) {
     return;
   }
   var songRating = ref.read(songRatingProvider.notifier);
   var ids = <String>[];
   for (var song in songs) {
     var id = song.id;
-    var rating = song.additional?.songRating?.rating ?? 0;
+    var rating = song.rating;
     if (rating == 5) {
       ids.add(id);
     }
@@ -146,9 +150,10 @@ class SongCommon extends _$SongCommon {
 }
 
 @riverpod
-class RandomSongs extends _$RandomSongs with ExtraProvider<SongListResponse> {
+class RandomSongs extends _$RandomSongs
+    with ExtraProvider<ToneHarborTrackObjectList> {
   @override
-  Future<SongListResponse> build({
+  Future<ToneHarborTrackObjectList> build({
     int limit = 100,
     int offset = 0,
     String library = 'shared',
@@ -214,9 +219,9 @@ class RandomSongs extends _$RandomSongs with ExtraProvider<SongListResponse> {
 
 @riverpod
 class FavoriteSongs extends _$FavoriteSongs
-    with ExtraProvider<SongListResponse> {
+    with ExtraProvider<ToneHarborTrackObjectList> {
   @override
-  Future<SongListResponse> build({
+  Future<ToneHarborTrackObjectList> build({
     int limit = 100,
     int offset = 0,
     String library = 'shared',
@@ -284,8 +289,10 @@ class FavoriteSongs extends _$FavoriteSongs
   @override
   Future<void> loadMore() async {
     if (state.value == null) return;
-    final currentData = state.value!.data;
-    if (currentData == null) return;
+    final currentData = state.value;
+    if (currentData == null || currentData is! ToneHarborTrackObjectListData) {
+      return;
+    }
 
     final currentTotal = currentData.total ?? 0;
     final currentSongs = currentData.songs;
@@ -307,16 +314,14 @@ class FavoriteSongs extends _$FavoriteSongs
         group: groupKey,
       );
 
-      final newSongs = newState.data?.songs ?? [];
+      if (newState is! ToneHarborTrackObjectListData) {
+        return;
+      }
+      final newSongs = newState.songs;
       final mergedSongs = [...currentSongs, ...newSongs];
 
       state = AsyncData(
-        newState.copyWith(
-          data: newState.data?.copyWith(
-            songs: mergedSongs,
-            total: currentTotal,
-          ),
-        ),
+        newState.copyWith(songs: mergedSongs, total: currentTotal),
       );
     } catch (e) {
       logger.e('加载更多songs失败: $e');
@@ -326,9 +331,10 @@ class FavoriteSongs extends _$FavoriteSongs
 }
 
 @riverpod
-class ArtistSongs extends _$ArtistSongs with ExtraProvider<SongListResponse> {
+class ArtistSongs extends _$ArtistSongs
+    with ExtraProvider<ToneHarborTrackObjectList> {
   @override
-  Future<SongListResponse> build({
+  Future<ToneHarborTrackObjectList> build({
     required String artist,
     int limit = 100,
     int offset = 0,
@@ -389,8 +395,10 @@ class ArtistSongs extends _$ArtistSongs with ExtraProvider<SongListResponse> {
   @override
   Future<void> loadMore() async {
     if (state.value == null) return;
-    final currentData = state.value!.data;
-    if (currentData == null) return;
+    final currentData = state.value;
+    if (currentData == null || currentData is! ToneHarborTrackObjectListData) {
+      return;
+    }
 
     final currentTotal = currentData.total ?? 0;
     final currentSongs = currentData.songs;
@@ -408,16 +416,14 @@ class ArtistSongs extends _$ArtistSongs with ExtraProvider<SongListResponse> {
         group: groupKey,
       );
 
-      final newSongs = newState.data?.songs ?? [];
+      if (newState is! ToneHarborTrackObjectListData) {
+        return;
+      }
+      final newSongs = newState.songs;
       final mergedSongs = [...currentSongs, ...newSongs];
 
       state = AsyncData(
-        newState.copyWith(
-          data: newState.data?.copyWith(
-            songs: mergedSongs,
-            total: currentTotal,
-          ),
-        ),
+        newState.copyWith(songs: mergedSongs, total: currentTotal),
       );
     } catch (e) {
       logger.e('加载更多songs失败: $e');
@@ -427,7 +433,7 @@ class ArtistSongs extends _$ArtistSongs with ExtraProvider<SongListResponse> {
 }
 
 @riverpod
-Future<SongListResponse> searchSongs(
+Future<ToneHarborTrackObjectList> searchSongs(
   Ref ref, {
   required String title,
   String library = 'all',
@@ -458,9 +464,10 @@ Future<SongListResponse> searchSongs(
 }
 
 @riverpod
-class AlbumSongs extends _$AlbumSongs with ExtraProvider<SongListResponse> {
+class AlbumSongs extends _$AlbumSongs
+    with ExtraProvider<ToneHarborTrackObjectList> {
   @override
-  Future<SongListResponse> build({
+  Future<ToneHarborTrackObjectList> build({
     required String album,
     required String albumArtist,
     int limit = 100,
@@ -532,8 +539,10 @@ class AlbumSongs extends _$AlbumSongs with ExtraProvider<SongListResponse> {
   @override
   Future<void> loadMore() async {
     if (state.value == null) return;
-    final currentData = state.value!.data;
-    if (currentData == null) return;
+    final currentData = state.value;
+    if (currentData == null || currentData is! ToneHarborTrackObjectListData) {
+      return;
+    }
 
     final currentTotal = currentData.total ?? 0;
     final currentSongs = currentData.songs;
@@ -555,17 +564,14 @@ class AlbumSongs extends _$AlbumSongs with ExtraProvider<SongListResponse> {
         artist: artist,
         cacheDuration: duration,
       );
-
-      final newSongs = newState.data?.songs ?? [];
+      if (newState is! ToneHarborTrackObjectListData) {
+        return;
+      }
+      final newSongs = newState.songs;
       final mergedSongs = [...currentSongs, ...newSongs];
 
       state = AsyncData(
-        newState.copyWith(
-          data: newState.data?.copyWith(
-            songs: mergedSongs,
-            total: currentTotal,
-          ),
-        ),
+        newState.copyWith(songs: mergedSongs, total: currentTotal),
       );
     } catch (e) {
       logger.e('加载更多albumSongs失败: $e');
@@ -575,9 +581,9 @@ class AlbumSongs extends _$AlbumSongs with ExtraProvider<SongListResponse> {
 }
 
 @riverpod
-class Songs extends _$Songs with ExtraProvider<SongListResponse> {
+class Songs extends _$Songs with ExtraProvider<ToneHarborTrackObjectList> {
   @override
-  Future<SongListResponse> build({
+  Future<ToneHarborTrackObjectList> build({
     int limit = 100,
     int offset = 0,
     String library = 'shared',
@@ -646,8 +652,10 @@ class Songs extends _$Songs with ExtraProvider<SongListResponse> {
   @override
   Future<void> loadMore() async {
     if (state.value == null) return;
-    final currentData = state.value!.data;
-    if (currentData == null) return;
+    final currentData = state.value;
+    if (currentData == null || currentData is! ToneHarborTrackObjectListData) {
+      return;
+    }
 
     final currentTotal = currentData.total ?? 0;
     final currentSongs = currentData.songs;
@@ -668,17 +676,14 @@ class Songs extends _$Songs with ExtraProvider<SongListResponse> {
         cacheDuration: duration,
         group: groupKey,
       );
-
-      final newSongs = newState.data?.songs ?? [];
+      if (newState is! ToneHarborTrackObjectListData) {
+        return;
+      }
+      final newSongs = newState.songs;
       final mergedSongs = [...currentSongs, ...newSongs];
 
       state = AsyncData(
-        newState.copyWith(
-          data: newState.data?.copyWith(
-            songs: mergedSongs,
-            total: currentTotal,
-          ),
-        ),
+        newState.copyWith(songs: mergedSongs, total: currentTotal),
       );
     } catch (e) {
       logger.e('加载更多songs失败: $e');
