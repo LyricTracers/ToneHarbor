@@ -1082,6 +1082,12 @@ abstract class AppLocalizations {
   /// **'Other'**
   String get other;
 
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
   /// No description provided for @play_current_song.
   ///
   /// In en, this message translates to:

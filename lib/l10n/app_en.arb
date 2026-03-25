@@ -165,6 +165,7 @@
   "delete_current_history": "Delete Current History",
   "redownload": "Redownload",
   "other": "Other",
+  "copy": "Copy",
   "play_current_song": "Play Current Song",
   "local_file_not_found": "Local file not found for %s"
 }

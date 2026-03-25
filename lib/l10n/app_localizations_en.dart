@@ -517,6 +517,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get other => 'Other';
 
   @override
+  String get copy => 'Copy';
+
+  @override
   String get play_current_song => 'Play Current Song';
 
   @override

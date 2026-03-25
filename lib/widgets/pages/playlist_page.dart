@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -12,20 +14,18 @@ class _PlaylistItem extends StatelessWidget {
     required this.track,
     required this.isDefault,
     required this.colorScheme,
-    required this.playingText,
-    required this.deleteText,
+    required this.i10n,
     required this.onTap,
-    required this.onDelete,
+    required this.onDeleteTap,
   });
 
   final int index;
   final dynamic track;
   final bool isDefault;
   final ColorScheme colorScheme;
-  final String playingText;
-  final String deleteText;
+  final AppLocalizations i10n;
   final VoidCallback onTap;
-  final VoidCallback? onDelete;
+  final VoidCallback onDeleteTap;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class _PlaylistItem extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  playingText,
+                  i10n.playing,
                   style: TextStyle(
                     color: colorScheme.onPrimary,
                     fontSize: 8,
@@ -66,50 +66,75 @@ class _PlaylistItem extends StatelessWidget {
                 color: colorScheme.primary,
               ),
             ),
-            title: Row(
-              children: [
-                const SizedBox(width: 5),
-                Flexible(
-                  child: SmartMarquee(
-                    text: track.title,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: colorScheme.onSurfaceVariant,
+            trailing: ReorderableDragStartListener(
+              index: index,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {},
+                child: const Icon(Icons.drag_handle, size: 16),
+              ),
+            ),
+            title: ContextMenuRegion<String>(
+              contextMenu: ContextMenu(
+                entriesBuilder: () => [
+                  MenuHeader(text: track.title),
+                  MenuDivider(),
+                  MenuItem<String>(
+                    label: Text(
+                      i10n.delete,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    manualScrollOnTap: true,
-                    alignment: AlignmentGeometry.centerLeft,
+                    icon: const Icon(Icons.delete_forever),
+                    onSelected: (value) {},
                   ),
-                ),
-                const SizedBox(width: 10),
-                SizedBox(
-                  width: 80,
-                  child: Text(
-                    track.artist,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.right,
-                    maxLines: 1,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: colorScheme.onSurfaceVariant.withValues(
-                        alpha: 0.7,
+
+                  MenuItem<String>(
+                    label: Text(i10n.copy),
+                    icon: const Icon(Icons.copy),
+                    onSelected: (value) {
+                      copyToClipboard(
+                        '${track.title}-${track.artist}',
+                        context,
+                        colorScheme.secondary,
+                      );
+                    },
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const SizedBox(width: 5),
+                  Flexible(
+                    child: SmartMarquee(
+                      text: track.title,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      manualScrollOnTap: true,
+                      alignment: AlignmentGeometry.centerLeft,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  SizedBox(
+                    width: 80,
+                    child: Text(
+                      track.artist,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.right,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.7,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete_rounded, size: 16),
-                  onPressed: onDelete,
-                  tooltip: onDelete == null ? null : deleteText,
-                ),
-                ReorderableDragStartListener(
-                  index: index,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {},
-                    child: const Icon(Icons.drag_handle, size: 16),
-                  ),
-                ),
-              ],
+                  const SizedBox(width: 10),
+                ],
+              ),
             ),
             selected: isDefault,
             onTap: onTap,
@@ -222,12 +247,13 @@ class PlaylistPage extends HookConsumerWidget {
                     track: track,
                     isDefault: isDefault,
                     colorScheme: colorScheme,
-                    playingText: i10n.playing,
-                    deleteText: i10n.delete,
+                    i10n: i10n,
                     onTap: () => audioPlayer.jumpTo(index),
-                    onDelete: () => ref
-                        .read(audioPlayerStateProvider.notifier)
-                        .removeTrack(track.id, index: index),
+                    onDeleteTap: () {
+                      ref
+                          .read(audioPlayerStateProvider.notifier)
+                          .removeTrack(track.id, index: index);
+                    },
                   ),
                 );
               },

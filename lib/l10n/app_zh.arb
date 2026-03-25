@@ -164,6 +164,7 @@
   "delete_current_history": "删除当前下载历史",
   "redownload": "重新下载",
   "other": "其他",
+  "copy": "拷贝",
   "play_current_song": "播放当前歌曲",
   "local_file_not_found": "本地未找到%s歌曲"
 }
