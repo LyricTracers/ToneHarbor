@@ -6,7 +6,6 @@ import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/audio_player/download_manager.dart';
 import 'package:toneharbor/providers/providers.dart';
-import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
 class SongContextMenu {
@@ -52,6 +51,7 @@ class SongContextMenu {
                       await ref
                           .read(localSongsProvider.notifier)
                           .removeAllSongs(track.id);
+                      ref.invalidate(localSongsProvider);
                     }
                   },
                 ),

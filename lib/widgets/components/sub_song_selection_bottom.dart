@@ -200,6 +200,7 @@ class SubSongSelectionBottom<T extends AsSong> extends HookConsumerWidget {
                   .read(localSongsProvider.notifier)
                   .removeAllSongsByIds(ids);
               ref.invalidate(songSelectionProvider);
+              ref.invalidate(localSongsProvider);
             },
             icon: const Icon(Icons.delete_forever_rounded, size: 18),
             tooltip: l10n.delete,

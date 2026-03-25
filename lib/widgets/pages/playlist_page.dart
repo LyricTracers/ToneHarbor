@@ -68,6 +68,7 @@ class _PlaylistItem extends StatelessWidget {
             ),
             title: Row(
               children: [
+                const SizedBox(width: 5),
                 Flexible(
                   child: SmartMarquee(
                     text: track.title,
@@ -95,12 +96,16 @@ class _PlaylistItem extends StatelessWidget {
                     ),
                   ),
                 ),
+                IconButton(
+                  icon: const Icon(Icons.delete_rounded, size: 16),
+                  onPressed: onDelete,
+                  tooltip: onDelete == null ? null : deleteText,
+                ),
+                ReorderableDragStartListener(
+                  index: index,
+                  child: const Icon(Icons.drag_handle, size: 16),
+                ),
               ],
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete_rounded, size: 16),
-              onPressed: onDelete,
-              tooltip: onDelete == null ? null : deleteText,
             ),
             selected: isDefault,
             onTap: onTap,
@@ -192,16 +197,25 @@ class PlaylistPage extends HookConsumerWidget {
           ),
           Divider(thickness: 2, height: 2, indent: 5, endIndent: 5),
           Expanded(
-            child: ListView.builder(
-              controller: scrollController,
+            child: ReorderableListView.builder(
+              scrollController: scrollController,
               itemCount: playlist.tracks.length,
               itemExtent: 44,
               cacheExtent: 50,
-              addAutomaticKeepAlives: true,
+              buildDefaultDragHandles: false,
+              onReorder: (oldIndex, newIndex) {
+                if (oldIndex < newIndex) {
+                  newIndex -= 1;
+                }
+                ref
+                    .read(audioPlayerStateProvider.notifier)
+                    .moveTrack(oldIndex, newIndex);
+              },
               itemBuilder: (context, index) {
                 var isDefault = playlist.currentIndex == index;
                 var track = playlist.tracks[index];
                 return RepaintBoundary(
+                  key: ValueKey(index),
                   child: _PlaylistItem(
                     index: index,
                     track: track,
