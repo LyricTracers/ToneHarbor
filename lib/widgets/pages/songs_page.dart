@@ -30,6 +30,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
     required this.limitTotal,
     this.sortAction = SongsPageSortAction.none,
     this.isLocal = false,
+    this.refreshRandom = false,
   });
 
   final int limitTotal;
@@ -37,6 +38,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
   final $AsyncNotifierProvider<T, ToneHarborTrackObjectList> baseProvider;
   final SongsPageSortAction sortAction;
   final bool isLocal;
+  final bool refreshRandom;
 
   PreferredSizeWidget _buildAppBar(
     WidgetRef ref,
@@ -77,8 +79,17 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
           },
           icon: const Icon(Icons.fact_check_rounded, size: 18),
         ),
+        if (refreshRandom)
+          IconButton(
+            icon: Icon(Icons.update_rounded, size: 18),
+            onPressed: () {
+              ref.invalidate(randomSongsProvider);
+            },
+          ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            ref.context.push("/setting");
+          },
           icon: const Icon(Icons.settings_rounded, size: 18),
         ),
       ],

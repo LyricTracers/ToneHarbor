@@ -257,7 +257,9 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
           icon: const Icon(Icons.fact_check_rounded, size: 18),
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            context.push("/setting");
+          },
           icon: const Icon(Icons.settings_rounded, size: 18),
         ),
       ],

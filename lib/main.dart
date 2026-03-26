@@ -22,6 +22,7 @@ import 'package:toneharbor/widgets/pages/download_page.dart';
 import 'package:toneharbor/widgets/pages/folders_page.dart';
 import 'package:toneharbor/widgets/pages/playlists_page.dart';
 import 'package:toneharbor/widgets/pages/search_resulut_page.dart';
+import 'package:toneharbor/widgets/pages/setting_page.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -211,6 +212,21 @@ class MyApp extends HookConsumerWidget {
                 },
               ),
               GoRoute(
+                path: '/random_songs/:title',
+                pageBuilder: (context, state) {
+                  return NoTransitionPage<void>(
+                    key: state.pageKey,
+                    child: SongsPage(
+                      title: state.pathParameters['title'] ?? 'Random Songs',
+                      baseProvider: randomSongsProvider(limit: 100),
+                      limitTotal: 100,
+                      sortAction: SongsPageSortAction.none,
+                      refreshRandom: true,
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
                 path: '/most_play/:title',
                 pageBuilder: (context, state) {
                   Future.microtask(() {
@@ -227,6 +243,11 @@ class MyApp extends HookConsumerWidget {
                     ),
                   );
                 },
+              ),
+              GoRoute(
+                path: '/setting',
+                pageBuilder: (context, state) =>
+                    NoTransitionPage(child: SettingPage()),
               ),
             ],
             builder: (context, state, child) {

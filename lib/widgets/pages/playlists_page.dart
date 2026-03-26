@@ -159,7 +159,9 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
         CommonSearchField(searchController: searchController),
         const SizedBox(width: 16),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            context.push("/setting");
+          },
           icon: const Icon(Icons.settings_rounded, size: 18),
         ),
       ],

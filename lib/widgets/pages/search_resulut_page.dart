@@ -70,7 +70,9 @@ class SearchResulutPage extends HookConsumerWidget {
                 icon: const Icon(Icons.fact_check_rounded, size: 18),
               ),
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  context.push("/setting");
+                },
                 icon: const Icon(Icons.settings_rounded, size: 18),
               ),
             ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:path/path.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/models/audio_station/album.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -65,7 +66,9 @@ class AlbumPage extends HookConsumerWidget {
           tooltip: l10n.sort,
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            ref.context.push("/setting");
+          },
           icon: const Icon(Icons.settings_rounded, size: 18),
         ),
       ],

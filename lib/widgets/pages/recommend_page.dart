@@ -21,14 +21,9 @@ class RecommendPage extends BaseContentPage {
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.refresh_rounded, size: 18),
+          icon: Icon(Icons.settings_rounded, size: 18),
           onPressed: () {
-            ref.invalidate(randomSongsProvider);
-            ref.invalidate(recentAlbumsProvider);
-            ref.invalidate(
-              albumsProvider(limit: 20, sortBy: 'year', sortDirection: 'desc'),
-            );
-            ref.invalidate(favoriteSongsProvider(limit: 50));
+            context.push("/setting");
           },
         ),
       ],
@@ -122,12 +117,7 @@ class RecommendPage extends BaseContentPage {
                     TextButton(
                       onPressed: () {
                         context.push(
-                          "/songs/${Uri.encodeComponent(i10n.daily_recommend)}",
-                          extra: (
-                            randomSongsProvider(limit: 100),
-                            100,
-                            SongsPageSortAction.none,
-                          ),
+                          "/random_songs/${Uri.encodeComponent(i10n.daily_recommend)}",
                         );
                       },
                       child: Text(
