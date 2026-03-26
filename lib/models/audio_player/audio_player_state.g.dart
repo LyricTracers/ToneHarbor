@@ -20,6 +20,7 @@ _AudioPlayerState _$AudioPlayerStateFromJson(Map<String, dynamic> json) =>
               )
               .toList() ??
           const [],
+      activeTrackId: json['activeTrackId'] as String?,
     );
 
 Map<String, dynamic> _$AudioPlayerStateToJson(_AudioPlayerState instance) =>
@@ -29,6 +30,7 @@ Map<String, dynamic> _$AudioPlayerStateToJson(_AudioPlayerState instance) =>
       'shuffled': instance.shuffled,
       'currentIndex': instance.currentIndex,
       'tracks': instance.tracks,
+      'activeTrackId': instance.activeTrackId,
     };
 
 const _$PlaylistModeEnumMap = {

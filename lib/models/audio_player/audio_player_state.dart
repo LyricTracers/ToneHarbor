@@ -14,6 +14,7 @@ sealed class AudioPlayerState with _$AudioPlayerState {
     required bool shuffled,
     @Default(0) int currentIndex,
     @Default([]) List<ToneHarborTrackObject> tracks,
+    String? activeTrackId,
   }) = _AudioPlayerState;
 
   factory AudioPlayerState({
@@ -22,6 +23,7 @@ sealed class AudioPlayerState with _$AudioPlayerState {
     required bool shuffled,
     int currentIndex = 0,
     List<ToneHarborTrackObject> tracks = const [],
+    String? activeTrackId,
   }) {
     return AudioPlayerState.inner(
       playing: playing,
@@ -29,6 +31,7 @@ sealed class AudioPlayerState with _$AudioPlayerState {
       shuffled: shuffled,
       currentIndex: currentIndex,
       tracks: tracks,
+      activeTrackId: activeTrackId,
     );
   }
 

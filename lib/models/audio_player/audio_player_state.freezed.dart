@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AudioPlayerState {
 
- bool get playing; PlaylistMode get loopMode; bool get shuffled; int get currentIndex; List<ToneHarborTrackObject> get tracks;
+ bool get playing; PlaylistMode get loopMode; bool get shuffled; int get currentIndex; List<ToneHarborTrackObject> get tracks; String? get activeTrackId;
 /// Create a copy of AudioPlayerState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $AudioPlayerStateCopyWith<AudioPlayerState> get copyWith => _$AudioPlayerStateCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AudioPlayerState&&(identical(other.playing, playing) || other.playing == playing)&&(identical(other.loopMode, loopMode) || other.loopMode == loopMode)&&(identical(other.shuffled, shuffled) || other.shuffled == shuffled)&&(identical(other.currentIndex, currentIndex) || other.currentIndex == currentIndex)&&const DeepCollectionEquality().equals(other.tracks, tracks));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AudioPlayerState&&(identical(other.playing, playing) || other.playing == playing)&&(identical(other.loopMode, loopMode) || other.loopMode == loopMode)&&(identical(other.shuffled, shuffled) || other.shuffled == shuffled)&&(identical(other.currentIndex, currentIndex) || other.currentIndex == currentIndex)&&const DeepCollectionEquality().equals(other.tracks, tracks)&&(identical(other.activeTrackId, activeTrackId) || other.activeTrackId == activeTrackId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,playing,loopMode,shuffled,currentIndex,const DeepCollectionEquality().hash(tracks));
+int get hashCode => Object.hash(runtimeType,playing,loopMode,shuffled,currentIndex,const DeepCollectionEquality().hash(tracks),activeTrackId);
 
 @override
 String toString() {
-  return 'AudioPlayerState(playing: $playing, loopMode: $loopMode, shuffled: $shuffled, currentIndex: $currentIndex, tracks: $tracks)';
+  return 'AudioPlayerState(playing: $playing, loopMode: $loopMode, shuffled: $shuffled, currentIndex: $currentIndex, tracks: $tracks, activeTrackId: $activeTrackId)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $AudioPlayerStateCopyWith<$Res>  {
   factory $AudioPlayerStateCopyWith(AudioPlayerState value, $Res Function(AudioPlayerState) _then) = _$AudioPlayerStateCopyWithImpl;
 @useResult
 $Res call({
- bool playing, PlaylistMode loopMode, bool shuffled, int currentIndex, List<ToneHarborTrackObject> tracks
+ bool playing, PlaylistMode loopMode, bool shuffled, int currentIndex, List<ToneHarborTrackObject> tracks, String? activeTrackId
 });
 
 
@@ -65,14 +65,15 @@ class _$AudioPlayerStateCopyWithImpl<$Res>
 
 /// Create a copy of AudioPlayerState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? playing = null,Object? loopMode = null,Object? shuffled = null,Object? currentIndex = null,Object? tracks = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? playing = null,Object? loopMode = null,Object? shuffled = null,Object? currentIndex = null,Object? tracks = null,Object? activeTrackId = freezed,}) {
   return _then(_self.copyWith(
 playing: null == playing ? _self.playing : playing // ignore: cast_nullable_to_non_nullable
 as bool,loopMode: null == loopMode ? _self.loopMode : loopMode // ignore: cast_nullable_to_non_nullable
 as PlaylistMode,shuffled: null == shuffled ? _self.shuffled : shuffled // ignore: cast_nullable_to_non_nullable
 as bool,currentIndex: null == currentIndex ? _self.currentIndex : currentIndex // ignore: cast_nullable_to_non_nullable
 as int,tracks: null == tracks ? _self.tracks : tracks // ignore: cast_nullable_to_non_nullable
-as List<ToneHarborTrackObject>,
+as List<ToneHarborTrackObject>,activeTrackId: freezed == activeTrackId ? _self.activeTrackId : activeTrackId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -154,10 +155,10 @@ return inner(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( bool playing,  PlaylistMode loopMode,  bool shuffled,  int currentIndex,  List<ToneHarborTrackObject> tracks)?  inner,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( bool playing,  PlaylistMode loopMode,  bool shuffled,  int currentIndex,  List<ToneHarborTrackObject> tracks,  String? activeTrackId)?  inner,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AudioPlayerState() when inner != null:
-return inner(_that.playing,_that.loopMode,_that.shuffled,_that.currentIndex,_that.tracks);case _:
+return inner(_that.playing,_that.loopMode,_that.shuffled,_that.currentIndex,_that.tracks,_that.activeTrackId);case _:
   return orElse();
 
 }
@@ -175,10 +176,10 @@ return inner(_that.playing,_that.loopMode,_that.shuffled,_that.currentIndex,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( bool playing,  PlaylistMode loopMode,  bool shuffled,  int currentIndex,  List<ToneHarborTrackObject> tracks)  inner,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( bool playing,  PlaylistMode loopMode,  bool shuffled,  int currentIndex,  List<ToneHarborTrackObject> tracks,  String? activeTrackId)  inner,}) {final _that = this;
 switch (_that) {
 case _AudioPlayerState():
-return inner(_that.playing,_that.loopMode,_that.shuffled,_that.currentIndex,_that.tracks);}
+return inner(_that.playing,_that.loopMode,_that.shuffled,_that.currentIndex,_that.tracks,_that.activeTrackId);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -192,10 +193,10 @@ return inner(_that.playing,_that.loopMode,_that.shuffled,_that.currentIndex,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( bool playing,  PlaylistMode loopMode,  bool shuffled,  int currentIndex,  List<ToneHarborTrackObject> tracks)?  inner,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( bool playing,  PlaylistMode loopMode,  bool shuffled,  int currentIndex,  List<ToneHarborTrackObject> tracks,  String? activeTrackId)?  inner,}) {final _that = this;
 switch (_that) {
 case _AudioPlayerState() when inner != null:
-return inner(_that.playing,_that.loopMode,_that.shuffled,_that.currentIndex,_that.tracks);case _:
+return inner(_that.playing,_that.loopMode,_that.shuffled,_that.currentIndex,_that.tracks,_that.activeTrackId);case _:
   return null;
 
 }
@@ -207,7 +208,7 @@ return inner(_that.playing,_that.loopMode,_that.shuffled,_that.currentIndex,_tha
 @JsonSerializable()
 
 class _AudioPlayerState extends AudioPlayerState {
-   _AudioPlayerState({required this.playing, required this.loopMode, required this.shuffled, this.currentIndex = 0, final  List<ToneHarborTrackObject> tracks = const []}): _tracks = tracks,super._();
+   _AudioPlayerState({required this.playing, required this.loopMode, required this.shuffled, this.currentIndex = 0, final  List<ToneHarborTrackObject> tracks = const [], this.activeTrackId}): _tracks = tracks,super._();
   factory _AudioPlayerState.fromJson(Map<String, dynamic> json) => _$AudioPlayerStateFromJson(json);
 
 @override final  bool playing;
@@ -221,6 +222,7 @@ class _AudioPlayerState extends AudioPlayerState {
   return EqualUnmodifiableListView(_tracks);
 }
 
+@override final  String? activeTrackId;
 
 /// Create a copy of AudioPlayerState
 /// with the given fields replaced by the non-null parameter values.
@@ -235,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AudioPlayerState&&(identical(other.playing, playing) || other.playing == playing)&&(identical(other.loopMode, loopMode) || other.loopMode == loopMode)&&(identical(other.shuffled, shuffled) || other.shuffled == shuffled)&&(identical(other.currentIndex, currentIndex) || other.currentIndex == currentIndex)&&const DeepCollectionEquality().equals(other._tracks, _tracks));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AudioPlayerState&&(identical(other.playing, playing) || other.playing == playing)&&(identical(other.loopMode, loopMode) || other.loopMode == loopMode)&&(identical(other.shuffled, shuffled) || other.shuffled == shuffled)&&(identical(other.currentIndex, currentIndex) || other.currentIndex == currentIndex)&&const DeepCollectionEquality().equals(other._tracks, _tracks)&&(identical(other.activeTrackId, activeTrackId) || other.activeTrackId == activeTrackId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,playing,loopMode,shuffled,currentIndex,const DeepCollectionEquality().hash(_tracks));
+int get hashCode => Object.hash(runtimeType,playing,loopMode,shuffled,currentIndex,const DeepCollectionEquality().hash(_tracks),activeTrackId);
 
 @override
 String toString() {
-  return 'AudioPlayerState.inner(playing: $playing, loopMode: $loopMode, shuffled: $shuffled, currentIndex: $currentIndex, tracks: $tracks)';
+  return 'AudioPlayerState.inner(playing: $playing, loopMode: $loopMode, shuffled: $shuffled, currentIndex: $currentIndex, tracks: $tracks, activeTrackId: $activeTrackId)';
 }
 
 
@@ -255,7 +257,7 @@ abstract mixin class _$AudioPlayerStateCopyWith<$Res> implements $AudioPlayerSta
   factory _$AudioPlayerStateCopyWith(_AudioPlayerState value, $Res Function(_AudioPlayerState) _then) = __$AudioPlayerStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool playing, PlaylistMode loopMode, bool shuffled, int currentIndex, List<ToneHarborTrackObject> tracks
+ bool playing, PlaylistMode loopMode, bool shuffled, int currentIndex, List<ToneHarborTrackObject> tracks, String? activeTrackId
 });
 
 
@@ -272,14 +274,15 @@ class __$AudioPlayerStateCopyWithImpl<$Res>
 
 /// Create a copy of AudioPlayerState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? playing = null,Object? loopMode = null,Object? shuffled = null,Object? currentIndex = null,Object? tracks = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? playing = null,Object? loopMode = null,Object? shuffled = null,Object? currentIndex = null,Object? tracks = null,Object? activeTrackId = freezed,}) {
   return _then(_AudioPlayerState(
 playing: null == playing ? _self.playing : playing // ignore: cast_nullable_to_non_nullable
 as bool,loopMode: null == loopMode ? _self.loopMode : loopMode // ignore: cast_nullable_to_non_nullable
 as PlaylistMode,shuffled: null == shuffled ? _self.shuffled : shuffled // ignore: cast_nullable_to_non_nullable
 as bool,currentIndex: null == currentIndex ? _self.currentIndex : currentIndex // ignore: cast_nullable_to_non_nullable
 as int,tracks: null == tracks ? _self._tracks : tracks // ignore: cast_nullable_to_non_nullable
-as List<ToneHarborTrackObject>,
+as List<ToneHarborTrackObject>,activeTrackId: freezed == activeTrackId ? _self.activeTrackId : activeTrackId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

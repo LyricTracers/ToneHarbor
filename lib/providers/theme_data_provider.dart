@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
@@ -86,7 +87,13 @@ class SyncSongIcon extends _$SyncSongIcon {
 class SongIcon extends _$SongIcon {
   @override
   Future<ImageProvider?> build() async {
-    final activeTrack = ref.watch(audioPlayerStateProvider).activeTrack;
+    final activeTrackId = ref.watch(
+      audioPlayerStateProvider.select((state) => state.activeTrackId),
+    );
+    if (activeTrackId == null) {
+      return null;
+    }
+    final activeTrack = ref.read(audioPlayerStateProvider).activeTrack;
     if (activeTrack == null) {
       return null;
     }
@@ -96,6 +103,7 @@ class SongIcon extends _$SongIcon {
       activeTrack.album,
       activeTrack.artist,
     );
+
     try {
       return NetworkImage(coverUrl);
     } catch (e) {

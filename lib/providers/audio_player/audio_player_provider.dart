@@ -14,6 +14,11 @@ part 'audio_player_provider.g.dart';
 
 @keepAlive
 class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
+  AudioPlayerState _updateActiveTrackId(AudioPlayerState newState) {
+    final activeTrack = newState.activeTrack;
+    return newState.copyWith(activeTrackId: activeTrack?.id);
+  }
+
   @override
   AudioPlayerState build() {
     final subscriptions = [
@@ -69,7 +74,9 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
               .map((e) => ToneHarborMedia.media(e).track)
               .toList();
 
-          state = state.copyWith(tracks: tracks, currentIndex: playlist.index);
+          state = _updateActiveTrackId(
+            state.copyWith(tracks: tracks, currentIndex: playlist.index),
+          );
           await _updatePlayerState(
             AudioPlayerStateTableCompanion(
               currentIndex: Value(state.currentIndex),
@@ -140,7 +147,9 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
         ),
       );
     } else if (tracks.isNotEmpty) {
-      state = state.copyWith(tracks: tracks, currentIndex: currentIndex);
+      state = _updateActiveTrackId(
+        state.copyWith(tracks: tracks, currentIndex: currentIndex),
+      );
       await audioPlayer.openPlaylist(
         tracks.asMediaList(),
         initialIndex: currentIndex,
@@ -179,7 +188,7 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
       ...state.tracks.sublist(insertIndex),
     ];
 
-    state = state.copyWith(tracks: newTracks);
+    state = _updateActiveTrackId(state.copyWith(tracks: newTracks));
 
     await audioPlayer.addTrackAt(ToneHarborMedia(track), insertIndex);
 
@@ -213,7 +222,7 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
       ...state.tracks.sublist(insertIndex),
     ];
 
-    state = state.copyWith(tracks: newTracks);
+    state = _updateActiveTrackId(state.copyWith(tracks: newTracks));
 
     int i = 0;
     for (final track in addableTracks) {
@@ -230,7 +239,9 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
   }
 
   Future<void> addTrack(ToneHarborTrackObject track) async {
-    state = state.copyWith(tracks: [...state.tracks, track]);
+    state = _updateActiveTrackId(
+      state.copyWith(tracks: [...state.tracks, track]),
+    );
 
     await audioPlayer.addTrack(ToneHarborMedia(track));
 
@@ -243,7 +254,9 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
   }
 
   Future<void> addTracks(Iterable<ToneHarborTrackObject> tracks) async {
-    state = state.copyWith(tracks: [...state.tracks, ...tracks]);
+    state = _updateActiveTrackId(
+      state.copyWith(tracks: [...state.tracks, ...tracks]),
+    );
 
     for (final track in tracks) {
       await audioPlayer.addTrack(ToneHarborMedia(track));
@@ -269,7 +282,9 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
         ? max(state.currentIndex - 1, 0)
         : min(state.currentIndex, newTracks.length - 1);
 
-    state = state.copyWith(tracks: newTracks, currentIndex: newCurrentIndex);
+    state = _updateActiveTrackId(
+      state.copyWith(tracks: newTracks, currentIndex: newCurrentIndex),
+    );
 
     await audioPlayer.removeTrack(removeIndex);
 
@@ -305,7 +320,9 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
         ? 0
         : max(state.currentIndex - removedBeforeCurrent, 0);
 
-    state = state.copyWith(tracks: newTracks, currentIndex: newCurrentIndex);
+    state = _updateActiveTrackId(
+      state.copyWith(tracks: newTracks, currentIndex: newCurrentIndex),
+    );
 
     for (final removeIndex in removeIndexes) {
       await audioPlayer.removeTrack(removeIndex);
@@ -343,7 +360,9 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
         ? 0
         : max(state.currentIndex - removedBeforeCurrent, 0);
 
-    state = state.copyWith(tracks: newTracks, currentIndex: newCurrentIndex);
+    state = _updateActiveTrackId(
+      state.copyWith(tracks: newTracks, currentIndex: newCurrentIndex),
+    );
 
     for (final removeIndex in removeIndexes) {
       await audioPlayer.removeTrack(removeIndex);
@@ -383,9 +402,11 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
       logger.d('[AudioPlayer] Track: ${media.track.id} -> ${media.uri}');
     }
 
-    state = state.copyWith(
-      tracks: medias.map((media) => media.track).toList(),
-      currentIndex: initialIndex,
+    state = _updateActiveTrackId(
+      state.copyWith(
+        tracks: medias.map((media) => media.track).toList(),
+        currentIndex: initialIndex,
+      ),
     );
 
     logger.i(
@@ -457,12 +478,14 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
   }
 
   Future<void> stop() async {
-    state = state.copyWith(
-      tracks: [],
-      currentIndex: 0,
-      loopMode: PlaylistMode.none,
-      playing: false,
-      shuffled: false,
+    state = _updateActiveTrackId(
+      state.copyWith(
+        tracks: [],
+        currentIndex: 0,
+        loopMode: PlaylistMode.none,
+        playing: false,
+        shuffled: false,
+      ),
     );
     await audioPlayer.stop();
     await _updatePlayerState(

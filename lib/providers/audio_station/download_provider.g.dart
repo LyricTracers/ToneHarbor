@@ -66,7 +66,7 @@ final class StreamUrlProvider
   }
 }
 
-String _$streamUrlHash() => r'2f73832b861d1c9540e095e40b6b66f5e472e4f9';
+String _$streamUrlHash() => r'01f341f4e1aba2f7292e4e354393819928893d06';
 
 final class StreamUrlFamily extends $Family
     with
