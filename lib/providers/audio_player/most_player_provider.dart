@@ -90,7 +90,8 @@ class MostPlayerService {
         );
       } else {
         final count = await db.mostPlayStateTable.count().getSingle();
-        if (count >= 100) {
+        if (count >= 110) {
+          final deleteCount = count - 109;
           final toDelete =
               await (db.selectOnly(db.mostPlayStateTable)
                     ..addColumns([db.mostPlayStateTable.trackId])
@@ -100,7 +101,7 @@ class MostPlayerService {
                         expression: db.mostPlayStateTable.lastPlayedAt,
                       ),
                     ])
-                    ..limit(count - 99))
+                    ..limit(deleteCount))
                   .map((row) => row.read(db.mostPlayStateTable.trackId)!)
                   .get();
 
