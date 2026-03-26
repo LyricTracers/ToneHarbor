@@ -195,7 +195,9 @@ class MyApp extends HookConsumerWidget {
               GoRoute(
                 path: '/local_songs/:title',
                 pageBuilder: (context, state) {
-                  ref.invalidate(localSongsProvider);
+                  Future.microtask(() {
+                    ref.invalidate(localSongsProvider);
+                  });
                   return NoTransitionPage<void>(
                     key: state.pageKey,
                     child: SongsPage(
@@ -211,7 +213,9 @@ class MyApp extends HookConsumerWidget {
               GoRoute(
                 path: '/most_play/:title',
                 pageBuilder: (context, state) {
-                  ref.invalidate(mostPlayerProvider());
+                  Future.microtask(() {
+                    ref.invalidate(mostPlayerProvider());
+                  });
                   return NoTransitionPage<void>(
                     key: state.pageKey,
                     child: SongsPage(
