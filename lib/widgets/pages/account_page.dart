@@ -31,6 +31,44 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     }
   }
 
+  Widget _buildListTile({
+    required String title,
+    required String value,
+    required ColorScheme colorScheme,
+    VoidCallback? onTap,
+    Widget? trailing,
+  }) {
+    return ListTile(
+      onTap: onTap,
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: colorScheme.onSurface,
+        ),
+      ),
+      trailing:
+          trailing ??
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 14,
+              color: colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+    );
+  }
+
+  Widget _buildDivider(ColorScheme colorScheme) {
+    return Divider(
+      height: 1,
+      color: colorScheme.outline.withValues(alpha: 0.2),
+      indent: 15,
+      endIndent: 15,
+    );
+  }
+
   Widget _logout(
     WidgetRef ref,
     AppLocalizations l10n,
@@ -65,77 +103,32 @@ class AccountPage extends HookConsumerWidget with BuildItem {
 
     return Column(
       children: [
-        ListTile(
-          onTap: () {
-            copyToClipboard(url, ref.context, colorScheme.secondary);
-          },
-          title: Text(
-            "设备地址",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
-          ),
-          trailing: Text(
-            url,
-            style: TextStyle(
-              fontSize: 14,
-              color: colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
-          ),
+        _buildListTile(
+          title: "设备地址",
+          value: url,
+          colorScheme: colorScheme,
+          onTap: () => copyToClipboard(url, ref.context, colorScheme.secondary),
         ),
-        Divider(
-          height: 1,
-          color: colorScheme.outline.withValues(alpha: 0.2),
-          indent: 15,
-          endIndent: 15,
-        ),
-        ListTile(
-          onTap: () {
-            copyToClipboard(
-              account?.account ?? '',
-              ref.context,
-              colorScheme.secondary,
-            );
-          },
-          title: Text(
-            "用户名",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
-          ),
-          trailing: Text(
+        _buildDivider(colorScheme),
+        _buildListTile(
+          title: "用户名",
+          value: account?.account ?? '',
+          colorScheme: colorScheme,
+          onTap: () => copyToClipboard(
             account?.account ?? '',
-            style: TextStyle(
-              fontSize: 14,
-              color: colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
+            ref.context,
+            colorScheme.secondary,
           ),
         ),
-        Divider(
-          height: 1,
-          color: colorScheme.outline.withValues(alpha: 0.2),
-          indent: 15,
-          endIndent: 15,
-        ),
-        ListTile(
-          onTap: () {
-            copyToClipboard(
-              account?.passwd ?? '',
-              ref.context,
-              colorScheme.secondary,
-            );
-          },
-          title: Text(
-            "密码",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
+        _buildDivider(colorScheme),
+        _buildListTile(
+          title: "密码",
+          value: '',
+          colorScheme: colorScheme,
+          onTap: () => copyToClipboard(
+            account?.passwd ?? '',
+            ref.context,
+            colorScheme.secondary,
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
@@ -182,86 +175,28 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     }
     return Column(
       children: [
-        ListTile(
-          title: Text(
-            "型号",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
-          ),
-          trailing: Text(
-            dsmInfo.model,
-            style: TextStyle(
-              fontSize: 14,
-              color: colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
-          ),
+        _buildListTile(
+          title: "型号",
+          value: dsmInfo.model,
+          colorScheme: colorScheme,
         ),
-        Divider(
-          height: 1,
-          color: colorScheme.outline.withValues(alpha: 0.2),
-          indent: 15,
-          endIndent: 15,
+        _buildDivider(colorScheme),
+        _buildListTile(
+          title: "序列号",
+          value: dsmInfo.serial,
+          colorScheme: colorScheme,
         ),
-        ListTile(
-          title: Text(
-            "序列号",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
-          ),
-          trailing: Text(
-            dsmInfo.serial,
-            style: TextStyle(
-              fontSize: 14,
-              color: colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
-          ),
+        _buildDivider(colorScheme),
+        _buildListTile(
+          title: "DSM版本号",
+          value: dsmInfo.versionString,
+          colorScheme: colorScheme,
         ),
-        Divider(
-          height: 1,
-          color: colorScheme.outline.withValues(alpha: 0.2),
-          indent: 15,
-          endIndent: 15,
-        ),
-        ListTile(
-          title: Text(
-            "DSM版本号",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
-          ),
-          trailing: Text(
-            dsmInfo.versionString,
-            style: TextStyle(
-              fontSize: 14,
-              color: colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
-          ),
-        ),
-
-        Divider(
-          height: 1,
-          color: colorScheme.outline.withValues(alpha: 0.2),
-          indent: 15,
-          endIndent: 15,
-        ),
-
-        ListTile(
-          title: Text(
-            "设备温度",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
-          ),
+        _buildDivider(colorScheme),
+        _buildListTile(
+          title: "设备温度",
+          value: "${dsmInfo.temperature}°C",
+          colorScheme: colorScheme,
           trailing: Text(
             "${dsmInfo.temperature}°C",
             style: TextStyle(
@@ -270,25 +205,11 @@ class AccountPage extends HookConsumerWidget with BuildItem {
             ),
           ),
         ),
-        Divider(
-          height: 1,
-          color: colorScheme.outline.withValues(alpha: 0.2),
-          indent: 15,
-          endIndent: 15,
-        ),
-        ListTile(
-          title: Text(
-            "运行时长",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
-          ),
-          trailing: Text(
-            _formatUptime(currentUptime),
-            style: const TextStyle(fontSize: 14),
-          ),
+        _buildDivider(colorScheme),
+        _buildListTile(
+          title: "运行时长",
+          value: _formatUptime(currentUptime),
+          colorScheme: colorScheme,
         ),
       ],
     );
