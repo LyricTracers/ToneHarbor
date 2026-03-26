@@ -28,7 +28,7 @@ class SongContextMenu {
       MenuDivider(),
     ];
 
-    if (isLocal) {
+    if (isLocal || item.isLocal) {
       final localSongsNotifier = ref.read(localSongsProvider.notifier);
       final localSong = localSongsNotifier.getLocalSong(itemId);
       final availableQualities = localSongsNotifier.getAvailableQualities(

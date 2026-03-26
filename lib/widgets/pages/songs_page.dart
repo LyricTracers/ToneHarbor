@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -218,13 +220,12 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                         selectionState: songSelectionState,
                         onTap: () async {
                           {
-                            List<ToneHarborTrackObject> tracks;
+                            var tracks = <ToneHarborTrackObject>[];
                             var initIndex = index;
                             if (isLocal) {
                               final localSongsNotifier = ref.read(
                                 localSongsProvider.notifier,
                               );
-                              tracks = [];
                               initIndex = 0;
                               for (final song in filteredItems) {
                                 final track = await localSongsNotifier
@@ -237,7 +238,20 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                                 }
                               }
                             } else {
-                              tracks = filteredItems;
+                              initIndex = 0;
+                              tracks.addAll(
+                                filteredItems.where((song) {
+                                  if (!song.isSong) return false;
+                                  if (song.id == item.id) {
+                                    initIndex = tracks.length;
+                                  }
+                                  if (song is ToneHarborTrackObjectLocal) {
+                                    return song.path.isNotEmpty &&
+                                        File(song.path).existsSync();
+                                  }
+                                  return true;
+                                }),
+                              );
                             }
                             if (tracks.isEmpty) return;
                             await ref

@@ -119,6 +119,14 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   bool get isFolder => this is ToneHarborTrackObjectFolder;
   bool get isSong =>
       this is ToneHarborTrackObjectFull || this is ToneHarborTrackObjectLocal;
+  bool get isLocal => this is ToneHarborTrackObjectLocal;
+
+  String get path {
+    if (this is ToneHarborTrackObjectLocal) {
+      return (this as ToneHarborTrackObjectLocal).path;
+    }
+    return '';
+  }
 
   String get artist {
     if (this is ToneHarborTrackObjectFull) {
@@ -208,6 +216,29 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
       return (this as ToneHarborTrackObjectLocal).codec;
     }
     return '';
+  }
+
+  ToneHarborTrackObject convertFull() {
+    if (this is ToneHarborTrackObjectLocal) {
+      final local = this as ToneHarborTrackObjectLocal;
+      return ToneHarborTrackObject.full(
+        id: local.id,
+        title: local.title,
+        artist: local.artist,
+        album: local.album,
+        externalUri: local.externalUri,
+        duration: local.duration,
+        filesize: local.filesize,
+        bitrate: local.bitrate,
+        channel: local.channel,
+        codec: local.codec,
+        container: local.container,
+        frequency: local.frequency,
+        rating: local.rating,
+        platform: ToneHarborTrackPlatform.local,
+      );
+    }
+    return this;
   }
 
   Metadata? toMetadata({

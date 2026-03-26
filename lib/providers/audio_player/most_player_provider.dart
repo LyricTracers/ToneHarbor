@@ -71,6 +71,7 @@ class MostPlayerService {
     if (!track.isSong) {
       return;
     }
+    track = track.convertFull();
     final trackId = track.id;
 
     await db.transaction(() async {
