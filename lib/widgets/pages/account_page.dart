@@ -61,8 +61,36 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     ValueNotifier<bool> obscurePassword,
   ) {
     var account = ref.read(accountInfoProvider);
+    var url = ref.read(baseUrlProvider);
+
     return Column(
       children: [
+        ListTile(
+          onTap: () {
+            copyToClipboard(url, ref.context, colorScheme.secondary);
+          },
+          title: Text(
+            "设备地址",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          trailing: Text(
+            url,
+            style: TextStyle(
+              fontSize: 14,
+              color: colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+        ),
+        Divider(
+          height: 1,
+          color: colorScheme.outline.withValues(alpha: 0.2),
+          indent: 15,
+          endIndent: 15,
+        ),
         ListTile(
           onTap: () {
             copyToClipboard(
