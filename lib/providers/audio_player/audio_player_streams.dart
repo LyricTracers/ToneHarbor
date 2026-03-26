@@ -67,18 +67,17 @@ class AudioPlayerStreamListeners {
             activeMedia.title,
             activeMedia.artist,
           );
-          try {
-            TrayManager.instance.updateMusicPlayerArtworkFromUrl(
-              ToneHarborMedia.getCoverUrl(
-                activeMedia.id,
-                activeMedia.album,
-                activeMedia.artist,
-              ),
-            );
-          } catch (e) {
-            logger.w(
-              '[AudioPlayer] Failed to update artwork: $e',
-            );
+          final coverUrl = ToneHarborMedia.getCoverUrl(
+            activeMedia.id,
+            activeMedia.album,
+            activeMedia.artist,
+          );
+          if (coverUrl.isNotEmpty) {
+            TrayManager.instance.updateMusicPlayerArtworkFromUrl(coverUrl).catchError((e) {
+              logger.w(
+                '[AudioPlayer] Failed to update artwork: $e',
+              );
+            });
           }
         }
       } catch (e, stack) {

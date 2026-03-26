@@ -32,7 +32,7 @@ Future<AuthResponse> _fullLogin(
   Account account,
   AppLocalizations l10n,
 ) async {
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final request = AuthRequest(
     api: 'SYNO.API.Auth',
@@ -158,7 +158,7 @@ Future<AuthResponse> _refreshToken(
   AppLocalizations l10n,
 ) async {
   // 直接使用传入的 serverUrl 构建 baseUrl，而不是通过 ref 获取
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
   logger.d('刷新Token，使用baseUrl: $baseUrl');
   final cookieString = 'did=${cookies.did}; id=${cookies.id}';
 
@@ -231,7 +231,7 @@ Future<AuthResponse> _refreshTokenWithWidgetRef(
   AudioStationCookies cookies,
   AppLocalizations l10n,
 ) async {
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
   logger.d('刷新Token，使用baseUrl: $baseUrl');
   final cookieString = 'did=${cookies.did}; id=${cookies.id}';
 

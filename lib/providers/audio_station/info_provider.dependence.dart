@@ -67,7 +67,7 @@ Future<SynoAPIInfoResponse> _queryAPI({
     }
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   late final HttpTextResponse response;
   try {
@@ -146,7 +146,7 @@ Future<AudioStationInfoResponse> _sendAudioStationInfoRequest({
     return AudioStationInfoResponse(success: false);
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);
@@ -218,7 +218,7 @@ Future<DSMInfoResponse> _sendDSMInfoRequest({
     return DSMInfoResponse(success: false);
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);

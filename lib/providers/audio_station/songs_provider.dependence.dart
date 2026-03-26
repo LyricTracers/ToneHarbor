@@ -21,7 +21,7 @@ Future<ToneHarborTrackObjectList> _sendSongRequest<T>({
   }
   logger.d('发送歌曲请求: $request');
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final params = Map<String, dynamic>.from(toJson())
     ..removeWhere((key, value) => value == null);
@@ -91,7 +91,7 @@ Future<LyricsResponse> _sendLyricsRequest<T>({
     return LyricsResponse(success: false);
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final params = Map<String, dynamic>.from(toJson())
     ..removeWhere((key, value) => value == null);
@@ -165,7 +165,7 @@ Future<SearchLyricsResponse> _sendSearchLyricsRequest<T>({
     return SearchLyricsResponse(success: false);
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   late final HttpTextResponse response;
   try {
@@ -235,7 +235,7 @@ Future<SongInfoResponse> _sendSongInfoRequest<T>({
     return SongInfoResponse(success: false, data: SongData(songs: []));
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final params = Map<String, dynamic>.from(toJson())
     ..removeWhere((key, value) => value == null);
@@ -392,7 +392,7 @@ Future<SetRatingResponse> _setRating({
     return SetRatingResponse(success: false);
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final request = SetRatingRequest(
     api: 'SYNO.AudioStation.Song',
@@ -492,7 +492,7 @@ Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
     return GetNumberOfPlugInsResponse(success: false, hasPlugIn: 0);
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final request = GetNumberOfPlugInsRequest(action: 'getNumberOfPlugIns');
 

@@ -94,7 +94,7 @@ class AudioStationCookiesInfo extends _$AudioStationCookiesInfo {
 }
 
 @keepAlive
-Future<String> baseUrl(Ref ref) async {
+String baseUrl(Ref ref) {
   final serverUrl = ref.watch(serverUrlProvider);
   if (serverUrl.isEmpty) {
     throw AudioStationException(message: '服务器地址不能为空');
@@ -185,7 +185,7 @@ Future<Map<String, String>?> authHeaders(Ref ref) async {
     return null;
   }
 
-  final baseUrl = await ref.watch(baseUrlProvider.future);
+  final baseUrl = ref.watch(baseUrlProvider);
 
   final headers = <String, String>{
     'x-requested-with': 'XMLHttpRequest',
@@ -250,7 +250,7 @@ Future<LogoutResponse> logout(WidgetRef ref) async {
     return LogoutResponse(success: false);
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final request = LogoutRequest(
     api: 'SYNO.API.Auth',

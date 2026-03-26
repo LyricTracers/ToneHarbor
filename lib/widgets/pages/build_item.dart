@@ -1,0 +1,168 @@
+import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/l10n/app_localizations.dart';
+
+mixin BuildItem {
+  Widget buildAppBar(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+    String title,
+  ) {
+    return AppBar(
+      title: Text(
+        title,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+      centerTitle: false,
+    );
+  }
+
+  Widget buildSectionTitle(String title, ColorScheme colorScheme) {
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: colorScheme.secondary,
+        ),
+      ),
+    );
+  }
+
+  Widget buildDropdownTile<T>({
+    required String title,
+    required List<T> items,
+    required T value,
+    required ValueChanged<T?>? onChanged,
+  }) {
+    return ListTile(
+      title: Text(title, style: const TextStyle(fontSize: 14)),
+      trailing: DropdownButton<T>(
+        value: value ?? items.first,
+        items: items
+            .map(
+              (e) => DropdownMenuItem(
+                value: e,
+                child: Text(
+                  e.toString().split('.').last,
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ),
+            )
+            .toList(),
+        onChanged: onChanged,
+      ),
+    );
+  }
+
+  Widget buildSliderTile({
+    required String title,
+    required double value,
+    required Function(double) onChanged,
+    required double minValue,
+    required double maxValue,
+    required ColorScheme colorScheme,
+  }) {
+    return ListTile(
+      title: Text(
+        '$title: ${value.toStringAsFixed(1)}',
+        style: const TextStyle(fontSize: 14),
+      ),
+      trailing: SizedBox(
+        width: 200,
+        child: Slider(
+          value: value,
+          min: minValue,
+          max: maxValue,
+          divisions: ((maxValue - minValue) * 10).toInt(),
+          onChanged: (v) => onChanged(v),
+          activeColor: colorScheme.secondary.withValues(alpha: 0.9),
+          inactiveColor: colorScheme.outline.withValues(alpha: 0.9),
+          thumbColor: colorScheme.secondary.withValues(alpha: 0.9),
+        ),
+      ),
+    );
+  }
+
+  Widget buildSwitchTile(
+    String title,
+    String? title2,
+    String subtitle,
+    String? subtitle2,
+    bool value,
+    Function(bool) onChanged,
+    ColorScheme colorScheme,
+  ) {
+    return ListTile(
+      title: Text(
+        value ? title : title2 ?? '',
+        style: const TextStyle(fontSize: 14),
+      ),
+      subtitle: Text(
+        value ? subtitle : subtitle2 ?? '',
+        style: const TextStyle(fontSize: 10),
+      ),
+      trailing: Switch(
+        value: value,
+        onChanged: onChanged,
+        activeTrackColor: colorScheme.secondary.withValues(alpha: 0.9),
+        activeThumbColor: colorScheme.secondaryContainer.withValues(alpha: 0.9),
+        inactiveTrackColor: colorScheme.outline.withValues(alpha: 0.9),
+      ),
+    );
+  }
+
+  List<Widget> buildItem(
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+    String title,
+    Widget child,
+  ) {
+    return [
+      buildSectionTitle(title, colorScheme),
+      Container(
+        width: double.infinity,
+        alignment: Alignment.centerLeft,
+        decoration: BoxDecoration(
+          color: colorScheme.tertiary.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: colorScheme.tertiary.withValues(alpha: 0.2),
+          ),
+        ),
+        child: child,
+      ),
+    ];
+  }
+
+  Widget buildContent(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+    List<Widget> children,
+  ) {
+    return Expanded(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 15,
+            bottom: 15,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: children,
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -28,7 +28,7 @@ Future<String> streamUrl(
     return "";
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
   final synotoken = ref.read(synoTokenProvider);
   quality ??= ref.read(audioQualityProvider);
 
@@ -108,7 +108,7 @@ Future<String> _getCoverUrlByArtist({
   required Ref ref,
   required String artistName,
 }) async {
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
   final synotoken = ref.read(synoTokenProvider);
 
   final queryParams = {
@@ -137,7 +137,7 @@ Future<String> _getCoverUrlByAlbum({
   bool isHr = true,
   String library = 'shared',
 }) async {
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
   final synotoken = ref.read(synoTokenProvider);
   // final timestamp = DateTime.now().millisecondsSinceEpoch;
 
@@ -170,7 +170,7 @@ Future<String> _getCoverUrlBySongId({
   required String songId,
   String library = 'all',
 }) async {
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
   final synotoken = ref.read(synoTokenProvider);
 
   final queryParams = {
@@ -339,7 +339,7 @@ Future<List<String>> batchDownloadSongs({
     return [];
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
   final defaultFilename = '${songIds.first}_batch_download.zip';
 
   final request = BatchDownloadRequest(

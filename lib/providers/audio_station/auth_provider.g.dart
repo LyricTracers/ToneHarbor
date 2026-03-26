@@ -220,9 +220,8 @@ abstract class _$AudioStationCookiesInfo
 @ProviderFor(baseUrl)
 final baseUrlProvider = BaseUrlProvider._();
 
-final class BaseUrlProvider
-    extends $FunctionalProvider<AsyncValue<String>, String, FutureOr<String>>
-    with $FutureModifier<String>, $FutureProvider<String> {
+final class BaseUrlProvider extends $FunctionalProvider<String, String, String>
+    with $Provider<String> {
   BaseUrlProvider._()
     : super(
         from: null,
@@ -239,16 +238,24 @@ final class BaseUrlProvider
 
   @$internal
   @override
-  $FutureProviderElement<String> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+  $ProviderElement<String> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
-  FutureOr<String> create(Ref ref) {
+  String create(Ref ref) {
     return baseUrl(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String>(value),
+    );
   }
 }
 
-String _$baseUrlHash() => r'9cfa5682d103aba97321df85fa6a2c41300fcb61';
+String _$baseUrlHash() => r'7cfd93ec1d917e0fb10b3a36079b60ecb3492a91';
 
 @ProviderFor(SynoToken)
 final synoTokenProvider = SynoTokenProvider._();

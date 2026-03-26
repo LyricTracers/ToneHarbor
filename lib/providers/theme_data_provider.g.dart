@@ -199,7 +199,7 @@ final class GetImageProviderProvider
   }
 }
 
-String _$getImageProviderHash() => r'a8a8ccd04924666c097c4b3343101a1d2e48e42f';
+String _$getImageProviderHash() => r'fe558b2e782e1ed101fe28449ac2202d7be84290';
 
 @ProviderFor(SyncSongIcon)
 final syncSongIconProvider = SyncSongIconProvider._();

@@ -18,7 +18,7 @@ Future<AlbumResponse> _sendAlbumRequest<T>({
     return AlbumResponse(success: false);
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final params = Map<String, dynamic>.from(toJson())
     ..removeWhere((key, value) => value == null);

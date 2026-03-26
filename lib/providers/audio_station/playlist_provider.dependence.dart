@@ -17,7 +17,7 @@ Future<PlaylistListResponse> _sendPlaylistRequest<T>({
     return PlaylistListResponse(success: false);
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final params = Map<String, dynamic>.from(toJson())
     ..removeWhere((key, value) => value == null);
@@ -89,7 +89,7 @@ Future<PlaylistDetailResponse> _sendPlaylistDetailRequest<T>({
     return PlaylistDetailResponse(success: false);
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final params = Map<String, dynamic>.from(toJson())
     ..removeWhere((key, value) => value == null);
@@ -333,7 +333,7 @@ Future<CreatePlaylistResponse> _createPlaylist({
     return CreatePlaylistResponse(success: false);
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final request = CreatePlaylistRequest(
     api: 'SYNO.AudioStation.Playlist',
@@ -417,7 +417,7 @@ Future<RenamePlaylistResponse> _renamePlaylist({
     return RenamePlaylistResponse(success: false);
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final request = RenamePlaylistRequest(
     api: 'SYNO.AudioStation.Playlist',
@@ -500,7 +500,7 @@ Future<DeletePlaylistResponse> _deletePlaylist({
     return DeletePlaylistResponse(success: false);
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final request = DeletePlaylistRequest(
     api: 'SYNO.AudioStation.Playlist',
@@ -586,7 +586,7 @@ Future<AddPlaylistSongsResponse> _addSongToPlaylist({
     return AddPlaylistSongsResponse(success: false);
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final request = AddPlaylistSongsRequest(
     api: 'SYNO.AudioStation.Playlist',
@@ -672,7 +672,7 @@ Future<RemoveMissingSongsResponse> _removeMissingSongs({
     return RemoveMissingSongsResponse(success: false);
   }
 
-  final baseUrl = await ref.read(baseUrlProvider.future);
+  final baseUrl = ref.read(baseUrlProvider);
 
   final request = RemoveMissingSongsRequest(
     api: 'SYNO.AudioStation.Playlist',

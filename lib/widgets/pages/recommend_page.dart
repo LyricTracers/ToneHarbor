@@ -76,7 +76,7 @@ class RecommendPage extends BaseContentPage {
                         i10n.more,
                         style: TextStyle(
                           fontSize: 11,
-                          color: colorScheme.onPrimaryContainer,
+                          color: colorScheme.tertiary,
                         ),
                       ),
                     ),
@@ -124,7 +124,7 @@ class RecommendPage extends BaseContentPage {
                         i10n.more,
                         style: TextStyle(
                           fontSize: 11,
-                          color: colorScheme.onPrimaryContainer,
+                          color: colorScheme.tertiary,
                         ),
                       ),
                     ),
