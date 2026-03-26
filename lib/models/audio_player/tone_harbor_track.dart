@@ -128,6 +128,15 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
     return '';
   }
 
+  String get externalUri {
+    if (this is ToneHarborTrackObjectFull) {
+      return (this as ToneHarborTrackObjectFull).externalUri;
+    } else if (this is ToneHarborTrackObjectLocal) {
+      return (this as ToneHarborTrackObjectLocal).externalUri;
+    }
+    return '';
+  }
+
   String get artist {
     if (this is ToneHarborTrackObjectFull) {
       return (this as ToneHarborTrackObjectFull).artist;

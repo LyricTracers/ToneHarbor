@@ -130,7 +130,7 @@ final class GetColorSchemeProvider
         argument: null,
         retry: null,
         name: r'getColorSchemeProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -150,7 +150,56 @@ final class GetColorSchemeProvider
   }
 }
 
-String _$getColorSchemeHash() => r'b76a6db3303acd298a9f19525d626c4b8dc9f9e6';
+String _$getColorSchemeHash() => r'd9a8e8ee688378da20d8eb4ccafa698a8c3c665d';
+
+@ProviderFor(getImageProvider)
+final getImageProviderProvider = GetImageProviderProvider._();
+
+final class GetImageProviderProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ImageProvider<Object>>,
+          AsyncValue<ImageProvider<Object>>,
+          AsyncValue<ImageProvider<Object>>
+        >
+    with $Provider<AsyncValue<ImageProvider<Object>>> {
+  GetImageProviderProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'getImageProviderProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$getImageProviderHash();
+
+  @$internal
+  @override
+  $ProviderElement<AsyncValue<ImageProvider<Object>>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AsyncValue<ImageProvider<Object>> create(Ref ref) {
+    return getImageProvider(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AsyncValue<ImageProvider<Object>> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AsyncValue<ImageProvider<Object>>>(
+        value,
+      ),
+    );
+  }
+}
+
+String _$getImageProviderHash() => r'a8a8ccd04924666c097c4b3343101a1d2e48e42f';
 
 @ProviderFor(SyncSongIcon)
 final syncSongIconProvider = SyncSongIconProvider._();
@@ -203,63 +252,11 @@ abstract class _$SyncSongIcon extends $Notifier<bool> {
   }
 }
 
-@ProviderFor(SongIconBase64)
-final songIconBase64Provider = SongIconBase64Provider._();
-
-final class SongIconBase64Provider
-    extends $NotifierProvider<SongIconBase64, String> {
-  SongIconBase64Provider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'songIconBase64Provider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$songIconBase64Hash();
-
-  @$internal
-  @override
-  SongIconBase64 create() => SongIconBase64();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(String value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<String>(value),
-    );
-  }
-}
-
-String _$songIconBase64Hash() => r'f961fd9ecac34c0070a7ff082948e283d93d8135';
-
-abstract class _$SongIconBase64 extends $Notifier<String> {
-  String build();
-  @$mustCallSuper
-  @override
-  void runBuild() {
-    final ref = this.ref as $Ref<String, String>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<String, String>,
-              String,
-              Object?,
-              Object?
-            >;
-    element.handleCreate(ref, build);
-  }
-}
-
 @ProviderFor(SongIcon)
 final songIconProvider = SongIconProvider._();
 
 final class SongIconProvider
-    extends $AsyncNotifierProvider<SongIcon, ImageProvider<Object>> {
+    extends $AsyncNotifierProvider<SongIcon, ImageProvider<Object>?> {
   SongIconProvider._()
     : super(
         from: null,
@@ -279,24 +276,24 @@ final class SongIconProvider
   SongIcon create() => SongIcon();
 }
 
-String _$songIconHash() => r'730fd3cb941a6a9c497e08dc4264f37f7ac12efa';
+String _$songIconHash() => r'6a7dbdb31a771ba3146d4f9ca7f2d2ecddf4c40a';
 
-abstract class _$SongIcon extends $AsyncNotifier<ImageProvider<Object>> {
-  FutureOr<ImageProvider<Object>> build();
+abstract class _$SongIcon extends $AsyncNotifier<ImageProvider<Object>?> {
+  FutureOr<ImageProvider<Object>?> build();
   @$mustCallSuper
   @override
   void runBuild() {
     final ref =
         this.ref
-            as $Ref<AsyncValue<ImageProvider<Object>>, ImageProvider<Object>>;
+            as $Ref<AsyncValue<ImageProvider<Object>?>, ImageProvider<Object>?>;
     final element =
         ref.element
             as $ClassProviderElement<
               AnyNotifier<
-                AsyncValue<ImageProvider<Object>>,
-                ImageProvider<Object>
+                AsyncValue<ImageProvider<Object>?>,
+                ImageProvider<Object>?
               >,
-              AsyncValue<ImageProvider<Object>>,
+              AsyncValue<ImageProvider<Object>?>,
               Object?,
               Object?
             >;

@@ -1,9 +1,11 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
+import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 part 'theme_data_provider.g.dart';
 
@@ -34,18 +36,36 @@ class ContrastLevel extends _$ContrastLevel {
   }
 }
 
-@riverpod
+@keepAlive
 Future<ColorScheme> getColorScheme(Ref ref) async {
-  final syncSongIcon = ref.watch(syncSongIconProvider);
   final schemeVariant = ref.watch(dynamicSchemeProvider);
   final contrastLevel = ref.watch(contrastLevelProvider);
+  final imageProvider = ref.watch(getImageProviderProvider);
   return await FrostedColorSchemeGenerator.generate(
-    imageProvider: syncSongIcon
-        ? await ref.watch(songIconProvider.future)
-        : await ref.watch(loadDefaultThemeIconProvider.future) ??
-              defaultSongIconProvider,
+    imageProvider: imageProvider.value ?? defaultSongIconProvider,
     schemeVariant: schemeVariant,
     contrastLevel: contrastLevel,
+  );
+}
+
+@keepAlive
+AsyncValue<ImageProvider> getImageProvider(Ref ref) {
+  final syncSongIcon = ref.watch(syncSongIconProvider);
+
+  if (syncSongIcon) {
+    final songIcon = ref.watch(songIconProvider);
+    return songIcon.when(
+      data: (icon) => AsyncValue.data(icon ?? defaultSongIconProvider),
+      loading: () => AsyncValue.data(defaultSongIconProvider),
+      error: (_, __) => AsyncValue.data(defaultSongIconProvider),
+    );
+  }
+
+  final defaultIcon = ref.watch(loadDefaultThemeIconProvider);
+  return defaultIcon.when(
+    data: (icon) => AsyncValue.data(icon ?? defaultSongIconProvider),
+    loading: () => AsyncValue.data(defaultSongIconProvider),
+    error: (_, __) => AsyncValue.data(defaultSongIconProvider),
   );
 }
 
@@ -62,42 +82,24 @@ class SyncSongIcon extends _$SyncSongIcon {
   }
 }
 
-@keepAlive
-class SongIconBase64 extends _$SongIconBase64 {
-  @override
-  String build() {
-    return '';
-  }
-
-  void setBase64(String value) async {
-    state = value;
-  }
-}
-
 @riverpod
 class SongIcon extends _$SongIcon {
   @override
-  Future<ImageProvider> build() async {
-    final base64 = ref.watch(songIconBase64Provider);
-    if (base64.isEmpty) {
-      return defaultSongIconProvider;
+  Future<ImageProvider?> build() async {
+    final activeTrack = ref.watch(audioPlayerStateProvider).activeTrack;
+    if (activeTrack == null) {
+      return null;
     }
 
-    String imageData = base64;
-    if (base64.startsWith('data:image/')) {
-      final commaIndex = base64.indexOf(',');
-      if (commaIndex != -1) {
-        imageData = base64.substring(commaIndex + 1);
-      } else {
-        return defaultSongIconProvider;
-      }
-    } else {
-      return defaultSongIconProvider;
-    }
+    final coverUrl = ToneHarborMedia.getCoverUrl(
+      activeTrack.id,
+      activeTrack.album,
+      activeTrack.artist,
+    );
     try {
-      return MemoryImage(base64Decode(imageData));
+      return NetworkImage(coverUrl);
     } catch (e) {
-      return defaultSongIconProvider;
+      return null;
     }
   }
 }

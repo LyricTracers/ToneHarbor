@@ -14,19 +14,8 @@ abstract class BaseBgLayout extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = getColorSchemeWhenReady(ref);
-    var syncSongIcon = ref.watch(syncSongIconProvider);
-    final songIcon = getValueWhenReadyWithWidgetRef(
-      ref,
-      songIconProvider,
-      defaultSongIconProvider,
-    );
-    final defaultIcon = getValueWhenReadyWithWidgetRef(
-      ref,
-      loadDefaultThemeIconProvider,
-      defaultSongIconProvider,
-    );
     var requestFlag = ref.watch(requestFlagProvider);
-    var targetIcon = syncSongIcon ? songIcon : defaultIcon ?? songIcon;
+    var targetIcon = ref.watch(getImageProviderProvider);
     final gradientDecoration = BoxDecoration(
       gradient: LinearGradient(
         begin: Alignment(-0.8, -0.8),
@@ -63,7 +52,7 @@ abstract class BaseBgLayout extends HookConsumerWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: targetIcon,
+                          image: targetIcon.value ?? defaultSongIconProvider,
                           fit: BoxFit.cover,
                         ),
                       ),
