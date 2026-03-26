@@ -39,7 +39,8 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     return ListTile(
       onTap: () async {
         audioPlayer.pause();
-        await logout(ref);
+        await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+        ref.invalidate(authTokenProvider);
       },
       title: Text(
         "退出登录",
