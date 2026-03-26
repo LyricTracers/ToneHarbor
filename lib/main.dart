@@ -10,6 +10,7 @@ import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/album.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/providers/audio_player/most_player_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/providers/server/server_provider.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_streams.dart';
@@ -203,6 +204,22 @@ class MyApp extends HookConsumerWidget {
                       limitTotal: -1,
                       sortAction: SongsPageSortAction.all,
                       isLocal: true,
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/most_play/:title',
+                pageBuilder: (context, state) {
+                  ref.invalidate(mostPlayerProvider());
+                  return NoTransitionPage<void>(
+                    key: state.pageKey,
+                    child: SongsPage(
+                      title: state.pathParameters['title'] ?? 'Most Play',
+                      baseProvider: mostPlayerProvider(),
+                      limitTotal: -1,
+                      sortAction: SongsPageSortAction.none,
+                      isLocal: false,
                     ),
                   );
                 },

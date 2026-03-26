@@ -166,6 +166,7 @@
   "redownload": "Redownload",
   "other": "Other",
   "copy": "Copy",
+  "most_play": "Most Played",
   "play_current_song": "Play Current Song",
   "local_file_not_found": "Local file not found for %s"
 }

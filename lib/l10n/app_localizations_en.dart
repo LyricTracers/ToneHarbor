@@ -520,6 +520,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get copy => 'Copy';
 
   @override
+  String get most_play => 'Most Played';
+
+  @override
   String get play_current_song => 'Play Current Song';
 
   @override

@@ -504,6 +504,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get copy => '拷贝';
 
   @override
+  String get most_play => '最常播放';
+
+  @override
   String get play_current_song => '播放当前歌曲';
 
   @override

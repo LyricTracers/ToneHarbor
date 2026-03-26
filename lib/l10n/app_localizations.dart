@@ -1088,6 +1088,12 @@ abstract class AppLocalizations {
   /// **'Copy'**
   String get copy;
 
+  /// No description provided for @most_play.
+  ///
+  /// In en, this message translates to:
+  /// **'Most Played'**
+  String get most_play;
+
   /// No description provided for @play_current_song.
   ///
   /// In en, this message translates to:

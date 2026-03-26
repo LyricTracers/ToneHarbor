@@ -1472,7 +1472,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "93afaf617b371151ee97b32b2d0cb89863f49bab"
+      resolved-ref: "4a01718011b718a305df4cfb36232d50dd64bd29"
       url: "https://git.nxcloud.club:12750/LyricTracers/tray_manager.git"
     source: git
     version: "0.5.2"

@@ -8,7 +8,6 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
-import 'package:toneharbor/widgets/components/common_artists.dart';
 import 'package:toneharbor/widgets/components/common_search_field.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 

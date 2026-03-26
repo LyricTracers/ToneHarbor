@@ -8,6 +8,8 @@ import 'package:toneharbor/hooks/use_progress.dart';
 import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/models/database/database.dart';
+import 'package:toneharbor/providers/audio_player/most_player_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -63,6 +65,10 @@ class BottomPlayer extends HookConsumerWidget {
     }
     useEffect(() {
       currentLineLyrics.value = activeTrack.title;
+      MostPlayerService.insertMostPlayer(
+        ref.read(appDatabaseProvider),
+        activeTrack,
+      );
       return null;
     }, [activeTrack]);
 

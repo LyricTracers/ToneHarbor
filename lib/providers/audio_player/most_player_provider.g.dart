@@ -52,7 +52,7 @@ final class MostPlayerNotifierProvider
 }
 
 String _$mostPlayerNotifierHash() =>
-    r'cf36817cdab9adffa6579d429da8a43f99b015f7';
+    r'9a4cbfbfc5f620aafeb2a46ffdc73e21edd9873d';
 
 final class MostPlayerNotifierFamily extends $Family
     with

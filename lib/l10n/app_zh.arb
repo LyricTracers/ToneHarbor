@@ -165,6 +165,7 @@
   "redownload": "重新下载",
   "other": "其他",
   "copy": "拷贝",
+  "most_play": "最常播放",
   "play_current_song": "播放当前歌曲",
   "local_file_not_found": "本地未找到%s歌曲"
 }
