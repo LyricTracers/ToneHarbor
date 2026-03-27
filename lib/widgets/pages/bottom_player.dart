@@ -34,6 +34,7 @@ class BottomPlayer extends HookConsumerWidget {
 
     final isHovered = useState(false);
     final colorScheme = getColorSchemeWhenReady(ref);
+    final l10n = ref.watch(l10nProvider);
     final isPlaying =
         useStream(audioPlayer.playingStream).data ?? audioPlayer.isPlaying;
     final progressData = useProgress(ref);
@@ -45,8 +46,7 @@ class BottomPlayer extends HookConsumerWidget {
     final bufferingPercentage = progressData.bufferProgress;
     final isBuffering = useStream(audioPlayer.bufferingStream).data ?? false;
     final currentLyrics = ref.watch(currentLyricsProvider).value;
-    var currentLineLyrics = useState<String>("");
-    final l10n = ref.watch(l10nProvider);
+    var currentLineLyrics = useState<String>(l10n.appTitle);
 
     LyricsLine? currentLine;
     if (currentLyrics != null) {
@@ -76,17 +76,14 @@ class BottomPlayer extends HookConsumerWidget {
     if (Platform.isMacOS) {
       final systemBrightness = MediaQuery.platformBrightnessOf(context);
       final statusBarState = ref.watch(statusBarLyricProvider);
-      if (!statusBarState) {
-        trayManager.setMarqueeLabel(currentLineLyrics.value);
-      }
       useEffect(() {
         switchIconWithLabel(
           systemBrightness == Brightness.dark,
           statusBarState,
-          label: l10n.appTitle,
+          label: currentLineLyrics.value,
         );
         return null;
-      }, [systemBrightness, statusBarState]);
+      }, [systemBrightness, statusBarState, currentLineLyrics.value]);
     }
 
     final favoritePlaylist = ref.watch(songRatingProvider);
