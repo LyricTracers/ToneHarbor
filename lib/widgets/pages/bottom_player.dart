@@ -74,10 +74,11 @@ class BottomPlayer extends HookConsumerWidget {
       return null;
     }, [activeTrack]);
     if (Platform.isMacOS) {
-      trayManager.setMarqueeLabel(currentLineLyrics.value);
       final systemBrightness = MediaQuery.platformBrightnessOf(context);
       final statusBarState = ref.watch(statusBarLyricProvider);
-
+      if (!statusBarState) {
+        trayManager.setMarqueeLabel(currentLineLyrics.value);
+      }
       useEffect(() {
         switchIconWithLabel(
           systemBrightness == Brightness.dark,
