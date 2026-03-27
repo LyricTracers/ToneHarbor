@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ import 'package:toneharbor/providers/audio_player/most_player_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/providers/server/server_provider.dart';
 import 'package:toneharbor/providers/audio_player/audio_player_streams.dart';
+import 'package:toneharbor/services/audio_player/connection_checker_service.dart';
 import 'package:toneharbor/widgets/layouts/playing_detail_layout.dart';
 import 'package:toneharbor/widgets/layouts/switch_lyrics_layout.dart';
 import 'package:toneharbor/widgets/pages/account_page.dart';
@@ -67,6 +69,61 @@ class MyApp extends HookConsumerWidget {
         }
         ref.read(audioPlayerStreamListenersProvider).dispose();
         audioPlayer.dispose();
+      };
+    }, []);
+
+    useEffect(() {
+      StreamSubscription? audioPlayerSubscription;
+      bool pausedByStream = false;
+
+      final connectServiceListen = ConnectionCheckerService
+          .instance
+          .onConnectivityChanged
+          .listen((connected) async {
+            audioPlayerSubscription?.cancel();
+            if (audioPlayer.currentIndex >= 0) {
+              if (connected && audioPlayer.isPaused && pausedByStream) {
+                await audioPlayer.resume();
+                pausedByStream = false;
+              } else if (!connected && audioPlayer.isPlaying) {
+                if ((audioPlayer.bufferedPosition -
+                        const Duration(seconds: 1)) <=
+                    audioPlayer.position) {
+                  await audioPlayer.pause();
+                  pausedByStream = true;
+                } else {
+                  audioPlayerSubscription = audioPlayer.positionStream.listen((
+                    position,
+                  ) async {
+                    if (ConnectionCheckerService.instance.isConnectedSync) {
+                      return;
+                    }
+
+                    final bufferedPosition =
+                        audioPlayer.bufferedPosition -
+                        const Duration(seconds: 1);
+                    final duration =
+                        audioPlayer.duration - const Duration(seconds: 1);
+
+                    if (bufferedPosition <= position || position >= duration) {
+                      audioPlayer.pause();
+                      pausedByStream = true;
+                    }
+                  });
+                }
+              }
+            }
+            if (!context.mounted) return;
+            final i10n = ref.read(l10nProvider);
+            showSnackBar(
+              connected ? i10n.you_are_offline : i10n.connection_restored,
+              context,
+              colorScheme.secondary,
+            );
+          });
+      return () {
+        audioPlayerSubscription?.cancel();
+        connectServiceListen.cancel();
       };
     }, []);
 
