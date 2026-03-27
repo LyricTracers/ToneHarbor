@@ -37,7 +37,7 @@ class ContrastLevel extends _$ContrastLevel {
   }
 }
 
-@keepAlive
+@riverpod
 Future<ColorScheme> getColorScheme(Ref ref) async {
   final schemeVariant = ref.watch(dynamicSchemeProvider);
   final contrastLevel = ref.watch(contrastLevelProvider);
@@ -49,13 +49,12 @@ Future<ColorScheme> getColorScheme(Ref ref) async {
   );
 }
 
-@keepAlive
+@riverpod
 AsyncValue<ImageProvider> getImageProvider(Ref ref) {
   final syncSongIcon = ref.watch(syncSongIconProvider);
 
   if (syncSongIcon) {
     final songIcon = ref.watch(songIconProvider);
-    logger.i("songIcon:${songIcon.hasValue}");
     return songIcon.when(
       data: (icon) => AsyncValue.data(icon ?? defaultSongIconProvider),
       loading: () => AsyncValue.data(defaultSongIconProvider),
@@ -111,7 +110,7 @@ class SongIcon extends _$SongIcon {
       fetchCoverBytesProvider(
         url: coverUrl,
         key: cacheKey,
-        liveKeepDuration: const Duration(minutes: 10),
+        liveKeepDuration: const Duration(minutes: 1),
       ),
     );
     return asyncValue.when(
@@ -123,7 +122,7 @@ class SongIcon extends _$SongIcon {
   }
 }
 
-@keepAlive
+@riverpod
 Future<ImageProvider?> loadDefaultThemeIcon(Ref ref) async {
   final savedPath = SharedPreferencesUtils.getDefaultThemeIcon();
 

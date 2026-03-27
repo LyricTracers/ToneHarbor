@@ -130,7 +130,7 @@ final class GetColorSchemeProvider
         argument: null,
         retry: null,
         name: r'getColorSchemeProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -150,7 +150,7 @@ final class GetColorSchemeProvider
   }
 }
 
-String _$getColorSchemeHash() => r'd9a8e8ee688378da20d8eb4ccafa698a8c3c665d';
+String _$getColorSchemeHash() => r'fe3d50fa4a63512006df5e0114c9d40543788d65';
 
 @ProviderFor(getImageProvider)
 final getImageProviderProvider = GetImageProviderProvider._();
@@ -169,7 +169,7 @@ final class GetImageProviderProvider
         argument: null,
         retry: null,
         name: r'getImageProviderProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -199,7 +199,7 @@ final class GetImageProviderProvider
   }
 }
 
-String _$getImageProviderHash() => r'fe558b2e782e1ed101fe28449ac2202d7be84290';
+String _$getImageProviderHash() => r'792118ea4e556af0edfdd7727bbd0e1688755104';
 
 @ProviderFor(SyncSongIcon)
 final syncSongIconProvider = SyncSongIconProvider._();
@@ -276,7 +276,7 @@ final class SongIconProvider
   SongIcon create() => SongIcon();
 }
 
-String _$songIconHash() => r'aa7cca6c2fb8582326642ee9df442614b618ddc1';
+String _$songIconHash() => r'0c9c3fe6d585d5d4c5868066f187c66b3e9f680c';
 
 abstract class _$SongIcon extends $AsyncNotifier<ImageProvider<Object>?> {
   FutureOr<ImageProvider<Object>?> build();
@@ -320,7 +320,7 @@ final class LoadDefaultThemeIconProvider
         argument: null,
         retry: null,
         name: r'loadDefaultThemeIconProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -341,4 +341,4 @@ final class LoadDefaultThemeIconProvider
 }
 
 String _$loadDefaultThemeIconHash() =>
-    r'826a2121acf3654ea9ec0787755f3a91537012e5';
+    r'696ab70438cc833e5322bcf2db8df7a4975d9c8b';
