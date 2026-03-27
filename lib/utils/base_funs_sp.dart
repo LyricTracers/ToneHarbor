@@ -138,4 +138,10 @@ abstract class SharedPreferencesUtils {
   static Future<void> setNormalizeAudio(bool value) async {
     await sharedPreferences.setBool(normalizeAudioKey, value);
   }
+
+  static int? getServerPort() => sharedPreferences.getInt(serverPortKey);
+
+  static Future<void> setServerPort(int port) async {
+    await sharedPreferences.setInt(serverPortKey, port);
+  }
 }

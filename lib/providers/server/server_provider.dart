@@ -72,17 +72,22 @@ Future<HttpServer> server(Ref ref) async {
   int attempts = 0;
   const maxAttempts = 10;
 
+  final savedPort = SharedPreferencesUtils.getServerPort();
+
   while (server == null && attempts < maxAttempts) {
     try {
-      final port = Random().nextInt(17500) + 5000;
+      final port = attempts == 0 && savedPort != null
+          ? savedPort
+          : Random().nextInt(17500) + 5000;
 
       server = await serve(
         pipeline.addHandler(router.call),
-        InternetAddress.loopbackIPv4,
+        ToneHarborMedia.host,
         port,
       );
 
       ToneHarborMedia.serverPort = port;
+      await SharedPreferencesUtils.setServerPort(port);
 
       logger.i(
         'Playback server started at http://${server.address.host}:${server.port}',

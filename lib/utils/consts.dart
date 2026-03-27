@@ -16,6 +16,7 @@ const String audioQualityKey = 'audio_quality';
 const String doubleLyricActionKey = 'double_lyric_action';
 const String statusBarKey = 'status_bar_lyric';
 const String normalizeAudioKey = 'normalize_audio';
+const String serverPortKey = 'server_port';
 
 // pic path
 const String iconPlaceholder = 'assets/icons/icon_placeholder.png';
