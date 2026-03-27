@@ -2,20 +2,19 @@ import 'dart:async';
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/widgets.dart';
-import 'package:lyricskit/lyricskit.dart';
 import 'package:toneharbor/init/initialized.dart';
 
 class ConnectionCheckerService with WidgetsBindingObserver {
   final _connectionStreamController = StreamController<bool>.broadcast();
-  final HttpClientWrapper http;
+  final HttpClient client;
 
   static final _instance = ConnectionCheckerService._();
 
   static ConnectionCheckerService get instance => _instance;
 
-  ConnectionCheckerService._() : http = HttpClientWrapper() {
+  ConnectionCheckerService._() : client = HttpClient() {
     Timer? timer;
-
+    WidgetsBinding.instance.addObserver(this);
     onConnectivityChanged.listen((connected) {
       try {
         if (!connected && timer == null) {
@@ -36,12 +35,15 @@ class ConnectionCheckerService with WidgetsBindingObserver {
     });
 
     Connectivity().onConnectivityChanged.listen((event) async {
+      logger.i("Connectivity event: $event");
       await isConnected;
     });
+
+    isConnected;
   }
 
   @override
-  didChangeAppLifecycleState(AppLifecycleState state) async {
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
       await isConnected;
     }
@@ -88,32 +90,34 @@ class ConnectionCheckerService with WidgetsBindingObserver {
 
   Future<bool> doesConnectTo(String address) async {
     try {
-      final result = await InternetAddress.lookup(address);
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        return true;
-      }
-      return false;
-    } on SocketException catch (_) {
-      try {
-        final response = await http.head('https://$address');
-        return (response.statusCode) <= 400;
-      } on RhttpException catch (_) {
+      final result = await InternetAddress.lookup(
+        address,
+      ).timeout(const Duration(seconds: 5));
+      if (result.isEmpty || result[0].rawAddress.isEmpty) {
         return false;
       }
+      final request = await client.headUrl(Uri.parse('https://$address'));
+      request.followRedirects = false;
+      final response = await request.close().timeout(
+        const Duration(seconds: 5),
+      );
+      return response.statusCode >= 200 && response.statusCode < 400;
+    } catch (_) {
+      return false;
     }
   }
 
   Future<bool> _isConnected() async {
-    return await doesConnectTo('google.com') ||
-        await doesConnectTo('www.baidu.com') || // for China
-        await isVpnActive(); // when VPN is active that means we are connected
+    return await doesConnectTo('www.baidu.com') ||
+        await doesConnectTo('google.com') ||
+        await isVpnActive();
   }
 
-  bool isConnectedSync = true;
+  bool? isConnectedSync;
 
   Future<bool> get isConnected async {
     final connected = await _isConnected();
-    if (connected != isConnectedSync /*previous value*/ ) {
+    if (isConnectedSync == null || connected != isConnectedSync) {
       _connectionStreamController.add(connected);
     }
     isConnectedSync = connected;

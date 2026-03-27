@@ -95,7 +95,8 @@ class MyApp extends HookConsumerWidget {
                   audioPlayerSubscription = audioPlayer.positionStream.listen((
                     position,
                   ) async {
-                    if (ConnectionCheckerService.instance.isConnectedSync) {
+                    if (ConnectionCheckerService.instance.isConnectedSync ==
+                        true) {
                       return;
                     }
 
@@ -113,8 +114,9 @@ class MyApp extends HookConsumerWidget {
                 }
               }
             }
-            if (!context.mounted) return;
             final i10n = ref.read(l10nProvider);
+            if (!context.mounted) return;
+            if (ScaffoldMessenger.maybeOf(context) == null) return;
             showSnackBar(
               connected ? i10n.you_are_offline : i10n.connection_restored,
               context,
