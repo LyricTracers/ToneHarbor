@@ -9,6 +9,7 @@ import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/database/database.dart';
 import 'package:toneharbor/providers/database/database.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
+import 'package:toneharbor/utils/base_funs.dart';
 
 part 'audio_player_provider.g.dart';
 
@@ -135,7 +136,9 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
       await audioPlayer.setLoopMode(playerState.loopMode);
       await audioPlayer.setShuffle(playerState.shuffled);
     }
-
+    await audioPlayer.setAudioNormalization(
+      SharedPreferencesUtils.getNormalizeAudio(),
+    );
     final tracks = playerState.tracks;
     final currentIndex = playerState.currentIndex;
 

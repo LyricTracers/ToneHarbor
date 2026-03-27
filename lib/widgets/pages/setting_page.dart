@@ -4,13 +4,59 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/pages/build_item.dart';
 import 'package:tray_manager/tray_manager.dart';
 
 class SettingPage extends HookConsumerWidget with BuildItem {
   const SettingPage({super.key});
+
+  Widget _audioPlay(
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+  ) {
+    return Column(
+      children: [
+        buildSwitchTile(
+          "回放增益",
+          "通过第三方软件(如rsgain)添加ReplayGain标签",
+          ref.watch(normalizeAudioProvider),
+          (value) async {
+            ref.read(normalizeAudioProvider.notifier).set(value);
+            await audioPlayer.setAudioNormalization(value);
+          },
+          colorScheme,
+        ),
+        Divider(
+          height: 1,
+          color: colorScheme.outline.withValues(alpha: 0.2),
+          indent: 15,
+          endIndent: 15,
+        ),
+        buildDropdownTile(
+          title: '播放音质',
+          items: AudioQuality.values,
+          value: ref.watch(audioQualityProvider),
+          colorScheme: colorScheme,
+          onChanged: (value) {
+            if (value != null) {
+              ref.read(audioQualityProvider.notifier).setAudioQuality(value);
+            }
+          },
+        ),
+        Divider(
+          height: 1,
+          color: colorScheme.outline.withValues(alpha: 0.2),
+          indent: 15,
+          endIndent: 15,
+        ),
+      ],
+    );
+  }
 
   Widget _statusBar(
     WidgetRef ref,
@@ -21,14 +67,13 @@ class SettingPage extends HookConsumerWidget with BuildItem {
       children: [
         buildSwitchTile(
           '状态栏显示',
-          '状态栏显示',
           '图标',
-          '歌词',
           ref.watch(statusBarLyricProvider),
           (value) async {
             ref.read(statusBarLyricProvider.notifier).set(value);
           },
           colorScheme,
+          subtitle2: '歌词',
         ),
         Divider(
           height: 1,
@@ -57,8 +102,8 @@ class SettingPage extends HookConsumerWidget with BuildItem {
         buildSwitchTile(
           '自动切换背景',
           '手动切换背景',
-          '跟随歌曲封面',
-          '长按封面设置背景',
+          title2: '跟随歌曲封面',
+          subtitle2: '长按封面设置背景',
           ref.watch(syncSongIconProvider),
           (value) =>
               ref.read(syncSongIconProvider.notifier).setSyncSongIcon(value),
@@ -139,6 +184,14 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             colorScheme,
             "账号",
             _account(ref, l10n, colorScheme),
+          ),
+          SizedBox(height: 20),
+          ...buildItem(
+            ref,
+            l10n,
+            colorScheme,
+            '播放设置',
+            _audioPlay(ref, l10n, colorScheme),
           ),
           SizedBox(height: 20),
           ...buildItem(

@@ -568,6 +568,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get connection_restored => 'Your internet connection was restored';
 
   @override
+  String get normalize_audio => 'Normalize audio';
+
+  @override
   String get day => 'day';
 
   @override

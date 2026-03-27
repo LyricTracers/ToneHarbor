@@ -102,16 +102,22 @@ mixin BuildItem {
 
   Widget buildSwitchTile(
     String title,
-    String? title2,
     String subtitle,
-    String? subtitle2,
     bool value,
     Function(bool) onChanged,
-    ColorScheme colorScheme,
-  ) {
+    ColorScheme colorScheme, {
+    String? title2,
+    String? subtitle2,
+  }) {
+    if (title2 == null || title2.isEmpty) {
+      title2 = title;
+    }
+    if (subtitle2 == null || subtitle2.isEmpty) {
+      subtitle2 = subtitle;
+    }
     return ListTile(
       title: Text(
-        value ? title : title2 ?? '',
+        value ? title : title2,
         style: TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.bold,
@@ -119,7 +125,7 @@ mixin BuildItem {
         ),
       ),
       subtitle: Text(
-        value ? subtitle : subtitle2 ?? '',
+        value ? subtitle : subtitle2,
         style: TextStyle(
           fontSize: 12,
           color: colorScheme.onSurface.withValues(alpha: 0.7),

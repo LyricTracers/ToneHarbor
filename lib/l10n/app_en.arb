@@ -182,6 +182,7 @@
   "error_getDeviceInfo_failed": "Failed to get device info!",
   "you_are_offline": "You are currently offline",
   "connection_restored": "Your internet connection was restored",
+  "normalize_audio": "Normalize audio",
   "day": "day",
   "hour": "hour",
   "minute": "minute",

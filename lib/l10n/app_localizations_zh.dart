@@ -552,6 +552,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get connection_restored => '您的互联网连接已恢复';
 
   @override
+  String get normalize_audio => '标准化音频';
+
+  @override
   String get day => '天';
 
   @override

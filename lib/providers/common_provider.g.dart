@@ -473,6 +473,58 @@ abstract class _$StatusBarLyric extends $Notifier<bool> {
   }
 }
 
+@ProviderFor(NormalizeAudio)
+final normalizeAudioProvider = NormalizeAudioProvider._();
+
+final class NormalizeAudioProvider
+    extends $NotifierProvider<NormalizeAudio, bool> {
+  NormalizeAudioProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'normalizeAudioProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$normalizeAudioHash();
+
+  @$internal
+  @override
+  NormalizeAudio create() => NormalizeAudio();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$normalizeAudioHash() => r'33da9653a17731ed959603259b61dab9e90f5126';
+
+abstract class _$NormalizeAudio extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(TrayFontSize)
 final trayFontSizeProvider = TrayFontSizeProvider._();
 

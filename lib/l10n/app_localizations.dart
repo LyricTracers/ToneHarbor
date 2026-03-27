@@ -1184,6 +1184,12 @@ abstract class AppLocalizations {
   /// **'Your internet connection was restored'**
   String get connection_restored;
 
+  /// No description provided for @normalize_audio.
+  ///
+  /// In en, this message translates to:
+  /// **'Normalize audio'**
+  String get normalize_audio;
+
   /// No description provided for @day.
   ///
   /// In en, this message translates to:

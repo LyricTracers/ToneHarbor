@@ -18,6 +18,9 @@ enum AudioQuality {
 
   bool get isTranscode => method == 'transcode';
   bool get isStream => method == 'stream';
+
+  @override
+  String toString() => label;
 }
 
 @freezed

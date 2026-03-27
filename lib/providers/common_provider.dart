@@ -188,6 +188,19 @@ class StatusBarLyric extends _$StatusBarLyric {
 }
 
 @riverpod
+class NormalizeAudio extends _$NormalizeAudio {
+  @override
+  bool build() {
+    return SharedPreferencesUtils.getNormalizeAudio();
+  }
+
+  void set(bool value) async {
+    state = value;
+    await SharedPreferencesUtils.setNormalizeAudio(value);
+  }
+}
+
+@riverpod
 class TrayFontSize extends _$TrayFontSize {
   @override
   double build() {

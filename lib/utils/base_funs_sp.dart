@@ -131,4 +131,11 @@ abstract class SharedPreferencesUtils {
   static Future<void> setStatusStatusBarLyric(bool value) async {
     await sharedPreferences.setBool(statusBarKey, value);
   }
+
+  static bool getNormalizeAudio() =>
+      sharedPreferences.getBool(normalizeAudioKey) ?? true;
+
+  static Future<void> setNormalizeAudio(bool value) async {
+    await sharedPreferences.setBool(normalizeAudioKey, value);
+  }
 }

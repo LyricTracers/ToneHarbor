@@ -118,9 +118,9 @@ class CustomPlayer extends Player {
 
   Future<void> setAudioNormalization(bool normalize) async {
     if (normalize) {
-      await nativePlayer.setProperty('af', 'dynaudnorm=g=5:f=250:r=0.9:p=0.5');
+      await nativePlayer.setProperty('replaygain', 'track');
     } else {
-      await nativePlayer.setProperty('af', '');
+      await nativePlayer.setProperty('replaygain', 'no');
     }
   }
 
