@@ -154,7 +154,7 @@ class SubSongSelectionBottom extends HookConsumerWidget {
               if (_checkIdsEmpty(ids, context, ref)) return;
               if (_checkIdsLimit(
                 ids,
-                100,
+                1000,
                 context,
                 ref,
                 l10n.cancel_favorite_limit_exceeded,

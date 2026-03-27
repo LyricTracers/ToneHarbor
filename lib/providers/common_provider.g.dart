@@ -453,7 +453,7 @@ final class StatusBarLyricProvider
   }
 }
 
-String _$statusBarLyricHash() => r'5a5acbabc590cfe6550bcee71858a32292a228f0';
+String _$statusBarLyricHash() => r'9ad21f513b00c6f849e1eb193ad12877b865b7ef';
 
 abstract class _$StatusBarLyric extends $Notifier<bool> {
   bool build();
@@ -466,6 +466,58 @@ abstract class _$StatusBarLyric extends $Notifier<bool> {
             as $ClassProviderElement<
               AnyNotifier<bool, bool>,
               bool,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(TrayFontSize)
+final trayFontSizeProvider = TrayFontSizeProvider._();
+
+final class TrayFontSizeProvider
+    extends $NotifierProvider<TrayFontSize, double> {
+  TrayFontSizeProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'trayFontSizeProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$trayFontSizeHash();
+
+  @$internal
+  @override
+  TrayFontSize create() => TrayFontSize();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(double value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<double>(value),
+    );
+  }
+}
+
+String _$trayFontSizeHash() => r'80113bb9f42702d8fbd26a4988087e16280fd535';
+
+abstract class _$TrayFontSize extends $Notifier<double> {
+  double build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<double, double>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<double, double>,
+              double,
               Object?,
               Object?
             >;

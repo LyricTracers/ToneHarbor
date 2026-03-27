@@ -186,3 +186,16 @@ class StatusBarLyric extends _$StatusBarLyric {
     await SharedPreferencesUtils.setStatusStatusBarLyric(value);
   }
 }
+
+@riverpod
+class TrayFontSize extends _$TrayFontSize {
+  @override
+  double build() {
+    return SharedPreferencesUtils.getTrayFontSize();
+  }
+
+  void setFontSize(double value) async {
+    state = value;
+    await SharedPreferencesUtils.setTrayFontSize(value);
+  }
+}

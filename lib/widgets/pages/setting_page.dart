@@ -7,6 +7,7 @@ import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/pages/build_item.dart';
+import 'package:tray_manager/tray_manager.dart';
 
 class SettingPage extends HookConsumerWidget with BuildItem {
   const SettingPage({super.key});
@@ -28,6 +29,23 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             ref.read(statusBarLyricProvider.notifier).set(value);
           },
           colorScheme,
+        ),
+        Divider(
+          height: 1,
+          color: colorScheme.outline.withValues(alpha: 0.2),
+          indent: 15,
+          endIndent: 15,
+        ),
+        buildSliderTile(
+          title: '字体大小',
+          value: ref.watch(trayFontSizeProvider),
+          onChanged: (value) async {
+            ref.read(trayFontSizeProvider.notifier).setFontSize(value);
+            await trayManager.setFontSize(value);
+          },
+          minValue: 12.0,
+          maxValue: 15.0,
+          colorScheme: colorScheme,
         ),
       ],
     );
