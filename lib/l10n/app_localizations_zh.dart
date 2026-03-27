@@ -546,6 +546,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_getDeviceInfo_failed => '获取设备信息失败！';
 
   @override
+  String get you_are_offline => '您当前处于离线状态';
+
+  @override
+  String get connection_restored => '您的互联网连接已恢复';
+
+  @override
   String get day => '天';
 
   @override

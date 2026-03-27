@@ -562,6 +562,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_getDeviceInfo_failed => 'Failed to get device info!';
 
   @override
+  String get you_are_offline => 'You are currently offline';
+
+  @override
+  String get connection_restored => 'Your internet connection was restored';
+
+  @override
   String get day => 'day';
 
   @override

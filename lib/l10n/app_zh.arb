@@ -179,6 +179,8 @@
   "operation": "操作",
   "logout": "退出登录",
   "error_getDeviceInfo_failed": "获取设备信息失败！",
+  "you_are_offline": "您当前处于离线状态",
+  "connection_restored": "您的互联网连接已恢复",
   "day": "天",
   "hour": "小时",
   "minute": "分钟",

@@ -1172,6 +1172,18 @@ abstract class AppLocalizations {
   /// **'Failed to get device info!'**
   String get error_getDeviceInfo_failed;
 
+  /// No description provided for @you_are_offline.
+  ///
+  /// In en, this message translates to:
+  /// **'You are currently offline'**
+  String get you_are_offline;
+
+  /// No description provided for @connection_restored.
+  ///
+  /// In en, this message translates to:
+  /// **'Your internet connection was restored'**
+  String get connection_restored;
+
   /// No description provided for @day.
   ///
   /// In en, this message translates to:

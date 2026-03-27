@@ -180,6 +180,8 @@
   "operation": "Operation",
   "logout": "Logout",
   "error_getDeviceInfo_failed": "Failed to get device info!",
+  "you_are_offline": "You are currently offline",
+  "connection_restored": "Your internet connection was restored",
   "day": "day",
   "hour": "hour",
   "minute": "minute",

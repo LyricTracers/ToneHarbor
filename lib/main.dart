@@ -80,7 +80,7 @@ class MyApp extends HookConsumerWidget {
           .instance
           .onConnectivityChanged
           .listen((connected) async {
-            audioPlayerSubscription?.cancel();
+            await audioPlayerSubscription?.cancel();
             if (audioPlayer.currentIndex >= 0) {
               if (connected && audioPlayer.isPaused && pausedByStream) {
                 await audioPlayer.resume();
