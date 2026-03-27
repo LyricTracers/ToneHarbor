@@ -592,6 +592,82 @@ class AppLocalizationsEn extends AppLocalizations {
   String get storage_other => 'Other';
 
   @override
+  String get settings => 'Settings';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get storage_management => 'Storage Management';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get replay_gain => 'Replay Gain';
+
+  @override
+  String get replay_gain_desc =>
+      'Add ReplayGain tags via third-party software (e.g., rsgain)';
+
+  @override
+  String get playback_quality => 'Playback Quality';
+
+  @override
+  String get status_bar_display => 'Status Bar Display';
+
+  @override
+  String get icon => 'Icon';
+
+  @override
+  String get lyrics => 'Lyrics';
+
+  @override
+  String get font_size => 'Font Size';
+
+  @override
+  String get auto_switch_background => 'Auto Switch Background';
+
+  @override
+  String get manual_switch_background => 'Manual Switch Background';
+
+  @override
+  String get follow_song_cover => 'Follow Song Cover';
+
+  @override
+  String get long_press_set_background => 'Long press cover to set background';
+
+  @override
+  String get color_scheme => 'Color Scheme';
+
+  @override
+  String get brightness_contrast => 'Brightness Contrast';
+
+  @override
+  String get playback_settings => 'Playback Settings';
+
+  @override
+  String get theme_settings => 'Theme Settings';
+
+  @override
+  String get status_bar_settings => 'Status Bar Settings';
+
+  @override
+  String get other_settings => 'Other Settings';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get confirm_clear => 'Confirm Clear';
+
+  @override
+  String get confirm_clear_message => 'Are you sure you want to clear [%s]?';
+
+  @override
+  String get size => 'Size';
+
+  @override
   String get day => 'day';
 
   @override

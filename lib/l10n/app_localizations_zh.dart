@@ -576,6 +576,81 @@ class AppLocalizationsZh extends AppLocalizations {
   String get storage_other => '其他';
 
   @override
+  String get settings => '设置';
+
+  @override
+  String get language => '语言';
+
+  @override
+  String get storage_management => '存储空间管理';
+
+  @override
+  String get about => '关于';
+
+  @override
+  String get replay_gain => '回放增益';
+
+  @override
+  String get replay_gain_desc => '通过第三方软件(如rsgain)添加ReplayGain标签';
+
+  @override
+  String get playback_quality => '播放音质';
+
+  @override
+  String get status_bar_display => '状态栏显示';
+
+  @override
+  String get icon => '图标';
+
+  @override
+  String get lyrics => '歌词';
+
+  @override
+  String get font_size => '字体大小';
+
+  @override
+  String get auto_switch_background => '自动切换背景';
+
+  @override
+  String get manual_switch_background => '手动切换背景';
+
+  @override
+  String get follow_song_cover => '跟随歌曲封面';
+
+  @override
+  String get long_press_set_background => '长按封面设置背景';
+
+  @override
+  String get color_scheme => '配色方案';
+
+  @override
+  String get brightness_contrast => '亮度对比度';
+
+  @override
+  String get playback_settings => '播放设置';
+
+  @override
+  String get theme_settings => '主题设置';
+
+  @override
+  String get status_bar_settings => '状态栏设置';
+
+  @override
+  String get other_settings => '其他设置';
+
+  @override
+  String get total => '总计';
+
+  @override
+  String get confirm_clear => '确认清理';
+
+  @override
+  String get confirm_clear_message => '确定要清理【%s】吗？';
+
+  @override
+  String get size => '大小';
+
+  @override
   String get day => '天';
 
   @override

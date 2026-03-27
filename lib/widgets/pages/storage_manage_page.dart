@@ -29,7 +29,7 @@ class StorageManagePage extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '存储空间管理',
+          l10n.storage_management,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         centerTitle: false,
@@ -91,7 +91,7 @@ class StorageManagePage extends HookConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            '总计',
+            l10n.total,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
@@ -148,12 +148,12 @@ class StorageManagePage extends HookConsumerWidget {
     showDialog(
       context: ref.context,
       builder: (context) => AlertDialog(
-        title: const Text(
-          '确认清理',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        title: Text(
+          l10n.confirm_clear,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         content: Text(
-          '确定要清理【${info.category.localizedLabel(l10n)}】 吗？\n大小: ${info.formattedSize}',
+          '${l10n.confirm_clear_message.replaceFirst('%s', info.category.localizedLabel(l10n))}\n${l10n.size}: ${info.formattedSize}',
         ),
         actions: [
           TextButton(

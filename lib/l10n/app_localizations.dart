@@ -1232,6 +1232,156 @@ abstract class AppLocalizations {
   /// **'Other'**
   String get storage_other;
 
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @storage_management.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage Management'**
+  String get storage_management;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @replay_gain.
+  ///
+  /// In en, this message translates to:
+  /// **'Replay Gain'**
+  String get replay_gain;
+
+  /// No description provided for @replay_gain_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Add ReplayGain tags via third-party software (e.g., rsgain)'**
+  String get replay_gain_desc;
+
+  /// No description provided for @playback_quality.
+  ///
+  /// In en, this message translates to:
+  /// **'Playback Quality'**
+  String get playback_quality;
+
+  /// No description provided for @status_bar_display.
+  ///
+  /// In en, this message translates to:
+  /// **'Status Bar Display'**
+  String get status_bar_display;
+
+  /// No description provided for @icon.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon'**
+  String get icon;
+
+  /// No description provided for @lyrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Lyrics'**
+  String get lyrics;
+
+  /// No description provided for @font_size.
+  ///
+  /// In en, this message translates to:
+  /// **'Font Size'**
+  String get font_size;
+
+  /// No description provided for @auto_switch_background.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto Switch Background'**
+  String get auto_switch_background;
+
+  /// No description provided for @manual_switch_background.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual Switch Background'**
+  String get manual_switch_background;
+
+  /// No description provided for @follow_song_cover.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow Song Cover'**
+  String get follow_song_cover;
+
+  /// No description provided for @long_press_set_background.
+  ///
+  /// In en, this message translates to:
+  /// **'Long press cover to set background'**
+  String get long_press_set_background;
+
+  /// No description provided for @color_scheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Color Scheme'**
+  String get color_scheme;
+
+  /// No description provided for @brightness_contrast.
+  ///
+  /// In en, this message translates to:
+  /// **'Brightness Contrast'**
+  String get brightness_contrast;
+
+  /// No description provided for @playback_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Playback Settings'**
+  String get playback_settings;
+
+  /// No description provided for @theme_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme Settings'**
+  String get theme_settings;
+
+  /// No description provided for @status_bar_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Status Bar Settings'**
+  String get status_bar_settings;
+
+  /// No description provided for @other_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Other Settings'**
+  String get other_settings;
+
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @confirm_clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Clear'**
+  String get confirm_clear;
+
+  /// No description provided for @confirm_clear_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to clear [%s]?'**
+  String get confirm_clear_message;
+
+  /// No description provided for @size.
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get size;
+
   /// No description provided for @day.
   ///
   /// In en, this message translates to:

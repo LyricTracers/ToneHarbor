@@ -18,7 +18,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
     return Column(
       children: [
         buildDropdownTile(
-          title: '语言',
+          title: l10n.language,
           items: Language.values,
           value: Language.fromLocale(ref.watch(localeProvider)),
           colorScheme: colorScheme,
@@ -38,7 +38,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
         ),
         ListTile(
           title: Text(
-            '存储空间管理',
+            l10n.storage_management,
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
@@ -56,7 +56,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
         ),
         ListTile(
           title: Text(
-            '关于',
+            l10n.about,
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
@@ -78,8 +78,8 @@ class SettingPage extends HookConsumerWidget with BuildItem {
     return Column(
       children: [
         buildSwitchTile(
-          "回放增益",
-          "通过第三方软件(如rsgain)添加ReplayGain标签",
+          l10n.replay_gain,
+          l10n.replay_gain_desc,
           ref.watch(normalizeAudioProvider),
           (value) async {
             ref.read(normalizeAudioProvider.notifier).set(value);
@@ -94,7 +94,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           endIndent: 15,
         ),
         buildDropdownTile(
-          title: '播放音质',
+          title: l10n.playback_quality,
           items: AudioQuality.values,
           value: ref.watch(audioQualityProvider),
           colorScheme: colorScheme,
@@ -124,14 +124,14 @@ class SettingPage extends HookConsumerWidget with BuildItem {
     return Column(
       children: [
         buildSwitchTile(
-          '状态栏显示',
-          '图标',
+          l10n.status_bar_display,
+          l10n.icon,
           ref.watch(statusBarLyricProvider),
           (value) async {
             ref.read(statusBarLyricProvider.notifier).set(value);
           },
           colorScheme,
-          subtitle2: '歌词',
+          subtitle2: l10n.lyrics,
         ),
         Divider(
           height: 1,
@@ -140,7 +140,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           endIndent: 15,
         ),
         buildSliderTile(
-          title: '字体大小',
+          title: l10n.font_size,
           value: ref.watch(trayFontSizeProvider),
           onChanged: (value) async {
             ref.read(trayFontSizeProvider.notifier).setFontSize(value);
@@ -158,10 +158,10 @@ class SettingPage extends HookConsumerWidget with BuildItem {
     return Column(
       children: [
         buildSwitchTile(
-          '自动切换背景',
-          '手动切换背景',
-          title2: '跟随歌曲封面',
-          subtitle2: '长按封面设置背景',
+          l10n.auto_switch_background,
+          l10n.manual_switch_background,
+          title2: l10n.follow_song_cover,
+          subtitle2: l10n.long_press_set_background,
           ref.watch(syncSongIconProvider),
           (value) =>
               ref.read(syncSongIconProvider.notifier).setSyncSongIcon(value),
@@ -174,7 +174,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           endIndent: 15,
         ),
         buildDropdownTile(
-          title: '配色方案',
+          title: l10n.color_scheme,
           items: DynamicSchemeVariant.values,
           value: ref.watch(dynamicSchemeProvider),
           colorScheme: colorScheme,
@@ -191,7 +191,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           endIndent: 15,
         ),
         buildSliderTile(
-          title: '亮度对比度',
+          title: l10n.brightness_contrast,
           value: ref.watch(contrastLevelProvider),
           onChanged: (value) =>
               ref.read(contrastLevelProvider.notifier).setContrastLevel(value),
@@ -234,13 +234,13 @@ class SettingPage extends HookConsumerWidget with BuildItem {
     final colorScheme = getColorSchemeWhenReady(ref);
     return Column(
       children: [
-        buildAppBar(context, ref, l10n, colorScheme, "设置"),
+        buildAppBar(context, ref, l10n, colorScheme, l10n.settings),
         buildContent(context, ref, l10n, colorScheme, [
           ...buildItem(
             ref,
             l10n,
             colorScheme,
-            "账号",
+            l10n.account,
             _account(ref, l10n, colorScheme),
           ),
           SizedBox(height: 20),
@@ -248,7 +248,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             ref,
             l10n,
             colorScheme,
-            '播放设置',
+            l10n.playback_settings,
             _audioPlay(ref, l10n, colorScheme),
           ),
           SizedBox(height: 20),
@@ -256,7 +256,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             ref,
             l10n,
             colorScheme,
-            '主题设置',
+            l10n.theme_settings,
             _theme(ref, l10n, colorScheme),
           ),
 
@@ -266,7 +266,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
               ref,
               l10n,
               colorScheme,
-              '状态栏设置',
+              l10n.status_bar_settings,
               _statusBar(ref, l10n, colorScheme),
             ),
           ],
@@ -275,7 +275,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             ref,
             l10n,
             colorScheme,
-            '其他设置',
+            l10n.other_settings,
             _other(context, ref, l10n, colorScheme),
           ),
         ]),
