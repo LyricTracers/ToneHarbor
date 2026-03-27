@@ -18,6 +18,7 @@ const String statusBarKey = 'status_bar_lyric';
 
 // pic path
 const String iconPlaceholder = 'assets/icons/icon_placeholder.png';
+const String bgPlaceholder = 'assets/icons/bg_placeholder.png';
 const String statusBarIcon = 'assets/icons/status_bar_icon.png';
 const String statusBarIconDark = 'assets/icons/status_bar_icon_dark.png';
 const String loadingErrorIcon = 'assets/icons/loading_error.svg';

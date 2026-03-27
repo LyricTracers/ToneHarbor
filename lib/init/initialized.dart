@@ -38,9 +38,11 @@ Future<void> initialized() async {
   initHttpClientWrapper();
   await initPersistentApiCache();
   await initMusicCacheBaseDir();
-  defaultSongIconProvider = const AssetImage(iconPlaceholder);
+  defaultSongIconProvider = const AssetImage(bgPlaceholder);
   defaultColorScheme = await FrostedColorSchemeGenerator.generate(
     imageProvider: defaultSongIconProvider,
+    schemeVariant: DynamicSchemeVariant.rainbow,
+    contrastLevel: 0,
   );
   placeholderErrorIconString = await rootBundle.loadString(
     placeholderErrorIcon,

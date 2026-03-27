@@ -55,6 +55,7 @@ AsyncValue<ImageProvider> getImageProvider(Ref ref) {
 
   if (syncSongIcon) {
     final songIcon = ref.watch(songIconProvider);
+    logger.i("songIcon:${songIcon.hasValue}");
     return songIcon.when(
       data: (icon) => AsyncValue.data(icon ?? defaultSongIconProvider),
       loading: () => AsyncValue.data(defaultSongIconProvider),
@@ -103,12 +104,22 @@ class SongIcon extends _$SongIcon {
       activeTrack.album,
       activeTrack.artist,
     );
-
-    try {
-      return NetworkImage(coverUrl);
-    } catch (e) {
-      return null;
-    }
+    final cacheKey = activeTrack.id.isNotEmpty
+        ? activeTrack.id
+        : sanitizeCacheKey("${activeTrack.artist}-${activeTrack.album}");
+    final asyncValue = ref.watch(
+      fetchCoverBytesProvider(
+        url: coverUrl,
+        key: cacheKey,
+        liveKeepDuration: const Duration(minutes: 10),
+      ),
+    );
+    return asyncValue.when(
+      data: (bytes) =>
+          bytes == null ? defaultSongIconProvider : MemoryImage(bytes),
+      loading: () => defaultSongIconProvider,
+      error: (_, __) => defaultSongIconProvider,
+    );
   }
 }
 
