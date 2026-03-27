@@ -11,7 +11,6 @@ import 'package:toneharbor/models/audio_station/auth.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/Excetions.dart';
 import 'package:toneharbor/utils/base_funs.dart';
-import 'package:toneharbor/utils/consts.dart';
 
 part 'auth_provider.g.dart';
 part 'auth_provider.dependence.dart';

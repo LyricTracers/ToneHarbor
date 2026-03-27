@@ -527,4 +527,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get local_file_not_found => 'Local file not found for %s';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get deviceInfo => 'Device Info';
+
+  @override
+  String get model => 'Model';
+
+  @override
+  String get serialNumber => 'Serial Number';
+
+  @override
+  String get dsmVersion => 'DSM Version';
+
+  @override
+  String get deviceTemperature => 'Device Temperature';
+
+  @override
+  String get uptime => 'Uptime';
+
+  @override
+  String get userInfo => 'User Info';
+
+  @override
+  String get operation => 'Operation';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get error_getDeviceInfo_failed => 'Failed to get device info!';
+
+  @override
+  String get day => 'day';
+
+  @override
+  String get hour => 'hour';
+
+  @override
+  String get minute => 'minute';
+
+  @override
+  String get second => 'second';
 }

@@ -58,12 +58,19 @@ Future<void> initialized() async {
 }
 
 Future<void> _initTray() async {
-  await trayManager.setFontSize(SharedPreferencesUtils.getTrayFontSize());
-  await trayManager.setIcon(statusBarIcon);
   if (Platform.isMacOS) {
+    await trayManager.setFontSize(SharedPreferencesUtils.getTrayFontSize());
     final ByteData imageData = await rootBundle.load(iconPlaceholder);
     final String base64Image = base64Encode(imageData.buffer.asUint8List());
     await trayManager.setMusicPlayerPopover(defaultArtwork: base64Image);
+    await switchIconWithLabel(
+      WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+          Brightness.dark,
+      true,
+    );
+    TrayManager.instance.updateMusicPlayerArtworkFromUrl("");
+  } else {
+    await trayManager.setIcon(statusBarIcon);
   }
 }
 

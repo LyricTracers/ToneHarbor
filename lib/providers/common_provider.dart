@@ -173,3 +173,16 @@ class SubContent extends _$SubContent {
     state = t;
   }
 }
+
+@riverpod
+class StatusBarLyric extends _$StatusBarLyric {
+  @override
+  bool build() {
+    return SharedPreferencesUtils.getStatusBarLyric();
+  }
+
+  void set(bool value) async {
+    state = value;
+    await SharedPreferencesUtils.setStatusStatusBarLyric(value);
+  }
+}

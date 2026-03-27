@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -8,6 +10,28 @@ import 'package:toneharbor/widgets/pages/build_item.dart';
 
 class SettingPage extends HookConsumerWidget with BuildItem {
   const SettingPage({super.key});
+
+  Widget _statusBar(
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+  ) {
+    return Column(
+      children: [
+        buildSwitchTile(
+          '状态栏显示',
+          '状态栏显示',
+          '图标',
+          '歌词',
+          ref.watch(statusBarLyricProvider),
+          (value) async {
+            ref.read(statusBarLyricProvider.notifier).set(value);
+          },
+          colorScheme,
+        ),
+      ],
+    );
+  }
 
   Widget _theme(WidgetRef ref, AppLocalizations l10n, ColorScheme colorScheme) {
     return Column(
@@ -32,6 +56,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           title: '配色方案',
           items: DynamicSchemeVariant.values,
           value: ref.watch(dynamicSchemeProvider),
+          colorScheme: colorScheme,
           onChanged: (value) {
             if (value != null) {
               ref.read(dynamicSchemeProvider.notifier).setSchemeVariant(value);
@@ -65,7 +90,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
     return ListTile(
       title: Text(
         ref.read(accountInfoProvider)?.account ?? '',
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
       ),
       subtitle: Text(
         ref.read(baseUrlProvider),
@@ -105,6 +130,16 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             '主题设置',
             _theme(ref, l10n, colorScheme),
           ),
+          if (Platform.isMacOS) ...[
+            SizedBox(height: 20),
+            ...buildItem(
+              ref,
+              l10n,
+              colorScheme,
+              '状态栏设置',
+              _statusBar(ref, l10n, colorScheme),
+            ),
+          ],
         ]),
       ],
     );

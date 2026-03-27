@@ -124,4 +124,11 @@ abstract class SharedPreferencesUtils {
   ) async {
     await sharedPreferences.setInt(doubleLyricActionKey, action.index);
   }
+
+  static bool getStatusBarLyric() =>
+      sharedPreferences.getBool(statusBarKey) ?? true;
+
+  static Future<void> setStatusStatusBarLyric(bool value) async {
+    await sharedPreferences.setBool(statusBarKey, value);
+  }
 }

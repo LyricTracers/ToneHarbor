@@ -420,3 +420,55 @@ abstract class _$SubContent extends $Notifier<SubContentData> {
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(StatusBarLyric)
+final statusBarLyricProvider = StatusBarLyricProvider._();
+
+final class StatusBarLyricProvider
+    extends $NotifierProvider<StatusBarLyric, bool> {
+  StatusBarLyricProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'statusBarLyricProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$statusBarLyricHash();
+
+  @$internal
+  @override
+  StatusBarLyric create() => StatusBarLyric();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$statusBarLyricHash() => r'5a5acbabc590cfe6550bcee71858a32292a228f0';
+
+abstract class _$StatusBarLyric extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

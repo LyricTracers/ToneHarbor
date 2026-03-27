@@ -511,4 +511,49 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get local_file_not_found => '本地未找到%s歌曲';
+
+  @override
+  String get account => '账号';
+
+  @override
+  String get deviceInfo => '设备信息';
+
+  @override
+  String get model => '型号';
+
+  @override
+  String get serialNumber => '序列号';
+
+  @override
+  String get dsmVersion => 'DSM版本号';
+
+  @override
+  String get deviceTemperature => '设备温度';
+
+  @override
+  String get uptime => '运行时长';
+
+  @override
+  String get userInfo => '用户信息';
+
+  @override
+  String get operation => '操作';
+
+  @override
+  String get logout => '退出登录';
+
+  @override
+  String get error_getDeviceInfo_failed => '获取设备信息失败！';
+
+  @override
+  String get day => '天';
+
+  @override
+  String get hour => '小时';
+
+  @override
+  String get minute => '分钟';
+
+  @override
+  String get second => '秒';
 }

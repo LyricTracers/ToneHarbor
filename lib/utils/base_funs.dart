@@ -20,6 +20,7 @@ import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:open_file/open_file.dart';
+import 'package:tray_manager/tray_manager.dart';
 part 'base_funs_sp.dart';
 part 'base_funs_theme.dart';
 
@@ -499,4 +500,20 @@ Future<T?> showCustomMenu<T>({
     elevation: 2,
     useRootNavigator: useRootNavigator,
   );
+}
+
+Future<void> switchIconWithLabel(
+  bool isDarkTheme,
+  bool statusBar, {
+  String? label,
+}) async {
+  if (statusBar) {
+    trayManager.setIcon(
+      isDarkTheme ? statusBarIconDark : statusBarIcon,
+      iconPosition: TrayIconPosition.right,
+    );
+  } else {
+    await trayManager.setMarqueeLabel(label ?? '拾音坞');
+    await trayManager.setMarqueeTextColor(isDarkTheme ? "#FFFFFF" : "#000000");
+  }
 }

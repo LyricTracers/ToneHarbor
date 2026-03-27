@@ -276,7 +276,7 @@ final class SongIconProvider
   SongIcon create() => SongIcon();
 }
 
-String _$songIconHash() => r'6a7dbdb31a771ba3146d4f9ca7f2d2ecddf4c40a';
+String _$songIconHash() => r'aa7cca6c2fb8582326642ee9df442614b618ddc1';
 
 abstract class _$SongIcon extends $AsyncNotifier<ImageProvider<Object>?> {
   FutureOr<ImageProvider<Object>?> build();

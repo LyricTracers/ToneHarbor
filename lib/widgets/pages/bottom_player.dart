@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
@@ -8,7 +10,6 @@ import 'package:toneharbor/hooks/use_progress.dart';
 import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
-import 'package:toneharbor/models/database/database.dart';
 import 'package:toneharbor/providers/audio_player/most_player_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -71,6 +72,19 @@ class BottomPlayer extends HookConsumerWidget {
       );
       return null;
     }, [activeTrack]);
+
+    if (Platform.isMacOS) {
+      final systemBrightness = MediaQuery.platformBrightnessOf(context);
+      final statusBarState = ref.watch(statusBarLyricProvider);
+
+      useEffect(() {
+        switchIconWithLabel(
+          systemBrightness == Brightness.dark,
+          statusBarState,
+        );
+        return null;
+      }, [systemBrightness, statusBarState]);
+    }
 
     final favoritePlaylist = ref.watch(songRatingProvider);
     final rating = favoritePlaylist.contains(activeTrack.id);

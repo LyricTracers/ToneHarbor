@@ -168,5 +168,20 @@
   "copy": "Copy",
   "most_play": "Most Played",
   "play_current_song": "Play Current Song",
-  "local_file_not_found": "Local file not found for %s"
+  "local_file_not_found": "Local file not found for %s",
+  "account": "Account",
+  "deviceInfo": "Device Info",
+  "model": "Model",
+  "serialNumber": "Serial Number",
+  "dsmVersion": "DSM Version",
+  "deviceTemperature": "Device Temperature",
+  "uptime": "Uptime",
+  "userInfo": "User Info",
+  "operation": "Operation",
+  "logout": "Logout",
+  "error_getDeviceInfo_failed": "Failed to get device info!",
+  "day": "day",
+  "hour": "hour",
+  "minute": "minute",
+  "second": "second"
 }

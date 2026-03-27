@@ -1105,6 +1105,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Local file not found for %s'**
   String get local_file_not_found;
+
+  /// No description provided for @account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
+
+  /// No description provided for @deviceInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Device Info'**
+  String get deviceInfo;
+
+  /// No description provided for @model.
+  ///
+  /// In en, this message translates to:
+  /// **'Model'**
+  String get model;
+
+  /// No description provided for @serialNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Serial Number'**
+  String get serialNumber;
+
+  /// No description provided for @dsmVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'DSM Version'**
+  String get dsmVersion;
+
+  /// No description provided for @deviceTemperature.
+  ///
+  /// In en, this message translates to:
+  /// **'Device Temperature'**
+  String get deviceTemperature;
+
+  /// No description provided for @uptime.
+  ///
+  /// In en, this message translates to:
+  /// **'Uptime'**
+  String get uptime;
+
+  /// No description provided for @userInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'User Info'**
+  String get userInfo;
+
+  /// No description provided for @operation.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation'**
+  String get operation;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
+
+  /// No description provided for @error_getDeviceInfo_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get device info!'**
+  String get error_getDeviceInfo_failed;
+
+  /// No description provided for @day.
+  ///
+  /// In en, this message translates to:
+  /// **'day'**
+  String get day;
+
+  /// No description provided for @hour.
+  ///
+  /// In en, this message translates to:
+  /// **'hour'**
+  String get hour;
+
+  /// No description provided for @minute.
+  ///
+  /// In en, this message translates to:
+  /// **'minute'**
+  String get minute;
+
+  /// No description provided for @second.
+  ///
+  /// In en, this message translates to:
+  /// **'second'**
+  String get second;
 }
 
 class _AppLocalizationsDelegate

@@ -167,5 +167,20 @@
   "copy": "拷贝",
   "most_play": "最常播放",
   "play_current_song": "播放当前歌曲",
-  "local_file_not_found": "本地未找到%s歌曲"
+  "local_file_not_found": "本地未找到%s歌曲",
+  "account": "账号",
+  "deviceInfo": "设备信息",
+  "model": "型号",
+  "serialNumber": "序列号",
+  "dsmVersion": "DSM版本号",
+  "deviceTemperature": "设备温度",
+  "uptime": "运行时长",
+  "userInfo": "用户信息",
+  "operation": "操作",
+  "logout": "退出登录",
+  "error_getDeviceInfo_failed": "获取设备信息失败！",
+  "day": "天",
+  "hour": "小时",
+  "minute": "分钟",
+  "second": "秒"
 }

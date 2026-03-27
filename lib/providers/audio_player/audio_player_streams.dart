@@ -72,13 +72,11 @@ class AudioPlayerStreamListeners {
             activeMedia.album,
             activeMedia.artist,
           );
-          if (coverUrl.isNotEmpty) {
-            TrayManager.instance.updateMusicPlayerArtworkFromUrl(coverUrl).catchError((e) {
-              logger.w(
-                '[AudioPlayer] Failed to update artwork: $e',
-              );
-            });
-          }
+          TrayManager.instance
+              .updateMusicPlayerArtworkFromUrl(coverUrl)
+              .catchError((e) {
+                logger.w('[AudioPlayer] Failed to update artwork: $e');
+              });
         }
       } catch (e, stack) {
         logger.e(

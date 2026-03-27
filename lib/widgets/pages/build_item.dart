@@ -37,10 +37,18 @@ mixin BuildItem {
     required String title,
     required List<T> items,
     required T value,
+    required ColorScheme colorScheme,
     required ValueChanged<T?>? onChanged,
   }) {
     return ListTile(
-      title: Text(title, style: const TextStyle(fontSize: 14)),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+          color: colorScheme.onSurface,
+        ),
+      ),
       trailing: DropdownButton<T>(
         value: value ?? items.first,
         items: items
@@ -70,7 +78,11 @@ mixin BuildItem {
     return ListTile(
       title: Text(
         '$title: ${value.toStringAsFixed(1)}',
-        style: const TextStyle(fontSize: 14),
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+          color: colorScheme.onSurface,
+        ),
       ),
       trailing: SizedBox(
         width: 200,
@@ -100,11 +112,18 @@ mixin BuildItem {
     return ListTile(
       title: Text(
         value ? title : title2 ?? '',
-        style: const TextStyle(fontSize: 14),
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+          color: colorScheme.onSurface,
+        ),
       ),
       subtitle: Text(
         value ? subtitle : subtitle2 ?? '',
-        style: const TextStyle(fontSize: 10),
+        style: TextStyle(
+          fontSize: 12,
+          color: colorScheme.onSurface.withValues(alpha: 0.7),
+        ),
       ),
       trailing: Switch(
         value: value,

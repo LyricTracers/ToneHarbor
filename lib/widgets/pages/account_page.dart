@@ -14,20 +14,20 @@ import 'package:toneharbor/widgets/pages/build_item.dart';
 class AccountPage extends HookConsumerWidget with BuildItem {
   const AccountPage({super.key});
 
-  String _formatUptime(int uptimeSeconds) {
+  String _formatUptime(int uptimeSeconds, AppLocalizations l10n) {
     final days = uptimeSeconds ~/ 86400;
     final hours = (uptimeSeconds % 86400) ~/ 3600;
     final minutes = (uptimeSeconds % 3600) ~/ 60;
     final seconds = uptimeSeconds % 60;
 
     if (days > 0) {
-      return '$days 天 $hours 小时 $minutes 分钟 $seconds 秒';
+      return '$days ${l10n.day} $hours ${l10n.hour} $minutes ${l10n.minute} $seconds ${l10n.second}';
     } else if (hours > 0) {
-      return '$hours 小时 $minutes 分钟 $seconds 秒';
+      return '$hours ${l10n.hour} $minutes ${l10n.minute} $seconds ${l10n.second}';
     } else if (minutes > 0) {
-      return '$minutes 分钟 $seconds 秒';
+      return '$minutes ${l10n.minute} $seconds ${l10n.second}';
     } else {
-      return '$seconds 秒';
+      return '$seconds ${l10n.second}';
     }
   }
 
@@ -81,7 +81,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
         ref.invalidate(authTokenProvider);
       },
       title: Text(
-        "退出登录",
+        l10n.logout,
         textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: 16,
@@ -104,14 +104,14 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     return Column(
       children: [
         _buildListTile(
-          title: "设备地址",
+          title: l10n.serverUrl,
           value: url,
           colorScheme: colorScheme,
           onTap: () => copyToClipboard(url, ref.context, colorScheme.secondary),
         ),
         _buildDivider(colorScheme),
         _buildListTile(
-          title: "用户名",
+          title: l10n.username,
           value: account?.account ?? '',
           colorScheme: colorScheme,
           onTap: () => copyToClipboard(
@@ -122,7 +122,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
         ),
         _buildDivider(colorScheme),
         _buildListTile(
-          title: "密码",
+          title: l10n.password,
           value: '',
           colorScheme: colorScheme,
           onTap: () => copyToClipboard(
@@ -168,7 +168,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     if (dsmInfo == null) {
       return ListTile(
         title: Text(
-          "获取设备信息失败！",
+          l10n.error_getDeviceInfo_failed,
           style: TextStyle(color: colorScheme.error, fontSize: 16),
         ),
       );
@@ -176,25 +176,25 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     return Column(
       children: [
         _buildListTile(
-          title: "型号",
+          title: l10n.model,
           value: dsmInfo.model,
           colorScheme: colorScheme,
         ),
         _buildDivider(colorScheme),
         _buildListTile(
-          title: "序列号",
+          title: l10n.serialNumber,
           value: dsmInfo.serial,
           colorScheme: colorScheme,
         ),
         _buildDivider(colorScheme),
         _buildListTile(
-          title: "DSM版本号",
+          title: l10n.dsmVersion,
           value: dsmInfo.versionString,
           colorScheme: colorScheme,
         ),
         _buildDivider(colorScheme),
         _buildListTile(
-          title: "设备温度",
+          title: l10n.deviceTemperature,
           value: "${dsmInfo.temperature}°C",
           colorScheme: colorScheme,
           trailing: Text(
@@ -207,8 +207,8 @@ class AccountPage extends HookConsumerWidget with BuildItem {
         ),
         _buildDivider(colorScheme),
         _buildListTile(
-          title: "运行时长",
-          value: _formatUptime(currentUptime),
+          title: l10n.uptime,
+          value: _formatUptime(currentUptime, l10n),
           colorScheme: colorScheme,
         ),
       ],
@@ -224,7 +224,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
 
     return Column(
       children: [
-        buildAppBar(context, ref, l10n, colorScheme, "账号"),
+        buildAppBar(context, ref, l10n, colorScheme, l10n.account),
         dsmInfo.when(
           data: (value) {
             final uptime = useState(value.data?.uptime ?? 0);
@@ -239,7 +239,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
                 ref,
                 l10n,
                 colorScheme,
-                "设备信息",
+                l10n.deviceInfo,
                 _deviceInfo(ref, l10n, colorScheme, value.data, uptime.value),
               ),
               SizedBox(height: 20),
@@ -247,7 +247,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
                 ref,
                 l10n,
                 colorScheme,
-                "用户信息",
+                l10n.userInfo,
                 _userInfo(ref, l10n, colorScheme, obscurePassword),
               ),
               SizedBox(height: 20),
@@ -255,7 +255,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
                 ref,
                 l10n,
                 colorScheme,
-                "操作",
+                l10n.operation,
                 _logout(ref, l10n, colorScheme),
               ),
             ]);
