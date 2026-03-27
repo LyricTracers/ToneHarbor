@@ -135,14 +135,16 @@ Future<List<StorageInfo>> _getStorageInfos() async {
   final coverSize = await _getDirectorySize(Directory(coverPath));
   final lyricsPath = p.join(appDir.path, 'lyrics_cache');
   final lyricsSize = await _getDirectorySize(Directory(lyricsPath));
-  final cacheSize = coverSize + lyricsSize;
+  final apiCachePath = p.join(appDir.path, 'audio_station_api');
+  final apiCacheSize = await _getDirectorySize(Directory(apiCachePath));
+  final cacheSize = coverSize + lyricsSize + apiCacheSize;
 
   if (cacheSize > 0) {
     infos.add(
       StorageInfo(
         category: StorageCategory.cache,
         path: coverPath,
-        additionalPaths: [lyricsPath],
+        additionalPaths: [lyricsPath, apiCachePath],
         size: cacheSize,
       ),
     );
