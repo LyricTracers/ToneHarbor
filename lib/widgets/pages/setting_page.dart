@@ -45,6 +45,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           onChanged: (value) {
             if (value != null) {
               ref.read(audioQualityProvider.notifier).setAudioQuality(value);
+              setDemuxerBufferSize(value);
             }
           },
         ),

@@ -18,6 +18,7 @@ import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:open_file/open_file.dart';
 import 'package:tray_manager/tray_manager.dart';
@@ -515,5 +516,15 @@ Future<void> switchIconWithLabel(
   } else {
     await trayManager.setMarqueeLabel(label ?? '拾音坞');
     await trayManager.setMarqueeTextColor(isDarkTheme ? "#FFFFFF" : "#000000");
+  }
+}
+
+void setDemuxerBufferSize(AudioQuality quality) {
+  if (quality == AudioQuality.original) {
+    audioPlayer.setDemuxerBufferSize(1024 * 1024 * 10);
+  } else if (quality == AudioQuality.high) {
+    audioPlayer.setDemuxerBufferSize(1024 * 1024 * 4);
+  } else {
+    audioPlayer.setDemuxerBufferSize(1024 * 1024 * 2);
   }
 }

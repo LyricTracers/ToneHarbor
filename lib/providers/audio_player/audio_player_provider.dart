@@ -139,6 +139,7 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
     await audioPlayer.setAudioNormalization(
       SharedPreferencesUtils.getNormalizeAudio(),
     );
+    setDemuxerBufferSize(SharedPreferencesUtils.getAudioQuality());
     final tracks = playerState.tracks;
     final currentIndex = playerState.currentIndex;
 
