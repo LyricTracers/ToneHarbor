@@ -15,6 +15,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/widgets.dart';
+import 'package:tray_manager/tray_manager.dart';
 
 enum ShowArrowType { up, down, none }
 
@@ -72,7 +73,7 @@ class BottomPlayer extends HookConsumerWidget {
       );
       return null;
     }, [activeTrack]);
-
+    trayManager.setMarqueeLabel(currentLineLyrics.value);
     if (Platform.isMacOS) {
       final systemBrightness = MediaQuery.platformBrightnessOf(context);
       final statusBarState = ref.watch(statusBarLyricProvider);
@@ -81,6 +82,7 @@ class BottomPlayer extends HookConsumerWidget {
         switchIconWithLabel(
           systemBrightness == Brightness.dark,
           statusBarState,
+          label: l10n.appTitle,
         );
         return null;
       }, [systemBrightness, statusBarState]);
