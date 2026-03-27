@@ -14,6 +14,62 @@ import 'package:tray_manager/tray_manager.dart';
 class SettingPage extends HookConsumerWidget with BuildItem {
   const SettingPage({super.key});
 
+  Widget _other(BuildContext context, WidgetRef ref, l10n, colorScheme) {
+    return Column(
+      children: [
+        buildDropdownTile(
+          title: '语言',
+          items: Language.values,
+          value: Language.fromLocale(ref.watch(localeProvider)),
+          colorScheme: colorScheme,
+          onChanged: (value) {
+            if (value != null) {
+              ref
+                  .read(localeProvider.notifier)
+                  .setLocale(Locale(value.languageCode));
+            }
+          },
+        ),
+        Divider(
+          height: 1,
+          color: colorScheme.outline.withValues(alpha: 0.2),
+          indent: 15,
+          endIndent: 15,
+        ),
+        ListTile(
+          title: Text(
+            '存储空间管理',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
+          onTap: () => context.push('/storage'),
+        ),
+        Divider(
+          height: 1,
+          color: colorScheme.outline.withValues(alpha: 0.2),
+          indent: 15,
+          endIndent: 15,
+        ),
+        ListTile(
+          title: Text(
+            '关于',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
+          onTap: () {},
+        ),
+      ],
+    );
+  }
+
   Widget _audioPlay(
     WidgetRef ref,
     AppLocalizations l10n,
@@ -42,6 +98,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           items: AudioQuality.values,
           value: ref.watch(audioQualityProvider),
           colorScheme: colorScheme,
+          labelBuilder: (q) => q.localizedLabel(l10n),
           onChanged: (value) {
             if (value != null) {
               ref.read(audioQualityProvider.notifier).setAudioQuality(value);
@@ -54,30 +111,6 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           color: colorScheme.outline.withValues(alpha: 0.2),
           indent: 15,
           endIndent: 15,
-        ),
-        ListTile(
-          title: Text(
-            '代理地址',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
-          ),
-          subtitle: Text(
-            ToneHarborMedia.baseUrl,
-            style: TextStyle(
-              fontSize: 12,
-              color: colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
-          ),
-          onTap: () {
-            copyToClipboard(
-              ToneHarborMedia.baseUrl,
-              ref.context,
-              colorScheme.secondary,
-            );
-          },
         ),
       ],
     );
@@ -226,6 +259,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             '主题设置',
             _theme(ref, l10n, colorScheme),
           ),
+
           if (Platform.isMacOS) ...[
             SizedBox(height: 20),
             ...buildItem(
@@ -236,6 +270,14 @@ class SettingPage extends HookConsumerWidget with BuildItem {
               _statusBar(ref, l10n, colorScheme),
             ),
           ],
+          SizedBox(height: 20),
+          ...buildItem(
+            ref,
+            l10n,
+            colorScheme,
+            '其他设置',
+            _other(context, ref, l10n, colorScheme),
+          ),
         ]),
       ],
     );

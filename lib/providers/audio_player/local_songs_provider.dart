@@ -162,6 +162,75 @@ class LocalMusicStateService {
       );
     }
   }
+
+  static Future<Set<String>> removeQualityFromAll(
+    AppDatabase db,
+    AudioQuality quality,
+  ) async {
+    final deletedTrackIds = <String>{};
+    final qualityBit = 1 << quality.index;
+    final allBitsMask = (1 << AudioQuality.values.length) - 1;
+    final clearMask = allBitsMask ^ qualityBit;
+
+    try {
+      await db.transaction(() async {
+        final result = await db
+            .customSelect(
+              'SELECT track_id FROM local_music_state WHERE qualities = ?',
+              variables: [Variable.withInt(qualityBit)],
+              readsFrom: {db.localMusicState},
+            )
+            .get();
+
+        for (final row in result) {
+          deletedTrackIds.add(row.read<String>('track_id'));
+        }
+
+        if (deletedTrackIds.isNotEmpty) {
+          await db.customStatement(
+            'DELETE FROM local_music_state WHERE qualities = ?',
+            [qualityBit],
+          );
+        }
+
+        await db.customStatement(
+          'UPDATE local_music_state SET qualities = qualities & ?, updated_at = ? WHERE qualities & ? != 0 AND qualities != ?',
+          [
+            clearMask,
+            DateTime.now().millisecondsSinceEpoch,
+            qualityBit,
+            qualityBit,
+          ],
+        );
+      });
+
+      logger.i(
+        '[LocalMusicStateService] Removed quality $quality from all records, deleted ${deletedTrackIds.length} tracks',
+      );
+    } catch (e) {
+      logger.e(
+        '[LocalMusicStateService] Failed to remove quality from all: $e',
+      );
+    }
+
+    return deletedTrackIds;
+  }
+
+  static Future<void> removeAllByQuality(
+    AppDatabase db,
+    AudioQuality quality,
+  ) async {
+    final cacheDir = getMusicCacheDirSync(quality);
+    final dir = Directory(cacheDir);
+
+    if (await dir.exists()) {
+      await dir.delete(recursive: true);
+      await dir.create(recursive: true);
+      logger.i('[LocalMusicStateService] Deleted cache directory: $cacheDir');
+    }
+
+    await removeQualityFromAll(db, quality);
+  }
 }
 
 class LocalSong {

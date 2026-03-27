@@ -1190,6 +1190,48 @@ abstract class AppLocalizations {
   /// **'Normalize audio'**
   String get normalize_audio;
 
+  /// No description provided for @proxy_url.
+  ///
+  /// In en, this message translates to:
+  /// **'Playback Proxy Address'**
+  String get proxy_url;
+
+  /// No description provided for @quality_low.
+  ///
+  /// In en, this message translates to:
+  /// **'Low Quality (128kbps)'**
+  String get quality_low;
+
+  /// No description provided for @quality_medium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium Quality (192kbps)'**
+  String get quality_medium;
+
+  /// No description provided for @quality_high.
+  ///
+  /// In en, this message translates to:
+  /// **'High Quality (320kbps)'**
+  String get quality_high;
+
+  /// No description provided for @quality_original.
+  ///
+  /// In en, this message translates to:
+  /// **'Original Quality'**
+  String get quality_original;
+
+  /// No description provided for @storage_cache.
+  ///
+  /// In en, this message translates to:
+  /// **'Cache'**
+  String get storage_cache;
+
+  /// No description provided for @storage_other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get storage_other;
+
   /// No description provided for @day.
   ///
   /// In en, this message translates to:

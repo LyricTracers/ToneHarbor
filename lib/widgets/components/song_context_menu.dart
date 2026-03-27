@@ -58,7 +58,7 @@ class SongContextMenu {
                 ),
                 ...availableQualities.map((quality) {
                   return MenuItem(
-                    label: Text(quality.label),
+                    label: Text(quality.localizedLabel(l10n)),
                     onSelected: (value) async {
                       final track = localSong.toTrack(quality: quality);
                       if (track != null) {

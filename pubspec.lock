@@ -338,6 +338,14 @@ packages:
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
     version: "1.6.0"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      sha256: "3e0141505477fd8ad55d6eb4e7776d3fe8430be8e497ccb1521370c3f21a3e2b"
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "2.0.8"
   fading_edge_scrollview:
     dependency: "direct main"
     description:
@@ -386,6 +394,14 @@ packages:
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
     version: "1.1.1"
+  fl_chart:
+    dependency: "direct main"
+    description:
+      name: fl_chart
+      sha256: b938f77d042cbcd822936a7a359a7235bad8bd72070de1f827efc2cc297ac888
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "1.2.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -1010,7 +1026,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: c26c74dc0e77f4bb30e09fbeb9a03cc1ebd4cb7a
+      resolved-ref: "2ee1c7973a0d9341657829ddc7c2fc62a411923a"
       url: "https://git.nxcloud.club:12750/LyricTracers/persistent_cache_flutter.git"
     source: git
     version: "2.0.0"

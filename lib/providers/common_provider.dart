@@ -40,6 +40,25 @@ enum LyricsDoubleClickAction {
   }
 }
 
+enum Language {
+  zh('zh', '简体中文'),
+  en('en', 'English');
+
+  final String languageCode;
+  final String displayName;
+  const Language(this.languageCode, this.displayName);
+
+  @override
+  String toString() => displayName;
+
+  static Language fromLocale(Locale locale) {
+    return Language.values.firstWhere(
+      (lang) => lang.languageCode == locale.languageCode,
+      orElse: () => Language.zh,
+    );
+  }
+}
+
 @riverpod
 class LyricDoubleClick extends _$LyricDoubleClick {
   @override

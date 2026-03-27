@@ -16,6 +16,7 @@ dependencies:
     sdk: flutter
   intl: ^0.20.2
   rhttp: ^0.15.0
+  fl_chart: ^1.2.0
   media_kit:
     git:
       url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git

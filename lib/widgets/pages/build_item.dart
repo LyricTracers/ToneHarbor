@@ -39,6 +39,7 @@ mixin BuildItem {
     required T value,
     required ColorScheme colorScheme,
     required ValueChanged<T?>? onChanged,
+    String Function(T)? labelBuilder,
   }) {
     return ListTile(
       title: Text(
@@ -56,7 +57,7 @@ mixin BuildItem {
               (e) => DropdownMenuItem(
                 value: e,
                 child: Text(
-                  e.toString().split('.').last,
+                  labelBuilder?.call(e) ?? e.toString().split('.').last,
                   style: const TextStyle(fontSize: 14),
                 ),
               ),

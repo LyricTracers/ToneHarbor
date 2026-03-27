@@ -1,26 +1,38 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:toneharbor/l10n/app_localizations.dart';
 
 part 'download.freezed.dart';
 part 'download.g.dart';
 
 enum AudioQuality {
-  low('低 (128kbps)', 'mp3', 128000, 'transcode'),
-  medium('中 (192kbps)', 'mp3', 192000, 'transcode'),
-  high('高 (320kbps)', 'mp3', 320000, 'transcode'),
-  original('原始 (不转码)', null, null, 'stream');
+  low,
+  medium,
+  high,
+  original;
 
-  final String label;
-  final String? format;
-  final int? bitrate;
-  final String method;
+  String localizedLabel(AppLocalizations l10n) {
+    switch (this) {
+      case AudioQuality.low:
+        return l10n.quality_low;
+      case AudioQuality.medium:
+        return l10n.quality_medium;
+      case AudioQuality.high:
+        return l10n.quality_high;
+      case AudioQuality.original:
+        return l10n.quality_original;
+    }
+  }
 
-  const AudioQuality(this.label, this.format, this.bitrate, this.method);
-
-  bool get isTranscode => method == 'transcode';
-  bool get isStream => method == 'stream';
-
-  @override
-  String toString() => label;
+  String? get format => this == original ? null : 'mp3';
+  int? get bitrate => switch (this) {
+    low => 128000,
+    medium => 192000,
+    high => 320000,
+    original => null,
+  };
+  bool get isTranscode => this != original;
+  bool get isStream => this == original;
+  String get method => this == original ? 'stream' : 'transcode';
 }
 
 @freezed

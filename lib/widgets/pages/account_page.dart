@@ -111,6 +111,19 @@ class AccountPage extends HookConsumerWidget with BuildItem {
         ),
         _buildDivider(colorScheme),
         _buildListTile(
+          title: l10n.proxy_url,
+          value: ToneHarborMedia.baseUrl,
+          colorScheme: colorScheme,
+          onTap: () {
+            copyToClipboard(
+              ToneHarborMedia.baseUrl,
+              ref.context,
+              colorScheme.secondary,
+            );
+          },
+        ),
+        _buildDivider(colorScheme),
+        _buildListTile(
           title: l10n.username,
           value: account?.account ?? '',
           colorScheme: colorScheme,

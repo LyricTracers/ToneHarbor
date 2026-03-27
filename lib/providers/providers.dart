@@ -15,3 +15,4 @@ export 'audio_player/local_songs_provider.dart';
 export 'theme_data_provider.dart';
 export 'common_provider.dart';
 export 'database/database.dart';
+export 'storage_provider.dart';

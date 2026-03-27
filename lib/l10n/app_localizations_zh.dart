@@ -555,6 +555,27 @@ class AppLocalizationsZh extends AppLocalizations {
   String get normalize_audio => '标准化音频';
 
   @override
+  String get proxy_url => '播放代理地址';
+
+  @override
+  String get quality_low => '低音质 (128kbps)';
+
+  @override
+  String get quality_medium => '中音质 (192kbps)';
+
+  @override
+  String get quality_high => '高音质 (320kbps)';
+
+  @override
+  String get quality_original => '原始音质 (不转码)';
+
+  @override
+  String get storage_cache => '缓存';
+
+  @override
+  String get storage_other => '其他';
+
+  @override
   String get day => '天';
 
   @override

@@ -571,6 +571,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get normalize_audio => 'Normalize audio';
 
   @override
+  String get proxy_url => 'Playback Proxy Address';
+
+  @override
+  String get quality_low => 'Low Quality (128kbps)';
+
+  @override
+  String get quality_medium => 'Medium Quality (192kbps)';
+
+  @override
+  String get quality_high => 'High Quality (320kbps)';
+
+  @override
+  String get quality_original => 'Original Quality';
+
+  @override
+  String get storage_cache => 'Cache';
+
+  @override
+  String get storage_other => 'Other';
+
+  @override
   String get day => 'day';
 
   @override

@@ -10,7 +10,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/album.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
-import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/audio_player/most_player_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/providers/server/server_provider.dart';
@@ -27,6 +26,7 @@ import 'package:toneharbor/widgets/pages/playlists_page.dart';
 import 'package:toneharbor/widgets/pages/search_resulut_page.dart';
 import 'package:toneharbor/widgets/pages/setting_page.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
+import 'package:toneharbor/widgets/pages/storage_manage_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'init/initialized.dart';
@@ -308,6 +308,15 @@ class MyApp extends HookConsumerWidget {
                 path: '/setting',
                 pageBuilder: (context, state) =>
                     NoTransitionPage(child: SettingPage()),
+              ),
+              GoRoute(
+                path: '/storage',
+                pageBuilder: (context, state) {
+                  Future.microtask(() {
+                    ref.invalidate(storageInfoProvider);
+                  });
+                  return NoTransitionPage(child: StorageManagePage());
+                },
               ),
               GoRoute(
                 path: '/account',
