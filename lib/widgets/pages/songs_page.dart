@@ -6,6 +6,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
@@ -82,7 +83,8 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
         if (refreshRandom)
           IconButton(
             icon: Icon(Icons.update_rounded, size: 18),
-            onPressed: () {
+            onPressed: () async {
+              await audioStationRequestCache.clearGroup("randomSongs");
               ref.invalidate(randomSongsProvider);
             },
           ),

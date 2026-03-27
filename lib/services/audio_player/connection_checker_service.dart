@@ -35,7 +35,6 @@ class ConnectionCheckerService with WidgetsBindingObserver {
     });
 
     Connectivity().onConnectivityChanged.listen((event) async {
-      logger.i("Connectivity event: $event");
       await isConnected;
     });
 

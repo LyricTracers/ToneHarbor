@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -70,7 +71,9 @@ class RecommendPageDailySongs extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = getColorSchemeWhenReady(ref);
-    final randomSongs = ref.watch(randomSongsProvider(limit: 100));
+    final randomSongs = ref.watch(
+      randomSongsProvider(limit: 100, cacheDuration: Duration(hours: 24)),
+    );
 
     return randomSongs.when(
       data: (data) {
@@ -79,9 +82,11 @@ class RecommendPageDailySongs extends ConsumerWidget {
       loading: () {
         return _buildShimmerLoading(context, colorScheme);
       },
-      error: (error, stack) => buildErrorView(context, ref, colorScheme, () {
-        ref.invalidate(randomSongsProvider);
-      }),
+      error: (error, stack) =>
+          buildErrorView(context, ref, colorScheme, () async {
+            await audioStationRequestCache.clearGroup("randomSongs");
+            ref.invalidate(randomSongsProvider);
+          }),
     );
   }
 

@@ -278,7 +278,10 @@ class MyApp extends HookConsumerWidget {
                     key: state.pageKey,
                     child: SongsPage(
                       title: state.pathParameters['title'] ?? 'Random Songs',
-                      baseProvider: randomSongsProvider(limit: 100),
+                      baseProvider: randomSongsProvider(
+                        limit: 100,
+                        cacheDuration: Duration(hours: 24),
+                      ),
                       limitTotal: 100,
                       sortAction: SongsPageSortAction.none,
                       refreshRandom: true,
