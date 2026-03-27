@@ -55,6 +55,30 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           indent: 15,
           endIndent: 15,
         ),
+        ListTile(
+          title: Text(
+            '代理地址',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          subtitle: Text(
+            ToneHarborMedia.baseUrl,
+            style: TextStyle(
+              fontSize: 12,
+              color: colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+          onTap: () {
+            copyToClipboard(
+              ToneHarborMedia.baseUrl,
+              ref.context,
+              colorScheme.secondary,
+            );
+          },
+        ),
       ],
     );
   }

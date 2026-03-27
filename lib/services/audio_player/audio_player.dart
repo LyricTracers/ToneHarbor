@@ -28,12 +28,12 @@ class ToneHarborMedia extends mk.Media {
             : getStreamUrl(track.id),
         extras: track.toJson(),
       );
-
+  static String get baseUrl => "http://$host:$serverPort";
   static String getStreamUrl(String songId) {
     if (serverPort == 0) {
       logger.w('[ToneHarborMedia] Server port is 0, stream URL may not work!');
     }
-    return "http://$host:$serverPort/stream/$songId";
+    return "$baseUrl/stream/$songId";
   }
 
   factory ToneHarborMedia.media(Media media) {
@@ -48,11 +48,11 @@ class ToneHarborMedia extends mk.Media {
   ) {
     if (songId.isEmpty) {
       if (albumName.isEmpty && artistName.isNotEmpty) {
-        return 'http://$host:$serverPort/cover-artist/${Uri.encodeComponent(artistName)}';
+        return "$baseUrl/cover-artist/${Uri.encodeComponent(artistName)}";
       }
-      return 'http://$host:$serverPort/cover-album/${Uri.encodeComponent(albumName)}/${Uri.encodeComponent(artistName)}';
+      return "$baseUrl/cover-album/${Uri.encodeComponent(albumName)}/${Uri.encodeComponent(artistName)}";
     }
-    return 'http://$host:$serverPort/cover/$songId';
+    return "$baseUrl/cover/$songId";
   }
 }
 

@@ -59,7 +59,6 @@ class LoggingInterceptor extends Interceptor {
 }
 
 class FileLogOutput extends LogOutput {
-  final String logFileName = 'audio_station.log';
   late String logFilePath;
   late IOSink _sink;
   final _logQueue = <String>[];
@@ -69,8 +68,7 @@ class FileLogOutput extends LogOutput {
 
   @override
   Future<void> init() async {
-    var targetDir = await getApplicationSupportDirectory();
-    logFilePath = '${targetDir.path}/$logFileName';
+    logFilePath = await getLogFilePath();
     debugPrint("logFilePath = $logFilePath");
     final File file = File(logFilePath);
     if (await file.exists()) {

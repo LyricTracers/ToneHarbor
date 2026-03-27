@@ -8,6 +8,7 @@ import 'package:shelf_router/shelf_router.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/server/playback_routes.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
+import 'package:toneharbor/utils/base_funs.dart';
 
 part 'server_provider.g.dart';
 
@@ -42,9 +43,25 @@ final serverRouterProvider = Provider((ref) {
     "/cover-album/<albumName>/<artistName>",
     playbackRoutes.getCoverAlbum,
   );
+  router.get("/log", getLog);
 
   return router;
 });
+
+Future<Response> getLog(Request request) async {
+  final logFilePath = await getLogFilePath();
+  final file = File(logFilePath);
+
+  if (!await file.exists()) {
+    return Response.notFound("Log file not found");
+  }
+
+  return Response(
+    200,
+    body: file.openRead(),
+    headers: {'content-type': 'text/plain; charset=utf-8'},
+  );
+}
 
 @keepAlive
 Future<HttpServer> server(Ref ref) async {
