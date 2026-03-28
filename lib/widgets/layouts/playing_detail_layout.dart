@@ -115,6 +115,11 @@ class PlayingDetailLayout extends BaseBgLayout {
                                   ),
                                 ),
                                 IconButton(
+                                  onPressed: () =>
+                                      _showAudioDeviceMenu(ref, colorScheme),
+                                  icon: Icon(Icons.speaker, size: 24),
+                                ),
+                                IconButton(
                                   onPressed: () {
                                     context.push(
                                       "/switch_lyrics",
@@ -502,5 +507,110 @@ class PlayingDetailLayout extends BaseBgLayout {
         ),
       ),
     );
+  }
+
+  void _showAudioDeviceMenu(WidgetRef ref, ColorScheme colorScheme) {
+    final l10n = ref.read(l10nProvider);
+    final devices = audioPlayer.audioDevices;
+    final selectedDevice = audioPlayer.currentAudioDevice;
+
+    showModalBottomSheet(
+      context: ref.context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text(
+                l10n.audio_device,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+            ),
+            const Divider(height: 1),
+            if (devices.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  l10n.no_audio_devices_found,
+                  style: TextStyle(
+                    color: colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+              )
+            else
+              ...devices.map((device) {
+                final isSelected = selectedDevice.name == device.name;
+                return ListTile(
+                  leading: Icon(
+                    _getDeviceIcon(device.name),
+                    size: 20,
+                    color: isSelected
+                        ? colorScheme.primary
+                        : colorScheme.onSurface,
+                  ),
+                  title: Text(
+                    device.description.isNotEmpty
+                        ? device.description
+                        : device.name,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                      color: isSelected
+                          ? colorScheme.primary
+                          : colorScheme.onSurface,
+                    ),
+                  ),
+                  subtitle: device.description.isNotEmpty
+                      ? Text(
+                          device.name,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: colorScheme.onSurface.withValues(alpha: 0.6),
+                          ),
+                        )
+                      : null,
+                  trailing: isSelected
+                      ? Icon(Icons.check_circle, color: colorScheme.primary)
+                      : null,
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await audioPlayer.setAudioDevice(device);
+                  },
+                );
+              }),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _getDeviceIcon(String deviceName) {
+    final name = deviceName.toLowerCase();
+    if (name.contains('airplay') ||
+        name.contains('apple tv') ||
+        name.contains('homepod')) {
+      return Icons.airplay;
+    } else if (name.contains('bluetooth') || name.contains('bt')) {
+      return Icons.bluetooth_audio;
+    } else if (name.contains('headphone') ||
+        name.contains('headset') ||
+        name.contains('earphone')) {
+      return Icons.headphones;
+    } else if (name.contains('hdmi') || name.contains('displayport')) {
+      return Icons.tv;
+    } else if (name.contains('usb')) {
+      return Icons.usb;
+    } else if (name.contains('speaker') || name.contains('built-in')) {
+      return Icons.speaker;
+    }
+    return Icons.speaker;
   }
 }

@@ -125,7 +125,15 @@ abstract class AudioPlayerInterface {
     return _mkPlayer.state.audioDevice;
   }
 
+  mk.AudioDevice get currentAudioDevice {
+    return _mkPlayer.state.audioDevice;
+  }
+
   Future<List<mk.AudioDevice>> get devices async {
+    return _mkPlayer.state.audioDevices;
+  }
+
+  List<mk.AudioDevice> get audioDevices {
     return _mkPlayer.state.audioDevices;
   }
 
