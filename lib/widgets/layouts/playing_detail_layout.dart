@@ -320,26 +320,28 @@ class PlayingDetailLayout extends BaseBgLayout {
       context: ref.context,
       builder: (context) => AlertDialog(
         title: Text(
-          '选择翻译语言',
+          ref.read(l10nProvider).default_target_language,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: TranslateTargetLanguage.values.map((language) {
-            return RadioListTile<TranslateTargetLanguage>(
-              title: Text(language.displayName),
-              value: language,
-              groupValue: currentLanguage,
-              onChanged: (value) {
-                if (value != null) {
-                  ref
-                      .read(zhipuTargetLanguageSettingProvider.notifier)
-                      .setTargetLanguage(value);
-                  Navigator.pop(context);
-                }
-              },
-            );
-          }).toList(),
+        content: RadioGroup<TranslateTargetLanguage>(
+          groupValue: currentLanguage,
+          onChanged: (value) {
+            if (value != null) {
+              ref
+                  .read(zhipuTargetLanguageSettingProvider.notifier)
+                  .setTargetLanguage(value);
+              Navigator.pop(context);
+            }
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: TranslateTargetLanguage.values.map((language) {
+              return RadioListTile<TranslateTargetLanguage>(
+                title: Text(language.displayName),
+                value: language,
+              );
+            }).toList(),
+          ),
         ),
       ),
     );
