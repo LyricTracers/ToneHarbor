@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -228,14 +227,8 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                                           context,
                                           colorScheme.secondary,
                                         );
+                                        Navigator.of(context).pop();
                                       }
-                                      ref
-                                          .read(subContentProvider.notifier)
-                                          .set(
-                                            SubContentData(
-                                              type: SubContentType.none,
-                                            ),
-                                          );
                                     }
                                   } catch (e) {
                                     if (context.mounted) {

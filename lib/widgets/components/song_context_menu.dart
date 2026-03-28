@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
-import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 
 import 'package:toneharbor/providers/audio_player/download_manager.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/widgets/pages/add_to_playlists_page.dart';
 
 class SongContextMenu {
   static List<ContextMenuEntry> build(
@@ -151,14 +152,10 @@ class SongContextMenu {
             MenuItem(
               label: Text(l10n.song_playlist),
               onSelected: (value) {
-                ref
-                    .read(subContentProvider.notifier)
-                    .set(
-                      SubContentData(
-                        type: SubContentType.addToPlayLists,
-                        extra: itemId,
-                      ),
-                    );
+                showSlidePanel(
+                  context: ref.context,
+                  builder: (context) => AddToPlaylistsPage(itemId),
+                );
               },
             ),
           ],

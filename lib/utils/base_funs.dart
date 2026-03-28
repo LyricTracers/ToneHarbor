@@ -557,3 +557,38 @@ String formatBytes(int bytes) {
   }
   return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(2)} GB';
 }
+
+Future<T?> showSlidePanel<T>({
+  required BuildContext context,
+  required Widget Function(BuildContext context) builder,
+  double? width,
+  bool barrierDismissible = true,
+  Color? barrierColor,
+}) {
+  return showGeneralDialog<T>(
+    context: context,
+    barrierDismissible: barrierDismissible,
+    barrierLabel: 'SlidePanel',
+    barrierColor: barrierColor ?? Colors.black.withValues(alpha: 0.3),
+    transitionDuration: const Duration(milliseconds: 200),
+    transitionBuilder: (context, animation, secondaryAnimation, child) {
+      return SlideTransition(
+        position: Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero)
+            .animate(
+              CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
+                reverseCurve: Curves.easeInCubic,
+              ),
+            ),
+        child: child,
+      );
+    },
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return Align(
+        alignment: Alignment.centerRight,
+        child: Material(color: Colors.transparent, child: builder(context)),
+      );
+    },
+  );
+}

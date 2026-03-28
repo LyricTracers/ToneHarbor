@@ -4,7 +4,6 @@ import "package:go_router/go_router.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
 import "package:lyricskit/lyricskit.dart";
 import "package:toneharbor/init/initialized.dart";
-import "package:toneharbor/models/audio_player/sub_content_state.dart";
 import "package:toneharbor/models/audio_player/tone_harbor_track.dart";
 import "package:toneharbor/providers/providers.dart";
 import "package:toneharbor/providers/translate/translate_provider.dart";
@@ -14,7 +13,6 @@ import "package:toneharbor/utils/base_funs.dart";
 import "package:toneharbor/widgets/layouts/base_bg_layout.dart";
 import "package:toneharbor/widgets/pages/add_to_playlists_page.dart";
 import "package:toneharbor/widgets/pages/lyrics_content_page.dart";
-import "package:toneharbor/widgets/pages/playlist_page.dart";
 import "package:toneharbor/widgets/widgets.dart";
 
 class PlayingDetailLayout extends BaseBgLayout {
@@ -34,7 +32,6 @@ class PlayingDetailLayout extends BaseBgLayout {
             automaticallyImplyLeading: false,
             leading: IconButton(
               onPressed: () {
-                ref.invalidate(subContentProvider);
                 ref.context.pop();
               },
               icon: Icon(Icons.arrow_back_ios_sharp),
@@ -44,28 +41,8 @@ class PlayingDetailLayout extends BaseBgLayout {
         ],
       );
     }
-    final subContentState = ref.watch(subContentProvider);
 
     final showTranslated = useState(false);
-
-    final animationController = useAnimationController(
-      duration: const Duration(milliseconds: 100),
-    );
-    useEffect(() {
-      if (subContentState.type != SubContentType.none) {
-        animationController.forward();
-      } else {
-        animationController.reverse();
-      }
-      return null;
-    }, [subContentState]);
-    final slideAnimation =
-        Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(
-          CurvedAnimation(
-            parent: animationController,
-            curve: Curves.fastEaseInToSlowEaseOut,
-          ),
-        );
     final isLocal = activeTrack.isLocal;
 
     useEffect(() {
@@ -99,15 +76,13 @@ class PlayingDetailLayout extends BaseBgLayout {
                                   onPressed: isLocal
                                       ? null
                                       : () {
-                                          ref
-                                              .read(subContentProvider.notifier)
-                                              .set(
-                                                SubContentData(
-                                                  type: SubContentType
-                                                      .addToPlayLists,
-                                                  extra: activeTrack.id,
+                                          showSlidePanel(
+                                            context: ref.context,
+                                            builder: (context) =>
+                                                AddToPlaylistsPage(
+                                                  activeTrack.id,
                                                 ),
-                                              );
+                                          );
                                         },
                                   icon: Icon(
                                     Icons.playlist_add_rounded,
@@ -185,41 +160,6 @@ class PlayingDetailLayout extends BaseBgLayout {
             BottomPlayer(showArrowType: ShowArrowType.down),
           ],
         ),
-
-        if (subContentState.type != SubContentType.none) ...[
-          Positioned.fill(
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                ref
-                    .read(subContentProvider.notifier)
-                    .set(SubContentData(type: SubContentType.none));
-              },
-              onLongPress: () {
-                ref
-                    .read(subContentProvider.notifier)
-                    .set(SubContentData(type: SubContentType.none));
-              },
-            ),
-          ),
-          SlideTransition(
-            position: slideAnimation,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                switch (subContentState.type) {
-                  SubContentType.playList => PlaylistPage(),
-                  SubContentType.songInfo => SizedBox(),
-                  SubContentType.addToPlayLists => AddToPlaylistsPage(
-                    subContentState.extra ?? activeTrack.id,
-                  ),
-                  SubContentType.updateLyrics => SizedBox(),
-                  SubContentType.none => const SizedBox(),
-                },
-              ],
-            ),
-          ),
-        ],
       ],
     );
   }

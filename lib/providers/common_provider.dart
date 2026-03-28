@@ -2,7 +2,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_utils.dart';
@@ -176,20 +175,6 @@ class AudioQualityNotifier extends _$AudioQualityNotifier {
   Future<void> setAudioQuality(AudioQuality quality) async {
     state = quality;
     await SharedPreferencesUtils.setAudioQuality(quality);
-  }
-}
-
-enum SubContentType { none, playList, songInfo, addToPlayLists, updateLyrics }
-
-@keepAlive
-class SubContent extends _$SubContent {
-  @override
-  SubContentData build() {
-    return SubContentData(type: SubContentType.none);
-  }
-
-  void set(SubContentData t) {
-    state = t;
   }
 }
 

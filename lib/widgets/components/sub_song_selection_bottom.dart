@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/audio_player/download_manager.dart';
 import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
+import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/widgets/pages/add_to_playlists_page.dart';
 
 class SubSongSelectionBottom extends HookConsumerWidget {
   final List<ToneHarborTrackObject> songs;
@@ -169,14 +170,10 @@ class SubSongSelectionBottom extends HookConsumerWidget {
                 return;
               }
 
-              ref
-                  .read(subContentProvider.notifier)
-                  .set(
-                    SubContentData(
-                      type: SubContentType.addToPlayLists,
-                      extra: ids.join(','),
-                    ),
-                  );
+              showSlidePanel(
+                context: context,
+                builder: (context) => AddToPlaylistsPage(ids.join(',')),
+              );
             },
             icon: const Icon(Icons.playlist_add_rounded, size: 18),
             tooltip: l10n.song_playlist,

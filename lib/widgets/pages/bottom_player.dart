@@ -7,13 +7,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:toneharbor/hooks/use_progress.dart';
-import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
 import 'package:toneharbor/providers/audio_player/most_player_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/widgets/pages/playlist_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 enum ShowArrowType { up, down, none }
@@ -368,11 +368,10 @@ class BottomPlayer extends HookConsumerWidget {
                         tooltip: l10n.play_queue,
                         icon: const Icon(Icons.queue_music_rounded, size: 18),
                         onPressed: () {
-                          ref
-                              .read(subContentProvider.notifier)
-                              .set(
-                                SubContentData(type: SubContentType.playList),
-                              );
+                          showSlidePanel(
+                            context: context,
+                            builder: (context) => const PlaylistPage(),
+                          );
                         },
                       ),
                       if (showArrowType != ShowArrowType.none)

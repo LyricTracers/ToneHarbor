@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/favorite_playlist_state.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
-import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/audio_player/song_selection_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
-import 'package:toneharbor/widgets/pages/add_to_playlists_page.dart';
-import 'package:toneharbor/widgets/pages/playlist_page.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
@@ -31,7 +26,6 @@ class HomeLayout extends BaseBgLayout {
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
     final colorScheme = getColorSchemeWhenReady(ref);
     final l10n = ref.watch(l10nProvider);
-    final subContentState = ref.watch(subContentProvider);
     final allMusicPath = '/songs/${Uri.encodeComponent(l10n.all_music)}';
     final allFoldersPath = '/folders/';
     final gradientDecoration = BoxDecoration(
@@ -48,25 +42,8 @@ class HomeLayout extends BaseBgLayout {
         ],
       ),
     );
-    final animationController = useAnimationController(
-      duration: const Duration(milliseconds: 100),
-    );
+
     final favoritePlaylist = ref.watch(favoritePlaylistStateProvider);
-    useEffect(() {
-      if (subContentState.type != SubContentType.none) {
-        animationController.forward();
-      } else {
-        animationController.reverse();
-      }
-      return null;
-    }, [subContentState]);
-    final slideAnimation =
-        Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(
-          CurvedAnimation(
-            parent: animationController,
-            curve: Curves.fastEaseInToSlowEaseOut,
-          ),
-        );
     var selectionTypeState = ref.watch(
       songSelectionProvider.select((state) {
         return SongSelectionState(
@@ -391,41 +368,6 @@ class HomeLayout extends BaseBgLayout {
             ),
           ],
         ),
-        if (subContentState.type != SubContentType.none) ...[
-          Positioned.fill(
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                ref
-                    .read(subContentProvider.notifier)
-                    .set(SubContentData(type: SubContentType.none));
-              },
-              onLongPress: () {
-                ref
-                    .read(subContentProvider.notifier)
-                    .set(SubContentData(type: SubContentType.none));
-              },
-            ),
-          ),
-          SlideTransition(
-            position: slideAnimation,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                switch (subContentState.type) {
-                  SubContentType.playList => PlaylistPage(),
-                  SubContentType.addToPlayLists =>
-                    subContentState.extra != null
-                        ? AddToPlaylistsPage(subContentState.extra!)
-                        : const SizedBox.shrink(),
-                  SubContentType.songInfo => const SizedBox.shrink(),
-                  SubContentType.updateLyrics => const SizedBox.shrink(),
-                  SubContentType.none => const SizedBox.shrink(),
-                },
-              ],
-            ),
-          ),
-        ],
         requestFlag
             ? const Center(child: AudioEqualizerLoader())
             : const SizedBox.shrink(),

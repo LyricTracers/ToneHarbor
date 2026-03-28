@@ -5,14 +5,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
-import 'package:toneharbor/models/audio_player/sub_content_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
 import 'package:toneharbor/widgets/pages/lyrics_content_page.dart';
-import 'package:toneharbor/widgets/pages/playlist_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class SwitchLyricsLayout extends BaseBgLayout {
@@ -30,7 +28,6 @@ class SwitchLyricsLayout extends BaseBgLayout {
     var songId = useState(songTrackObject.id);
     var title = useState(songTrackObject.title);
     var selectedIndex = useState(-1);
-    final subContentState = ref.watch(subContentProvider);
     var artist = useState(
       songTrackObject.artist == "Unknown Artist" ? "" : songTrackObject.artist,
     );
@@ -75,9 +72,6 @@ class SwitchLyricsLayout extends BaseBgLayout {
         ],
       ),
     );
-    final animationController = useAnimationController(
-      duration: const Duration(milliseconds: 100),
-    );
 
     useEffect(() {
       void onTextChanged() {
@@ -101,15 +95,6 @@ class SwitchLyricsLayout extends BaseBgLayout {
       };
     }, [artistController]);
 
-    useEffect(() {
-      if (subContentState.type != SubContentType.none) {
-        animationController.forward();
-      } else {
-        animationController.reverse();
-      }
-      return null;
-    }, [subContentState]);
-
     var callBack = useCallback(() {
       if (title.value.isEmpty) {
         showSnackBar(l10n.input_title_empty, context, colorScheme.secondary);
@@ -120,13 +105,6 @@ class SwitchLyricsLayout extends BaseBgLayout {
       ref.invalidate(combinedSearchProvider);
     }, []);
 
-    final slideAnimation =
-        Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(
-          CurvedAnimation(
-            parent: animationController,
-            curve: Curves.fastEaseInToSlowEaseOut,
-          ),
-        );
     var width = MediaQuery.of(context).size.width;
     return Stack(
       children: [
@@ -351,30 +329,6 @@ class SwitchLyricsLayout extends BaseBgLayout {
             ),
           ],
         ),
-        if (subContentState.type == SubContentType.playList) ...[
-          Positioned.fill(
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                ref
-                    .read(subContentProvider.notifier)
-                    .set(SubContentData(type: SubContentType.none));
-              },
-              onLongPress: () {
-                ref
-                    .read(subContentProvider.notifier)
-                    .set(SubContentData(type: SubContentType.none));
-              },
-            ),
-          ),
-          SlideTransition(
-            position: slideAnimation,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [PlaylistPage()],
-            ),
-          ),
-        ],
       ],
     );
   }
