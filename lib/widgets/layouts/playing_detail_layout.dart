@@ -63,6 +63,12 @@ class PlayingDetailLayout extends BaseBgLayout {
           ),
         );
     final isLocal = activeTrack is ToneHarborTrackObjectLocal;
+
+    useEffect(() {
+      ref.invalidate(translateTextProvider);
+      return null;
+    }, [activeTrack.id]);
+
     return Stack(
       children: [
         Column(
@@ -225,18 +231,29 @@ class PlayingDetailLayout extends BaseBgLayout {
 
   Widget _buildTranslateButton(WidgetRef ref, ColorScheme colorScheme) {
     final targetLanguage = ref.watch(zhipuTargetLanguageSettingProvider);
+    final translateState = ref.watch(translateTextProvider);
+    final isLoading = translateState.isLoading;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          onPressed: () {
-            _translateLyrics(ref);
-          },
-          icon: Icon(Icons.translate_rounded, size: 24),
+          onPressed: isLoading ? null : () => _translateLyrics(ref),
+          icon: isLoading
+              ? SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: colorScheme.onSurface,
+                  ),
+                )
+              : Icon(Icons.translate_rounded, size: 24),
         ),
         GestureDetector(
-          onTap: () => _showLanguageSelector(ref, colorScheme),
+          onTap: isLoading
+              ? null
+              : () => _showLanguageSelector(ref, colorScheme),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(

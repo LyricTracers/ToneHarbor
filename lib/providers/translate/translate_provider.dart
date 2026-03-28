@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:rhttp/rhttp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/services/translate/translate_service.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -111,9 +112,14 @@ TranslateService translateService(Ref ref) {
 
 @riverpod
 class TranslateText extends _$TranslateText {
+  CancelToken? _cancelToken;
+
   @override
   FutureOr<String?> build() {
     ref.keepAliveFor(Duration(minutes: 5));
+    ref.onDispose(() {
+      _cancelToken?.cancel();
+    });
     return null;
   }
 
@@ -121,10 +127,15 @@ class TranslateText extends _$TranslateText {
     String text, {
     TranslateTargetLanguage target = TranslateTargetLanguage.simplifiedChinese,
   }) async {
+    _cancelToken?.cancel();
+    _cancelToken = CancelToken();
+
     state = const AsyncValue.loading();
+
     final service = ref.read(translateServiceProvider);
+
     state = await AsyncValue.guard(
-      () => service.translate(text, target: target),
+      () => service.translate(text, target: target, cancelToken: _cancelToken),
     );
   }
 }

@@ -82,6 +82,7 @@ Important rules for lyrics translation:
   Future<String> translate(
     String text, {
     TranslateTargetLanguage target = TranslateTargetLanguage.simplifiedChinese,
+    CancelToken? cancelToken,
   }) async {
     if (!hasApiKey) {
       throw TranslateException(
@@ -111,6 +112,7 @@ Important rules for lyrics translation:
           'Authorization': 'Bearer $apiKey',
           'Content-Type': 'application/json',
         }),
+        cancelToken: cancelToken,
       );
 
       if (response.statusCode != 200) {
