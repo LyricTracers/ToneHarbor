@@ -661,4 +661,40 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get second => '秒';
+
+  @override
+  String get zhipu_translate_settings => '智谱翻译设置';
+
+  @override
+  String get api_settings => 'API 设置';
+
+  @override
+  String get model_settings => '模型设置';
+
+  @override
+  String get advanced_settings => '高级设置';
+
+  @override
+  String get api_key => 'API Key';
+
+  @override
+  String get not_configured => '未配置';
+
+  @override
+  String get enter_api_key => '请输入 API Key';
+
+  @override
+  String get save => '保存';
+
+  @override
+  String get api_endpoint => 'API 端点';
+
+  @override
+  String get temperature => '温度';
+
+  @override
+  String get reset_default => '恢复默认';
+
+  @override
+  String get default_target_language => '默认翻译语言';
 }

@@ -17,6 +17,11 @@ const String doubleLyricActionKey = 'double_lyric_action';
 const String statusBarKey = 'status_bar_lyric';
 const String normalizeAudioKey = 'normalize_audio';
 const String serverPortKey = 'server_port';
+const String zhipuApiKey = 'zhipu_api_key';
+const String zhipuModelKey = 'zhipu_model';
+const String zhipuEndpointKey = 'zhipu_endpoint';
+const String zhipuTemperatureKey = 'zhipu_temperature';
+const String zhipuTargetLanguageKey = 'zhipu_target_language';
 
 // pic path
 const String iconPlaceholder = 'assets/icons/icon_placeholder.png';

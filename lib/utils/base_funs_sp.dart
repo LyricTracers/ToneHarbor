@@ -144,4 +144,37 @@ abstract class SharedPreferencesUtils {
   static Future<void> setServerPort(int port) async {
     await sharedPreferences.setInt(serverPortKey, port);
   }
+
+  static String? getZhipuApiKey() => sharedPreferences.getString(zhipuApiKey);
+
+  static Future<void> setZhipuApiKey(String key) async {
+    await sharedPreferences.setString(zhipuApiKey, key);
+  }
+
+  static int? getZhipuModel() => sharedPreferences.getInt(zhipuModelKey);
+
+  static Future<void> setZhipuModel(int index) async {
+    await sharedPreferences.setInt(zhipuModelKey, index);
+  }
+
+  static String? getZhipuEndpoint() =>
+      sharedPreferences.getString(zhipuEndpointKey);
+
+  static Future<void> setZhipuEndpoint(String endpoint) async {
+    await sharedPreferences.setString(zhipuEndpointKey, endpoint);
+  }
+
+  static double? getZhipuTemperature() =>
+      sharedPreferences.getDouble(zhipuTemperatureKey);
+
+  static Future<void> setZhipuTemperature(double temperature) async {
+    await sharedPreferences.setDouble(zhipuTemperatureKey, temperature);
+  }
+
+  static int? getZhipuTargetLanguage() =>
+      sharedPreferences.getInt(zhipuTargetLanguageKey);
+
+  static Future<void> setZhipuTargetLanguage(int index) async {
+    await sharedPreferences.setInt(zhipuTargetLanguageKey, index);
+  }
 }

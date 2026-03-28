@@ -218,5 +218,17 @@
   "day": "day",
   "hour": "hour",
   "minute": "minute",
-  "second": "second"
+  "second": "second",
+  "zhipu_translate_settings": "Zhipu Translate Settings",
+  "api_settings": "API Settings",
+  "model_settings": "Model Settings",
+  "advanced_settings": "Advanced Settings",
+  "api_key": "API Key",
+  "not_configured": "Not Configured",
+  "enter_api_key": "Enter API Key",
+  "save": "Save",
+  "api_endpoint": "API Endpoint",
+  "temperature": "Temperature",
+  "reset_default": "Reset to Default",
+  "default_target_language": "Default Target Language"
 }

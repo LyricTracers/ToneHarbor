@@ -678,4 +678,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get second => 'second';
+
+  @override
+  String get zhipu_translate_settings => 'Zhipu Translate Settings';
+
+  @override
+  String get api_settings => 'API Settings';
+
+  @override
+  String get model_settings => 'Model Settings';
+
+  @override
+  String get advanced_settings => 'Advanced Settings';
+
+  @override
+  String get api_key => 'API Key';
+
+  @override
+  String get not_configured => 'Not Configured';
+
+  @override
+  String get enter_api_key => 'Enter API Key';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get api_endpoint => 'API Endpoint';
+
+  @override
+  String get temperature => 'Temperature';
+
+  @override
+  String get reset_default => 'Reset to Default';
+
+  @override
+  String get default_target_language => 'Default Target Language';
 }

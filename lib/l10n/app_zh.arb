@@ -217,5 +217,17 @@
   "day": "天",
   "hour": "小时",
   "minute": "分钟",
-  "second": "秒"
+  "second": "秒",
+  "zhipu_translate_settings": "智谱翻译设置",
+  "api_settings": "API 设置",
+  "model_settings": "模型设置",
+  "advanced_settings": "高级设置",
+  "api_key": "API Key",
+  "not_configured": "未配置",
+  "enter_api_key": "请输入 API Key",
+  "save": "保存",
+  "api_endpoint": "API 端点",
+  "temperature": "温度",
+  "reset_default": "恢复默认",
+  "default_target_language": "默认翻译语言"
 }

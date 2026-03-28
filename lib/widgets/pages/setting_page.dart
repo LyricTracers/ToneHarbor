@@ -56,6 +56,24 @@ class SettingPage extends HookConsumerWidget with BuildItem {
         ),
         ListTile(
           title: Text(
+            l10n.zhipu_translate_settings,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
+          onTap: () => context.push('/zhipu-translate'),
+        ),
+        Divider(
+          height: 1,
+          color: colorScheme.outline.withValues(alpha: 0.2),
+          indent: 15,
+          endIndent: 15,
+        ),
+        ListTile(
+          title: Text(
             l10n.about,
             style: TextStyle(
               fontSize: 15,

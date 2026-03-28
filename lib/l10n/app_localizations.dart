@@ -1405,6 +1405,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'second'**
   String get second;
+
+  /// No description provided for @zhipu_translate_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Zhipu Translate Settings'**
+  String get zhipu_translate_settings;
+
+  /// No description provided for @api_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'API Settings'**
+  String get api_settings;
+
+  /// No description provided for @model_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Model Settings'**
+  String get model_settings;
+
+  /// No description provided for @advanced_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced Settings'**
+  String get advanced_settings;
+
+  /// No description provided for @api_key.
+  ///
+  /// In en, this message translates to:
+  /// **'API Key'**
+  String get api_key;
+
+  /// No description provided for @not_configured.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Configured'**
+  String get not_configured;
+
+  /// No description provided for @enter_api_key.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter API Key'**
+  String get enter_api_key;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @api_endpoint.
+  ///
+  /// In en, this message translates to:
+  /// **'API Endpoint'**
+  String get api_endpoint;
+
+  /// No description provided for @temperature.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperature'**
+  String get temperature;
+
+  /// No description provided for @reset_default.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to Default'**
+  String get reset_default;
+
+  /// No description provided for @default_target_language.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Target Language'**
+  String get default_target_language;
 }
 
 class _AppLocalizationsDelegate

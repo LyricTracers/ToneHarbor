@@ -5,7 +5,9 @@ import "package:hooks_riverpod/hooks_riverpod.dart";
 import "package:toneharbor/models/audio_player/sub_content_state.dart";
 import "package:toneharbor/models/audio_player/tone_harbor_track.dart";
 import "package:toneharbor/providers/providers.dart";
+import "package:toneharbor/providers/translate/translate_provider.dart";
 import "package:toneharbor/services/audio_player/audio_player.dart";
+import "package:toneharbor/services/translate/translate_service.dart";
 import "package:toneharbor/utils/base_funs.dart";
 import "package:toneharbor/widgets/layouts/base_bg_layout.dart";
 import "package:toneharbor/widgets/pages/add_to_playlists_page.dart";
@@ -111,13 +113,7 @@ class PlayingDetailLayout extends BaseBgLayout {
                                   },
                                   icon: Icon(Icons.lyrics_rounded, size: 24),
                                 ),
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.more_horiz_rounded,
-                                    size: 24,
-                                  ),
-                                ),
+                                _buildTranslateButton(ref, colorScheme),
                               ],
                             ),
                           ),
@@ -224,6 +220,111 @@ class PlayingDetailLayout extends BaseBgLayout {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildTranslateButton(WidgetRef ref, ColorScheme colorScheme) {
+    final targetLanguage = ref.watch(zhipuTargetLanguageSettingProvider);
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          onPressed: () {
+            _translateLyrics(ref);
+          },
+          icon: Icon(Icons.translate_rounded, size: 24),
+        ),
+        GestureDetector(
+          onTap: () => _showLanguageSelector(ref, colorScheme),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.arrow_forward_rounded,
+                  size: 10,
+                  color: colorScheme.onSurface.withValues(alpha: 0.7),
+                ),
+                SizedBox(width: 2),
+                Text(
+                  targetLanguage == TranslateTargetLanguage.simplifiedChinese
+                      ? '中'
+                      : 'EN',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _translateLyrics(WidgetRef ref) async {
+    final currentLyrics = ref.read(currentLyricsProvider).value;
+    if (currentLyrics == null || currentLyrics.isEmpty) {
+      return;
+    }
+
+    final lyricsText = currentLyrics.lines
+        .map((line) => line.toLrcString())
+        .where((str) => str.isNotEmpty)
+        .join('\n');
+
+    if (lyricsText.isEmpty) {
+      return;
+    }
+
+    final targetLanguage = ref.read(zhipuTargetLanguageSettingProvider);
+    await ref
+        .read(translateTextProvider.notifier)
+        .translate(lyricsText, target: targetLanguage);
+
+    final translatedText = ref.read(translateTextProvider).value;
+    if (translatedText != null) {
+      print('Translated lyrics:\n$translatedText');
+    }
+  }
+
+  void _showLanguageSelector(WidgetRef ref, ColorScheme colorScheme) {
+    final currentLanguage = ref.read(zhipuTargetLanguageSettingProvider);
+
+    showDialog(
+      context: ref.context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          '选择翻译语言',
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: TranslateTargetLanguage.values.map((language) {
+            return RadioListTile<TranslateTargetLanguage>(
+              title: Text(language.displayName),
+              value: language,
+              groupValue: currentLanguage,
+              onChanged: (value) {
+                if (value != null) {
+                  ref
+                      .read(zhipuTargetLanguageSettingProvider.notifier)
+                      .setTargetLanguage(value);
+                  Navigator.pop(context);
+                }
+              },
+            );
+          }).toList(),
+        ),
+      ),
     );
   }
 }
