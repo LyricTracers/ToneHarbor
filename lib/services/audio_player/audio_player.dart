@@ -19,6 +19,10 @@ class ToneHarborMedia extends mk.Media {
 
   static String get host =>
       Platform.isWindows ? "localhost" : InternetAddress.loopbackIPv4.address;
+
+  static String get listenHost =>
+      Platform.isWindows ? "localhost" : InternetAddress.anyIPv4.address;
+
   final ToneHarborTrackObject track;
 
   ToneHarborMedia(this.track)

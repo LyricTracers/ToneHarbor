@@ -1,6 +1,5 @@
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 
 ({

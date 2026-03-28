@@ -82,7 +82,7 @@ Future<HttpServer> server(Ref ref) async {
 
       server = await serve(
         pipeline.addHandler(router.call),
-        ToneHarborMedia.host,
+        ToneHarborMedia.listenHost,
         port,
       );
 
