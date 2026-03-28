@@ -14,9 +14,8 @@ class SongContextMenu {
     WidgetRef ref,
     ColorScheme colorScheme,
     AppLocalizations l10n,
-    ToneHarborTrackObject item, {
-    bool isLocal = false,
-  }) {
+    ToneHarborTrackObject item,
+  ) {
     final itemId = item.id;
     final itemTitle = item.title;
 

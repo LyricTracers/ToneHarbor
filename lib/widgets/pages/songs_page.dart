@@ -213,13 +213,8 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                     child: ContextMenuRegion(
                       enableDefaultGestures: !songSelectionState.selectionType,
                       contextMenu: ContextMenu(
-                        entriesBuilder: () => SongContextMenu.build(
-                          ref,
-                          colorScheme,
-                          l10n,
-                          item,
-                          isLocal: isLocal,
-                        ),
+                        entriesBuilder: () =>
+                            SongContextMenu.build(ref, colorScheme, l10n, item),
                         padding: const EdgeInsets.all(8.0),
                       ),
                       child: SongItem(
@@ -243,11 +238,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                                   if (song.id == item.id) {
                                     initIndex = tracks.length;
                                   }
-                                  if (song is ToneHarborTrackObjectLocal) {
-                                    return song.path.isNotEmpty &&
-                                        File(song.path).existsSync();
-                                  } else if (song
-                                      is ToneHarborTrackObjectMultLocal) {
+                                  if (song is ToneHarborTrackObjectMultLocal) {
                                     return song.availableQualities.isNotEmpty &&
                                         File(song.path).existsSync();
                                   } else {

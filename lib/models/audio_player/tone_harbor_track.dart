@@ -51,22 +51,6 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
   factory ToneHarborTrackObject.fromJson(Map<String, dynamic> json) =>
       _$ToneHarborTrackObjectFromJson(json);
 
-  factory ToneHarborTrackObject.local({
-    required String id,
-    required String title,
-    required String artist,
-    required String album,
-    required String externalUri,
-    required int filesize,
-    required int rating,
-    required Duration duration,
-    required int bitrate,
-    required int channel,
-    required String codec,
-    required String container,
-    required int frequency,
-    required String path,
-  }) = ToneHarborTrackObjectLocal;
   factory ToneHarborTrackObject.multLocal({
     required String id,
     required String title,
@@ -114,7 +98,13 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
         ? baseName.substring(0, musicIndex)
         : baseName;
 
-    return ToneHarborTrackObject.local(
+    final parentDirName = file.parent.path.split(Platform.pathSeparator).last;
+    final quality = AudioQuality.values.firstWhere(
+      (q) => q.name == parentDirName,
+      orElse: () => SharedPreferencesUtils.getAudioQuality(),
+    );
+
+    return ToneHarborTrackObject.multLocal(
       id: id,
       title: fileMetadata?.title ?? titleFromFile,
       artist: fileMetadata?.artist ?? '',
@@ -128,7 +118,7 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
       codec: '',
       container: extension(file.path).replaceFirst('.', ''),
       frequency: fileMetadata?.sampleRate ?? 0,
-      path: file.absolute.path,
+      availableQualities: [quality],
     );
   }
 }
@@ -137,17 +127,11 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   bool get isFolder => this is ToneHarborTrackObjectFolder;
   bool get isSong =>
       this is ToneHarborTrackObjectFull ||
-      this is ToneHarborTrackObjectLocal ||
       this is ToneHarborTrackObjectMultLocal;
-  bool get isLocal =>
-      this is ToneHarborTrackObjectLocal ||
-      this is ToneHarborTrackObjectMultLocal;
-  bool get isMultLocal => this is ToneHarborTrackObjectMultLocal;
+  bool get isLocal => this is ToneHarborTrackObjectMultLocal;
 
   String get path {
-    if (this is ToneHarborTrackObjectLocal) {
-      return (this as ToneHarborTrackObjectLocal).path;
-    } else if (this is ToneHarborTrackObjectMultLocal) {
+    if (this is ToneHarborTrackObjectMultLocal) {
       final multLocal = this as ToneHarborTrackObjectMultLocal;
       return getTrackCachePath(multLocal, multLocal.bestQuality);
     }
@@ -184,8 +168,6 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   String get externalUri {
     if (this is ToneHarborTrackObjectFull) {
       return (this as ToneHarborTrackObjectFull).externalUri;
-    } else if (this is ToneHarborTrackObjectLocal) {
-      return (this as ToneHarborTrackObjectLocal).externalUri;
     } else if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).externalUri;
     }
@@ -195,8 +177,6 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   String get artist {
     if (this is ToneHarborTrackObjectFull) {
       return (this as ToneHarborTrackObjectFull).artist;
-    } else if (this is ToneHarborTrackObjectLocal) {
-      return (this as ToneHarborTrackObjectLocal).artist;
     } else if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).artist;
     }
@@ -206,8 +186,6 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   String get album {
     if (this is ToneHarborTrackObjectFull) {
       return (this as ToneHarborTrackObjectFull).album;
-    } else if (this is ToneHarborTrackObjectLocal) {
-      return (this as ToneHarborTrackObjectLocal).album;
     } else if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).album;
     }
@@ -217,8 +195,6 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   Duration get duration {
     if (this is ToneHarborTrackObjectFull) {
       return (this as ToneHarborTrackObjectFull).duration;
-    } else if (this is ToneHarborTrackObjectLocal) {
-      return (this as ToneHarborTrackObjectLocal).duration;
     } else if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).duration;
     }
@@ -228,8 +204,6 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   int get filesize {
     if (this is ToneHarborTrackObjectFull) {
       return (this as ToneHarborTrackObjectFull).filesize;
-    } else if (this is ToneHarborTrackObjectLocal) {
-      return (this as ToneHarborTrackObjectLocal).filesize;
     } else if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).filesize;
     }
@@ -239,8 +213,6 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   int get channel {
     if (this is ToneHarborTrackObjectFull) {
       return (this as ToneHarborTrackObjectFull).channel;
-    } else if (this is ToneHarborTrackObjectLocal) {
-      return (this as ToneHarborTrackObjectLocal).channel;
     } else if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).channel;
     }
@@ -250,8 +222,8 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   int get rating {
     if (this is ToneHarborTrackObjectFull) {
       return (this as ToneHarborTrackObjectFull).rating;
-    } else if (this is ToneHarborTrackObjectLocal) {
-      return (this as ToneHarborTrackObjectLocal).rating;
+    } else if (this is ToneHarborTrackObjectMultLocal) {
+      return (this as ToneHarborTrackObjectMultLocal).rating;
     }
     return 0;
   }
@@ -259,8 +231,6 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   int get bitrate {
     if (this is ToneHarborTrackObjectFull) {
       return (this as ToneHarborTrackObjectFull).bitrate;
-    } else if (this is ToneHarborTrackObjectLocal) {
-      return (this as ToneHarborTrackObjectLocal).bitrate;
     } else if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).bitrate;
     }
@@ -270,8 +240,6 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   int get frequency {
     if (this is ToneHarborTrackObjectFull) {
       return (this as ToneHarborTrackObjectFull).frequency;
-    } else if (this is ToneHarborTrackObjectLocal) {
-      return (this as ToneHarborTrackObjectLocal).frequency;
     } else if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).frequency;
     }
@@ -281,8 +249,6 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   String get container {
     if (this is ToneHarborTrackObjectFull) {
       return (this as ToneHarborTrackObjectFull).container;
-    } else if (this is ToneHarborTrackObjectLocal) {
-      return (this as ToneHarborTrackObjectLocal).container;
     } else if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).container;
     }
@@ -292,8 +258,6 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   String get codec {
     if (this is ToneHarborTrackObjectFull) {
       return (this as ToneHarborTrackObjectFull).codec;
-    } else if (this is ToneHarborTrackObjectLocal) {
-      return (this as ToneHarborTrackObjectLocal).codec;
     } else if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).codec;
     }
@@ -301,25 +265,7 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   }
 
   ToneHarborTrackObject convertFull() {
-    if (this is ToneHarborTrackObjectLocal) {
-      final local = this as ToneHarborTrackObjectLocal;
-      return ToneHarborTrackObject.full(
-        id: local.id,
-        title: local.title,
-        artist: local.artist,
-        album: local.album,
-        externalUri: local.externalUri,
-        duration: local.duration,
-        filesize: local.filesize,
-        bitrate: local.bitrate,
-        channel: local.channel,
-        codec: local.codec,
-        container: local.container,
-        frequency: local.frequency,
-        rating: local.rating,
-        platform: ToneHarborTrackPlatform.local,
-      );
-    } else if (this is ToneHarborTrackObjectMultLocal) {
+    if (this is ToneHarborTrackObjectMultLocal) {
       final multLocal = this as ToneHarborTrackObjectMultLocal;
       return ToneHarborTrackObject.full(
         id: multLocal.id,
@@ -347,7 +293,7 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
     String? mimeType,
   }) {
     if (this is ToneHarborTrackObjectFull ||
-        this is ToneHarborTrackObjectLocal) {
+        this is ToneHarborTrackObjectMultLocal) {
       return _createMetadata(
         id: id,
         title: title,
