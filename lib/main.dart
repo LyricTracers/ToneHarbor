@@ -52,8 +52,22 @@ class MyApp extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final serverAsync = ref.watch(serverProvider);
+    ref.watch(serverProvider);
     ref.listen(audioPlayerStreamListenersProvider, (_, __) {});
+
+    ref.listen<AsyncValue<HttpServer>>(serverProvider, (previous, next) {
+      next.when(
+        data: (server) {
+          logger.i('Server started successfully on port ${server.port}');
+        },
+        loading: () {
+          logger.i('Server is starting...');
+        },
+        error: (error, stackTrace) {
+          logger.e('Server failed to start: $error', stackTrace: stackTrace);
+        },
+      );
+    });
 
     final colorScheme = getColorSchemeWhenReady(ref);
     final localeAsync = ref.watch(localeProvider);
@@ -129,16 +143,6 @@ class MyApp extends HookConsumerWidget {
         connectServiceListen.cancel();
       };
     }, []);
-
-    if (serverAsync.isLoading) {
-      return const MaterialApp(
-        home: Scaffold(body: Center(child: CircularProgressIndicator())),
-      );
-    }
-
-    if (serverAsync.hasError) {
-      logger.e('Server failed to start: ${serverAsync.error}');
-    }
 
     final router = useMemoized(() {
       return GoRouter(
