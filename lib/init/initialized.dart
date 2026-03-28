@@ -6,47 +6,46 @@ import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:metadata_god/metadata_god.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/init/app_dependencies.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:metadata_god/metadata_god.dart';
 import 'package:logger/logger.dart';
 
 part 'initialized_log.dart';
 
-late final ColorScheme defaultColorScheme;
-late final ImageProvider defaultSongIconProvider;
-late final HttpClientWrapper httpClientWrapper;
-late final HttpClientWrapper downloadHttpClientWrapper;
-late final HttpClientWrapper coverDownloadHttpClientWrapper;
-late final HttpClientWrapper translateHttpClientWrapper;
-late final PersistentApiCache<Map<String, dynamic>> audioStationRequestCache;
-late final PersistentApiCache<Map<String, dynamic>> lyricCache;
-late final String placeholderErrorIconString;
+final defaultColorScheme = appDependencies.defaultColorScheme;
+final defaultSongIconProvider = appDependencies.defaultSongIconProvider;
+final httpClientWrapper = appDependencies.httpClientWrapper;
+final downloadHttpClientWrapper = appDependencies.downloadHttpClientWrapper;
+final coverDownloadHttpClientWrapper =
+    appDependencies.coverDownloadHttpClientWrapper;
+final translateHttpClientWrapper = appDependencies.translateHttpClientWrapper;
+final audioStationRequestCache = appDependencies.audioStationRequestCache;
+final lyricCache = appDependencies.lyricCache;
+final placeholderErrorIconString = appDependencies.placeholderErrorIconString;
 
 const keepAlive = Riverpod(keepAlive: true);
 
 Future<void> initialized() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
-  await MetadataGod.initialize();
   await SharedPreferencesUtils.initialize();
   await Rhttp.init();
+  await MetadataGod.initialize();
+
   initLogger();
-  initHttpClientWrapper();
-  await initPersistentApiCache();
+  await audioStationRequestCache.init();
+  await lyricCache.init();
+  await CacheManager.instance.init();
   await initMusicCacheBaseDir();
-  defaultSongIconProvider = const AssetImage(bgPlaceholder);
-  defaultColorScheme = await FrostedColorSchemeGenerator.generate(
-    imageProvider: defaultSongIconProvider,
-    schemeVariant: DynamicSchemeVariant.rainbow,
-    contrastLevel: 0,
-  );
-  placeholderErrorIconString = await rootBundle.loadString(
-    placeholderErrorIcon,
-  );
+
+  await appDependencies.initColorScheme();
+  await appDependencies.initPlaceholderErrorIconString();
+
   if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
     _initTray();
     await WindowManager.instance.ensureInitialized();
@@ -74,79 +73,4 @@ Future<void> _initTray() async {
   } else {
     await trayManager.setIcon(statusBarIcon);
   }
-}
-
-void initHttpClientWrapper() {
-  httpClientWrapper = HttpClientWrapper(
-    settings: const ClientSettings(
-      timeoutSettings: TimeoutSettings(
-        timeout: Duration(seconds: 60),
-        connectTimeout: Duration(seconds: 15),
-      ),
-    ),
-    retryInterceptor: RetryInterceptor(
-      maxRetries: 3,
-      delay: (attempt) => Duration(milliseconds: 500 * (attempt + 1)),
-      beforeRetry: (attempt, request, response, exception) async {
-        logger.w('after【Retrying $attempt count】 throw $exception');
-        return request;
-      },
-    ),
-    loggingInterceptor: LoggingInterceptor(logger: logger),
-  );
-
-  downloadHttpClientWrapper = HttpClientWrapper(
-    settings: const ClientSettings(
-      timeoutSettings: TimeoutSettings(
-        timeout: Duration(minutes: 30),
-        connectTimeout: Duration(seconds: 30),
-      ),
-    ),
-    retryInterceptor: RetryInterceptor(maxRetries: 0),
-    loggingInterceptor: LoggingInterceptor(logger: logger),
-  );
-
-  coverDownloadHttpClientWrapper = HttpClientWrapper(
-    settings: const ClientSettings(
-      timeoutSettings: TimeoutSettings(
-        timeout: Duration(minutes: 1),
-        connectTimeout: Duration(seconds: 30),
-      ),
-    ),
-    retryInterceptor: RetryInterceptor(maxRetries: 1),
-  );
-
-  translateHttpClientWrapper = HttpClientWrapper(
-    settings: const ClientSettings(
-      timeoutSettings: TimeoutSettings(
-        timeout: Duration(minutes: 5),
-        connectTimeout: Duration(seconds: 30),
-      ),
-    ),
-    retryInterceptor: RetryInterceptor(maxRetries: 0),
-    loggingInterceptor: LoggingInterceptor(logger: logger),
-  );
-}
-
-Future<void> initPersistentApiCache() async {
-  audioStationRequestCache = PersistentApiCache<Map<String, dynamic>>(
-    'audio_station_api',
-    options: const CacheOptions(
-      enabled: true,
-      defaultDuration: Duration(minutes: 30),
-    ),
-  );
-  lyricCache = PersistentApiCache<Map<String, dynamic>>(
-    'lyrics_cache',
-    options: const CacheOptions(
-      enabled: true,
-      defaultDuration: Duration(days: 365),
-    ),
-    backend: CacheStorageBackend.file,
-  );
-  await audioStationRequestCache.init();
-  //群晖歌词缓存
-  await lyricCache.init();
-  //第三方歌词缓存
-  await CacheManager.instance.init();
 }
