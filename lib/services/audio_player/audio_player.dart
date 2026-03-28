@@ -23,9 +23,7 @@ class ToneHarborMedia extends mk.Media {
 
   ToneHarborMedia(this.track)
     : super(
-        track is ToneHarborTrackObjectLocal
-            ? track.path
-            : getStreamUrl(track.id),
+        track.isLocal ? track.path : getStreamUrl(track.id),
         extras: track.toJson(),
       );
   static String get baseUrl => "http://$host:$serverPort";

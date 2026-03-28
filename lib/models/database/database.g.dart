@@ -1348,6 +1348,28 @@ class $LocalMusicStateTable extends LocalMusicState
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _externalUriMeta = const VerificationMeta(
+    'externalUri',
+  );
+  @override
+  late final GeneratedColumn<String> externalUri = GeneratedColumn<String>(
+    'external_uri',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _ratingMeta = const VerificationMeta('rating');
+  @override
+  late final GeneratedColumn<int> rating = GeneratedColumn<int>(
+    'rating',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _durationMeta = const VerificationMeta(
     'duration',
   );
@@ -1438,6 +1460,8 @@ class $LocalMusicStateTable extends LocalMusicState
     artist,
     album,
     container,
+    externalUri,
+    rating,
     duration,
     fileSize,
     bitrate,
@@ -1501,6 +1525,21 @@ class $LocalMusicStateTable extends LocalMusicState
       );
     } else if (isInserting) {
       context.missing(_containerMeta);
+    }
+    if (data.containsKey('external_uri')) {
+      context.handle(
+        _externalUriMeta,
+        externalUri.isAcceptableOrUnknown(
+          data['external_uri']!,
+          _externalUriMeta,
+        ),
+      );
+    }
+    if (data.containsKey('rating')) {
+      context.handle(
+        _ratingMeta,
+        rating.isAcceptableOrUnknown(data['rating']!, _ratingMeta),
+      );
     }
     if (data.containsKey('duration')) {
       context.handle(
@@ -1577,6 +1616,14 @@ class $LocalMusicStateTable extends LocalMusicState
         DriftSqlType.string,
         data['${effectivePrefix}container'],
       )!,
+      externalUri: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}external_uri'],
+      )!,
+      rating: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rating'],
+      )!,
       duration: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}duration'],
@@ -1622,6 +1669,8 @@ class LocalMusicStateData extends DataClass
   final String artist;
   final String album;
   final String container;
+  final String externalUri;
+  final int rating;
   final int duration;
   final int fileSize;
   final int bitrate;
@@ -1636,6 +1685,8 @@ class LocalMusicStateData extends DataClass
     required this.artist,
     required this.album,
     required this.container,
+    required this.externalUri,
+    required this.rating,
     required this.duration,
     required this.fileSize,
     required this.bitrate,
@@ -1653,6 +1704,8 @@ class LocalMusicStateData extends DataClass
     map['artist'] = Variable<String>(artist);
     map['album'] = Variable<String>(album);
     map['container'] = Variable<String>(container);
+    map['external_uri'] = Variable<String>(externalUri);
+    map['rating'] = Variable<int>(rating);
     map['duration'] = Variable<int>(duration);
     map['file_size'] = Variable<int>(fileSize);
     map['bitrate'] = Variable<int>(bitrate);
@@ -1671,6 +1724,8 @@ class LocalMusicStateData extends DataClass
       artist: Value(artist),
       album: Value(album),
       container: Value(container),
+      externalUri: Value(externalUri),
+      rating: Value(rating),
       duration: Value(duration),
       fileSize: Value(fileSize),
       bitrate: Value(bitrate),
@@ -1693,6 +1748,8 @@ class LocalMusicStateData extends DataClass
       artist: serializer.fromJson<String>(json['artist']),
       album: serializer.fromJson<String>(json['album']),
       container: serializer.fromJson<String>(json['container']),
+      externalUri: serializer.fromJson<String>(json['externalUri']),
+      rating: serializer.fromJson<int>(json['rating']),
       duration: serializer.fromJson<int>(json['duration']),
       fileSize: serializer.fromJson<int>(json['fileSize']),
       bitrate: serializer.fromJson<int>(json['bitrate']),
@@ -1712,6 +1769,8 @@ class LocalMusicStateData extends DataClass
       'artist': serializer.toJson<String>(artist),
       'album': serializer.toJson<String>(album),
       'container': serializer.toJson<String>(container),
+      'externalUri': serializer.toJson<String>(externalUri),
+      'rating': serializer.toJson<int>(rating),
       'duration': serializer.toJson<int>(duration),
       'fileSize': serializer.toJson<int>(fileSize),
       'bitrate': serializer.toJson<int>(bitrate),
@@ -1729,6 +1788,8 @@ class LocalMusicStateData extends DataClass
     String? artist,
     String? album,
     String? container,
+    String? externalUri,
+    int? rating,
     int? duration,
     int? fileSize,
     int? bitrate,
@@ -1743,6 +1804,8 @@ class LocalMusicStateData extends DataClass
     artist: artist ?? this.artist,
     album: album ?? this.album,
     container: container ?? this.container,
+    externalUri: externalUri ?? this.externalUri,
+    rating: rating ?? this.rating,
     duration: duration ?? this.duration,
     fileSize: fileSize ?? this.fileSize,
     bitrate: bitrate ?? this.bitrate,
@@ -1759,6 +1822,10 @@ class LocalMusicStateData extends DataClass
       artist: data.artist.present ? data.artist.value : this.artist,
       album: data.album.present ? data.album.value : this.album,
       container: data.container.present ? data.container.value : this.container,
+      externalUri: data.externalUri.present
+          ? data.externalUri.value
+          : this.externalUri,
+      rating: data.rating.present ? data.rating.value : this.rating,
       duration: data.duration.present ? data.duration.value : this.duration,
       fileSize: data.fileSize.present ? data.fileSize.value : this.fileSize,
       bitrate: data.bitrate.present ? data.bitrate.value : this.bitrate,
@@ -1778,6 +1845,8 @@ class LocalMusicStateData extends DataClass
           ..write('artist: $artist, ')
           ..write('album: $album, ')
           ..write('container: $container, ')
+          ..write('externalUri: $externalUri, ')
+          ..write('rating: $rating, ')
           ..write('duration: $duration, ')
           ..write('fileSize: $fileSize, ')
           ..write('bitrate: $bitrate, ')
@@ -1797,6 +1866,8 @@ class LocalMusicStateData extends DataClass
     artist,
     album,
     container,
+    externalUri,
+    rating,
     duration,
     fileSize,
     bitrate,
@@ -1815,6 +1886,8 @@ class LocalMusicStateData extends DataClass
           other.artist == this.artist &&
           other.album == this.album &&
           other.container == this.container &&
+          other.externalUri == this.externalUri &&
+          other.rating == this.rating &&
           other.duration == this.duration &&
           other.fileSize == this.fileSize &&
           other.bitrate == this.bitrate &&
@@ -1831,6 +1904,8 @@ class LocalMusicStateCompanion extends UpdateCompanion<LocalMusicStateData> {
   final Value<String> artist;
   final Value<String> album;
   final Value<String> container;
+  final Value<String> externalUri;
+  final Value<int> rating;
   final Value<int> duration;
   final Value<int> fileSize;
   final Value<int> bitrate;
@@ -1846,6 +1921,8 @@ class LocalMusicStateCompanion extends UpdateCompanion<LocalMusicStateData> {
     this.artist = const Value.absent(),
     this.album = const Value.absent(),
     this.container = const Value.absent(),
+    this.externalUri = const Value.absent(),
+    this.rating = const Value.absent(),
     this.duration = const Value.absent(),
     this.fileSize = const Value.absent(),
     this.bitrate = const Value.absent(),
@@ -1862,6 +1939,8 @@ class LocalMusicStateCompanion extends UpdateCompanion<LocalMusicStateData> {
     this.artist = const Value.absent(),
     this.album = const Value.absent(),
     required String container,
+    this.externalUri = const Value.absent(),
+    this.rating = const Value.absent(),
     this.duration = const Value.absent(),
     this.fileSize = const Value.absent(),
     this.bitrate = const Value.absent(),
@@ -1881,6 +1960,8 @@ class LocalMusicStateCompanion extends UpdateCompanion<LocalMusicStateData> {
     Expression<String>? artist,
     Expression<String>? album,
     Expression<String>? container,
+    Expression<String>? externalUri,
+    Expression<int>? rating,
     Expression<int>? duration,
     Expression<int>? fileSize,
     Expression<int>? bitrate,
@@ -1897,6 +1978,8 @@ class LocalMusicStateCompanion extends UpdateCompanion<LocalMusicStateData> {
       if (artist != null) 'artist': artist,
       if (album != null) 'album': album,
       if (container != null) 'container': container,
+      if (externalUri != null) 'external_uri': externalUri,
+      if (rating != null) 'rating': rating,
       if (duration != null) 'duration': duration,
       if (fileSize != null) 'file_size': fileSize,
       if (bitrate != null) 'bitrate': bitrate,
@@ -1915,6 +1998,8 @@ class LocalMusicStateCompanion extends UpdateCompanion<LocalMusicStateData> {
     Value<String>? artist,
     Value<String>? album,
     Value<String>? container,
+    Value<String>? externalUri,
+    Value<int>? rating,
     Value<int>? duration,
     Value<int>? fileSize,
     Value<int>? bitrate,
@@ -1931,6 +2016,8 @@ class LocalMusicStateCompanion extends UpdateCompanion<LocalMusicStateData> {
       artist: artist ?? this.artist,
       album: album ?? this.album,
       container: container ?? this.container,
+      externalUri: externalUri ?? this.externalUri,
+      rating: rating ?? this.rating,
       duration: duration ?? this.duration,
       fileSize: fileSize ?? this.fileSize,
       bitrate: bitrate ?? this.bitrate,
@@ -1962,6 +2049,12 @@ class LocalMusicStateCompanion extends UpdateCompanion<LocalMusicStateData> {
     }
     if (container.present) {
       map['container'] = Variable<String>(container.value);
+    }
+    if (externalUri.present) {
+      map['external_uri'] = Variable<String>(externalUri.value);
+    }
+    if (rating.present) {
+      map['rating'] = Variable<int>(rating.value);
     }
     if (duration.present) {
       map['duration'] = Variable<int>(duration.value);
@@ -1999,6 +2092,8 @@ class LocalMusicStateCompanion extends UpdateCompanion<LocalMusicStateData> {
           ..write('artist: $artist, ')
           ..write('album: $album, ')
           ..write('container: $container, ')
+          ..write('externalUri: $externalUri, ')
+          ..write('rating: $rating, ')
           ..write('duration: $duration, ')
           ..write('fileSize: $fileSize, ')
           ..write('bitrate: $bitrate, ')
@@ -3090,6 +3185,8 @@ typedef $$LocalMusicStateTableCreateCompanionBuilder =
       Value<String> artist,
       Value<String> album,
       required String container,
+      Value<String> externalUri,
+      Value<int> rating,
       Value<int> duration,
       Value<int> fileSize,
       Value<int> bitrate,
@@ -3107,6 +3204,8 @@ typedef $$LocalMusicStateTableUpdateCompanionBuilder =
       Value<String> artist,
       Value<String> album,
       Value<String> container,
+      Value<String> externalUri,
+      Value<int> rating,
       Value<int> duration,
       Value<int> fileSize,
       Value<int> bitrate,
@@ -3153,6 +3252,16 @@ class $$LocalMusicStateTableFilterComposer
 
   ColumnFilters<String> get container => $composableBuilder(
     column: $table.container,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get externalUri => $composableBuilder(
+    column: $table.externalUri,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rating => $composableBuilder(
+    column: $table.rating,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3231,6 +3340,16 @@ class $$LocalMusicStateTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get externalUri => $composableBuilder(
+    column: $table.externalUri,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rating => $composableBuilder(
+    column: $table.rating,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get duration => $composableBuilder(
     column: $table.duration,
     builder: (column) => ColumnOrderings(column),
@@ -3293,6 +3412,14 @@ class $$LocalMusicStateTableAnnotationComposer
 
   GeneratedColumn<String> get container =>
       $composableBuilder(column: $table.container, builder: (column) => column);
+
+  GeneratedColumn<String> get externalUri => $composableBuilder(
+    column: $table.externalUri,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get rating =>
+      $composableBuilder(column: $table.rating, builder: (column) => column);
 
   GeneratedColumn<int> get duration =>
       $composableBuilder(column: $table.duration, builder: (column) => column);
@@ -3359,6 +3486,8 @@ class $$LocalMusicStateTableTableManager
                 Value<String> artist = const Value.absent(),
                 Value<String> album = const Value.absent(),
                 Value<String> container = const Value.absent(),
+                Value<String> externalUri = const Value.absent(),
+                Value<int> rating = const Value.absent(),
                 Value<int> duration = const Value.absent(),
                 Value<int> fileSize = const Value.absent(),
                 Value<int> bitrate = const Value.absent(),
@@ -3374,6 +3503,8 @@ class $$LocalMusicStateTableTableManager
                 artist: artist,
                 album: album,
                 container: container,
+                externalUri: externalUri,
+                rating: rating,
                 duration: duration,
                 fileSize: fileSize,
                 bitrate: bitrate,
@@ -3391,6 +3522,8 @@ class $$LocalMusicStateTableTableManager
                 Value<String> artist = const Value.absent(),
                 Value<String> album = const Value.absent(),
                 required String container,
+                Value<String> externalUri = const Value.absent(),
+                Value<int> rating = const Value.absent(),
                 Value<int> duration = const Value.absent(),
                 Value<int> fileSize = const Value.absent(),
                 Value<int> bitrate = const Value.absent(),
@@ -3406,6 +3539,8 @@ class $$LocalMusicStateTableTableManager
                 artist: artist,
                 album: album,
                 container: container,
+                externalUri: externalUri,
+                rating: rating,
                 duration: duration,
                 fileSize: fileSize,
                 bitrate: bitrate,

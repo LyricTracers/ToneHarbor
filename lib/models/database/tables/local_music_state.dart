@@ -7,6 +7,8 @@ class LocalMusicState extends Table {
   TextColumn get artist => text().withDefault(const Constant(''))();
   TextColumn get album => text().withDefault(const Constant(''))();
   TextColumn get container => text()();
+  TextColumn get externalUri => text().withDefault(const Constant(''))();
+  IntColumn get rating => integer().withDefault(const Constant(0))();
   IntColumn get duration => integer().withDefault(const Constant(0))();
   IntColumn get fileSize => integer().withDefault(const Constant(0))();
   IntColumn get bitrate => integer().withDefault(const Constant(0))();

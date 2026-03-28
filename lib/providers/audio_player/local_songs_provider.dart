@@ -12,13 +12,6 @@ import 'package:toneharbor/utils/base_funs.dart';
 
 part 'local_songs_provider.g.dart';
 
-const List<AudioQuality> _qualityPriority = [
-  AudioQuality.original,
-  AudioQuality.high,
-  AudioQuality.medium,
-  AudioQuality.low,
-];
-
 class LocalMusicStateService {
   static int _qualitiesToBitmask(Set<AudioQuality> qualities) {
     int mask = 0;
@@ -233,166 +226,38 @@ class LocalMusicStateService {
   }
 }
 
-class LocalSong {
-  final String id;
-  final String title;
-  final String artist;
-  final String album;
-  final String container;
-  final int duration;
-  final int fileSize;
-  final int bitrate;
-  final int channel;
-  final String codec;
-  final int frequency;
-  final List<AudioQuality> availableQualities;
-  final String filename;
-
-  LocalSong({
-    required this.id,
-    required this.title,
-    required this.artist,
-    required this.album,
-    required this.container,
-    required this.duration,
-    required this.fileSize,
-    required this.bitrate,
-    required this.channel,
-    required this.codec,
-    required this.frequency,
-    required this.availableQualities,
-    String? filename,
-  }) : filename = filename ?? _generateFilename(title, artist, id);
-
-  AudioQuality get bestQuality {
-    if (availableQualities.isEmpty) {
-      return AudioQuality.high;
-    }
-    return availableQualities.first;
-  }
-
-  String get path => getPath(bestQuality);
-
-  static String _generateFilename(String title, String artist, String id) {
-    var fileName = "${title}_$id";
-    if (artist.isNotEmpty) {
-      fileName = "${artist}_$fileName";
-    }
-    return sanitizeFilename(fileName, id);
-  }
-
-  static String _buildPath(
-    String filename,
-    String container,
-    AudioQuality quality,
-  ) {
-    try {
-      final cacheDir = getMusicCacheDirSync(quality);
-      final extension = quality.isTranscode ? 'mp3' : container;
-      return '$cacheDir/$filename.$extension';
-    } catch (e) {
-      return '';
-    }
-  }
-
-  String getPath(AudioQuality quality) =>
-      _buildPath(filename, container, quality);
-
-  ToneHarborTrackObject? toTrack({AudioQuality? quality}) {
-    if (availableQualities.isEmpty) {
-      return null;
-    }
-
-    AudioQuality q;
-    if (quality != null && availableQualities.contains(quality)) {
-      q = quality;
-    } else {
-      q = bestQuality;
-    }
-
-    return ToneHarborTrackObject.local(
-      id: id,
-      title: title,
-      artist: artist,
-      album: album,
-      externalUri: "",
-      duration: Duration(milliseconds: duration),
-      rating: 0,
-      filesize: fileSize,
-      bitrate: bitrate,
-      channel: channel,
-      codec: codec,
-      container: container,
-      frequency: frequency,
-      path: getPath(q),
-    );
-  }
-
-  ToneHarborTrackObject toLocalTrack() {
-    return ToneHarborTrackObject.local(
-      id: id,
-      title: title,
-      artist: artist,
-      album: album,
-      externalUri: "",
-      duration: Duration(milliseconds: duration),
-      rating: 0,
-      filesize: fileSize,
-      bitrate: bitrate,
-      channel: channel,
-      codec: codec,
-      container: container,
-      frequency: frequency,
-      path: path,
-    );
-  }
-
-  LocalSong copyWith({List<AudioQuality>? availableQualities}) {
-    return LocalSong(
-      id: id,
-      title: title,
-      artist: artist,
-      album: album,
-      container: container,
-      duration: duration,
-      fileSize: fileSize,
-      bitrate: bitrate,
-      channel: channel,
-      codec: codec,
-      frequency: frequency,
-      availableQualities: availableQualities ?? this.availableQualities,
-      filename: filename,
-    );
-  }
-
-  factory LocalSong.fromDb(LocalMusicStateData data) {
-    final qualities = <AudioQuality>[];
-    final filename = _generateFilename(data.title, data.artist, data.trackId);
-    for (final q in _qualityPriority) {
-      if ((data.qualities & (1 << q.index)) != 0) {
-        final path = _buildPath(filename, data.container, q);
-        if (File(path).existsSync()) {
-          qualities.add(q);
-        }
+ToneHarborTrackObjectMultLocal _localSongFromDb(LocalMusicStateData data) {
+  final qualities = <AudioQuality>[];
+  for (final q in AudioQuality.values) {
+    if ((data.qualities & (1 << q.index)) != 0) {
+      final filename = generateTrackFilename(
+        data.title,
+        data.artist,
+        data.trackId,
+      );
+      final path = buildTrackPath(filename, data.container, q);
+      if (File(path).existsSync()) {
+        qualities.add(q);
       }
     }
-
-    return LocalSong(
-      id: data.trackId,
-      title: data.title,
-      artist: data.artist,
-      album: data.album,
-      container: data.container,
-      duration: data.duration,
-      fileSize: data.fileSize,
-      bitrate: data.bitrate,
-      channel: data.channel,
-      codec: data.codec,
-      frequency: data.frequency,
-      availableQualities: qualities,
-      filename: filename,
-    );
   }
+
+  return ToneHarborTrackObjectMultLocal(
+    id: data.trackId,
+    title: data.title,
+    artist: data.artist,
+    album: data.album,
+    container: data.container,
+    externalUri: data.externalUri,
+    rating: data.rating,
+    duration: Duration(microseconds: data.duration),
+    filesize: data.fileSize,
+    bitrate: data.bitrate,
+    channel: data.channel,
+    codec: data.codec,
+    frequency: data.frequency,
+    availableQualities: qualities,
+  );
 }
 
 @riverpod
@@ -405,13 +270,10 @@ class LocalSongs extends _$LocalSongs
   String _sortDirection = 'desc';
   int _totalCount = 0;
 
-  final Map<String, LocalSong> _songsCache = {};
-
   @override
   Future<ToneHarborTrackObjectList> build() async {
     _currentPage = 0;
     _isLoadingMore = false;
-    _songsCache.clear();
     _totalCount = 0;
 
     return await _loadInitialSongs();
@@ -446,7 +308,7 @@ class LocalSongs extends _$LocalSongs
     }
   }
 
-  Future<List<ToneHarborTrackObject>> _loadPageFromDatabase(
+  Future<List<ToneHarborTrackObjectMultLocal>> _loadPageFromDatabase(
     AppDatabase db,
     int offset,
     int limit,
@@ -499,12 +361,10 @@ class LocalSongs extends _$LocalSongs
 
     final records = await query.get();
 
-    final result = <ToneHarborTrackObject>[];
+    final result = <ToneHarborTrackObjectMultLocal>[];
     for (final record in records) {
-      final song = LocalSong.fromDb(record);
-      final localTrack = song.toLocalTrack();
-      _songsCache[song.id] = song;
-      result.add(localTrack);
+      final song = _localSongFromDb(record);
+      result.add(song);
     }
 
     return result;
@@ -555,7 +415,6 @@ class LocalSongs extends _$LocalSongs
     _sortBy = sortBy.toLowerCase();
     _sortDirection = sortDirection.toLowerCase();
     _currentPage = 0;
-    _songsCache.clear();
 
     final db = ref.read(appDatabaseProvider);
     final songs = await _loadPageFromDatabase(db, 0, _pageSize);
@@ -570,32 +429,9 @@ class LocalSongs extends _$LocalSongs
     );
   }
 
-  LocalSong? getLocalSong(String songId) {
-    return _songsCache[songId];
-  }
-
-  List<AudioQuality> getAvailableQualities(String songId) {
-    final song = _songsCache[songId];
-    if (song == null) return [];
-    return song.availableQualities;
-  }
-
-  Future<ToneHarborTrackObject?> getLocalSongTrack(String songId) async {
-    final song = _songsCache[songId];
-    if (song == null) return null;
-
-    final track = song.toTrack();
-    if (track == null) {
-      await removeAllSongs(songId);
-      return null;
-    }
-    return track;
-  }
-
   Future<void> refresh() async {
     _currentPage = 0;
     _isLoadingMore = false;
-    _songsCache.clear();
     state = const AsyncValue.loading();
 
     try {
@@ -621,84 +457,57 @@ class LocalSongs extends _$LocalSongs
     }
   }
 
-  Future<void> addOrUpdateSong(
-    ToneHarborTrackObject track,
+  Future<void> removeSong(
+    ToneHarborTrackObjectMultLocal track,
     AudioQuality quality,
   ) async {
-    await LocalMusicStateService.addToLocalMusicState(
-      ref.read(appDatabaseProvider),
-      track,
-      quality,
-    );
+    final song = track;
 
-    final existing = _songsCache[track.id];
-    if (existing != null) {
-      _songsCache[track.id] = existing.copyWith(
-        availableQualities: [...existing.availableQualities, quality],
+    final path = song.getPath(quality);
+    if (path.isNotEmpty) {
+      try {
+        final file = File(path);
+        if (await file.exists()) {
+          await file.delete();
+          logger.i('[LocalSongs] Deleted local file: $path');
+        }
+      } catch (e) {
+        logger.e('[LocalSongs] Failed to delete file: $path, $e');
+      }
+    }
+
+    final newQualities = song.availableQualities
+        .where((q) => q != quality)
+        .toList();
+
+    if (newQualities.isEmpty) {
+      _totalCount--;
+      await LocalMusicStateService.removeFromLocalMusicState(
+        ref.read(appDatabaseProvider),
+        track.id,
       );
-      _updateSongInState(track.id);
-    } else {
-      _songsCache[track.id] = LocalSong(
-        id: track.id,
-        title: track.title,
-        artist: track.artist,
-        album: track.album,
-        container: track.container,
-        duration: track.duration.inMilliseconds,
-        fileSize: track.filesize,
-        bitrate: track.bitrate,
-        channel: track.channel,
-        codec: track.codec,
-        frequency: track.frequency,
-        availableQualities: [quality],
-      );
-      _totalCount++;
-      await _refreshFirstPage();
+      await _updateStateAfterRemove(track.id);
+    }
+
+    final recordDeleted =
+        await LocalMusicStateService.removeFromLocalMusicState(
+          ref.read(appDatabaseProvider),
+          track.id,
+          quality: quality,
+        );
+
+    if (recordDeleted) {
+      _totalCount--;
+      await _updateStateAfterRemove(track.id);
     }
   }
 
-  void _updateSongInState(String trackId) {
-    final currentState = state;
-    if (currentState is AsyncData<ToneHarborTrackObjectList>) {
-      final currentSongs = currentState.value.songs;
-      final updatedSong = _songsCache[trackId]?.toTrack();
-      if (updatedSong == null) return;
+  Future<void> removeAllSongs(ToneHarborTrackObjectMultLocal track) async {
+    _totalCount--;
+    final trackId = track.id;
 
-      final index = currentSongs.indexWhere((s) => s.id == trackId);
-      if (index == -1) return;
-
-      final updatedSongs = List<ToneHarborTrackObject>.from(currentSongs);
-      updatedSongs[index] = updatedSong;
-
-      state = AsyncValue.data(
-        ToneHarborTrackObjectList.data(
-          songs: updatedSongs,
-          total: _totalCount,
-          offset: 0,
-        ),
-      );
-    }
-  }
-
-  Future<void> _refreshFirstPage() async {
-    final db = ref.read(appDatabaseProvider);
-    final songs = await _loadPageFromDatabase(db, 0, _pageSize);
-    _currentPage = 1;
-
-    state = AsyncValue.data(
-      ToneHarborTrackObjectList.data(
-        songs: songs,
-        total: _totalCount,
-        offset: 0,
-      ),
-    );
-  }
-
-  Future<void> removeSong(String trackId, AudioQuality quality) async {
-    final song = _songsCache[trackId];
-
-    if (song != null) {
-      final path = song.getPath(quality);
+    for (final quality in track.availableQualities) {
+      final path = track.getPath(quality);
       if (path.isNotEmpty) {
         try {
           final file = File(path);
@@ -710,47 +519,25 @@ class LocalSongs extends _$LocalSongs
           logger.e('[LocalSongs] Failed to delete file: $path, $e');
         }
       }
-
-      final newQualities = song.availableQualities
-          .where((q) => q != quality)
-          .toList();
-
-      if (newQualities.isEmpty) {
-        _songsCache.remove(trackId);
-        _totalCount--;
-        await LocalMusicStateService.removeFromLocalMusicState(
-          ref.read(appDatabaseProvider),
-          trackId,
-        );
-        await _updateStateAfterRemove(trackId);
-      } else {
-        _songsCache[trackId] = song.copyWith(availableQualities: newQualities);
-        _updateSongInState(trackId);
-      }
-      return;
     }
 
-    final recordDeleted =
-        await LocalMusicStateService.removeFromLocalMusicState(
-          ref.read(appDatabaseProvider),
-          trackId,
-          quality: quality,
-        );
-
-    if (recordDeleted) {
-      _totalCount--;
-      _songsCache.remove(trackId);
-      await _updateStateAfterRemove(trackId);
-    }
+    await LocalMusicStateService.removeFromLocalMusicState(
+      ref.read(appDatabaseProvider),
+      trackId,
+    );
+    await _updateStateAfterRemove(trackId);
   }
 
-  Future<void> removeAllSongs(String trackId) async {
-    final removed = _songsCache.remove(trackId);
-    if (removed != null) {
-      _totalCount--;
+  Future<void> removeAllSongsByIds(
+    Set<ToneHarborTrackObjectMultLocal> tracks,
+    Set<String> trackIds,
+  ) async {
+    if (tracks.isEmpty) return;
 
-      for (final quality in removed.availableQualities) {
-        final path = removed.getPath(quality);
+    for (final track in tracks) {
+      _totalCount--;
+      for (final quality in track.availableQualities) {
+        final path = track.getPath(quality);
         if (path.isNotEmpty) {
           try {
             final file = File(path);
@@ -760,40 +547,6 @@ class LocalSongs extends _$LocalSongs
             }
           } catch (e) {
             logger.e('[LocalSongs] Failed to delete file: $path, $e');
-          }
-        }
-      }
-    }
-
-    await LocalMusicStateService.removeFromLocalMusicState(
-      ref.read(appDatabaseProvider),
-      trackId,
-    );
-    if (removed != null) {
-      await _updateStateAfterRemove(trackId);
-    }
-  }
-
-  Future<void> removeAllSongsByIds(Set<String> trackIds) async {
-    if (trackIds.isEmpty) return;
-
-    for (final trackId in trackIds) {
-      final removed = _songsCache.remove(trackId);
-      if (removed != null) {
-        _totalCount--;
-
-        for (final quality in removed.availableQualities) {
-          final path = removed.getPath(quality);
-          if (path.isNotEmpty) {
-            try {
-              final file = File(path);
-              if (await file.exists()) {
-                await file.delete();
-                logger.i('[LocalSongs] Deleted local file: $path');
-              }
-            } catch (e) {
-              logger.e('[LocalSongs] Failed to delete file: $path, $e');
-            }
           }
         }
       }

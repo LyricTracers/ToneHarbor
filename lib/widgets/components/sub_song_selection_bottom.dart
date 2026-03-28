@@ -47,10 +47,17 @@ class SubSongSelectionBottom extends HookConsumerWidget {
     return false;
   }
 
-  List<ToneHarborTrackObject> _getSelectedTracks(Set<String> ids) {
+  Set<T> _getSelectedTracks<T>(Set<String> ids) {
+    if (T == ToneHarborTrackObject) {
+      return ids
+          .map((id) => songs.firstWhere((element) => element.id == id))
+          .cast<T>()
+          .toSet();
+    }
     return ids
         .map((id) => songs.firstWhere((element) => element.id == id))
-        .toList();
+        .whereType<T>()
+        .toSet();
   }
 
   @override
@@ -195,7 +202,10 @@ class SubSongSelectionBottom extends HookConsumerWidget {
                   .removeTracks(ids);
               await ref
                   .read(localSongsProvider.notifier)
-                  .removeAllSongsByIds(ids);
+                  .removeAllSongsByIds(
+                    _getSelectedTracks<ToneHarborTrackObjectMultLocal>(ids),
+                    ids,
+                  );
               ref.invalidate(songSelectionProvider);
               ref.invalidate(localSongsProvider);
             },
@@ -216,7 +226,9 @@ class SubSongSelectionBottom extends HookConsumerWidget {
               return;
             }
 
-            final selectedTracks = _getSelectedTracks(ids);
+            final selectedTracks = _getSelectedTracks<ToneHarborTrackObject>(
+              ids,
+            );
             await ref
                 .read(audioPlayerStateProvider.notifier)
                 .addTracksAtFirst(selectedTracks, allowDuplicates: true);
@@ -247,7 +259,9 @@ class SubSongSelectionBottom extends HookConsumerWidget {
               return;
             }
 
-            final selectedTracks = _getSelectedTracks(ids);
+            final selectedTracks = _getSelectedTracks<ToneHarborTrackObject>(
+              ids,
+            );
             await ref
                 .read(audioPlayerStateProvider.notifier)
                 .addTracks(selectedTracks);

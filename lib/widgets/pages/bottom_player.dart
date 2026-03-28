@@ -287,7 +287,7 @@ class BottomPlayer extends HookConsumerWidget {
                             ),
                           ),
                         ),
-                      if (activeTrack is! ToneHarborTrackObjectLocal) ...[
+                      if (!activeTrack.isLocal) ...[
                         const SizedBox(width: 2),
                         IconButton(
                           icon: Icon(

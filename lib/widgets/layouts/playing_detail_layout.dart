@@ -66,7 +66,7 @@ class PlayingDetailLayout extends BaseBgLayout {
             curve: Curves.fastEaseInToSlowEaseOut,
           ),
         );
-    final isLocal = activeTrack is ToneHarborTrackObjectLocal;
+    final isLocal = activeTrack.isLocal;
 
     useEffect(() {
       ref.invalidate(translateTextProvider);

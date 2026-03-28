@@ -332,11 +332,8 @@ Future<void> openCacheFolder() async {
   }
 }
 
-Future<String> getTrackCachePath(
-  ToneHarborTrackObject track,
-  AudioQuality quality,
-) async {
-  final cacheDir = await getMusicCacheDir(quality);
+String getTrackCachePath(ToneHarborTrackObject track, AudioQuality quality) {
+  final cacheDir = getMusicCacheDirSync(quality);
   final extension = quality.isTranscode ? 'mp3' : track.container;
   var fileName = "${track.title}_${track.id}";
   if (track.artist.isNotEmpty) {
@@ -350,7 +347,7 @@ Future<bool> isTrackCached(
   ToneHarborTrackObject track,
   AudioQuality quality,
 ) async {
-  final cachePath = await getTrackCachePath(track, quality);
+  final cachePath = getTrackCachePath(track, quality);
   return File(cachePath).exists();
 }
 
@@ -380,6 +377,24 @@ String sanitizeFilename(String input, String id, {String replacement = ''}) {
     return id;
   }
   return result;
+}
+
+String generateTrackFilename(String title, String artist, String id) {
+  var fileName = "${title}_$id";
+  if (artist.isNotEmpty) {
+    fileName = "${artist}_$fileName";
+  }
+  return sanitizeFilename(fileName, id);
+}
+
+String buildTrackPath(String filename, String container, AudioQuality quality) {
+  try {
+    final cacheDir = getMusicCacheDirSync(quality);
+    final extension = quality.isTranscode ? 'mp3' : container;
+    return '$cacheDir/$filename.$extension';
+  } catch (e) {
+    return '';
+  }
 }
 
 void showCreatePlaylistDialog(

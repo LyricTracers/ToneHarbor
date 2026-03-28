@@ -33,7 +33,7 @@ final class LocalSongsProvider
   LocalSongs create() => LocalSongs();
 }
 
-String _$localSongsHash() => r'887a0b2ce5d3fa8fbbf88d4f3925a6ac8db14cbd';
+String _$localSongsHash() => r'27777372f0d37a0910884c6ed9d5309521d37209';
 
 abstract class _$LocalSongs extends $AsyncNotifier<ToneHarborTrackObjectList> {
   FutureOr<ToneHarborTrackObjectList> build();

@@ -28,72 +28,65 @@ class SongContextMenu {
       MenuDivider(),
     ];
 
-    if (isLocal || item.isLocal) {
-      final localSongsNotifier = ref.read(localSongsProvider.notifier);
-      final localSong = localSongsNotifier.getLocalSong(itemId);
-      final availableQualities = localSongsNotifier.getAvailableQualities(
-        itemId,
-      );
-      if (localSong != null) {
-        if (availableQualities.length > 1) {
-          entries.add(
-            MenuItem.submenu(
-              label: Text(l10n.delete),
-              icon: const Icon(Icons.delete_forever),
-              items: [
-                MenuItem(
-                  label: Text(l10n.select_all),
-                  onSelected: (value) async {
-                    final track = localSong.toTrack();
-                    if (track != null) {
-                      await ref
-                          .read(audioPlayerStateProvider.notifier)
-                          .removeAllTracksById(track.id);
-                      await ref
-                          .read(localSongsProvider.notifier)
-                          .removeAllSongs(track.id);
-                      ref.invalidate(localSongsProvider);
-                    }
-                  },
-                ),
-                ...availableQualities.map((quality) {
-                  return MenuItem(
-                    label: Text(quality.localizedLabel(l10n)),
-                    onSelected: (value) async {
-                      final track = localSong.toTrack(quality: quality);
-                      if (track != null) {
-                        await ref
-                            .read(audioPlayerStateProvider.notifier)
-                            .removeAllTracksById(track.id);
-                        await ref
-                            .read(localSongsProvider.notifier)
-                            .removeSong(track.id, quality);
-                      }
-                    },
-                  );
-                }),
-              ],
-            ),
-          );
-        } else if (availableQualities.length == 1) {
-          entries.add(
-            MenuItem(
-              label: Text(l10n.delete),
-              icon: Icon(Icons.delete_forever_rounded),
-              onSelected: (value) async {
-                final track = localSong.toTrack();
-                if (track != null) {
+    if (item is ToneHarborTrackObjectMultLocal) {
+      final availableQualities = item.availableQualities;
+      if (availableQualities.length > 1) {
+        entries.add(
+          MenuItem.submenu(
+            label: Text(l10n.delete),
+            icon: const Icon(Icons.delete_forever),
+            items: [
+              MenuItem(
+                label: Text(l10n.select_all),
+                onSelected: (value) async {
+                  ref.read(requestFlagProvider.notifier).setRequestFlag(true);
                   await ref
                       .read(audioPlayerStateProvider.notifier)
-                      .removeAllTracksById(track.id);
+                      .removeAllTracksById(itemId);
                   await ref
                       .read(localSongsProvider.notifier)
-                      .removeSong(track.id, availableQualities[0]);
-                }
-              },
-            ),
-          );
-        }
+                      .removeAllSongs(item);
+                  ref.invalidate(localSongsProvider);
+                  ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+                },
+              ),
+              ...availableQualities.map((quality) {
+                return MenuItem(
+                  label: Text(quality.localizedLabel(l10n)),
+                  onSelected: (value) async {
+                    ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+                    await ref
+                        .read(audioPlayerStateProvider.notifier)
+                        .removeAllTracksById(itemId);
+                    await ref
+                        .read(localSongsProvider.notifier)
+                        .removeSong(item, quality);
+                    ref
+                        .read(requestFlagProvider.notifier)
+                        .setRequestFlag(false);
+                  },
+                );
+              }),
+            ],
+          ),
+        );
+      } else if (availableQualities.length == 1) {
+        entries.add(
+          MenuItem(
+            label: Text(l10n.delete),
+            icon: Icon(Icons.delete_forever_rounded),
+            onSelected: (value) async {
+              ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+              await ref
+                  .read(audioPlayerStateProvider.notifier)
+                  .removeAllTracksById(itemId);
+              await ref
+                  .read(localSongsProvider.notifier)
+                  .removeSong(item, availableQualities[0]);
+              ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+            },
+          ),
+        );
       }
     } else {
       entries.addAll([
@@ -127,7 +120,9 @@ class SongContextMenu {
           label: Text(l10n.download),
           icon: Icon(Icons.download_rounded),
           onSelected: (value) async {
-            ref.read(downloadManagerProvider.notifier).addToQueue(item);
+            ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+            await ref.read(downloadManagerProvider.notifier).addToQueue(item);
+            ref.read(requestFlagProvider.notifier).setRequestFlag(false);
           },
         ),
         MenuItem.submenu(
@@ -137,17 +132,21 @@ class SongContextMenu {
             MenuItem(
               label: Text(l10n.next_song),
               onSelected: (value) async {
+                ref.read(requestFlagProvider.notifier).setRequestFlag(true);
                 await ref
                     .read(audioPlayerStateProvider.notifier)
                     .addTrackAtFirst(item, allowDuplicates: true);
+                ref.read(requestFlagProvider.notifier).setRequestFlag(false);
               },
             ),
             MenuItem(
               label: Text(l10n.play_queue),
               onSelected: (value) async {
+                ref.read(requestFlagProvider.notifier).setRequestFlag(true);
                 await ref
                     .read(audioPlayerStateProvider.notifier)
                     .addTrack(item);
+                ref.read(requestFlagProvider.notifier).setRequestFlag(false);
               },
             ),
             MenuItem(

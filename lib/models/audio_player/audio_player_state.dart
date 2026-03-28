@@ -46,9 +46,7 @@ sealed class AudioPlayerState with _$AudioPlayerState {
   bool containsTrack(ToneHarborTrackObject track) {
     return tracks.isNotEmpty &&
         tracks.any(
-          (t) =>
-              track is ToneHarborTrackObjectLocal &&
-                  t is ToneHarborTrackObjectLocal
+          (t) => track.isLocal && t.isLocal
               ? t.path == track.path
               : t.id == track.id,
         );

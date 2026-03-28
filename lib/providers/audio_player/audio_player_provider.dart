@@ -385,9 +385,13 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
       return false;
     }
 
-    return a is ToneHarborTrackObjectLocal && b is ToneHarborTrackObjectLocal
-        ? a.path == b.path
-        : a.id == b.id;
+    return (a is ToneHarborTrackObjectLocal && b is ToneHarborTrackObjectLocal
+            ? a.path == b.path
+            : a.id == b.id) ||
+        (a is ToneHarborTrackObjectMultLocal &&
+            b is ToneHarborTrackObjectMultLocal &&
+            a.id == b.id &&
+            a.availableQualities == b.availableQualities);
   }
 
   Future<void> load(

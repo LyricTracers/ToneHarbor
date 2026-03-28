@@ -122,7 +122,7 @@ class AudioPlayerStreamListeners {
           return;
         }
 
-        if (nextTrack is ToneHarborTrackObjectLocal) {
+        if (nextTrack.isLocal) {
           lastPreloadedTrack = preloadKey;
           logger.i('[AudioPlayer] Skip local track: ${nextTrack.title}');
           return;

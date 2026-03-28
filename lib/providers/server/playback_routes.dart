@@ -140,7 +140,7 @@ class PlaybackRoutes {
         return Response.notFound("Track not found in current queue");
       }
 
-      if (track is ToneHarborTrackObjectLocal) {
+      if (track.isLocal) {
         final file = File(track.path);
         if (!await file.exists()) {
           return Response.notFound("Local file not found");
@@ -158,7 +158,7 @@ class PlaybackRoutes {
       }
 
       final quality = ref.read(audioQualityProvider);
-      final cachePath = await getTrackCachePath(track, quality);
+      final cachePath = getTrackCachePath(track, quality);
       final cacheFile = File(cachePath);
 
       if (await cacheFile.exists()) {
@@ -229,12 +229,12 @@ class PlaybackRoutes {
         return Response.notFound("Track not found in current queue");
       }
 
-      if (track is ToneHarborTrackObjectLocal) {
+      if (track.isLocal) {
         return _serveLocalFile(track);
       }
 
       final quality = ref.read(audioQualityProvider);
-      final cachePath = await getTrackCachePath(track, quality);
+      final cachePath = getTrackCachePath(track, quality);
       final cacheFile = File(cachePath);
 
       if (await cacheFile.exists()) {
@@ -258,7 +258,7 @@ class PlaybackRoutes {
     }
   }
 
-  Future<Response> _serveLocalFile(ToneHarborTrackObjectLocal track) async {
+  Future<Response> _serveLocalFile(ToneHarborTrackObject track) async {
     final file = File(track.path);
     if (!await file.exists()) {
       return Response.notFound("Local file not found");

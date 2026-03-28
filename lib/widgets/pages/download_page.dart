@@ -720,7 +720,7 @@ class _DownloadHistoryTab extends HookConsumerWidget {
                       track.id,
                     });
                     final quality = ref.read(audioQualityProvider);
-                    final cachePath = await getTrackCachePath(track, quality);
+                    final cachePath = getTrackCachePath(track, quality);
                     final file = File(cachePath);
                     if (await file.exists()) {
                       await file.delete();
@@ -739,7 +739,7 @@ class _DownloadHistoryTab extends HookConsumerWidget {
                     onSelected: (value) async {
                       var track = downloadTaskRecords[index].track;
                       final quality = ref.read(audioQualityProvider);
-                      final cachePath = await getTrackCachePath(track, quality);
+                      final cachePath = getTrackCachePath(track, quality);
                       final file = File(cachePath);
                       if (await file.exists()) {
                         var fileTrack =

@@ -165,7 +165,7 @@ class DownloadManager extends _$DownloadManager {
         rating: 0,
         platform: ToneHarborTrackPlatform.synology,
       );
-      final savePath = await getTrackCachePath(track, record.quality);
+      final savePath = getTrackCachePath(track, record.quality);
 
       final completeFile = File(savePath);
       if (await completeFile.exists()) {
@@ -332,13 +332,13 @@ class DownloadManager extends _$DownloadManager {
   }
 
   Future<void> preloadNextTrack(ToneHarborTrackObject track) async {
-    if (track is ToneHarborTrackObjectLocal) {
+    if (track.isLocal) {
       logger.i('[DownloadManager] Skip local track: ${track.id}');
       return;
     }
 
     final quality = ref.read(audioQualityProvider);
-    final cachePath = await getTrackCachePath(track, quality);
+    final cachePath = getTrackCachePath(track, quality);
 
     final existingTask = state.firstWhereOrNull((e) => e.track.id == track.id);
     if (existingTask != null) {
@@ -404,7 +404,7 @@ class DownloadManager extends _$DownloadManager {
 
   Future<void> addToQueue(ToneHarborTrackObject track) async {
     final quality = ref.read(audioQualityProvider);
-    final cachePath = await getTrackCachePath(track, quality);
+    final cachePath = getTrackCachePath(track, quality);
 
     final existingTask = state.firstWhereOrNull((e) => e.track.id == track.id);
     if (existingTask != null) {
@@ -455,7 +455,7 @@ class DownloadManager extends _$DownloadManager {
     _startDownloading();
   }
 
-  Future<void> addAllToQueue(List<ToneHarborTrackObject> tracks) async {
+  Future<void> addAllToQueue(Set<ToneHarborTrackObject> tracks) async {
     final quality = ref.read(audioQualityProvider);
     final trackIdsToRemove = <String>[];
     final tracksToAdd = <ToneHarborTrackObject>[];
@@ -512,7 +512,7 @@ class DownloadManager extends _$DownloadManager {
     if (tracksToAdd.isNotEmpty) {
       final newTasks = <DownloadTask>[];
       for (final track in tracksToAdd) {
-        final cachePath = await getTrackCachePath(track, quality);
+        final cachePath = getTrackCachePath(track, quality);
         final partFile = File('$cachePath.part');
         final downloadedBytes = await partFile.exists()
             ? await partFile.length()
@@ -660,7 +660,7 @@ class DownloadManager extends _$DownloadManager {
     if (task?.status case DownloadStatus.canceled || DownloadStatus.failed) {
       final savePath =
           task!.savePath ??
-          await getTrackCachePath(track, ref.read(audioQualityProvider));
+          getTrackCachePath(track, ref.read(audioQualityProvider));
 
       if (!CacheLockManager.instance.tryLock(savePath)) {
         logger.i(
@@ -928,7 +928,7 @@ class DownloadManager extends _$DownloadManager {
 
   Future<void> _downloadTrack(DownloadTask task) async {
     final quality = ref.read(audioQualityProvider);
-    final savePath = await getTrackCachePath(task.track, quality);
+    final savePath = getTrackCachePath(task.track, quality);
 
     if (!CacheLockManager.instance.tryLock(savePath)) {
       logger.w(

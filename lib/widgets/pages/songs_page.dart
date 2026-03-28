@@ -235,22 +235,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                           {
                             var tracks = <ToneHarborTrackObject>[];
                             var initIndex = index;
-                            if (isLocal) {
-                              final localSongsNotifier = ref.read(
-                                localSongsProvider.notifier,
-                              );
-                              initIndex = 0;
-                              for (final song in filteredItems) {
-                                final track = await localSongsNotifier
-                                    .getLocalSongTrack(song.id);
-                                if (track != null) {
-                                  if (track.id == item.id) {
-                                    initIndex = tracks.length;
-                                  }
-                                  tracks.add(track);
-                                }
-                              }
-                            } else {
+                            if (!isLocal) {
                               initIndex = 0;
                               tracks.addAll(
                                 filteredItems.where((song) {
@@ -261,10 +246,17 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                                   if (song is ToneHarborTrackObjectLocal) {
                                     return song.path.isNotEmpty &&
                                         File(song.path).existsSync();
+                                  } else if (song
+                                      is ToneHarborTrackObjectMultLocal) {
+                                    return song.availableQualities.isNotEmpty &&
+                                        File(song.path).existsSync();
+                                  } else {
+                                    return true;
                                   }
-                                  return true;
                                 }),
                               );
+                            } else {
+                              tracks = filteredItems;
                             }
                             if (tracks.isEmpty) return;
                             await ref
