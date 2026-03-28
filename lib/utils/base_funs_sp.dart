@@ -157,6 +157,13 @@ abstract class SharedPreferencesUtils {
     await sharedPreferences.setInt(zhipuModelKey, index);
   }
 
+  static String? getAICustomModel() =>
+      sharedPreferences.getString(aiCustomModelKey);
+
+  static Future<void> setAICustomModel(String model) async {
+    await sharedPreferences.setString(aiCustomModelKey, model);
+  }
+
   static String? getZhipuEndpoint() =>
       sharedPreferences.getString(zhipuEndpointKey);
 

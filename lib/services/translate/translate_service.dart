@@ -3,18 +3,20 @@ import 'dart:convert';
 import 'package:rhttp/rhttp.dart';
 import 'package:toneharbor/init/initialized.dart';
 
-enum ZhipuModel {
+enum AIModel {
   glm5('glm-5', 'GLM-5'),
   glm4_7('glm-4.7', 'GLM-4.7'),
   glm4_7Flash('glm-4.7-flash', 'GLM-4.7-Flash (免费)'),
+  glm4_6Flash('glm-4.6-flash', 'GLM-4.6-Flash (免费)'),
   glm4_7Flashx('glm-4.7-flashx', 'GLM-4.7-FlashX'),
   glm4_5Air('glm-4.5-air', 'GLM-4.5-Air'),
   glm4Flash250414('glm-4-flash-250414', 'GLM-4-Flash-250414 (免费)'),
-  glm4Flashx250414('glm-4-flashx-250414', 'GLM-4-FlashX-250414');
+  glm4Flashx250414('glm-4-flashx-250414', 'GLM-4-FlashX-250414'),
+  custom('custom', '自定义模型');
 
   final String value;
   final String displayName;
-  const ZhipuModel(this.value, this.displayName);
+  const AIModel(this.value, this.displayName);
 }
 
 enum TranslateTargetLanguage {
@@ -67,15 +69,26 @@ Important rules for lyrics translation:
 
   final String apiKey;
   final String endpoint;
-  final ZhipuModel model;
+  final AIModel model;
+  final String? customModel;
   final double temperature;
 
   TranslateService({
     required this.apiKey,
     this.endpoint = defaultEndpoint,
-    this.model = ZhipuModel.glm4Flash250414,
+    this.model = AIModel.glm4Flash250414,
+    this.customModel,
     this.temperature = 0.3,
   });
+
+  String get _modelValue {
+    if (model == AIModel.custom &&
+        customModel != null &&
+        customModel!.isNotEmpty) {
+      return customModel!;
+    }
+    return model.value;
+  }
 
   bool get hasApiKey => apiKey.isNotEmpty;
 
@@ -87,7 +100,7 @@ Important rules for lyrics translation:
     if (!hasApiKey) {
       throw TranslateException(
         type: TranslateErrorType.missingApiKey,
-        message: 'ZhipuAI API key is not configured',
+        message: 'AI API key is not configured',
       );
     }
 
@@ -104,7 +117,7 @@ Important rules for lyrics translation:
       final response = await translateHttpClientWrapper.post(
         endpoint,
         body: HttpBody.json({
-          'model': model.value,
+          'model': _modelValue,
           'messages': messages.map((m) => m.toJson()).toList(),
           'temperature': temperature,
         }),

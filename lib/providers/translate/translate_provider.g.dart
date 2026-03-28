@@ -61,51 +61,103 @@ abstract class _$ZhipuApiKey extends $Notifier<String?> {
   }
 }
 
-@ProviderFor(ZhipuModelSetting)
-final zhipuModelSettingProvider = ZhipuModelSettingProvider._();
+@ProviderFor(AIModelSetting)
+final aIModelSettingProvider = AIModelSettingProvider._();
 
-final class ZhipuModelSettingProvider
-    extends $NotifierProvider<ZhipuModelSetting, ZhipuModel> {
-  ZhipuModelSettingProvider._()
+final class AIModelSettingProvider
+    extends $NotifierProvider<AIModelSetting, AIModel> {
+  AIModelSettingProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'zhipuModelSettingProvider',
+        name: r'aIModelSettingProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$zhipuModelSettingHash();
+  String debugGetCreateSourceHash() => _$aIModelSettingHash();
 
   @$internal
   @override
-  ZhipuModelSetting create() => ZhipuModelSetting();
+  AIModelSetting create() => AIModelSetting();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ZhipuModel value) {
+  Override overrideWithValue(AIModel value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<ZhipuModel>(value),
+      providerOverride: $SyncValueProvider<AIModel>(value),
     );
   }
 }
 
-String _$zhipuModelSettingHash() => r'6c956f429dbe2d886873a252bfdaadf8703641ff';
+String _$aIModelSettingHash() => r'9d8b9f29eb38ea1da48221c164451cf0d63f53d4';
 
-abstract class _$ZhipuModelSetting extends $Notifier<ZhipuModel> {
-  ZhipuModel build();
+abstract class _$AIModelSetting extends $Notifier<AIModel> {
+  AIModel build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<ZhipuModel, ZhipuModel>;
+    final ref = this.ref as $Ref<AIModel, AIModel>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<ZhipuModel, ZhipuModel>,
-              ZhipuModel,
+              AnyNotifier<AIModel, AIModel>,
+              AIModel,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(AICustomModel)
+final aICustomModelProvider = AICustomModelProvider._();
+
+final class AICustomModelProvider
+    extends $NotifierProvider<AICustomModel, String?> {
+  AICustomModelProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'aICustomModelProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$aICustomModelHash();
+
+  @$internal
+  @override
+  AICustomModel create() => AICustomModel();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String?>(value),
+    );
+  }
+}
+
+String _$aICustomModelHash() => r'46c1299a8668c3b59189e5e709fd678922a08ba9';
+
+abstract class _$AICustomModel extends $Notifier<String?> {
+  String? build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<String?, String?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<String?, String?>,
+              String?,
               Object?,
               Object?
             >;
@@ -320,7 +372,7 @@ final class TranslateServiceProvider
   }
 }
 
-String _$translateServiceHash() => r'5c83c81cba463f6b01680471c1582035ca74bfeb';
+String _$translateServiceHash() => r'b8f3474c2b9c736d3b2697d780c24bee9e47b594';
 
 @ProviderFor(TranslateText)
 final translateTextProvider = TranslateTextProvider._();
@@ -346,7 +398,7 @@ final class TranslateTextProvider
   TranslateText create() => TranslateText();
 }
 
-String _$translateTextHash() => r'a8e04f91cfeea3545212c42054ef848c159ccfce';
+String _$translateTextHash() => r'e5cd079f14c7e0d85dd8206d40f6af1901f322fb';
 
 abstract class _$TranslateText extends $AsyncNotifier<String?> {
   FutureOr<String?> build();

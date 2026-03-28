@@ -1412,6 +1412,12 @@ abstract class AppLocalizations {
   /// **'Zhipu Translate Settings'**
   String get zhipu_translate_settings;
 
+  /// No description provided for @ai_translate_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Translate Settings'**
+  String get ai_translate_settings;
+
   /// No description provided for @api_settings.
   ///
   /// In en, this message translates to:
@@ -1477,6 +1483,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Default Target Language'**
   String get default_target_language;
+
+  /// No description provided for @custom_model.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Model'**
+  String get custom_model;
+
+  /// No description provided for @custom_model_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter model name, e.g., gpt-4, deepseek-chat, etc.'**
+  String get custom_model_hint;
 
   /// No description provided for @show_original_lyrics.
   ///

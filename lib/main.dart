@@ -27,7 +27,7 @@ import 'package:toneharbor/widgets/pages/search_resulut_page.dart';
 import 'package:toneharbor/widgets/pages/setting_page.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
 import 'package:toneharbor/widgets/pages/storage_manage_page.dart';
-import 'package:toneharbor/widgets/pages/zhipu_translate_setting_page.dart';
+import 'package:toneharbor/widgets/pages/ai_translate_setting_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'init/initialized.dart';
@@ -327,9 +327,9 @@ class MyApp extends HookConsumerWidget {
                 },
               ),
               GoRoute(
-                path: '/zhipu-translate',
+                path: '/ai-translate',
                 pageBuilder: (context, state) =>
-                    NoTransitionPage(child: ZhipuTranslateSettingPage()),
+                    NoTransitionPage(child: AITranslateSettingPage()),
               ),
               GoRoute(
                 path: '/account',

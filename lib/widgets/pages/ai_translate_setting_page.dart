@@ -7,8 +7,8 @@ import 'package:toneharbor/services/translate/translate_service.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/pages/build_item.dart';
 
-class ZhipuTranslateSettingPage extends HookConsumerWidget with BuildItem {
-  const ZhipuTranslateSettingPage({super.key});
+class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
+  const AITranslateSettingPage({super.key});
 
   Widget _buildDivider(ColorScheme colorScheme) {
     return Divider(
@@ -58,20 +58,45 @@ class ZhipuTranslateSettingPage extends HookConsumerWidget with BuildItem {
     AppLocalizations l10n,
     ColorScheme colorScheme,
   ) {
+    final selectedModel = ref.watch(aIModelSettingProvider);
+    final customModel = ref.watch(aICustomModelProvider);
+
     return Column(
       children: [
         buildDropdownTile(
           title: l10n.model,
-          items: ZhipuModel.values,
-          value: ref.watch(zhipuModelSettingProvider),
+          items: AIModel.values,
+          value: selectedModel,
           colorScheme: colorScheme,
           labelBuilder: (m) => m.displayName,
           onChanged: (value) {
             if (value != null) {
-              ref.read(zhipuModelSettingProvider.notifier).setModel(value);
+              ref.read(aIModelSettingProvider.notifier).setModel(value);
             }
           },
         ),
+        if (selectedModel == AIModel.custom) ...[
+          _buildDivider(colorScheme),
+          ListTile(
+            title: Text(
+              l10n.custom_model,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface,
+              ),
+            ),
+            subtitle: Text(
+              customModel ?? l10n.not_configured,
+              style: TextStyle(
+                fontSize: 12,
+                color: colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
+            ),
+            trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
+            onTap: () => _showCustomModelDialog(ref, colorScheme, l10n),
+          ),
+        ],
         _buildDivider(colorScheme),
         buildDropdownTile(
           title: l10n.default_target_language,
@@ -177,6 +202,61 @@ class ZhipuTranslateSettingPage extends HookConsumerWidget with BuildItem {
     );
   }
 
+  void _showCustomModelDialog(
+    WidgetRef ref,
+    ColorScheme colorScheme,
+    AppLocalizations l10n,
+  ) {
+    final controller = TextEditingController(
+      text: ref.read(aICustomModelProvider) ?? '',
+    );
+
+    showDialog(
+      context: ref.context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          l10n.custom_model,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: 'gpt-4, deepseek-chat, etc.',
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.custom_model_hint,
+              style: TextStyle(
+                fontSize: 12,
+                color: colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () {
+              ref
+                  .read(aICustomModelProvider.notifier)
+                  .setCustomModel(controller.text);
+              Navigator.pop(context);
+            },
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showEndpointDialog(
     WidgetRef ref,
     ColorScheme colorScheme,
@@ -238,7 +318,7 @@ class ZhipuTranslateSettingPage extends HookConsumerWidget with BuildItem {
           ref,
           l10n,
           colorScheme,
-          l10n.zhipu_translate_settings,
+          l10n.ai_translate_settings,
         ),
         buildContent(context, ref, l10n, colorScheme, [
           ...buildItem(

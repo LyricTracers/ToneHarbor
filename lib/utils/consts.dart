@@ -22,6 +22,7 @@ const String zhipuModelKey = 'zhipu_model';
 const String zhipuEndpointKey = 'zhipu_endpoint';
 const String zhipuTemperatureKey = 'zhipu_temperature';
 const String zhipuTargetLanguageKey = 'zhipu_target_language';
+const String aiCustomModelKey = 'ai_custom_model';
 
 // pic path
 const String iconPlaceholder = 'assets/icons/icon_placeholder.png';

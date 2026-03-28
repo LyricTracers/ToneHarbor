@@ -56,7 +56,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
         ),
         ListTile(
           title: Text(
-            l10n.zhipu_translate_settings,
+            l10n.ai_translate_settings,
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
@@ -64,7 +64,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             ),
           ),
           trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
-          onTap: () => context.push('/zhipu-translate'),
+          onTap: () => context.push('/ai-translate'),
         ),
         Divider(
           height: 1,

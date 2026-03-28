@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:logger/logger.dart';
-import 'package:metadata_god/metadata_god.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/init/initialized.dart';
 

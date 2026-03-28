@@ -379,7 +379,7 @@ class PlayingDetailLayout extends BaseBgLayout {
                 ),
                 onTap: () async {
                   Navigator.pop(context);
-                  await _saveTranslatedLyrics(ref, activeTrack);
+                  await _saveTranslatedLyrics(ref, activeTrack, showTranslated);
                 },
               ),
             ],
@@ -442,6 +442,7 @@ class PlayingDetailLayout extends BaseBgLayout {
   Future<void> _saveTranslatedLyrics(
     WidgetRef ref,
     ToneHarborTrackObject activeTrack,
+    ValueNotifier<bool> showTranslated,
   ) async {
     final currentLyrics = ref.read(currentLyricsProvider).value;
     final translatedText = ref.read(translateTextProvider).value;
@@ -463,6 +464,10 @@ class PlayingDetailLayout extends BaseBgLayout {
       mergedLyrics.toJson(),
       permanent: true,
     );
+
+    ref.invalidate(currentLyricsProvider);
+    ref.invalidate(translateTextProvider);
+    showTranslated.value = false;
   }
 
   void _showLanguageSelector(WidgetRef ref, ColorScheme colorScheme) {

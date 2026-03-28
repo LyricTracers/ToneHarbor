@@ -666,6 +666,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get zhipu_translate_settings => '智谱翻译设置';
 
   @override
+  String get ai_translate_settings => 'AI 翻译设置';
+
+  @override
   String get api_settings => 'API 设置';
 
   @override
@@ -697,6 +700,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get default_target_language => '默认翻译语言';
+
+  @override
+  String get custom_model => '自定义模型';
+
+  @override
+  String get custom_model_hint => '输入模型名称，例如：gpt-4, deepseek-chat 等';
 
   @override
   String get show_original_lyrics => '显示原文';

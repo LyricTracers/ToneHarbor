@@ -26,19 +26,32 @@ class ZhipuApiKey extends _$ZhipuApiKey {
 }
 
 @riverpod
-class ZhipuModelSetting extends _$ZhipuModelSetting {
+class AIModelSetting extends _$AIModelSetting {
   @override
-  ZhipuModel build() {
+  AIModel build() {
     final savedIndex = SharedPreferencesUtils.getZhipuModel();
-    if (savedIndex != null && savedIndex < ZhipuModel.values.length) {
-      return ZhipuModel.values[savedIndex];
+    if (savedIndex != null && savedIndex < AIModel.values.length) {
+      return AIModel.values[savedIndex];
     }
-    return ZhipuModel.glm4Flash250414;
+    return AIModel.glm4Flash250414;
   }
 
-  Future<void> setModel(ZhipuModel model) async {
+  Future<void> setModel(AIModel model) async {
     await SharedPreferencesUtils.setZhipuModel(model.index);
     state = model;
+  }
+}
+
+@riverpod
+class AICustomModel extends _$AICustomModel {
+  @override
+  String? build() {
+    return SharedPreferencesUtils.getAICustomModel();
+  }
+
+  Future<void> setCustomModel(String model) async {
+    await SharedPreferencesUtils.setAICustomModel(model);
+    state = model.isEmpty ? null : model;
   }
 }
 
@@ -98,13 +111,15 @@ class ZhipuTargetLanguageSetting extends _$ZhipuTargetLanguageSetting {
 @riverpod
 TranslateService translateService(Ref ref) {
   final apiKey = ref.watch(zhipuApiKeyProvider) ?? '';
-  final model = ref.watch(zhipuModelSettingProvider);
+  final model = ref.watch(aIModelSettingProvider);
+  final customModel = ref.watch(aICustomModelProvider);
   final endpoint = ref.watch(zhipuEndpointSettingProvider);
   final temperature = ref.watch(zhipuTemperatureSettingProvider);
 
   return TranslateService(
     apiKey: apiKey,
     model: model,
+    customModel: customModel,
     endpoint: endpoint,
     temperature: temperature,
   );
