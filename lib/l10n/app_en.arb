@@ -242,5 +242,9 @@
   "audio_device": "Audio Device",
   "no_audio_devices_found": "No audio devices found",
   "available_devices": "Available Devices",
-  "audio_device_hint": "Select an audio output device. AirPlay and Bluetooth devices will appear here when connected."
+  "audio_device_hint": "Select an audio output device. AirPlay and Bluetooth devices will appear here when connected.",
+  "lyrics_provider": "Lyrics Provider",
+  "lyrics_provider_desc": "Select the sources for lyrics search",
+  "select_all": "Select All",
+  "clear_all": "Clear All"
 }

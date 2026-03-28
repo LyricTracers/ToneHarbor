@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lyricskit/lyricskit.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -149,7 +150,151 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           indent: 15,
           endIndent: 15,
         ),
+        ListTile(
+          title: Text(
+            l10n.lyrics_provider,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          subtitle: Consumer(
+            builder: (context, ref, child) {
+              final selectedProviders = ref.watch(
+                lyricsProviderSelectionProvider,
+              );
+              return selectedProviders.when(
+                data: (providers) {
+                  if (providers.isEmpty) {
+                    return Text(
+                      l10n.lyrics_provider_desc,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    );
+                  }
+                  final names = providers.map((p) => p.displayName).join(', ');
+                  return Text(
+                    names,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colorScheme.onSurface.withValues(alpha: 0.7),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  );
+                },
+                loading: () => Text(
+                  l10n.lyrics_provider_desc,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+                error: (_, __) => Text(
+                  l10n.lyrics_provider_desc,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+              );
+            },
+          ),
+          trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
+          onTap: () =>
+              _showLyricsProviderDialog(context, ref, l10n, colorScheme),
+        ),
+        Divider(
+          height: 1,
+          color: colorScheme.outline.withValues(alpha: 0.2),
+          indent: 15,
+          endIndent: 15,
+        ),
       ],
+    );
+  }
+
+  void _showLyricsProviderDialog(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          l10n.lyrics_provider,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        content: Consumer(
+          builder: (context, ref, child) {
+            final selectedProviders = ref.watch(
+              lyricsProviderSelectionProvider,
+            );
+            return selectedProviders.when(
+              data: (providers) => SizedBox(
+                width: 300,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            ref
+                                .read(lyricsProviderSelectionProvider.notifier)
+                                .selectAll();
+                          },
+                          child: Text(l10n.select_all),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            ref
+                                .read(lyricsProviderSelectionProvider.notifier)
+                                .clearAll();
+                          },
+                          child: Text(l10n.clear_all),
+                        ),
+                      ],
+                    ),
+                    const Divider(height: 1),
+                    ...LyricsProviderType.values.map((provider) {
+                      final isSelected = providers.contains(provider);
+                      return CheckboxListTile(
+                        title: Text(provider.displayName),
+                        value: isSelected,
+                        onChanged: (value) {
+                          ref
+                              .read(lyricsProviderSelectionProvider.notifier)
+                              .toggleProvider(provider);
+                        },
+                        controlAffinity: ListTileControlAffinity.leading,
+                        contentPadding: EdgeInsets.zero,
+                      );
+                    }),
+                  ],
+                ),
+              ),
+              loading: () => const SizedBox(
+                height: 100,
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (_, __) => Text('Error loading providers'),
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n.confirm),
+          ),
+        ],
+      ),
     );
   }
 

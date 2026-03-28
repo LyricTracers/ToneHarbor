@@ -1549,6 +1549,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select an audio output device. AirPlay and Bluetooth devices will appear here when connected.'**
   String get audio_device_hint;
+
+  /// No description provided for @lyrics_provider.
+  ///
+  /// In en, this message translates to:
+  /// **'Lyrics Provider'**
+  String get lyrics_provider;
+
+  /// No description provided for @lyrics_provider_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the sources for lyrics search'**
+  String get lyrics_provider_desc;
+
+  /// No description provided for @clear_all.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All'**
+  String get clear_all;
 }
 
 class _AppLocalizationsDelegate

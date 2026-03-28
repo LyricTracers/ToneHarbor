@@ -752,4 +752,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get audio_device_hint =>
       'Select an audio output device. AirPlay and Bluetooth devices will appear here when connected.';
+
+  @override
+  String get lyrics_provider => 'Lyrics Provider';
+
+  @override
+  String get lyrics_provider_desc => 'Select the sources for lyrics search';
+
+  @override
+  String get clear_all => 'Clear All';
 }

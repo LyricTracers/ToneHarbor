@@ -733,4 +733,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get audio_device_hint => '选择音频输出设备。连接 AirPlay 和蓝牙设备后会显示在此处。';
+
+  @override
+  String get lyrics_provider => '歌词源';
+
+  @override
+  String get lyrics_provider_desc => '选择歌词搜索来源';
+
+  @override
+  String get clear_all => '清空';
 }

@@ -241,5 +241,9 @@
   "audio_device": "音频设备",
   "no_audio_devices_found": "未找到音频设备",
   "available_devices": "可用设备",
-  "audio_device_hint": "选择音频输出设备。连接 AirPlay 和蓝牙设备后会显示在此处。"
+  "audio_device_hint": "选择音频输出设备。连接 AirPlay 和蓝牙设备后会显示在此处。",
+  "lyrics_provider": "歌词源",
+  "lyrics_provider_desc": "选择歌词搜索来源",
+  "select_all": "全选",
+  "clear_all": "清空"
 }
