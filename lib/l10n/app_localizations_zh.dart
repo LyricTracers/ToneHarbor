@@ -697,4 +697,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get default_target_language => '默认翻译语言';
+
+  @override
+  String get show_original_lyrics => '显示原文';
+
+  @override
+  String get show_translated_lyrics => '显示译文';
+
+  @override
+  String get save_translated_lyrics => '保存翻译歌词';
+
+  @override
+  String get translate_lyrics => '翻译歌词';
+
+  @override
+  String get target_language => '目标语言';
 }

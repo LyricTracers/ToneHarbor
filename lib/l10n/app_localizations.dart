@@ -1477,6 +1477,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Default Target Language'**
   String get default_target_language;
+
+  /// No description provided for @show_original_lyrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Original'**
+  String get show_original_lyrics;
+
+  /// No description provided for @show_translated_lyrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Translation'**
+  String get show_translated_lyrics;
+
+  /// No description provided for @save_translated_lyrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Translated Lyrics'**
+  String get save_translated_lyrics;
+
+  /// No description provided for @translate_lyrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Translate Lyrics'**
+  String get translate_lyrics;
+
+  /// No description provided for @target_language.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Language'**
+  String get target_language;
 }
 
 class _AppLocalizationsDelegate

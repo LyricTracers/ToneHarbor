@@ -230,5 +230,10 @@
   "api_endpoint": "API Endpoint",
   "temperature": "Temperature",
   "reset_default": "Reset to Default",
-  "default_target_language": "Default Target Language"
+  "default_target_language": "Default Target Language",
+  "show_original_lyrics": "Show Original",
+  "show_translated_lyrics": "Show Translation",
+  "save_translated_lyrics": "Save Translated Lyrics",
+  "translate_lyrics": "Translate Lyrics",
+  "target_language": "Target Language"
 }

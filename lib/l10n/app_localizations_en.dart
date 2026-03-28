@@ -714,4 +714,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get default_target_language => 'Default Target Language';
+
+  @override
+  String get show_original_lyrics => 'Show Original';
+
+  @override
+  String get show_translated_lyrics => 'Show Translation';
+
+  @override
+  String get save_translated_lyrics => 'Save Translated Lyrics';
+
+  @override
+  String get translate_lyrics => 'Translate Lyrics';
+
+  @override
+  String get target_language => 'Target Language';
 }

@@ -116,7 +116,7 @@ class TranslateText extends _$TranslateText {
 
   @override
   FutureOr<String?> build() {
-    ref.keepAliveFor(Duration(minutes: 5));
+    ref.keepAliveFor(Duration(minutes: 10));
     ref.onDispose(() {
       _cancelToken?.cancel();
     });

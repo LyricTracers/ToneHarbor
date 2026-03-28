@@ -229,5 +229,10 @@
   "api_endpoint": "API 端点",
   "temperature": "温度",
   "reset_default": "恢复默认",
-  "default_target_language": "默认翻译语言"
+  "default_target_language": "默认翻译语言",
+  "show_original_lyrics": "显示原文",
+  "show_translated_lyrics": "显示译文",
+  "save_translated_lyrics": "保存翻译歌词",
+  "translate_lyrics": "翻译歌词",
+  "target_language": "目标语言"
 }

@@ -21,6 +21,7 @@ late final ImageProvider defaultSongIconProvider;
 late final HttpClientWrapper httpClientWrapper;
 late final HttpClientWrapper downloadHttpClientWrapper;
 late final HttpClientWrapper coverDownloadHttpClientWrapper;
+late final HttpClientWrapper translateHttpClientWrapper;
 late final PersistentApiCache<Map<String, dynamic>> audioStationRequestCache;
 late final PersistentApiCache<Map<String, dynamic>> lyricCache;
 late final String placeholderErrorIconString;
@@ -113,6 +114,17 @@ void initHttpClientWrapper() {
       ),
     ),
     retryInterceptor: RetryInterceptor(maxRetries: 1),
+  );
+
+  translateHttpClientWrapper = HttpClientWrapper(
+    settings: const ClientSettings(
+      timeoutSettings: TimeoutSettings(
+        timeout: Duration(minutes: 5),
+        connectTimeout: Duration(seconds: 30),
+      ),
+    ),
+    retryInterceptor: RetryInterceptor(maxRetries: 0),
+    loggingInterceptor: LoggingInterceptor(logger: logger),
   );
 }
 

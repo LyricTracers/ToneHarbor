@@ -346,7 +346,7 @@ final class TranslateTextProvider
   TranslateText create() => TranslateText();
 }
 
-String _$translateTextHash() => r'b496dbf85d06e36c15c380620b55164871704256';
+String _$translateTextHash() => r'a8e04f91cfeea3545212c42054ef848c159ccfce';
 
 abstract class _$TranslateText extends $AsyncNotifier<String?> {
   FutureOr<String?> build();

@@ -101,7 +101,7 @@ Important rules for lyrics translation:
     final messages = _buildChatMessages(text, target);
 
     try {
-      final response = await httpClientWrapper.post(
+      final response = await translateHttpClientWrapper.post(
         endpoint,
         body: HttpBody.json({
           'model': model.value,

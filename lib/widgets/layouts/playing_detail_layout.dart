@@ -2,6 +2,8 @@ import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:go_router/go_router.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
+import "package:lyricskit/lyricskit.dart";
+import "package:toneharbor/init/initialized.dart";
 import "package:toneharbor/models/audio_player/sub_content_state.dart";
 import "package:toneharbor/models/audio_player/tone_harbor_track.dart";
 import "package:toneharbor/providers/providers.dart";
@@ -43,6 +45,8 @@ class PlayingDetailLayout extends BaseBgLayout {
       );
     }
     final subContentState = ref.watch(subContentProvider);
+
+    final showTranslated = useState(false);
 
     final animationController = useAnimationController(
       duration: const Duration(milliseconds: 100),
@@ -119,7 +123,12 @@ class PlayingDetailLayout extends BaseBgLayout {
                                   },
                                   icon: Icon(Icons.lyrics_rounded, size: 24),
                                 ),
-                                _buildTranslateButton(ref, colorScheme),
+                                _buildTranslateButton(
+                                  ref,
+                                  colorScheme,
+                                  showTranslated,
+                                  activeTrack,
+                                ),
                               ],
                             ),
                           ),
@@ -129,8 +138,40 @@ class PlayingDetailLayout extends BaseBgLayout {
                   ),
                   Expanded(
                     flex: 1,
-                    child: LyricsContentPage(
-                      currentLyrics: ref.watch(currentLyricsProvider).value,
+                    child: Builder(
+                      builder: (context) {
+                        final originalLyrics = ref
+                            .watch(currentLyricsProvider)
+                            .value;
+                        final translatedText = ref
+                            .watch(translateTextProvider)
+                            .value;
+
+                        if (!showTranslated.value ||
+                            originalLyrics == null ||
+                            translatedText == null) {
+                          return LyricsContentPage(
+                            currentLyrics: originalLyrics,
+                          );
+                        }
+
+                        final translatedLyrics = Lyrics.fromString(
+                          translatedText,
+                        );
+                        if (translatedLyrics == null) {
+                          return LyricsContentPage(
+                            currentLyrics: originalLyrics,
+                          );
+                        }
+
+                        final mergedLyrics = Lyrics.fromJson(
+                          originalLyrics.toJson(),
+                        );
+
+                        mergedLyrics.merge(translatedLyrics);
+
+                        return LyricsContentPage(currentLyrics: mergedLyrics);
+                      },
                     ),
                   ),
                 ],
@@ -229,65 +270,151 @@ class PlayingDetailLayout extends BaseBgLayout {
     );
   }
 
-  Widget _buildTranslateButton(WidgetRef ref, ColorScheme colorScheme) {
+  Widget _buildTranslateButton(
+    WidgetRef ref,
+    ColorScheme colorScheme,
+    ValueNotifier<bool> showTranslated,
+    ToneHarborTrackObject activeTrack,
+  ) {
     final targetLanguage = ref.watch(zhipuTargetLanguageSettingProvider);
     final translateState = ref.watch(translateTextProvider);
     final isLoading = translateState.isLoading;
+    final hasTranslation = translateState.value != null;
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          onPressed: isLoading ? null : () => _translateLyrics(ref),
-          icon: isLoading
-              ? SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: colorScheme.onSurface,
-                  ),
-                )
-              : Icon(Icons.translate_rounded, size: 24),
-        ),
-        GestureDetector(
-          onTap: isLoading
-              ? null
-              : () => _showLanguageSelector(ref, colorScheme),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(4),
+    return IconButton(
+      onPressed: isLoading
+          ? null
+          : () => _showTranslateMenu(
+              ref,
+              colorScheme,
+              showTranslated,
+              activeTrack,
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+      icon: isLoading
+          ? SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: colorScheme.onSurface,
+              ),
+            )
+          : Stack(
               children: [
-                Icon(
-                  Icons.arrow_forward_rounded,
-                  size: 10,
-                  color: colorScheme.onSurface.withValues(alpha: 0.7),
-                ),
-                SizedBox(width: 2),
-                Text(
-                  targetLanguage == TranslateTargetLanguage.simplifiedChinese
-                      ? '中'
-                      : 'EN',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
+                Icon(Icons.translate_rounded, size: 24),
+                if (hasTranslation)
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 2,
+                        vertical: 1,
+                      ),
+                      decoration: BoxDecoration(
+                        color: showTranslated.value
+                            ? colorScheme.primary
+                            : colorScheme.surface,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                      child: Text(
+                        targetLanguage ==
+                                TranslateTargetLanguage.simplifiedChinese
+                            ? '中'
+                            : 'EN',
+                        style: TextStyle(
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                          color: showTranslated.value
+                              ? colorScheme.onPrimary
+                              : colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
               ],
             ),
-          ),
-        ),
-      ],
     );
   }
 
-  Future<void> _translateLyrics(WidgetRef ref) async {
+  void _showTranslateMenu(
+    WidgetRef ref,
+    ColorScheme colorScheme,
+    ValueNotifier<bool> showTranslated,
+    ToneHarborTrackObject activeTrack,
+  ) {
+    final hasTranslation = ref.read(translateTextProvider).value != null;
+    final l10n = ref.read(l10nProvider);
+
+    showModalBottomSheet(
+      context: ref.context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (hasTranslation) ...[
+              ListTile(
+                leading: Icon(
+                  showTranslated.value
+                      ? Icons.lyrics_rounded
+                      : Icons.translate_rounded,
+                  size: 18,
+                ),
+                title: Text(
+                  showTranslated.value
+                      ? l10n.show_original_lyrics
+                      : l10n.show_translated_lyrics,
+                  style: const TextStyle(fontSize: 14),
+                ),
+                onTap: () {
+                  showTranslated.value = !showTranslated.value;
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.save_rounded, size: 18),
+                title: Text(
+                  l10n.save_translated_lyrics,
+                  style: const TextStyle(fontSize: 14),
+                ),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await _saveTranslatedLyrics(ref, activeTrack);
+                },
+              ),
+            ],
+            ListTile(
+              leading: const Icon(Icons.translate_rounded, size: 18),
+              title: Text(
+                l10n.translate_lyrics,
+                style: const TextStyle(fontSize: 14),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _translateLyrics(ref, showTranslated);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.language_rounded, size: 18),
+              title: Text(
+                '${l10n.target_language}: ${ref.read(zhipuTargetLanguageSettingProvider).displayName}',
+                style: const TextStyle(fontSize: 14),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _showLanguageSelector(ref, colorScheme);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _translateLyrics(
+    WidgetRef ref,
+    ValueNotifier<bool> showTranslated,
+  ) async {
     final currentLyrics = ref.read(currentLyricsProvider).value;
     if (currentLyrics == null || currentLyrics.isEmpty) {
       return;
@@ -307,10 +434,35 @@ class PlayingDetailLayout extends BaseBgLayout {
         .read(translateTextProvider.notifier)
         .translate(lyricsText, target: targetLanguage);
 
-    final translatedText = ref.read(translateTextProvider).value;
-    if (translatedText != null) {
-      print('Translated lyrics:\n$translatedText');
+    if (ref.read(translateTextProvider).value != null) {
+      showTranslated.value = true;
     }
+  }
+
+  Future<void> _saveTranslatedLyrics(
+    WidgetRef ref,
+    ToneHarborTrackObject activeTrack,
+  ) async {
+    final currentLyrics = ref.read(currentLyricsProvider).value;
+    final translatedText = ref.read(translateTextProvider).value;
+
+    if (currentLyrics == null || translatedText == null) {
+      return;
+    }
+
+    final translatedLyrics = Lyrics.fromString(translatedText);
+    if (translatedLyrics == null) {
+      return;
+    }
+
+    final mergedLyrics = Lyrics.fromJson(currentLyrics.toJson());
+
+    mergedLyrics.merge(translatedLyrics);
+    await lyricCache.set(
+      activeTrack.id,
+      mergedLyrics.toJson(),
+      permanent: true,
+    );
   }
 
   void _showLanguageSelector(WidgetRef ref, ColorScheme colorScheme) {
