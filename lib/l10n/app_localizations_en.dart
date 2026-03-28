@@ -739,4 +739,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get target_language => 'Target Language';
+
+  @override
+  String get audio_device => 'Audio Device';
+
+  @override
+  String get no_audio_devices_found => 'No audio devices found';
+
+  @override
+  String get available_devices => 'Available Devices';
+
+  @override
+  String get audio_device_hint =>
+      'Select an audio output device. AirPlay and Bluetooth devices will appear here when connected.';
 }

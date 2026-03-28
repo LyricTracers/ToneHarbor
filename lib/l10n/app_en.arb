@@ -238,5 +238,9 @@
   "show_translated_lyrics": "Show Translation",
   "save_translated_lyrics": "Save Translated Lyrics",
   "translate_lyrics": "Translate Lyrics",
-  "target_language": "Target Language"
+  "target_language": "Target Language",
+  "audio_device": "Audio Device",
+  "no_audio_devices_found": "No audio devices found",
+  "available_devices": "Available Devices",
+  "audio_device_hint": "Select an audio output device. AirPlay and Bluetooth devices will appear here when connected."
 }

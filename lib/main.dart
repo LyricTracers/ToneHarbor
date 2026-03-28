@@ -20,6 +20,7 @@ import 'package:toneharbor/widgets/layouts/switch_lyrics_layout.dart';
 import 'package:toneharbor/widgets/pages/account_page.dart';
 import 'package:toneharbor/widgets/pages/album_page.dart';
 import 'package:toneharbor/widgets/pages/artist_page.dart';
+import 'package:toneharbor/widgets/pages/audio_device_page.dart';
 import 'package:toneharbor/widgets/pages/download_page.dart';
 import 'package:toneharbor/widgets/pages/folders_page.dart';
 import 'package:toneharbor/widgets/pages/playlists_page.dart';
@@ -335,6 +336,11 @@ class MyApp extends HookConsumerWidget {
                 path: '/account',
                 pageBuilder: (context, state) =>
                     NoTransitionPage(child: AccountPage()),
+              ),
+              GoRoute(
+                path: '/audio-device',
+                pageBuilder: (context, state) =>
+                    NoTransitionPage(child: AudioDevicePage()),
               ),
             ],
             builder: (context, state, child) {

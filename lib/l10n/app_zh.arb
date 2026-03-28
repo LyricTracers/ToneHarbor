@@ -237,5 +237,9 @@
   "show_translated_lyrics": "显示译文",
   "save_translated_lyrics": "保存翻译歌词",
   "translate_lyrics": "翻译歌词",
-  "target_language": "目标语言"
+  "target_language": "目标语言",
+  "audio_device": "音频设备",
+  "no_audio_devices_found": "未找到音频设备",
+  "available_devices": "可用设备",
+  "audio_device_hint": "选择音频输出设备。连接 AirPlay 和蓝牙设备后会显示在此处。"
 }

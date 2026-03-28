@@ -89,6 +89,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
   }
 
   Widget _audioPlay(
+    BuildContext context,
     WidgetRef ref,
     AppLocalizations l10n,
     ColorScheme colorScheme,
@@ -123,6 +124,24 @@ class SettingPage extends HookConsumerWidget with BuildItem {
               setDemuxerBufferSize(value);
             }
           },
+        ),
+        Divider(
+          height: 1,
+          color: colorScheme.outline.withValues(alpha: 0.2),
+          indent: 15,
+          endIndent: 15,
+        ),
+        ListTile(
+          title: Text(
+            l10n.audio_device,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
+          onTap: () => context.push('/audio-device'),
         ),
         Divider(
           height: 1,
@@ -267,7 +286,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             l10n,
             colorScheme,
             l10n.playback_settings,
-            _audioPlay(ref, l10n, colorScheme),
+            _audioPlay(context, ref, l10n, colorScheme),
           ),
           SizedBox(height: 20),
           ...buildItem(

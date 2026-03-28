@@ -1525,6 +1525,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Target Language'**
   String get target_language;
+
+  /// No description provided for @audio_device.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Device'**
+  String get audio_device;
+
+  /// No description provided for @no_audio_devices_found.
+  ///
+  /// In en, this message translates to:
+  /// **'No audio devices found'**
+  String get no_audio_devices_found;
+
+  /// No description provided for @available_devices.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Devices'**
+  String get available_devices;
+
+  /// No description provided for @audio_device_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an audio output device. AirPlay and Bluetooth devices will appear here when connected.'**
+  String get audio_device_hint;
 }
 
 class _AppLocalizationsDelegate
