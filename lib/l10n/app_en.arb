@@ -245,7 +245,7 @@
   "audio_device_hint": "Select an audio output device. AirPlay and Bluetooth devices will appear here when connected.",
   "lyrics_provider": "Lyrics Provider",
   "lyrics_provider_desc": "Select the sources for lyrics search",
-  "remove_from_playlist": "remove",
+  "remove_from_playlist": "Remove From Playlist",
   "select_all": "Select All",
   "clear_all": "Clear All"
 }

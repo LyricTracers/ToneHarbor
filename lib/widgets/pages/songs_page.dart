@@ -185,7 +185,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
     return Column(
       children: [
         if (songSelectionState.selectionType)
-          SubSongSelectionTop(songs: filteredItems, playlistId: playlistId),
+          SubSongSelectionTop(songs: filteredItems),
         if (!songSelectionState.selectionType)
           _buildAppBar(ref, colorScheme, total, searchController),
         Expanded(
@@ -285,11 +285,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
           ),
         ),
         if (songSelectionState.selectionType)
-          SubSongSelectionBottom(
-            songs: filteredItems,
-            isLocal: isLocal,
-            playlistId: playlistId,
-          ),
+          SubSongSelectionBottom(songs: filteredItems, isLocal: isLocal),
       ],
     );
   }

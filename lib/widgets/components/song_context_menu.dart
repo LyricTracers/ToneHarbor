@@ -165,7 +165,7 @@ class SongContextMenu {
         if (playlistId.isNotEmpty && index != -1)
           MenuItem(
             label: Text(l10n.remove_from_playlist),
-            icon: Icon(Icons.remove_rounded),
+            icon: Icon(Icons.playlist_remove_rounded),
             onSelected: (value) async {
               try {
                 ref.read(requestFlagProvider.notifier).setRequestFlag(true);

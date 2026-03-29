@@ -741,7 +741,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get lyrics_provider_desc => '选择歌词搜索来源';
 
   @override
-  String get remove_from_playlist => '移除';
+  String get remove_from_playlist => '从歌单移除';
 
   @override
   String get clear_all => '清空';

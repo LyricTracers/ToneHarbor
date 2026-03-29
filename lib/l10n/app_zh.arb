@@ -244,7 +244,7 @@
   "audio_device_hint": "选择音频输出设备。连接 AirPlay 和蓝牙设备后会显示在此处。",
   "lyrics_provider": "歌词源",
   "lyrics_provider_desc": "选择歌词搜索来源",
-  "remove_from_playlist": "移除",
+  "remove_from_playlist": "从歌单移除",
   "select_all": "全选",
   "clear_all": "清空"
 }

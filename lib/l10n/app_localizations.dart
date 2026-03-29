@@ -1565,7 +1565,7 @@ abstract class AppLocalizations {
   /// No description provided for @remove_from_playlist.
   ///
   /// In en, this message translates to:
-  /// **'remove'**
+  /// **'Remove From Playlist'**
   String get remove_from_playlist;
 
   /// No description provided for @clear_all.
