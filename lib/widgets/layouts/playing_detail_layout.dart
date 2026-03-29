@@ -4,6 +4,7 @@ import "package:go_router/go_router.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
 import "package:lyricskit/lyricskit.dart";
 import "package:toneharbor/init/initialized.dart";
+import "package:toneharbor/l10n/app_localizations.dart";
 import "package:toneharbor/models/audio_player/tone_harbor_track.dart";
 import "package:toneharbor/providers/providers.dart";
 import "package:toneharbor/providers/translate/translate_provider.dart";
@@ -23,6 +24,7 @@ class PlayingDetailLayout extends BaseBgLayout {
     final audioPlayerState = ref.watch(audioPlayerStateProvider);
     final colorScheme = getColorSchemeWhenReady(ref);
     final activeTrack = audioPlayerState.activeTrack;
+    final l10n = ref.watch(l10nProvider);
     var size = MediaQuery.of(ref.context).size;
     double radius = size.height > size.width / 2 ? size.width / 2 : size.height;
     if (activeTrack == null) {
@@ -73,6 +75,7 @@ class PlayingDetailLayout extends BaseBgLayout {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 IconButton(
+                                  tooltip: l10n.song_playlist,
                                   onPressed: isLocal
                                       ? null
                                       : () {
@@ -93,6 +96,7 @@ class PlayingDetailLayout extends BaseBgLayout {
                                   onPressed: () =>
                                       _showAudioDeviceMenu(ref, colorScheme),
                                   icon: Icon(Icons.speaker, size: 24),
+                                  tooltip: l10n.audio_device,
                                 ),
                                 IconButton(
                                   onPressed: () {
@@ -102,12 +106,14 @@ class PlayingDetailLayout extends BaseBgLayout {
                                     );
                                   },
                                   icon: Icon(Icons.lyrics_rounded, size: 24),
+                                  tooltip: l10n.lyrics,
                                 ),
                                 _buildTranslateButton(
                                   ref,
                                   colorScheme,
                                   showTranslated,
                                   activeTrack,
+                                  l10n,
                                 ),
                               ],
                             ),
@@ -220,6 +226,7 @@ class PlayingDetailLayout extends BaseBgLayout {
     ColorScheme colorScheme,
     ValueNotifier<bool> showTranslated,
     ToneHarborTrackObject activeTrack,
+    AppLocalizations l10n,
   ) {
     final targetLanguage = ref.watch(zhipuTargetLanguageSettingProvider);
     final translateState = ref.watch(translateTextProvider);
@@ -227,6 +234,7 @@ class PlayingDetailLayout extends BaseBgLayout {
     final hasTranslation = translateState.value != null;
 
     return IconButton(
+      tooltip: l10n.translate_lyrics,
       onPressed: isLoading
           ? null
           : () => _showTranslateMenu(
