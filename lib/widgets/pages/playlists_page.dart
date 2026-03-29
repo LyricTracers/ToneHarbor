@@ -10,7 +10,6 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/components/common_search_field.dart';
-import 'package:toneharbor/widgets/pages/songs_page.dart';
 
 class _PlaylistItemWidget extends HookConsumerWidget {
   final List<PlaylistInfo> playlists;

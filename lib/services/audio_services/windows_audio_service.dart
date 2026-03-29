@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:smtc_windows/smtc_windows.dart';
-import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
+import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/services/audio_player/playback_state.dart';
 

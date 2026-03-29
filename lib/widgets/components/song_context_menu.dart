@@ -3,10 +3,7 @@ import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
-
-import 'package:toneharbor/providers/audio_player/download_manager.dart';
 import 'package:toneharbor/providers/providers.dart';
-import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/pages/add_to_playlists_page.dart';
 

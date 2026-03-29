@@ -3,10 +3,7 @@ import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/artist.dart';
 import 'package:toneharbor/models/audio_station/album.dart';
-import 'package:toneharbor/providers/audio_station/auth_provider.dart';
-import 'package:toneharbor/providers/audio_station/songs_provider.dart';
-import 'package:toneharbor/providers/audio_station/artists_provider.dart';
-import 'package:toneharbor/providers/audio_station/albums_provider.dart';
+import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 part 'search_provider.g.dart';
 

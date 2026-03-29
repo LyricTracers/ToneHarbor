@@ -50,7 +50,7 @@ final class MixSearchProvider
   }
 }
 
-String _$mixSearchHash() => r'a7295e8b96432f11ce76bfed3ec6cb02bb88b67f';
+String _$mixSearchHash() => r'58ceba7a61cfba84338802790e02f620f4a56f16';
 
 final class MixSearchFamily extends $Family
     with

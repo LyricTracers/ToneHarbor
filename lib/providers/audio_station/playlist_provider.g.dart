@@ -60,7 +60,7 @@ final class PlaylistResponseNotifierProvider
 }
 
 String _$playlistResponseNotifierHash() =>
-    r'8e70adfff7f7cb82a8a3e2256311473da78f6863';
+    r'b5e5a3fc9582f416b1fb376ee9202dcf4d6d1525';
 
 final class PlaylistResponseNotifierFamily extends $Family
     with
@@ -211,7 +211,7 @@ final class PlaylistDetailProvider
   }
 }
 
-String _$playlistDetailHash() => r'94e85a2c1bc00b97a25cb613795ae98899099de2';
+String _$playlistDetailHash() => r'e21c447d8aa11914d4e87e3571e0e8f086464fdc';
 
 final class PlaylistDetailFamily extends $Family
     with

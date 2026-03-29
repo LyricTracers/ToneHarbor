@@ -5,7 +5,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:toneharbor/services/audio_services/mobile_audio_service.dart';
 import 'package:toneharbor/services/audio_services/windows_audio_service.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
-import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
+import 'package:toneharbor/providers/providers.dart';
 import 'dart:io';
 
 class AudioServices with WidgetsBindingObserver {

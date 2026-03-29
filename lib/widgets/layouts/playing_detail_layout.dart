@@ -7,7 +7,6 @@ import "package:toneharbor/init/initialized.dart";
 import "package:toneharbor/l10n/app_localizations.dart";
 import "package:toneharbor/models/audio_player/tone_harbor_track.dart";
 import "package:toneharbor/providers/providers.dart";
-import "package:toneharbor/providers/translate/translate_provider.dart";
 import "package:toneharbor/services/audio_player/audio_player.dart";
 import "package:toneharbor/services/translate/translate_service.dart";
 import "package:toneharbor/utils/base_funs.dart";

@@ -66,7 +66,7 @@ final class StreamUrlProvider
   }
 }
 
-String _$streamUrlHash() => r'01f341f4e1aba2f7292e4e354393819928893d06';
+String _$streamUrlHash() => r'9604cc013ed7680e47bb00de816158fc4da9441e';
 
 final class StreamUrlFamily extends $Family
     with
@@ -145,7 +145,7 @@ final class CoverUrlBySongIdProvider
   }
 }
 
-String _$coverUrlBySongIdHash() => r'991c586aefb47e3190de916e838a74f7ae5a5d85';
+String _$coverUrlBySongIdHash() => r'fc2df3af8f8d5424688c685b8e147b2f8769181a';
 
 final class CoverUrlBySongIdFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<String>, String> {

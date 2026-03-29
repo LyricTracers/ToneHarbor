@@ -9,7 +9,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/misc.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:path_provider/path_provider.dart' as paths;
 import 'package:rhttp/rhttp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -261,10 +260,10 @@ String? _musicCacheBaseDir;
 
 Future<void> initMusicCacheBaseDir() async {
   if (Platform.isAndroid) {
-    final dirs = await paths.getExternalCacheDirectories();
+    final dirs = await getExternalCacheDirectories();
     _musicCacheBaseDir = join(dirs!.first.path, 'Cached Tracks');
   } else {
-    final dir = await paths.getApplicationSupportDirectory();
+    final dir = await getApplicationSupportDirectory();
     _musicCacheBaseDir = join(dir.path, 'cached_tracks');
   }
 }
@@ -287,9 +286,7 @@ Future<String> getMusicCacheDir(AudioQuality quality) async {
   String subDir;
   subDir = quality.name;
   if (Platform.isAndroid) {
-    final dir = await paths.getExternalCacheDirectories().then(
-      (dirs) => dirs!.first,
-    );
+    final dir = await getExternalCacheDirectories().then((dirs) => dirs!.first);
     final cacheDir = Directory(join(dir.path, 'Cached Tracks', subDir));
     if (!await cacheDir.exists()) {
       await cacheDir.create(recursive: true);
@@ -297,7 +294,7 @@ Future<String> getMusicCacheDir(AudioQuality quality) async {
     return cacheDir.path;
   }
 
-  final dir = await paths.getApplicationSupportDirectory();
+  final dir = await getApplicationSupportDirectory();
   final cacheDir = Directory(join(dir.path, 'cached_tracks', subDir));
   if (!await cacheDir.exists()) {
     await cacheDir.create(recursive: true);
@@ -307,16 +304,14 @@ Future<String> getMusicCacheDir(AudioQuality quality) async {
 
 Future<String> getCoverCacheDir() async {
   if (Platform.isAndroid) {
-    final dir = await paths.getExternalCacheDirectories().then(
-      (dirs) => dirs!.first,
-    );
+    final dir = await getExternalCacheDirectories().then((dirs) => dirs!.first);
     if (!await dir.exists()) {
       await dir.create(recursive: true);
     }
     return join(dir.path, 'Cached Covers');
   }
 
-  final dir = await paths.getApplicationSupportDirectory();
+  final dir = await getApplicationSupportDirectory();
   return join(dir.path, 'cached_covers');
 }
 

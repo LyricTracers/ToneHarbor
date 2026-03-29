@@ -5,10 +5,10 @@ import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:media_kit/media_kit.dart' hide Track;
 import 'package:toneharbor/models/audio_player/audio_player_state.dart';
-import 'package:toneharbor/providers/audio_player/audio_player_provider.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/services/audio_player/playback_state.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/providers/providers.dart';
 
 class MobileAudioService extends BaseAudioHandler {
   AudioSession? session;
