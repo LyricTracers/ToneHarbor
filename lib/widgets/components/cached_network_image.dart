@@ -88,7 +88,18 @@ class CachedNetworkImage extends ConsumerWidget {
   }
 
   Widget _buildImage(BuildContext context, Uint8List bytes) {
-    final imageProvider = MemoryImage(bytes);
+    ImageProvider imageProvider = MemoryImage(bytes);
+
+    final cacheWidth = memCacheWidth ?? (width != null ? (width! * 2).toInt() : null);
+    final cacheHeight = memCacheHeight ?? (height != null ? (height! * 2).toInt() : null);
+
+    if (cacheWidth != null || cacheHeight != null) {
+      imageProvider = ResizeImage(
+        imageProvider,
+        width: cacheWidth,
+        height: cacheHeight,
+      );
+    }
 
     if (imageBuilder != null) {
       return imageBuilder!(context, imageProvider);

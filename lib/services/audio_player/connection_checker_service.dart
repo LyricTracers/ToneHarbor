@@ -6,19 +6,30 @@ import 'package:toneharbor/init/initialized.dart';
 
 class ConnectionCheckerService with WidgetsBindingObserver {
   final _connectionStreamController = StreamController<bool>.broadcast();
-  final HttpClient client;
+  final HttpClient _client;
+  Timer? _reconnectTimer;
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
+  StreamSubscription<bool>? _internalSubscription;
 
-  static final _instance = ConnectionCheckerService._();
+  static ConnectionCheckerService? _instance;
 
-  static ConnectionCheckerService get instance => _instance;
+  static ConnectionCheckerService get instance {
+    _instance ??= ConnectionCheckerService._();
+    return _instance!;
+  }
 
-  ConnectionCheckerService._() : client = HttpClient() {
-    Timer? timer;
+  ConnectionCheckerService._() : _client = HttpClient() {
     WidgetsBinding.instance.addObserver(this);
-    onConnectivityChanged.listen((connected) {
+    _init();
+  }
+
+  void _init() {
+    _internalSubscription = onConnectivityChanged.listen((connected) {
       try {
-        if (!connected && timer == null) {
-          timer = Timer.periodic(const Duration(seconds: 30), (timer) async {
+        if (!connected && _reconnectTimer == null) {
+          _reconnectTimer = Timer.periodic(const Duration(seconds: 30), (
+            timer,
+          ) async {
             if (WidgetsBinding.instance.lifecycleState ==
                 AppLifecycleState.paused) {
               return;
@@ -26,15 +37,17 @@ class ConnectionCheckerService with WidgetsBindingObserver {
             await isConnected;
           });
         } else {
-          timer?.cancel();
-          timer = null;
+          _reconnectTimer?.cancel();
+          _reconnectTimer = null;
         }
       } catch (e, stack) {
         logger.i("ConnectionCheckerService error: $e, $stack");
       }
     });
 
-    Connectivity().onConnectivityChanged.listen((event) async {
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((
+      event,
+    ) async {
       await isConnected;
     });
 
@@ -95,7 +108,7 @@ class ConnectionCheckerService with WidgetsBindingObserver {
       if (result.isEmpty || result[0].rawAddress.isEmpty) {
         return false;
       }
-      final request = await client.headUrl(Uri.parse('https://$address'));
+      final request = await _client.headUrl(Uri.parse('https://$address'));
       request.followRedirects = false;
       final response = await request.close().timeout(
         const Duration(seconds: 5),
@@ -124,4 +137,17 @@ class ConnectionCheckerService with WidgetsBindingObserver {
   }
 
   Stream<bool> get onConnectivityChanged => _connectionStreamController.stream;
+
+  void dispose() {
+    _reconnectTimer?.cancel();
+    _reconnectTimer = null;
+    _internalSubscription?.cancel();
+    _internalSubscription = null;
+    _connectivitySubscription?.cancel();
+    _connectivitySubscription = null;
+    _connectionStreamController.close();
+    _client.close();
+    WidgetsBinding.instance.removeObserver(this);
+    _instance = null;
+  }
 }

@@ -160,7 +160,7 @@ class RandomSongs extends _$RandomSongs
     String additional = 'song_tag,song_audio,song_rating',
     Duration? cacheDuration,
   }) async {
-    ref.keepAliveFor(Duration(minutes: 30));
+    ref.keepAliveFor(Duration(minutes: 10));
     final authHeaders = await ref.watch(authHeadersProvider.future);
     if (authHeaders == null) {
       return const ToneHarborTrackObjectListEmpty();
