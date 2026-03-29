@@ -6,13 +6,6 @@ import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
-import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
-import 'package:toneharbor/widgets/components/common_albums.dart';
-import 'package:toneharbor/widgets/components/common_artists.dart';
-import 'package:toneharbor/widgets/components/song_context_menu.dart';
-import 'package:toneharbor/widgets/components/song_item.dart';
-import 'package:toneharbor/widgets/components/sub_song_selection_bottom.dart';
-import 'package:toneharbor/widgets/components/sub_song_selection_top.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class SearchResulutPage extends HookConsumerWidget {

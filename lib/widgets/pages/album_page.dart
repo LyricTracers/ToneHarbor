@@ -7,9 +7,6 @@ import 'package:toneharbor/models/audio_station/album.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
-import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
-import 'package:toneharbor/widgets/components/common_search_field.dart';
-import 'package:toneharbor/widgets/pages/songs_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class AlbumPage extends HookConsumerWidget {

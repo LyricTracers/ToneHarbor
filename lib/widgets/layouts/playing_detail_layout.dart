@@ -10,9 +10,6 @@ import "package:toneharbor/providers/providers.dart";
 import "package:toneharbor/services/audio_player/audio_player.dart";
 import "package:toneharbor/services/translate/translate_service.dart";
 import "package:toneharbor/utils/base_funs.dart";
-import "package:toneharbor/widgets/layouts/base_bg_layout.dart";
-import "package:toneharbor/widgets/pages/add_to_playlists_page.dart";
-import "package:toneharbor/widgets/pages/lyrics_content_page.dart";
 import "package:toneharbor/widgets/widgets.dart";
 
 class PlayingDetailLayout extends BaseBgLayout {

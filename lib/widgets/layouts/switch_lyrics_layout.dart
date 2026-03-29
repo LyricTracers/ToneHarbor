@@ -8,9 +8,6 @@ import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
-import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
-import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
-import 'package:toneharbor/widgets/pages/lyrics_content_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class SwitchLyricsLayout extends BaseBgLayout {
