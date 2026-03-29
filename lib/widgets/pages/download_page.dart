@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
@@ -131,6 +132,7 @@ class DownloadPage extends HookConsumerWidget {
                 isSelected: selectedTab.value == 0,
                 colorScheme: colorScheme,
                 onPressed: () => selectedTab.value = 0,
+                tooltip: l10n.download,
               ),
               _buildTabButton(
                 icon: Icons.history_rounded,
@@ -140,16 +142,21 @@ class DownloadPage extends HookConsumerWidget {
                   ref.invalidate(downloadHistoryProvider);
                   selectedTab.value = 1;
                 },
+                tooltip: l10n.download_history,
               ),
               IconButton(
                 onPressed: () {
                   ref.read(songSelectionProvider.notifier).toggle();
                 },
                 icon: Icon(Icons.fact_check_rounded, size: 18),
+                tooltip: l10n.select_all,
               ),
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  ref.context.push("/setting");
+                },
                 icon: Icon(Icons.settings_rounded, size: 18),
+                tooltip: l10n.settings,
               ),
             ],
             centerTitle: false,
@@ -235,6 +242,7 @@ class DownloadPage extends HookConsumerWidget {
     required bool isSelected,
     required ColorScheme colorScheme,
     required VoidCallback onPressed,
+    required String tooltip,
   }) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -242,6 +250,7 @@ class DownloadPage extends HookConsumerWidget {
         IconButton(
           onPressed: onPressed,
           icon: Icon(icon, size: 18, color: colorScheme.onSurface),
+          tooltip: tooltip,
         ),
         if (isSelected)
           Container(

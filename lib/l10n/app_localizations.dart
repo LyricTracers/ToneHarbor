@@ -1568,6 +1568,18 @@ abstract class AppLocalizations {
   /// **'Remove From Playlist'**
   String get remove_from_playlist;
 
+  /// No description provided for @download_history.
+  ///
+  /// In en, this message translates to:
+  /// **'Download History'**
+  String get download_history;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
   /// No description provided for @clear_all.
   ///
   /// In en, this message translates to:

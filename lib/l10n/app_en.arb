@@ -246,6 +246,8 @@
   "lyrics_provider": "Lyrics Provider",
   "lyrics_provider_desc": "Select the sources for lyrics search",
   "remove_from_playlist": "Remove From Playlist",
+  "download_history":"Download History",
+  "refresh": "Refresh",
   "select_all": "Select All",
   "clear_all": "Clear All"
 }

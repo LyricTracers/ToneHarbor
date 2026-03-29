@@ -255,12 +255,14 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
             ref.read(songSelectionProvider.notifier).toggle();
           },
           icon: const Icon(Icons.fact_check_rounded, size: 18),
+          tooltip: l10n.select_all,
         ),
         IconButton(
           onPressed: () {
             context.push("/setting");
           },
           icon: const Icon(Icons.settings_rounded, size: 18),
+          tooltip: l10n.settings,
         ),
       ],
       centerTitle: false,

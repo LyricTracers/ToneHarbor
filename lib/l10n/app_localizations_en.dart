@@ -763,5 +763,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get remove_from_playlist => 'Remove From Playlist';
 
   @override
+  String get download_history => 'Download History';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
   String get clear_all => 'Clear All';
 }

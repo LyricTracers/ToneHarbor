@@ -81,6 +81,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
             ref.read(songSelectionProvider.notifier).toggle();
           },
           icon: const Icon(Icons.fact_check_rounded, size: 18),
+          tooltip: l10n.select_all,
         ),
         if (refreshRandom)
           IconButton(
@@ -89,12 +90,14 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
               await audioStationRequestCache.clearGroup("randomSongs");
               ref.invalidate(randomSongsProvider);
             },
+            tooltip: l10n.refresh,
           ),
         IconButton(
           onPressed: () {
             ref.context.push("/setting");
           },
           icon: const Icon(Icons.settings_rounded, size: 18),
+          tooltip: l10n.settings,
         ),
       ],
       centerTitle: false,

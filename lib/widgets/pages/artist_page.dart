@@ -66,6 +66,7 @@ class ArtistPage extends HookConsumerWidget {
             ref.context.push("/setting");
           },
           icon: const Icon(Icons.settings_rounded, size: 18),
+          tooltip: l10n.settings,
         ),
       ],
     );

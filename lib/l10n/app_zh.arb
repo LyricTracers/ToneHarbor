@@ -245,6 +245,8 @@
   "lyrics_provider": "歌词源",
   "lyrics_provider_desc": "选择歌词搜索来源",
   "remove_from_playlist": "从歌单移除",
+  "download_history":"下载历史",
+  "refresh": "刷新",
   "select_all": "全选",
   "clear_all": "清空"
 }

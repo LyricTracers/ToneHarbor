@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/pages/songs_page.dart';
@@ -25,6 +24,7 @@ class RecommendPage extends BaseContentPage {
           onPressed: () {
             context.push("/setting");
           },
+          tooltip: i10n.settings,
         ),
       ],
       centerTitle: false,

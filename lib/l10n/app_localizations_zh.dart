@@ -744,5 +744,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get remove_from_playlist => '从歌单移除';
 
   @override
+  String get download_history => '下载历史';
+
+  @override
+  String get refresh => '刷新';
+
+  @override
   String get clear_all => '清空';
 }

@@ -735,7 +735,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "4701d44335a07bca9e9afb50a640352013648395"
+      resolved-ref: "9bf6c85a7b2b73b57da50d2ef7d649e9401d9320"
       url: "https://git.nxcloud.club:12750/LyricTracers/lyricskit.git"
     source: git
     version: "0.1.0"
