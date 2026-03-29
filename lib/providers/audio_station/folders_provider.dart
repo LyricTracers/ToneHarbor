@@ -23,6 +23,10 @@ class Folders extends _$Folders with ExtraProvider<FolderResponse> {
     Duration? cacheDuration = const Duration(minutes: 100),
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
+    final authHeaders = await ref.watch(authHeadersProvider.future);
+    if (authHeaders == null) {
+      return const FolderResponse(success: false);
+    }
     duration = cacheDuration;
     groupKey = 'folders';
     if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {

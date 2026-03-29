@@ -17,6 +17,10 @@ Future<AlbumResponse> randomAlbums(
   Duration? keepAliveDuration,
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
+  if (authHeaders == null) {
+    return const AlbumResponse(success: false);
+  }
   try {
     return await _getAlbums(
       ref: ref,
@@ -41,6 +45,10 @@ Future<AlbumResponse> recentAlbums(
   Duration? keepAliveDuration = const Duration(minutes: 20),
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
+  if (authHeaders == null) {
+    return const AlbumResponse(success: false);
+  }
   try {
     return await _getAlbums(
       ref: ref,
@@ -66,6 +74,10 @@ Future<AlbumResponse> artistAlbums(
   Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
+  if (authHeaders == null) {
+    return const AlbumResponse(success: false);
+  }
   try {
     return await _getAlbums(
       ref: ref,
@@ -93,6 +105,10 @@ Future<AlbumResponse> searchAlbums(
   Duration? keepAliveDuration,
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
+  if (authHeaders == null) {
+    return const AlbumResponse(success: false);
+  }
   try {
     return await _searchAlbums(
       ref: ref,
@@ -128,6 +144,10 @@ class Albums extends _$Albums with ExtraProvider<AlbumResponse> {
     duration = cacheDuration;
     groupKey = "albums";
     ref.keepAliveFor(Duration(minutes: 5));
+    final authHeaders = await ref.watch(authHeadersProvider.future);
+    if (authHeaders == null) {
+      return const AlbumResponse(success: false);
+    }
     if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {
       extraSortBy = sortBy;
       extraSortDirection = sortDirection;

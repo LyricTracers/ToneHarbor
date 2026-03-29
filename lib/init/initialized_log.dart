@@ -144,9 +144,17 @@ class FileLogOutput extends LogOutput {
   }
 }
 
+class ShowLogFilter extends LogFilter {
+  @override
+  bool shouldLog(LogEvent event) {
+    return true;
+  }
+}
+
 late final Logger logger;
 void initLogger() {
   logger = Logger(
+    filter: ShowLogFilter(),
     level: Level.all,
     output: MultiOutput([ConsoleOutput(), FileLogOutput()]),
     printer: HybridPrinter(

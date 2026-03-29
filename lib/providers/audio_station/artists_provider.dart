@@ -22,6 +22,10 @@ class SearchArtist extends _$SearchArtist {
     Duration? cacheDuration = const Duration(minutes: 30),
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
+    final authHeaders = await ref.watch(authHeadersProvider.future);
+    if (authHeaders == null) {
+      return const ArtistResponse(success: false);
+    }
     return await _searchArtists(
       ref: ref,
       filter: filter,
@@ -51,6 +55,10 @@ class Artists extends _$Artists with ExtraProvider<ArtistResponse> {
     duration = cacheDuration;
     groupKey = 'artists';
     ref.keepAliveFor(Duration(minutes: 5));
+    final authHeaders = await ref.watch(authHeadersProvider.future);
+    if (authHeaders == null) {
+      return const ArtistResponse(success: false);
+    }
     if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {
       extraSortBy = sortBy;
       extraSortDirection = sortDirection;

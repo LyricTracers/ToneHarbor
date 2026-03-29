@@ -161,6 +161,10 @@ class RandomSongs extends _$RandomSongs
     Duration? cacheDuration,
   }) async {
     ref.keepAliveFor(Duration(minutes: 30));
+    final authHeaders = await ref.watch(authHeadersProvider.future);
+    if (authHeaders == null) {
+      return const ToneHarborTrackObjectListEmpty();
+    }
     duration = cacheDuration;
     groupKey = 'randomSongs';
     if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {
@@ -231,6 +235,10 @@ class FavoriteSongs extends _$FavoriteSongs
     Duration? cacheDuration = const Duration(minutes: 30),
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
+    final authHeaders = await ref.watch(authHeadersProvider.future);
+    if (authHeaders == null) {
+      return const ToneHarborTrackObjectListEmpty();
+    }
     duration = cacheDuration;
     groupKey = 'favoriteSongs';
     if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {
@@ -341,6 +349,10 @@ class ArtistSongs extends _$ArtistSongs
     Duration? cacheDuration = const Duration(minutes: 5),
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
+    final authHeaders = await ref.watch(authHeadersProvider.future);
+    if (authHeaders == null) {
+      return const ToneHarborTrackObjectListEmpty();
+    }
     duration = cacheDuration;
     groupKey = 'artistSongs';
 
@@ -445,6 +457,10 @@ Future<ToneHarborTrackObjectList> searchSongs(
   Duration? keepAliveDuration,
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
+  final authHeaders = await ref.watch(authHeadersProvider.future);
+  if (authHeaders == null) {
+    return const ToneHarborTrackObjectListEmpty();
+  }
   try {
     return await _searchSongs(
       ref: ref,
@@ -480,6 +496,10 @@ class AlbumSongs extends _$AlbumSongs
     Duration? cacheDuration = const Duration(minutes: 5),
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
+    final authHeaders = await ref.watch(authHeadersProvider.future);
+    if (authHeaders == null) {
+      return const ToneHarborTrackObjectListEmpty();
+    }
     duration = cacheDuration;
     groupKey = 'albumSongs';
     if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {
@@ -595,6 +615,10 @@ class Songs extends _$Songs with ExtraProvider<ToneHarborTrackObjectList> {
     String group = 'songs',
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
+    final authHeaders = await ref.watch(authHeadersProvider.future);
+    if (authHeaders == null) {
+      return const ToneHarborTrackObjectListEmpty();
+    }
     duration = cacheDuration;
     groupKey = group;
     if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {

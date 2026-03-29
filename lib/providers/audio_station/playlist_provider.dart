@@ -22,6 +22,10 @@ class PlaylistResponseNotifier extends _$PlaylistResponseNotifier
     String sortDirection = 'ASC',
   }) async {
     ref.keepAliveFor(const Duration(minutes: 5));
+    final authHeaders = await ref.watch(authHeadersProvider.future);
+    if (authHeaders == null) {
+      return const PlaylistListResponse(success: false);
+    }
     duration = const Duration(minutes: 30);
     groupKey = 'playlist';
     if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {
@@ -129,6 +133,10 @@ class PlaylistDetail extends _$PlaylistDetail
     String sortDirection = 'ASC',
   }) async {
     ref.keepAliveFor(const Duration(minutes: 5));
+    final authHeaders = await ref.watch(authHeadersProvider.future);
+    if (authHeaders == null) {
+      return const ToneHarborTrackObjectListEmpty();
+    }
     duration = const Duration(minutes: 30);
     groupKey = 'playlistDetail';
     if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {

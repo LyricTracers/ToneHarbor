@@ -19,6 +19,10 @@ Future<String> streamUrl(
   AudioQuality? quality,
   String? container,
 }) async {
+  final authHeaders = await ref.watch(authHeadersProvider.future);
+  if (authHeaders == null) {
+    return "";
+  }
   final cookiesInfo = ref.read(audioStationCookiesInfoProvider);
   if (cookiesInfo == null || !cookiesInfo.isValid) {
     Future.microtask(() async {
@@ -65,6 +69,10 @@ Future<String> streamUrl(
 @riverpod
 Future<String> coverUrlBySongId(Ref ref, {required String songId}) async {
   final link = ref.keepAlive();
+  final authHeaders = await ref.watch(authHeadersProvider.future);
+  if (authHeaders == null) {
+    return "";
+  }
   try {
     return _getCoverUrlBySongId(ref: ref, songId: songId);
   } finally {

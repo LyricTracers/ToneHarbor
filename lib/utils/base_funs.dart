@@ -279,7 +279,7 @@ String getMusicCacheDirSync(AudioQuality quality) {
 }
 
 Future<String> getLogFilePath() async {
-  var targetDir = await getApplicationSupportDirectory();
+  var targetDir = await getApplicationCacheDirectory();
   return '${targetDir.path}/audio_station.log';
 }
 

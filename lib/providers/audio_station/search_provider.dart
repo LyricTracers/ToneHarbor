@@ -3,6 +3,7 @@ import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/artist.dart';
 import 'package:toneharbor/models/audio_station/album.dart';
+import 'package:toneharbor/providers/audio_station/auth_provider.dart';
 import 'package:toneharbor/providers/audio_station/songs_provider.dart';
 import 'package:toneharbor/providers/audio_station/artists_provider.dart';
 import 'package:toneharbor/providers/audio_station/albums_provider.dart';
@@ -26,6 +27,10 @@ class MixSearch extends _$MixSearch {
     SearchType type = SearchType.all,
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
+    final authHeaders = await ref.watch(authHeadersProvider.future);
+    if (authHeaders == null) {
+      return const MixSearchData();
+    }
     if (query.trim().isEmpty) {
       return const MixSearchData();
     }
