@@ -130,7 +130,7 @@ class PlaylistDetail extends _$PlaylistDetail
   }) async {
     ref.keepAliveFor(const Duration(minutes: 5));
     duration = const Duration(minutes: 30);
-    groupKey = 'playlist';
+    groupKey = 'playlistDetail';
     if (extraSortBy.isEmpty && extraSortDirection.isEmpty) {
       extraSortBy = sortBy;
       extraSortDirection = sortDirection;

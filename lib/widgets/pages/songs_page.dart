@@ -185,7 +185,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
     return Column(
       children: [
         if (songSelectionState.selectionType)
-          SubSongSelectionTop(songs: filteredItems),
+          SubSongSelectionTop(songs: filteredItems, playlistId: playlistId),
         if (!songSelectionState.selectionType)
           _buildAppBar(ref, colorScheme, total, searchController),
         Expanded(
@@ -215,8 +215,14 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                     child: ContextMenuRegion(
                       enableDefaultGestures: !songSelectionState.selectionType,
                       contextMenu: ContextMenu(
-                        entriesBuilder: () =>
-                            SongContextMenu.build(ref, colorScheme, l10n, item),
+                        entriesBuilder: () => SongContextMenu.build(
+                          ref,
+                          colorScheme,
+                          l10n,
+                          item,
+                          playlistId: playlistId,
+                          index: searchQuery.isEmpty ? index : -1,
+                        ),
                         padding: const EdgeInsets.all(8.0),
                       ),
                       child: SongItem(
@@ -279,7 +285,11 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
           ),
         ),
         if (songSelectionState.selectionType)
-          SubSongSelectionBottom(songs: filteredItems, isLocal: isLocal),
+          SubSongSelectionBottom(
+            songs: filteredItems,
+            isLocal: isLocal,
+            playlistId: playlistId,
+          ),
       ],
     );
   }

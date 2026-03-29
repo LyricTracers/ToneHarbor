@@ -15,8 +15,10 @@ class SongContextMenu {
     WidgetRef ref,
     ColorScheme colorScheme,
     AppLocalizations l10n,
-    ToneHarborTrackObject item,
-  ) {
+    ToneHarborTrackObject item, {
+    String playlistId = '',
+    int index = -1,
+  }) {
     final itemId = item.id;
     final itemTitle = item.title;
 
@@ -160,6 +162,38 @@ class SongContextMenu {
             ),
           ],
         ),
+        if (playlistId.isNotEmpty && index != -1)
+          MenuItem(
+            label: Text(l10n.remove_from_playlist),
+            icon: Icon(Icons.remove_rounded),
+            onSelected: (value) async {
+              try {
+                ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+                var result = await ref
+                    .read(playlistStateProvider.notifier)
+                    .removeSongsFromPlaylist(
+                      id: playlistId,
+                      offset: index,
+                      limit: 1,
+                    );
+                if (result.success) {
+                  await clearCacheByGroupKey(groupKey: "playlistDetail");
+                  ref.invalidate(playlistDetailProvider);
+                }
+              } catch (e) {
+                final context = ref.context;
+                if (context.mounted) {
+                  if (e is AudioStationException) {
+                    showSnackBar(e.message, context, colorScheme.secondary);
+                  } else {
+                    showSnackBar(e.toString(), context, colorScheme.secondary);
+                  }
+                }
+              } finally {
+                ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+              }
+            },
+          ),
       ]);
     }
 

@@ -760,5 +760,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lyrics_provider_desc => 'Select the sources for lyrics search';
 
   @override
+  String get remove_from_playlist => 'remove';
+
+  @override
   String get clear_all => 'Clear All';
 }

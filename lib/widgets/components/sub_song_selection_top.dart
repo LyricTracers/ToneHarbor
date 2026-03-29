@@ -6,7 +6,12 @@ import 'package:toneharbor/providers/providers.dart';
 
 class SubSongSelectionTop extends HookConsumerWidget {
   final List<ToneHarborTrackObject> songs;
-  const SubSongSelectionTop({super.key, required this.songs});
+  final String playlistId;
+  const SubSongSelectionTop({
+    super.key,
+    required this.songs,
+    this.playlistId = '',
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

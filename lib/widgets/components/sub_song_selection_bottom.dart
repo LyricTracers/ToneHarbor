@@ -12,10 +12,13 @@ import 'package:toneharbor/widgets/pages/add_to_playlists_page.dart';
 class SubSongSelectionBottom extends HookConsumerWidget {
   final List<ToneHarborTrackObject> songs;
   final bool isLocal;
+  final String playlistId;
+
   const SubSongSelectionBottom({
     super.key,
     required this.songs,
     this.isLocal = false,
+    this.playlistId = '',
   });
 
   bool _checkIdsEmpty(Set<String> ids, BuildContext context, WidgetRef ref) {

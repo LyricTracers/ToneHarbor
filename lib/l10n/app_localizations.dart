@@ -1562,6 +1562,12 @@ abstract class AppLocalizations {
   /// **'Select the sources for lyrics search'**
   String get lyrics_provider_desc;
 
+  /// No description provided for @remove_from_playlist.
+  ///
+  /// In en, this message translates to:
+  /// **'remove'**
+  String get remove_from_playlist;
+
   /// No description provided for @clear_all.
   ///
   /// In en, this message translates to:
