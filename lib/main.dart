@@ -314,6 +314,23 @@ class MyApp extends HookConsumerWidget {
                 },
               ),
               GoRoute(
+                path: '/playlist_song/:title',
+                pageBuilder: (context, state) {
+                  var playlistId = state.extra as String;
+                  return NoTransitionPage<void>(
+                    key: state.pageKey,
+                    child: SongsPage(
+                      title: state.pathParameters['title'] ?? 'Playlist Songs',
+                      baseProvider: playlistDetailProvider(id: playlistId),
+                      playlistId: playlistId,
+                      limitTotal: -1,
+                      sortAction: SongsPageSortAction.none,
+                      isLocal: false,
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
                 path: '/setting',
                 pageBuilder: (context, state) =>
                     NoTransitionPage(child: SettingPage()),

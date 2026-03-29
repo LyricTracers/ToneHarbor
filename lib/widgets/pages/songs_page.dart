@@ -32,6 +32,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
     this.sortAction = SongsPageSortAction.none,
     this.isLocal = false,
     this.refreshRandom = false,
+    this.playlistId = '',
   });
 
   final int limitTotal;
@@ -40,6 +41,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
   final SongsPageSortAction sortAction;
   final bool isLocal;
   final bool refreshRandom;
+  final String playlistId;
 
   PreferredSizeWidget _buildAppBar(
     WidgetRef ref,

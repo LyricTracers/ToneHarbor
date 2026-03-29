@@ -364,7 +364,7 @@ final class PlaylistStateNotifierProvider
 }
 
 String _$playlistStateNotifierHash() =>
-    r'0a249d41f26cdca5a89e7bc7e1b4c1d68d12f463';
+    r'f6bdfe8af987ef449e0f2d8e09b369a31d6527a1';
 
 abstract class _$PlaylistStateNotifier extends $Notifier<void> {
   void build();

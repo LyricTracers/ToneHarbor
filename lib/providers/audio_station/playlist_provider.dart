@@ -269,16 +269,14 @@ class PlaylistStateNotifier extends _$PlaylistStateNotifier {
   Future<AddPlaylistSongsResponse> addSongToPlaylist({
     required String id,
     required String songId,
-    int offset = -1,
-    int limit = 0,
     bool skipDuplicate = false,
   }) async {
     return await _addSongToPlaylist(
       ref: ref,
       id: id,
       songId: songId,
-      offset: offset,
-      limit: limit,
+      offset: -1,
+      limit: 0,
       skipDuplicate: skipDuplicate,
     );
   }
@@ -286,16 +284,14 @@ class PlaylistStateNotifier extends _$PlaylistStateNotifier {
   Future<AddPlaylistSongsResponse> addSongsToPlaylist({
     required String id,
     required List<String> songIds,
-    int offset = -1,
-    int limit = 0,
     bool skipDuplicate = false,
   }) async {
     return await _addSongToPlaylist(
       ref: ref,
       id: id,
       songId: songIds.join(','),
-      offset: offset,
-      limit: limit,
+      offset: -1,
+      limit: 0,
       skipDuplicate: skipDuplicate,
     );
   }
@@ -304,11 +300,12 @@ class PlaylistStateNotifier extends _$PlaylistStateNotifier {
     required String id,
     required int offset,
     required int limit,
+    String skipSongIds = '',
   }) async {
     return await _addSongToPlaylist(
       ref: ref,
       id: id,
-      songId: '',
+      songId: skipSongIds,
       offset: offset,
       limit: limit,
     );

@@ -69,12 +69,8 @@ class _PlaylistItemWidget extends HookConsumerWidget {
               behavior: HitTestBehavior.opaque,
               onTap: () async {
                 context.push(
-                  "/songs/${Uri.encodeComponent(playlistItem.name)}",
-                  extra: (
-                    playlistDetailProvider(id: playlistItem.id),
-                    -1,
-                    SongsPageSortAction.none,
-                  ),
+                  "/playlist_song/${Uri.encodeComponent(playlistItem.name)}",
+                  extra: playlistItem.id,
                 );
               },
               child: Padding(
