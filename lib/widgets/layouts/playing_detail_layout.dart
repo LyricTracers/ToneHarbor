@@ -3,6 +3,7 @@ import "package:flutter_hooks/flutter_hooks.dart";
 import "package:go_router/go_router.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
 import "package:lyricskit/lyricskit.dart";
+import "package:path/path.dart";
 import "package:toneharbor/init/initialized.dart";
 import "package:toneharbor/l10n/app_localizations.dart";
 import "package:toneharbor/models/audio_player/tone_harbor_track.dart";
@@ -340,7 +341,7 @@ class PlayingDetailLayout extends BaseBgLayout {
               ),
               onTap: () {
                 Navigator.pop(context);
-                _translateLyrics(ref, showTranslated);
+                _translateLyrics(ref, showTranslated, colorScheme);
               },
             ),
             ListTile(
@@ -363,6 +364,7 @@ class PlayingDetailLayout extends BaseBgLayout {
   Future<void> _translateLyrics(
     WidgetRef ref,
     ValueNotifier<bool> showTranslated,
+    ColorScheme colorScheme,
   ) async {
     final currentLyrics = ref.read(currentLyricsProvider).value;
     if (currentLyrics == null || currentLyrics.isEmpty) {
@@ -385,6 +387,17 @@ class PlayingDetailLayout extends BaseBgLayout {
 
     if (ref.read(translateTextProvider).value != null) {
       showTranslated.value = true;
+    }
+    if (ref.read(translateTextProvider).hasError) {
+      logger.i("translate error: ${ref.read(translateTextProvider).error}");
+      if (ref.context.mounted) {
+        showSnackBar(
+          ref.read(translateTextProvider).error.toString(),
+          ref.context,
+          colorScheme.secondary,
+        );
+      }
+      return;
     }
   }
 

@@ -43,7 +43,7 @@ abstract class SharedPreferencesUtils {
   }
 
   static bool getSyncSongIcon() =>
-      sharedPreferences.getBool(syncSongIconKey) ?? false;
+      sharedPreferences.getBool(syncSongIconKey) ?? true;
 
   static Future<void> setSyncSongIcon(bool value) async {
     await sharedPreferences.setBool(syncSongIconKey, value);
