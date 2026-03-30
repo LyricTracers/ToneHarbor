@@ -3,12 +3,13 @@ import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
-class _PlaylistItem extends StatelessWidget {
+class _PlaylistItem extends HookConsumerWidget {
   const _PlaylistItem({
     required this.index,
     required this.track,
@@ -20,7 +21,7 @@ class _PlaylistItem extends StatelessWidget {
   });
 
   final int index;
-  final dynamic track;
+  final ToneHarborTrackObject track;
   final bool isDefault;
   final ColorScheme colorScheme;
   final AppLocalizations i10n;
@@ -28,7 +29,7 @@ class _PlaylistItem extends StatelessWidget {
   final VoidCallback onDeleteTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SizedBox(
       height: 44,
       child: Stack(
@@ -86,7 +87,11 @@ class _PlaylistItem extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     icon: const Icon(Icons.delete_forever),
-                    onSelected: (value) {},
+                    onSelected: (value) {
+                      ref
+                          .read(audioPlayerStateProvider.notifier)
+                          .removeTrack(track.id, index: index);
+                    },
                   ),
 
                   MenuItem<String>(
