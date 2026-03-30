@@ -4,7 +4,7 @@ description: "ToneHarbor · Your music, all in harbor."
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+2
+version: 1.0.0+3
 
 environment:
   sdk: ^3.9.2
@@ -20,7 +20,7 @@ dependencies:
   media_kit:
     git:
       url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
-      ref: v1.0.0-macos
+      ref: main
       path: media_kit
   media_kit_libs_audio: ^1.0.7
   flutter_context_menu: 
@@ -100,6 +100,35 @@ dev_dependencies:
   freezed: ^3.2.3
   drift_dev: 2.29.0
   json_serializable: 6.11.2
+
+dependency_overrides:
+  media_kit_libs_ios_audio:
+    path: ../media-kit/libs/ios/media_kit_libs_ios_audio
+    # git:
+    #   url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
+    #   ref: main
+    #   path: libs/ios/media_kit_libs_ios_audio
+  # media_kit_libs_android_audio:
+  #   git:
+  #     url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
+  #     ref: v1.0.0-macos
+  #     path: libs/android/media_kit_libs_android_audio
+  media_kit_libs_macos_audio:
+    path: ../media-kit/libs/macos/media_kit_libs_macos_audio
+    # git:
+    #   url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
+    #   ref: main
+    #   path: libs/macos/media_kit_libs_macos_audio
+  # media_kit_libs_windows_audio:
+  #   git:
+  #     url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
+  #     ref: v1.0.0-macos
+  #     path: libs/windows/media_kit_libs_windows_audio
+  # media_kit_libs_linux:
+  #   git:
+  #     url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
+  #     ref: v1.0.0-macos
+  #     path: libs/linux/media_kit_libs_linux
 
 flutter:
   generate: true

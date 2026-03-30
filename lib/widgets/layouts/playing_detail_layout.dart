@@ -224,7 +224,7 @@ class PlayingDetailLayout extends BaseBgLayout {
     ToneHarborTrackObject activeTrack,
     AppLocalizations l10n,
   ) {
-    final targetLanguage = ref.watch(zhipuTargetLanguageSettingProvider);
+    final targetLanguage = ref.watch(aITargetLanguageSettingProvider);
     final translateState = ref.watch(translateTextProvider);
     final isLoading = translateState.isLoading;
     final hasTranslation = translateState.value != null;
@@ -346,7 +346,7 @@ class PlayingDetailLayout extends BaseBgLayout {
             ListTile(
               leading: const Icon(Icons.language_rounded, size: 18),
               title: Text(
-                '${l10n.target_language}: ${ref.read(zhipuTargetLanguageSettingProvider).displayName}',
+                '${l10n.target_language}: ${ref.read(aITargetLanguageSettingProvider).displayName}',
                 style: const TextStyle(fontSize: 14),
               ),
               onTap: () {
@@ -379,7 +379,7 @@ class PlayingDetailLayout extends BaseBgLayout {
       return;
     }
 
-    final targetLanguage = ref.read(zhipuTargetLanguageSettingProvider);
+    final targetLanguage = ref.read(aITargetLanguageSettingProvider);
     await ref
         .read(translateTextProvider.notifier)
         .translate(lyricsText, target: targetLanguage);
@@ -432,7 +432,7 @@ class PlayingDetailLayout extends BaseBgLayout {
   }
 
   void _showLanguageSelector(WidgetRef ref, ColorScheme colorScheme) {
-    final currentLanguage = ref.read(zhipuTargetLanguageSettingProvider);
+    final currentLanguage = ref.read(aITargetLanguageSettingProvider);
 
     showDialog(
       context: ref.context,
@@ -446,7 +446,7 @@ class PlayingDetailLayout extends BaseBgLayout {
           onChanged: (value) {
             if (value != null) {
               ref
-                  .read(zhipuTargetLanguageSettingProvider.notifier)
+                  .read(aITargetLanguageSettingProvider.notifier)
                   .setTargetLanguage(value);
               Navigator.pop(context);
             }

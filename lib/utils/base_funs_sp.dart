@@ -145,16 +145,22 @@ abstract class SharedPreferencesUtils {
     await sharedPreferences.setInt(serverPortKey, port);
   }
 
-  static String? getZhipuApiKey() => sharedPreferences.getString(zhipuApiKey);
+  static int? getAIPlatform() => sharedPreferences.getInt(aiPlatformKey);
 
-  static Future<void> setZhipuApiKey(String key) async {
-    await sharedPreferences.setString(zhipuApiKey, key);
+  static Future<void> setAIPlatform(int index) async {
+    await sharedPreferences.setInt(aiPlatformKey, index);
   }
 
-  static int? getZhipuModel() => sharedPreferences.getInt(zhipuModelKey);
+  static String? getAIApiKey() => sharedPreferences.getString(aiApiKeyKey);
 
-  static Future<void> setZhipuModel(int index) async {
-    await sharedPreferences.setInt(zhipuModelKey, index);
+  static Future<void> setAIApiKey(String key) async {
+    await sharedPreferences.setString(aiApiKeyKey, key);
+  }
+
+  static int? getAIModel() => sharedPreferences.getInt(aiModelKey);
+
+  static Future<void> setAIModel(int index) async {
+    await sharedPreferences.setInt(aiModelKey, index);
   }
 
   static String? getAICustomModel() =>
@@ -164,24 +170,24 @@ abstract class SharedPreferencesUtils {
     await sharedPreferences.setString(aiCustomModelKey, model);
   }
 
-  static String? getZhipuEndpoint() =>
-      sharedPreferences.getString(zhipuEndpointKey);
+  static String? getAIEndpoint() =>
+      sharedPreferences.getString(aiEndpointKey);
 
-  static Future<void> setZhipuEndpoint(String endpoint) async {
-    await sharedPreferences.setString(zhipuEndpointKey, endpoint);
+  static Future<void> setAIEndpoint(String endpoint) async {
+    await sharedPreferences.setString(aiEndpointKey, endpoint);
   }
 
-  static double? getZhipuTemperature() =>
-      sharedPreferences.getDouble(zhipuTemperatureKey);
+  static double? getAITemperature() =>
+      sharedPreferences.getDouble(aiTemperatureKey);
 
-  static Future<void> setZhipuTemperature(double temperature) async {
-    await sharedPreferences.setDouble(zhipuTemperatureKey, temperature);
+  static Future<void> setAITemperature(double temperature) async {
+    await sharedPreferences.setDouble(aiTemperatureKey, temperature);
   }
 
-  static int? getZhipuTargetLanguage() =>
-      sharedPreferences.getInt(zhipuTargetLanguageKey);
+  static int? getAITargetLanguage() =>
+      sharedPreferences.getInt(aiTargetLanguageKey);
 
-  static Future<void> setZhipuTargetLanguage(int index) async {
-    await sharedPreferences.setInt(zhipuTargetLanguageKey, index);
+  static Future<void> setAITargetLanguage(int index) async {
+    await sharedPreferences.setInt(aiTargetLanguageKey, index);
   }
 }

@@ -669,6 +669,30 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ai_translate_settings => 'AI 翻译设置';
 
   @override
+  String get platform => '平台';
+
+  @override
+  String get platform_settings => '平台设置';
+
+  @override
+  String get siliconflow => '硅基流动';
+
+  @override
+  String get llama => 'Llama';
+
+  @override
+  String get custom_platform => '自定义';
+
+  @override
+  String get built_in_model => '内置模型';
+
+  @override
+  String get need_api_key_hint => '此平台需要 API Key';
+
+  @override
+  String get api_key_required => '需要 API Key';
+
+  @override
   String get api_settings => 'API 设置';
 
   @override

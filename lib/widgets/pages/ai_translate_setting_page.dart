@@ -18,36 +18,92 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
     );
   }
 
+  Widget _platformSettings(
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+  ) {
+    final currentPlatform = ref.watch(aIPlatformSettingProvider);
+
+    return Column(
+      children: [
+        buildDropdownTile(
+          title: l10n.platform,
+          items: AIPlatform.values,
+          value: currentPlatform,
+          colorScheme: colorScheme,
+          labelBuilder: (p) => p.displayName,
+          onChanged: (value) {
+            if (value != null) {
+              ref.read(aIPlatformSettingProvider.notifier).setPlatform(value);
+              ref.read(aIEndpointSettingProvider.notifier).resetToDefault();
+              ref
+                  .read(aIModelSettingProvider.notifier)
+                  .setModel(
+                    PlatformConfigs.getConfig(value).builtInModels.isNotEmpty
+                        ? PlatformConfigs.getConfig(value).builtInModels.first
+                        : AIModel.glm4Flash250414,
+                  );
+            }
+          },
+        ),
+      ],
+    );
+  }
+
   Widget _apiSettings(
     WidgetRef ref,
     AppLocalizations l10n,
     ColorScheme colorScheme,
   ) {
-    final apiKey = ref.watch(zhipuApiKeyProvider);
+    final platform = ref.watch(aIPlatformSettingProvider);
+    final apiKey = ref.watch(aIApiKeyProvider);
+    final needsApiKey = !platform.hasBuiltInApiKey;
 
     return Column(
       children: [
-        ListTile(
-          title: Text(
-            l10n.api_key,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
+        if (needsApiKey) ...[
+          ListTile(
+            title: Text(
+              l10n.api_key,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface,
+              ),
             ),
-          ),
-          subtitle: Text(
-            apiKey != null && apiKey.isNotEmpty
-                ? '${apiKey.substring(0, 8)}...${apiKey.substring(apiKey.length - 4)}'
-                : l10n.not_configured,
-            style: TextStyle(
-              fontSize: 12,
-              color: colorScheme.onSurface.withValues(alpha: 0.7),
+            subtitle: Text(
+              apiKey != null && apiKey.isNotEmpty
+                  ? '${apiKey.substring(0, 8)}...${apiKey.substring(apiKey.length - 4)}'
+                  : l10n.not_configured,
+              style: TextStyle(
+                fontSize: 12,
+                color: colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
             ),
+            trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
+            onTap: () => _showApiKeyDialog(ref, colorScheme, l10n),
           ),
-          trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
-          onTap: () => _showApiKeyDialog(ref, colorScheme, l10n),
-        ),
+        ] else ...[
+          ListTile(
+            title: Text(
+              l10n.api_key,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface,
+              ),
+            ),
+            subtitle: Text(
+              'Built-in API Key',
+              style: TextStyle(
+                fontSize: 12,
+                color: colorScheme.onSurface.withValues(alpha: 0.5),
+              ),
+            ),
+            trailing: Icon(Icons.check_circle, size: 18, color: Colors.green),
+          ),
+        ],
       ],
     );
   }
@@ -57,24 +113,50 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
     AppLocalizations l10n,
     ColorScheme colorScheme,
   ) {
+    final platform = ref.watch(aIPlatformSettingProvider);
     final selectedModel = ref.watch(aIModelSettingProvider);
     final customModel = ref.watch(aICustomModelProvider);
+    final availableModels = PlatformConfigs.getConfig(platform).builtInModels;
 
     return Column(
       children: [
-        buildDropdownTile(
-          title: l10n.model,
-          items: AIModel.values,
-          value: selectedModel,
-          colorScheme: colorScheme,
-          labelBuilder: (m) => m.displayName,
-          onChanged: (value) {
-            if (value != null) {
-              ref.read(aIModelSettingProvider.notifier).setModel(value);
-            }
-          },
-        ),
-        if (selectedModel == AIModel.custom) ...[
+        if (availableModels.isNotEmpty) ...[
+          buildDropdownTile(
+            title: l10n.model,
+            items: availableModels,
+            value: availableModels.contains(selectedModel)
+                ? selectedModel
+                : availableModels.first,
+            colorScheme: colorScheme,
+            labelBuilder: (m) => m.displayName,
+            onChanged: (value) {
+              if (value != null) {
+                ref.read(aIModelSettingProvider.notifier).setModel(value);
+              }
+            },
+          ),
+        ] else ...[
+          ListTile(
+            title: Text(
+              l10n.model,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface,
+              ),
+            ),
+            subtitle: Text(
+              l10n.custom_model,
+              style: TextStyle(
+                fontSize: 12,
+                color: colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
+            ),
+            trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
+            onTap: () => _showCustomModelDialog(ref, colorScheme, l10n),
+          ),
+        ],
+        if (selectedModel.isCustom) ...[
           _buildDivider(colorScheme),
           ListTile(
             title: Text(
@@ -100,13 +182,13 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
         buildDropdownTile(
           title: l10n.default_target_language,
           items: TranslateTargetLanguage.values,
-          value: ref.watch(zhipuTargetLanguageSettingProvider),
+          value: ref.watch(aITargetLanguageSettingProvider),
           colorScheme: colorScheme,
           labelBuilder: (l) => '→ ${l.displayName}',
           onChanged: (value) {
             if (value != null) {
               ref
-                  .read(zhipuTargetLanguageSettingProvider.notifier)
+                  .read(aITargetLanguageSettingProvider.notifier)
                   .setTargetLanguage(value);
             }
           },
@@ -132,7 +214,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
             ),
           ),
           subtitle: Text(
-            ref.watch(zhipuEndpointSettingProvider),
+            ref.watch(aIEndpointSettingProvider),
             style: TextStyle(
               fontSize: 12,
               color: colorScheme.onSurface.withValues(alpha: 0.7),
@@ -144,10 +226,10 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
         _buildDivider(colorScheme),
         buildSliderTile(
           title: l10n.temperature,
-          value: ref.watch(zhipuTemperatureSettingProvider),
+          value: ref.watch(aITemperatureSettingProvider),
           onChanged: (value) {
             ref
-                .read(zhipuTemperatureSettingProvider.notifier)
+                .read(aITemperatureSettingProvider.notifier)
                 .setTemperature(value);
           },
           minValue: 0.0,
@@ -164,7 +246,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
     AppLocalizations l10n,
   ) {
     final controller = TextEditingController(
-      text: ref.read(zhipuApiKeyProvider) ?? '',
+      text: ref.read(aIApiKeyProvider) ?? '',
     );
 
     showDialog(
@@ -190,7 +272,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
           TextButton(
             onPressed: () async {
               await ref
-                  .read(zhipuApiKeyProvider.notifier)
+                  .read(aIApiKeyProvider.notifier)
                   .setApiKey(controller.text);
               if (context.mounted) Navigator.pop(context);
             },
@@ -223,7 +305,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
             TextField(
               controller: controller,
               decoration: InputDecoration(
-                hintText: 'gpt-4, deepseek-chat, etc.',
+                hintText: 'Qwen/Qwen2.5-7B-Instruct, deepseek-chat, etc.',
                 border: const OutlineInputBorder(),
               ),
             ),
@@ -262,7 +344,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
     AppLocalizations l10n,
   ) {
     final controller = TextEditingController(
-      text: ref.read(zhipuEndpointSettingProvider),
+      text: ref.read(aIEndpointSettingProvider),
     );
 
     showDialog(
@@ -275,7 +357,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
         content: TextField(
           controller: controller,
           decoration: InputDecoration(
-            hintText: TranslateService.defaultEndpoint,
+            hintText: 'https://api.example.com/v1/chat/completions',
             border: const OutlineInputBorder(),
           ),
         ),
@@ -287,7 +369,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
           TextButton(
             onPressed: () {
               ref
-                  .read(zhipuEndpointSettingProvider.notifier)
+                  .read(aIEndpointSettingProvider.notifier)
                   .setEndpoint(controller.text);
               Navigator.pop(context);
             },
@@ -295,7 +377,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
           ),
           TextButton(
             onPressed: () {
-              ref.read(zhipuEndpointSettingProvider.notifier).resetToDefault();
+              ref.read(aIEndpointSettingProvider.notifier).resetToDefault();
               Navigator.pop(context);
             },
             child: Text(l10n.reset_default),
@@ -320,6 +402,14 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
           l10n.ai_translate_settings,
         ),
         buildContent(context, ref, l10n, colorScheme, [
+          ...buildItem(
+            ref,
+            l10n,
+            colorScheme,
+            l10n.platform_settings,
+            _platformSettings(ref, l10n, colorScheme),
+          ),
+          const SizedBox(height: 20),
           ...buildItem(
             ref,
             l10n,

@@ -759,8 +759,8 @@ packages:
     dependency: "direct main"
     description:
       path: media_kit
-      ref: "v1.0.0-macos"
-      resolved-ref: a0168ec537f6465db66ce3b076ac88724066a603
+      ref: main
+      resolved-ref: "915d033ea4774ea416f8f38966d64a5a899c4f63"
       url: "https://git.nxcloud.club:12750/LyricTracers/media-kit.git"
     source: git
     version: "1.2.6"
@@ -781,12 +781,11 @@ packages:
     source: hosted
     version: "1.0.7"
   media_kit_libs_ios_audio:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: media_kit_libs_ios_audio
-      sha256: "78ccf04e27d6b4ba00a355578ccb39b772f00d48269a6ac3db076edf2d51934f"
-      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
-    source: hosted
+      path: "../media-kit/libs/ios/media_kit_libs_ios_audio"
+      relative: true
+    source: path
     version: "1.1.4"
   media_kit_libs_linux:
     dependency: transitive
@@ -797,13 +796,12 @@ packages:
     source: hosted
     version: "1.2.1"
   media_kit_libs_macos_audio:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: media_kit_libs_macos_audio
-      sha256: "3be21844df98f286de32808592835073cdef2c1a10078bac135da790badca950"
-      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
-    source: hosted
-    version: "1.1.4"
+      path: "../media-kit/libs/macos/media_kit_libs_macos_audio"
+      relative: true
+    source: path
+    version: "1.1.5"
   media_kit_libs_windows_audio:
     dependency: transitive
     description:

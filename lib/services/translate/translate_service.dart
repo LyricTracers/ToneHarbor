@@ -3,20 +3,87 @@ import 'dart:convert';
 import 'package:rhttp/rhttp.dart';
 import 'package:toneharbor/init/initialized.dart';
 
+enum AIPlatform {
+  zhipu('智谱', true),
+  siliconflow('硅基流动', true),
+  custom('自定义', false);
+
+  final String displayName;
+  final bool hasBuiltInApiKey;
+  const AIPlatform(this.displayName, this.hasBuiltInApiKey);
+}
+
+class PlatformConfig {
+  final String defaultEndpoint;
+  final List<AIModel> builtInModels;
+  final String? builtInApiKey;
+
+  const PlatformConfig({
+    required this.defaultEndpoint,
+    this.builtInModels = const [],
+    this.builtInApiKey,
+  });
+}
+
+class PlatformConfigs {
+  static const String zhipuBuiltInApiKey =
+      '48e673dfc1e74f14a5138449188fbe72.6ikVQcvReyFc8i1n';
+  static const String siliconflowBuiltInApiKey =
+      'sk-pvwbojahqwxykwrvrdtdlmpkglmjktiajbvgjrixfspiuqty';
+
+  static const Map<AIPlatform, PlatformConfig> configs = {
+    AIPlatform.zhipu: PlatformConfig(
+      defaultEndpoint: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
+      builtInModels: [
+        AIModel.glm4Flash250414,
+        AIModel.glm4_5Flash,
+        AIModel.glm4_7Flash,
+        AIModel.glm4_6Flash,
+      ],
+      builtInApiKey: zhipuBuiltInApiKey,
+    ),
+    AIPlatform.siliconflow: PlatformConfig(
+      defaultEndpoint: 'https://api.siliconflow.cn/v1/chat/completions',
+      builtInModels: [
+        AIModel.qwen2_5_7BInstruct,
+        AIModel.qwen3_8B,
+        AIModel.qwen3_5_4B,
+      ],
+      builtInApiKey: siliconflowBuiltInApiKey,
+    ),
+    AIPlatform.custom: PlatformConfig(defaultEndpoint: '', builtInModels: []),
+  };
+
+  static PlatformConfig getConfig(AIPlatform platform) {
+    return configs[platform]!;
+  }
+}
+
 enum AIModel {
-  glm5('glm-5', 'GLM-5'),
-  glm4_7('glm-4.7', 'GLM-4.7'),
-  glm4_7Flash('glm-4.7-flash', 'GLM-4.7-Flash (免费)'),
-  glm4_6Flash('glm-4.6-flash', 'GLM-4.6-Flash (免费)'),
-  glm4_7Flashx('glm-4.7-flashx', 'GLM-4.7-FlashX'),
-  glm4_5Air('glm-4.5-air', 'GLM-4.5-Air'),
-  glm4Flash250414('glm-4-flash-250414', 'GLM-4-Flash-250414 (免费)'),
-  glm4Flashx250414('glm-4-flashx-250414', 'GLM-4-FlashX-250414'),
-  custom('custom', '自定义模型');
+  // Zhipu models (free)
+  glm4_7Flash('glm-4.7-flash', 'GLM-4.7-Flash', AIPlatform.zhipu),
+  glm4_6Flash('glm-4.6-flash', 'GLM-4.6-Flash', AIPlatform.zhipu),
+  glm4Flash250414('glm-4-flash-250414', 'GLM-4-Flash-250414', AIPlatform.zhipu),
+  glm4_5Flash('glm-4.5-flash', 'GLM-4.5-Flash', AIPlatform.zhipu),
+
+  // SiliconFlow models (free)
+  qwen2_5_7BInstruct(
+    'Qwen/Qwen2.5-7B-Instruct',
+    'Qwen2.5-7B-Instruct',
+    AIPlatform.siliconflow,
+  ),
+  qwen3_8B('Qwen/Qwen3-8B', 'Qwen3-8B', AIPlatform.siliconflow),
+  qwen3_5_4B('Qwen/Qwen3.5-4B', 'Qwen3.5-4B', AIPlatform.siliconflow),
+
+  // Custom
+  custom('custom', '自定义模型', AIPlatform.custom);
 
   final String value;
   final String displayName;
-  const AIModel(this.value, this.displayName);
+  final AIPlatform platform;
+  const AIModel(this.value, this.displayName, this.platform);
+
+  bool get isCustom => platform == AIPlatform.custom;
 }
 
 enum TranslateTargetLanguage {
@@ -68,6 +135,7 @@ Important rules for lyrics translation:
 5. Keep original English words/names if they are commonly used as is in the target language''';
 
   final String apiKey;
+  final AIPlatform platform;
   final String endpoint;
   final AIModel model;
   final String? customModel;
@@ -75,22 +143,24 @@ Important rules for lyrics translation:
 
   TranslateService({
     required this.apiKey,
-    this.endpoint = defaultEndpoint,
+    required this.platform,
+    required this.endpoint,
     this.model = AIModel.glm4Flash250414,
     this.customModel,
     this.temperature = 0.3,
   });
 
   String get _modelValue {
-    if (model == AIModel.custom &&
-        customModel != null &&
-        customModel!.isNotEmpty) {
+    if (model.isCustom && customModel != null && customModel!.isNotEmpty) {
       return customModel!;
     }
     return model.value;
   }
 
   bool get hasApiKey => apiKey.isNotEmpty;
+
+  List<AIModel> get availableModels =>
+      PlatformConfigs.getConfig(platform).builtInModels;
 
   Future<String> translate(
     String text, {

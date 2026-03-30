@@ -8,19 +8,36 @@ import 'package:toneharbor/utils/base_funs.dart';
 part 'translate_provider.g.dart';
 
 @riverpod
-class ZhipuApiKey extends _$ZhipuApiKey {
+class AIPlatformSetting extends _$AIPlatformSetting {
+  @override
+  AIPlatform build() {
+    final savedIndex = SharedPreferencesUtils.getAIPlatform();
+    if (savedIndex != null && savedIndex < AIPlatform.values.length) {
+      return AIPlatform.values[savedIndex];
+    }
+    return AIPlatform.zhipu;
+  }
+
+  Future<void> setPlatform(AIPlatform platform) async {
+    await SharedPreferencesUtils.setAIPlatform(platform.index);
+    state = platform;
+  }
+}
+
+@riverpod
+class AIApiKey extends _$AIApiKey {
   @override
   String? build() {
-    return SharedPreferencesUtils.getZhipuApiKey();
+    return SharedPreferencesUtils.getAIApiKey();
   }
 
   Future<void> setApiKey(String key) async {
-    await SharedPreferencesUtils.setZhipuApiKey(key);
+    await SharedPreferencesUtils.setAIApiKey(key);
     state = key.isEmpty ? null : key;
   }
 
   Future<void> clearApiKey() async {
-    await SharedPreferencesUtils.setZhipuApiKey('');
+    await SharedPreferencesUtils.setAIApiKey('');
     state = null;
   }
 }
@@ -29,7 +46,7 @@ class ZhipuApiKey extends _$ZhipuApiKey {
 class AIModelSetting extends _$AIModelSetting {
   @override
   AIModel build() {
-    final savedIndex = SharedPreferencesUtils.getZhipuModel();
+    final savedIndex = SharedPreferencesUtils.getAIModel();
     if (savedIndex != null && savedIndex < AIModel.values.length) {
       return AIModel.values[savedIndex];
     }
@@ -37,7 +54,7 @@ class AIModelSetting extends _$AIModelSetting {
   }
 
   Future<void> setModel(AIModel model) async {
-    await SharedPreferencesUtils.setZhipuModel(model.index);
+    await SharedPreferencesUtils.setAIModel(model.index);
     state = model;
   }
 }
@@ -56,45 +73,58 @@ class AICustomModel extends _$AICustomModel {
 }
 
 @riverpod
-class ZhipuEndpointSetting extends _$ZhipuEndpointSetting {
+class AIEndpointSetting extends _$AIEndpointSetting {
   @override
   String build() {
-    return SharedPreferencesUtils.getZhipuEndpoint() ??
-        TranslateService.defaultEndpoint;
+    final platform = SharedPreferencesUtils.getAIPlatform();
+    final savedEndpoint = SharedPreferencesUtils.getAIEndpoint();
+    if (savedEndpoint != null && savedEndpoint.isNotEmpty) {
+      return savedEndpoint;
+    }
+    return PlatformConfigs.getConfig(
+      platform != null && platform < AIPlatform.values.length
+          ? AIPlatform.values[platform]
+          : AIPlatform.zhipu,
+    ).defaultEndpoint;
   }
 
   Future<void> setEndpoint(String endpoint) async {
-    await SharedPreferencesUtils.setZhipuEndpoint(endpoint);
+    await SharedPreferencesUtils.setAIEndpoint(endpoint);
     state = endpoint;
   }
 
   Future<void> resetToDefault() async {
-    await SharedPreferencesUtils.setZhipuEndpoint(
-      TranslateService.defaultEndpoint,
-    );
-    state = TranslateService.defaultEndpoint;
+    final platform = SharedPreferencesUtils.getAIPlatform();
+    final platformEnum = platform != null && platform < AIPlatform.values.length
+        ? AIPlatform.values[platform]
+        : AIPlatform.zhipu;
+    final defaultEndpoint = PlatformConfigs.getConfig(
+      platformEnum,
+    ).defaultEndpoint;
+    await SharedPreferencesUtils.setAIEndpoint(defaultEndpoint);
+    state = defaultEndpoint;
   }
 }
 
 @riverpod
-class ZhipuTemperatureSetting extends _$ZhipuTemperatureSetting {
+class AITemperatureSetting extends _$AITemperatureSetting {
   @override
   double build() {
-    return SharedPreferencesUtils.getZhipuTemperature() ?? 0.3;
+    return SharedPreferencesUtils.getAITemperature() ?? 0.3;
   }
 
   Future<void> setTemperature(double value) async {
     final clampedValue = value.clamp(0.0, 2.0);
-    await SharedPreferencesUtils.setZhipuTemperature(clampedValue);
+    await SharedPreferencesUtils.setAITemperature(clampedValue);
     state = clampedValue;
   }
 }
 
 @riverpod
-class ZhipuTargetLanguageSetting extends _$ZhipuTargetLanguageSetting {
+class AITargetLanguageSetting extends _$AITargetLanguageSetting {
   @override
   TranslateTargetLanguage build() {
-    final savedIndex = SharedPreferencesUtils.getZhipuTargetLanguage();
+    final savedIndex = SharedPreferencesUtils.getAITargetLanguage();
     if (savedIndex != null &&
         savedIndex < TranslateTargetLanguage.values.length) {
       return TranslateTargetLanguage.values[savedIndex];
@@ -103,24 +133,30 @@ class ZhipuTargetLanguageSetting extends _$ZhipuTargetLanguageSetting {
   }
 
   Future<void> setTargetLanguage(TranslateTargetLanguage language) async {
-    await SharedPreferencesUtils.setZhipuTargetLanguage(language.index);
+    await SharedPreferencesUtils.setAITargetLanguage(language.index);
     state = language;
   }
 }
 
 @riverpod
 TranslateService translateService(Ref ref) {
-  final apiKey = ref.watch(zhipuApiKeyProvider) ?? '';
+  final platform = ref.watch(aIPlatformSettingProvider);
+  final userApiKey = ref.watch(aIApiKeyProvider) ?? '';
   final model = ref.watch(aIModelSettingProvider);
   final customModel = ref.watch(aICustomModelProvider);
-  final endpoint = ref.watch(zhipuEndpointSettingProvider);
-  final temperature = ref.watch(zhipuTemperatureSettingProvider);
+  final endpoint = ref.watch(aIEndpointSettingProvider);
+  final temperature = ref.watch(aITemperatureSettingProvider);
+
+  final effectiveApiKey = platform.hasBuiltInApiKey
+      ? PlatformConfigs.getConfig(platform).builtInApiKey ?? userApiKey
+      : userApiKey;
 
   return TranslateService(
-    apiKey: apiKey,
+    apiKey: effectiveApiKey,
+    platform: platform,
+    endpoint: endpoint,
     model: model,
     customModel: customModel,
-    endpoint: endpoint,
     temperature: temperature,
   );
 }

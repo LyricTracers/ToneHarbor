@@ -686,6 +686,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ai_translate_settings => 'AI Translate Settings';
 
   @override
+  String get platform => 'Platform';
+
+  @override
+  String get platform_settings => 'Platform Settings';
+
+  @override
+  String get siliconflow => 'SiliconFlow';
+
+  @override
+  String get llama => 'Llama';
+
+  @override
+  String get custom_platform => 'Custom';
+
+  @override
+  String get built_in_model => 'Built-in Model';
+
+  @override
+  String get need_api_key_hint => 'API Key required for this platform';
+
+  @override
+  String get api_key_required => 'API Key Required';
+
+  @override
   String get api_settings => 'API Settings';
 
   @override

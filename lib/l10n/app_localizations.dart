@@ -1418,6 +1418,54 @@ abstract class AppLocalizations {
   /// **'AI Translate Settings'**
   String get ai_translate_settings;
 
+  /// No description provided for @platform.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform'**
+  String get platform;
+
+  /// No description provided for @platform_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform Settings'**
+  String get platform_settings;
+
+  /// No description provided for @siliconflow.
+  ///
+  /// In en, this message translates to:
+  /// **'SiliconFlow'**
+  String get siliconflow;
+
+  /// No description provided for @llama.
+  ///
+  /// In en, this message translates to:
+  /// **'Llama'**
+  String get llama;
+
+  /// No description provided for @custom_platform.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get custom_platform;
+
+  /// No description provided for @built_in_model.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in Model'**
+  String get built_in_model;
+
+  /// No description provided for @need_api_key_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'API Key required for this platform'**
+  String get need_api_key_hint;
+
+  /// No description provided for @api_key_required.
+  ///
+  /// In en, this message translates to:
+  /// **'API Key Required'**
+  String get api_key_required;
+
   /// No description provided for @api_settings.
   ///
   /// In en, this message translates to:

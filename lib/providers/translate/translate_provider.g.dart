@@ -9,28 +9,79 @@ part of 'translate_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(ZhipuApiKey)
-final zhipuApiKeyProvider = ZhipuApiKeyProvider._();
+@ProviderFor(AIPlatformSetting)
+final aIPlatformSettingProvider = AIPlatformSettingProvider._();
 
-final class ZhipuApiKeyProvider
-    extends $NotifierProvider<ZhipuApiKey, String?> {
-  ZhipuApiKeyProvider._()
+final class AIPlatformSettingProvider
+    extends $NotifierProvider<AIPlatformSetting, AIPlatform> {
+  AIPlatformSettingProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'zhipuApiKeyProvider',
+        name: r'aIPlatformSettingProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$zhipuApiKeyHash();
+  String debugGetCreateSourceHash() => _$aIPlatformSettingHash();
 
   @$internal
   @override
-  ZhipuApiKey create() => ZhipuApiKey();
+  AIPlatformSetting create() => AIPlatformSetting();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AIPlatform value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AIPlatform>(value),
+    );
+  }
+}
+
+String _$aIPlatformSettingHash() => r'aedf1d5d2e3d85315224b0f212b0665144ce910f';
+
+abstract class _$AIPlatformSetting extends $Notifier<AIPlatform> {
+  AIPlatform build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AIPlatform, AIPlatform>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AIPlatform, AIPlatform>,
+              AIPlatform,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(AIApiKey)
+final aIApiKeyProvider = AIApiKeyProvider._();
+
+final class AIApiKeyProvider extends $NotifierProvider<AIApiKey, String?> {
+  AIApiKeyProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'aIApiKeyProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$aIApiKeyHash();
+
+  @$internal
+  @override
+  AIApiKey create() => AIApiKey();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(String? value) {
@@ -41,9 +92,9 @@ final class ZhipuApiKeyProvider
   }
 }
 
-String _$zhipuApiKeyHash() => r'5c3265790c14c58455951da395f609f3a521b600';
+String _$aIApiKeyHash() => r'18d6ec1d9bc8ac9374fed2274813955aa4c6af33';
 
-abstract class _$ZhipuApiKey extends $Notifier<String?> {
+abstract class _$AIApiKey extends $Notifier<String?> {
   String? build();
   @$mustCallSuper
   @override
@@ -93,7 +144,7 @@ final class AIModelSettingProvider
   }
 }
 
-String _$aIModelSettingHash() => r'9d8b9f29eb38ea1da48221c164451cf0d63f53d4';
+String _$aIModelSettingHash() => r'be05e1c455d939c21fe4fd7f7166674056c7deac';
 
 abstract class _$AIModelSetting extends $Notifier<AIModel> {
   AIModel build();
@@ -165,28 +216,28 @@ abstract class _$AICustomModel extends $Notifier<String?> {
   }
 }
 
-@ProviderFor(ZhipuEndpointSetting)
-final zhipuEndpointSettingProvider = ZhipuEndpointSettingProvider._();
+@ProviderFor(AIEndpointSetting)
+final aIEndpointSettingProvider = AIEndpointSettingProvider._();
 
-final class ZhipuEndpointSettingProvider
-    extends $NotifierProvider<ZhipuEndpointSetting, String> {
-  ZhipuEndpointSettingProvider._()
+final class AIEndpointSettingProvider
+    extends $NotifierProvider<AIEndpointSetting, String> {
+  AIEndpointSettingProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'zhipuEndpointSettingProvider',
+        name: r'aIEndpointSettingProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$zhipuEndpointSettingHash();
+  String debugGetCreateSourceHash() => _$aIEndpointSettingHash();
 
   @$internal
   @override
-  ZhipuEndpointSetting create() => ZhipuEndpointSetting();
+  AIEndpointSetting create() => AIEndpointSetting();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(String value) {
@@ -197,10 +248,9 @@ final class ZhipuEndpointSettingProvider
   }
 }
 
-String _$zhipuEndpointSettingHash() =>
-    r'53958d131e94ffcff37ac3ea603bae18bf95bf71';
+String _$aIEndpointSettingHash() => r'794ce099713bb01c44676eecf4dd6284595d03a3';
 
-abstract class _$ZhipuEndpointSetting extends $Notifier<String> {
+abstract class _$AIEndpointSetting extends $Notifier<String> {
   String build();
   @$mustCallSuper
   @override
@@ -218,28 +268,28 @@ abstract class _$ZhipuEndpointSetting extends $Notifier<String> {
   }
 }
 
-@ProviderFor(ZhipuTemperatureSetting)
-final zhipuTemperatureSettingProvider = ZhipuTemperatureSettingProvider._();
+@ProviderFor(AITemperatureSetting)
+final aITemperatureSettingProvider = AITemperatureSettingProvider._();
 
-final class ZhipuTemperatureSettingProvider
-    extends $NotifierProvider<ZhipuTemperatureSetting, double> {
-  ZhipuTemperatureSettingProvider._()
+final class AITemperatureSettingProvider
+    extends $NotifierProvider<AITemperatureSetting, double> {
+  AITemperatureSettingProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'zhipuTemperatureSettingProvider',
+        name: r'aITemperatureSettingProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$zhipuTemperatureSettingHash();
+  String debugGetCreateSourceHash() => _$aITemperatureSettingHash();
 
   @$internal
   @override
-  ZhipuTemperatureSetting create() => ZhipuTemperatureSetting();
+  AITemperatureSetting create() => AITemperatureSetting();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(double value) {
@@ -250,10 +300,10 @@ final class ZhipuTemperatureSettingProvider
   }
 }
 
-String _$zhipuTemperatureSettingHash() =>
-    r'8a115b3a753aa1e6faf1a01c376fbc440e72de6c';
+String _$aITemperatureSettingHash() =>
+    r'bf5a8161cceff828ee44036ef61c02f5309e6851';
 
-abstract class _$ZhipuTemperatureSetting extends $Notifier<double> {
+abstract class _$AITemperatureSetting extends $Notifier<double> {
   double build();
   @$mustCallSuper
   @override
@@ -271,30 +321,29 @@ abstract class _$ZhipuTemperatureSetting extends $Notifier<double> {
   }
 }
 
-@ProviderFor(ZhipuTargetLanguageSetting)
-final zhipuTargetLanguageSettingProvider =
-    ZhipuTargetLanguageSettingProvider._();
+@ProviderFor(AITargetLanguageSetting)
+final aITargetLanguageSettingProvider = AITargetLanguageSettingProvider._();
 
-final class ZhipuTargetLanguageSettingProvider
+final class AITargetLanguageSettingProvider
     extends
-        $NotifierProvider<ZhipuTargetLanguageSetting, TranslateTargetLanguage> {
-  ZhipuTargetLanguageSettingProvider._()
+        $NotifierProvider<AITargetLanguageSetting, TranslateTargetLanguage> {
+  AITargetLanguageSettingProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'zhipuTargetLanguageSettingProvider',
+        name: r'aITargetLanguageSettingProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$zhipuTargetLanguageSettingHash();
+  String debugGetCreateSourceHash() => _$aITargetLanguageSettingHash();
 
   @$internal
   @override
-  ZhipuTargetLanguageSetting create() => ZhipuTargetLanguageSetting();
+  AITargetLanguageSetting create() => AITargetLanguageSetting();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(TranslateTargetLanguage value) {
@@ -305,10 +354,10 @@ final class ZhipuTargetLanguageSettingProvider
   }
 }
 
-String _$zhipuTargetLanguageSettingHash() =>
-    r'2ca27e20c7724e2ba3ecc85fc0b84967fec83684';
+String _$aITargetLanguageSettingHash() =>
+    r'16879a3af68108575598256db7b54ccbb7d7e636';
 
-abstract class _$ZhipuTargetLanguageSetting
+abstract class _$AITargetLanguageSetting
     extends $Notifier<TranslateTargetLanguage> {
   TranslateTargetLanguage build();
   @$mustCallSuper
@@ -372,7 +421,7 @@ final class TranslateServiceProvider
   }
 }
 
-String _$translateServiceHash() => r'b8f3474c2b9c736d3b2697d780c24bee9e47b594';
+String _$translateServiceHash() => r'b2263a102fe346f6fa7add2eaac24555bce44031';
 
 @ProviderFor(TranslateText)
 final translateTextProvider = TranslateTextProvider._();
