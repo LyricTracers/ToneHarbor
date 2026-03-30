@@ -291,6 +291,14 @@ class LoginLayout extends BaseBgLayout {
                   ),
                   child: Text(l10n.signIn),
                 ),
+                const SizedBox(height: 16),
+                TextButton.icon(
+                  onPressed: () {
+                    context.go('/local_music');
+                  },
+                  icon: const Icon(Icons.library_music_outlined, size: 18),
+                  label: Text(l10n.local_songs),
+                ),
               ],
             ),
           ),

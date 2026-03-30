@@ -1580,6 +1580,12 @@ abstract class AppLocalizations {
   /// **'Refresh'**
   String get refresh;
 
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get login;
+
   /// No description provided for @clear_all.
   ///
   /// In en, this message translates to:

@@ -30,6 +30,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
     required this.limitTotal,
     this.sortAction = SongsPageSortAction.none,
     this.isLocal = false,
+    this.fromNoLoginLocal = false,
     this.refreshRandom = false,
     this.playlistId = '',
   });
@@ -41,6 +42,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
   final bool isLocal;
   final bool refreshRandom;
   final String playlistId;
+  final bool fromNoLoginLocal;
 
   PreferredSizeWidget _buildAppBar(
     WidgetRef ref,
@@ -91,13 +93,22 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
             },
             tooltip: l10n.refresh,
           ),
-        IconButton(
-          onPressed: () {
-            ref.context.push("/setting");
-          },
-          icon: const Icon(Icons.settings_rounded, size: 18),
-          tooltip: l10n.settings,
-        ),
+        if (!fromNoLoginLocal)
+          IconButton(
+            onPressed: () {
+              ref.context.push("/setting");
+            },
+            icon: const Icon(Icons.settings_rounded, size: 18),
+            tooltip: l10n.settings,
+          ),
+        if (fromNoLoginLocal)
+          IconButton(
+            onPressed: () {
+              ref.context.go("/login");
+            },
+            icon: const Icon(Icons.login, size: 18),
+            tooltip: l10n.login,
+          ),
       ],
       centerTitle: false,
     );

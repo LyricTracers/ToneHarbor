@@ -769,5 +769,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get refresh => 'Refresh';
 
   @override
+  String get login => 'Login';
+
+  @override
   String get clear_all => 'Clear All';
 }

@@ -750,5 +750,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get refresh => '刷新';
 
   @override
+  String get login => '登录';
+
+  @override
   String get clear_all => '清空';
 }

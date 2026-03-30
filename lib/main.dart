@@ -10,25 +10,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/album.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
-import 'package:toneharbor/providers/audio_player/most_player_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
-import 'package:toneharbor/providers/server/server_provider.dart';
-import 'package:toneharbor/providers/audio_player/audio_player_streams.dart';
 import 'package:toneharbor/services/audio_player/connection_checker_service.dart';
-import 'package:toneharbor/widgets/layouts/playing_detail_layout.dart';
-import 'package:toneharbor/widgets/layouts/switch_lyrics_layout.dart';
-import 'package:toneharbor/widgets/pages/account_page.dart';
-import 'package:toneharbor/widgets/pages/album_page.dart';
-import 'package:toneharbor/widgets/pages/artist_page.dart';
-import 'package:toneharbor/widgets/pages/audio_device_page.dart';
-import 'package:toneharbor/widgets/pages/download_page.dart';
-import 'package:toneharbor/widgets/pages/folders_page.dart';
-import 'package:toneharbor/widgets/pages/playlists_page.dart';
-import 'package:toneharbor/widgets/pages/search_resulut_page.dart';
-import 'package:toneharbor/widgets/pages/setting_page.dart';
-import 'package:toneharbor/widgets/pages/songs_page.dart';
-import 'package:toneharbor/widgets/pages/storage_manage_page.dart';
-import 'package:toneharbor/widgets/pages/ai_translate_setting_page.dart';
+import 'package:toneharbor/widgets/layouts/local_songs_layout.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'init/initialized.dart';
@@ -389,6 +373,13 @@ class MyApp extends HookConsumerWidget {
             ),
           ),
           GoRoute(
+            path: '/local_music',
+            pageBuilder: (context, state) => NoTransitionPage(
+              key: state.pageKey,
+              child: const LocalSongsLayout(),
+            ),
+          ),
+          GoRoute(
             path: '/test',
             pageBuilder: (context, state) =>
                 NoTransitionPage(key: state.pageKey, child: const TestLayout()),
@@ -398,7 +389,13 @@ class MyApp extends HookConsumerWidget {
           logger.d('redirect: ${state.fullPath}');
           final currentPath = state.uri.path;
 
-          final publicPaths = ['/login', '/playing_detail', '/test'];
+          final publicPaths = [
+            '/login',
+            '/playing_detail',
+            '/switch_lyrics',
+            '/local_music',
+            '/test',
+          ];
           if (publicPaths.any((path) => currentPath.startsWith(path))) {
             return null;
           }

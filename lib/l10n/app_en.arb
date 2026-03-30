@@ -248,6 +248,7 @@
   "remove_from_playlist": "Remove From Playlist",
   "download_history":"Download History",
   "refresh": "Refresh",
+  "login": "Login",
   "select_all": "Select All",
   "clear_all": "Clear All"
 }
