@@ -123,8 +123,8 @@ lib/
 ## Development
 
 ### Prerequisites
-- Flutter SDK 3.9+
-- Dart 3.9+
+- Flutter SDK 3.35.7
+- Dart 3.9.2
 - Platform-specific requirements:
   - **macOS**: Xcode
   - **Windows**: Visual Studio
