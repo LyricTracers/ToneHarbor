@@ -27,14 +27,16 @@ A feature-rich Audio Station client for Synology NAS, with support for local mus
 - Desktop system tray lyrics (macOS)
 
 ### 🎨 Beautiful UI
-- Material Design 3
-- Light/Dark theme
+- Material Design 3 with dynamic color scheme
+- Light/Dark theme with auto/manual background switching
+- Dynamic background from album art
 - Responsive layout for desktop and mobile
 - Cover art display
 - Search with history
 
 ### 💻 Desktop Integration
 - System tray support (macOS/Windows/Linux)
+- Status bar lyrics display (macOS)
 - Global media key shortcuts
 - Mini player mode
 - Desktop notifications
