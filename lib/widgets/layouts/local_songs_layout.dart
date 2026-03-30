@@ -3,14 +3,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/providers/providers.dart';
-import 'package:toneharbor/widgets/pages/bottom_player.dart';
-import 'package:toneharbor/widgets/pages/songs_page.dart';
+import 'package:toneharbor/widgets/widgets.dart';
 
-class LocalSongsLayout extends HookConsumerWidget {
+class LocalSongsLayout extends BaseBgLayout {
   const LocalSongsLayout({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
     final l10n = ref.watch(l10nProvider);
 
     useEffect(() {
@@ -33,7 +32,6 @@ class LocalSongsLayout extends HookConsumerWidget {
     return Scaffold(
       body: Column(
         children: [
-          SizedBox(height: 20),
           Expanded(
             child: SongsPage(
               title: l10n.local_songs,

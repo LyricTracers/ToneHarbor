@@ -52,25 +52,33 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
   ) {
     final l10n = ref.watch(l10nProvider);
     return AppBar(
-      title: Row(
+      title: Column(
         children: [
-          Text(
-            title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-
-          if (total > 0)
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Text(
-                " ${l10n.total_songs.replaceFirst("%s", total.toString())}",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: colorScheme.onSurface.withValues(alpha: 0.7),
-                  fontWeight: FontWeight.w600,
+          if (fromNoLoginLocal) SizedBox(height: 16),
+          Row(
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
+
+              if (total > 0)
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    " ${l10n.total_songs.replaceFirst("%s", total.toString())}",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colorScheme.onSurface.withValues(alpha: 0.7),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
       actions: [
