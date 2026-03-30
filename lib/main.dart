@@ -83,8 +83,8 @@ class MyApp extends HookConsumerWidget {
           windowManager.removeListener(_DesktopListener(ref));
           trayManager.removeListener(_DesktopListener(ref));
         }
-        ref.read(audioPlayerStreamListenersProvider).dispose();
         audioPlayer.dispose();
+        ref.read(audioPlayerStreamListenersProvider).dispose();
       };
     }, []);
 

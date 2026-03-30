@@ -91,10 +91,10 @@ class WindowsAudioService {
   }
 
   void dispose() {
-    smtc.disableSmtc();
-    smtc.dispose();
     for (var element in subscriptions) {
       element.cancel();
     }
+    smtc.disableSmtc();
+    smtc.dispose();
   }
 }

@@ -321,6 +321,7 @@ class DownloadManager extends _$DownloadManager {
         if (task.savePath != null) {
           CacheLockManager.instance.unlock(task.savePath!);
         }
+        task.dispose();
       }
 
       final trackIdsToCancel = tasksToCancel.map((t) => t.track.id).toList();
@@ -359,6 +360,7 @@ class DownloadManager extends _$DownloadManager {
           logger.i(
             '[DownloadManager] Normal task in queue, converting to preload: ${track.id}',
           );
+          existingTask.dispose();
           state = state.where((e) => e.track.id != track.id).toList();
 
         case DownloadStatus.paused:
@@ -366,6 +368,7 @@ class DownloadManager extends _$DownloadManager {
             '[DownloadManager] Track is paused, converting to preload: ${track.id}',
           );
           _pausedTracks.remove(track.id);
+          existingTask.dispose();
           state = state.where((e) => e.track.id != track.id).toList();
 
         case DownloadStatus.canceled:
@@ -374,6 +377,7 @@ class DownloadManager extends _$DownloadManager {
             '[DownloadManager] Track failed/canceled, retrying preload: ${track.id}',
           );
           await _deletePartFile(existingTask.savePath);
+          existingTask.dispose();
           state = state.where((e) => e.track.id != track.id).toList();
 
         case DownloadStatus.completed:
@@ -421,6 +425,7 @@ class DownloadManager extends _$DownloadManager {
             '[DownloadManager] Track is paused, converting to normal: ${track.id}',
           );
           _pausedTracks.remove(track.id);
+          existingTask.dispose();
           state = state.where((e) => e.track.id != track.id).toList();
 
         case DownloadStatus.canceled:
@@ -429,6 +434,7 @@ class DownloadManager extends _$DownloadManager {
             '[DownloadManager] Track failed/canceled, retrying: ${track.id}',
           );
           await _deletePartFile(existingTask.savePath);
+          existingTask.dispose();
           state = state.where((e) => e.track.id != track.id).toList();
 
         case DownloadStatus.completed:
@@ -504,6 +510,10 @@ class DownloadManager extends _$DownloadManager {
     }
 
     if (trackIdsToRemove.isNotEmpty) {
+      for (final trackId in trackIdsToRemove) {
+        final task = state.firstWhereOrNull((e) => e.track.id == trackId);
+        task?.dispose();
+      }
       state = state
           .where((e) => !trackIdsToRemove.contains(e.track.id))
           .toList();
@@ -736,6 +746,15 @@ class DownloadManager extends _$DownloadManager {
 
     if (normalCanceledIds.isEmpty && preloadCanceledIds.isEmpty) return;
 
+    final tasksToDispose = state.where((e) {
+      return normalCanceledIds.contains(e.track.id) ||
+          preloadCanceledIds.contains(e.track.id);
+    }).toList();
+
+    for (final task in tasksToDispose) {
+      task.dispose();
+    }
+
     state = state.where((e) {
       return !normalCanceledIds.contains(e.track.id) &&
           !preloadCanceledIds.contains(e.track.id);
@@ -822,6 +841,7 @@ class DownloadManager extends _$DownloadManager {
     if (status == DownloadStatus.completed ||
         status == DownloadStatus.canceled) {
       state = state.where((e) => e.track.id != track.id).toList();
+      task.dispose();
 
       if (task.type == DownloadType.preload) {
         await _deleteTaskFromDb(track.id);
