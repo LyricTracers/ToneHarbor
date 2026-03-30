@@ -243,11 +243,20 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
   }
 
   Future<void> addTrack(ToneHarborTrackObject track) async {
+    final isFirstTrack = state.tracks.isEmpty;
     state = _updateActiveTrackId(
       state.copyWith(tracks: [...state.tracks, track]),
     );
 
     await audioPlayer.addTrack(ToneHarborMedia(track));
+
+    if (isFirstTrack) {
+      await audioPlayer.openPlaylist(
+        state.tracks.asMediaList(),
+        initialIndex: 0,
+        autoPlay: true,
+      );
+    }
 
     await _updatePlayerState(
       AudioPlayerStateTableCompanion(
@@ -258,12 +267,21 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
   }
 
   Future<void> addTracks(Iterable<ToneHarborTrackObject> tracks) async {
+    final isFirstTrack = state.tracks.isEmpty;
     state = _updateActiveTrackId(
       state.copyWith(tracks: [...state.tracks, ...tracks]),
     );
 
-    for (final track in tracks) {
-      await audioPlayer.addTrack(ToneHarborMedia(track));
+    if (isFirstTrack && tracks.isNotEmpty) {
+      await audioPlayer.openPlaylist(
+        state.tracks.asMediaList(),
+        initialIndex: 0,
+        autoPlay: true,
+      );
+    } else {
+      for (final track in tracks) {
+        await audioPlayer.addTrack(ToneHarborMedia(track));
+      }
     }
 
     await _updatePlayerState(
