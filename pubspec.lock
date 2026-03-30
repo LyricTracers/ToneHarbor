@@ -45,8 +45,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: e16e5ab810d5580aa18758d52001d232ab27434e
+      ref: "v1.0.0-macos"
+      resolved-ref: "4fc56e7199971644a28ba064405a10389b825a62"
       url: "https://git.nxcloud.club:12750/LyricTracers/archive_gbk.git"
     source: git
     version: "4.0.7"
@@ -428,7 +428,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
+      ref: "v1.0.0-macos"
       resolved-ref: "1ba8e2bfed15bd532f222122aa226be0417beeb1"
       url: "https://git.nxcloud.club:12750/LyricTracers/flutter_context_menu.git"
     source: git
@@ -458,8 +458,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "11521dbe486782716671d92647d193829c6827c3"
+      ref: "v1.0.0-macos"
+      resolved-ref: babadd162e8bdffabf5a35466e6bf80dfdf039ca
       url: "https://git.nxcloud.club:12750/LyricTracers/flutter_lyric.git"
     source: git
     version: "3.0.2"
@@ -467,7 +467,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
+      ref: "v1.0.0-macos"
       resolved-ref: a73502cd064d28a421341f89976c4a50d631391b
       url: "https://git.nxcloud.club:12750/LyricTracers/flutter_native_splash.git"
     source: git
@@ -734,8 +734,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "9bf6c85a7b2b73b57da50d2ef7d649e9401d9320"
+      ref: "v1.0.0-macos"
+      resolved-ref: de95b15a5a5f4ead1eb8162571bde68ec52290f0
       url: "https://git.nxcloud.club:12750/LyricTracers/lyricskit.git"
     source: git
     version: "0.1.0"
@@ -759,7 +759,7 @@ packages:
     dependency: "direct main"
     description:
       path: media_kit
-      ref: main
+      ref: "v1.0.0-macos"
       resolved-ref: a0168ec537f6465db66ce3b076ac88724066a603
       url: "https://git.nxcloud.club:12750/LyricTracers/media-kit.git"
     source: git
@@ -832,8 +832,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "922be7dd7a33e4e6c471577ea4427d6ada2064dd"
+      ref: "v1.0.0-macos"
+      resolved-ref: "80b3367b97124afaf41d697d83dda7c180163dd8"
       url: "https://git.nxcloud.club:12750/LyricTracers/metadata_god.git"
     source: git
     version: "1.1.0"
@@ -1025,7 +1025,7 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: main
+      ref: "v1.0.0-macos"
       resolved-ref: "2ee1c7973a0d9341657829ddc7c2fc62a411923a"
       url: "https://git.nxcloud.club:12750/LyricTracers/persistent_cache_flutter.git"
     source: git
@@ -1511,7 +1511,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
+      ref: "v1.0.0-macos"
       resolved-ref: "499be1ef8f9b655b627ba26417b4ff7a66cb62fc"
       url: "https://git.nxcloud.club:12750/LyricTracers/tray_manager.git"
     source: git
@@ -1648,8 +1648,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "8d84e97e5d5d277686cba3cedaacd5a4d7356d2e"
+      ref: "v1.0.0-macos"
+      resolved-ref: "008823bb943a8aa2b9ea9412d051436940413e0d"
       url: "https://git.nxcloud.club:12750/LyricTracers/window_manager.git"
     source: git
     version: "0.5.1"
