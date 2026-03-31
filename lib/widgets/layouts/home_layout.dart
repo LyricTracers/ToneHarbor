@@ -6,7 +6,6 @@ import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
-import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class HomeLayout extends BaseBgLayout {
@@ -26,18 +25,7 @@ class HomeLayout extends BaseBgLayout {
     final allMusicPath = '/songs/${Uri.encodeComponent(l10n.all_music)}';
     final allFoldersPath = '/folders/';
     final gradientDecoration = BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment(-0.8, -0.8),
-        end: Alignment(0.8, 0.8),
-        stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
-        colors: [
-          colorScheme.surface,
-          colorScheme.surfaceContainerHighest,
-          colorScheme.surface,
-          colorScheme.surfaceContainerHighest,
-          colorScheme.surface,
-        ],
-      ),
+      color: colorScheme.tertiary.withValues(alpha: 0.1),
     );
 
     final favoritePlaylist = ref.watch(favoritePlaylistStateProvider);
@@ -50,7 +38,6 @@ class HomeLayout extends BaseBgLayout {
         );
       }),
     );
-    final color = colorScheme.tertiary.withValues(alpha: 0.1);
 
     return Stack(
       children: [
