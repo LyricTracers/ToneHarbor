@@ -3,11 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class RecommendPage extends HookConsumerWidget {
-  final bool needAppBar;
-  const RecommendPage({super.key, this.needAppBar = true});
+  const RecommendPage({super.key});
 
   PreferredSizeWidget buildAppBar(BuildContext context, WidgetRef ref) {
     final i10n = ref.watch(l10nProvider);
@@ -34,6 +34,7 @@ class RecommendPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     var colorScheme = getColorSchemeWhenReady(ref);
     final i10n = ref.watch(l10nProvider);
+    final needAppBar = MediaQuery.of(context).lgAndUp;
     return Column(
       children: [
         if (needAppBar) buildAppBar(context, ref),

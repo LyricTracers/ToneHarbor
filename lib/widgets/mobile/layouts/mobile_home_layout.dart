@@ -43,9 +43,9 @@ class MobileHomeLayout extends BaseBgLayout {
           child: TabBarView(
             controller: tabController,
             children: [
-              const RecommendPage(needAppBar: false),
+              const RecommendPage(),
               const LibraryPage(),
-              const SettingPage(needAppBar: false),
+              const SettingPage(),
             ],
           ),
         ),

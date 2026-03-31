@@ -9,12 +9,12 @@ import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/pages/build_item.dart';
 import 'package:tray_manager/tray_manager.dart';
 
 class SettingPage extends HookConsumerWidget with BuildItem {
-  final bool needAppBar;
-  const SettingPage({super.key, this.needAppBar = true});
+  const SettingPage({super.key});
 
   Widget _other(BuildContext context, WidgetRef ref, l10n, colorScheme) {
     return Column(
@@ -415,6 +415,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = ref.watch(l10nProvider);
     final colorScheme = getColorSchemeWhenReady(ref);
+    final needAppBar = MediaQuery.of(context).lgAndUp;
     return Column(
       children: [
         if (needAppBar)
