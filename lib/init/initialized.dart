@@ -53,9 +53,11 @@ Future<void> initialized() async {
       await windowManager.setPreventClose(true);
     });
   }
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    FlutterNativeSplash.remove();
-  });
+  if (Platform.isIOS || Platform.isMacOS) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FlutterNativeSplash.remove();
+    });
+  }
 }
 
 Future<void> _initTray() async {

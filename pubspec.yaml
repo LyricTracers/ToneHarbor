@@ -82,9 +82,10 @@ dependencies:
       url: https://git.nxcloud.club:12750/LyricTracers/window_manager.git
       ref: v1.0.0-macos 
   flutter_native_splash:
-    git:
-      url: https://git.nxcloud.club:12750/LyricTracers/flutter_native_splash.git
-      ref: v1.0.0-macos
+    path: ../flutter_native_splash
+    # git:
+    #   url: https://git.nxcloud.club:12750/LyricTracers/flutter_native_splash.git
+    #   ref: v1.0.0-macos
   flutter_lyric:
     git:
       url: https://git.nxcloud.club:12750/LyricTracers/flutter_lyric.git

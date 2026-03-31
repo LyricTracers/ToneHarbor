@@ -466,11 +466,9 @@ packages:
   flutter_native_splash:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "v1.0.0-macos"
-      resolved-ref: a73502cd064d28a421341f89976c4a50d631391b
-      url: "https://git.nxcloud.club:12750/LyricTracers/flutter_native_splash.git"
-    source: git
+      path: "../flutter_native_splash"
+      relative: true
+    source: path
     version: "2.4.7"
   flutter_plugin_android_lifecycle:
     dependency: transitive

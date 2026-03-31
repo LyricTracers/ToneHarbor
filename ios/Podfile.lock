@@ -163,7 +163,7 @@ SPEC CHECKSUMS:
   file_picker: a0560bc09d61de87f12d246fc47d2119e6ef37be
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_broadcasts: 7bb7cc1024900a7f85e98b6faab795290b7c2339
-  flutter_native_splash: c32d145d68aeda5502d5f543ee38c192065986cf
+  flutter_native_splash: 57a0da564d1a03a31c20c5d85768b58cf767fec9
   media_kit_libs_ios_audio: 905e6323b72e65c63ab9262b2e473f52c024a3a8
   metadata_god: 018b59c2f3617569928550dcbd17481591557c1d
   open_file_ios: 46184d802ee7959203f6392abcfa0dd49fdb5be0
@@ -177,6 +177,6 @@ SPEC CHECKSUMS:
   sqlite3_flutter_libs: d13b8b3003f18f596e542bcb9482d105577eff41
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
 
-PODFILE CHECKSUM: 948f9019638911721f35d7cf4ee97fca50a2bc90
+PODFILE CHECKSUM: f2b47babea136bfb42bf2221313c40b669847e71
 
 COCOAPODS: 1.16.2
