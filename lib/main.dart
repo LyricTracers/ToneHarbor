@@ -14,6 +14,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/connection_checker_service.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/layouts/local_songs_layout.dart';
+import 'package:toneharbor/widgets/mobile/layouts/mobile_full_layout.dart';
 import 'package:toneharbor/widgets/mobile/layouts/mobile_home_layout.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -35,8 +36,8 @@ void main() async {
 }
 
 int _getMobileTabIndex(String path) {
-  if (path.startsWith('/mobile/library')) return 1;
-  if (path.startsWith('/mobile/settings')) return 2;
+  if (path.startsWith('/mobile_home/library')) return 1;
+  if (path.startsWith('/mobile_home/settings')) return 2;
   return 0;
 }
 
@@ -146,7 +147,13 @@ class MyApp extends HookConsumerWidget {
               if (size.lgAndUp) {
                 return HomeLayout(currentPath: state.uri.path, child: child);
               }
-              return MobileHomeLayout(tab: _getMobileTabIndex(state.uri.path));
+              if (state.uri.path.startsWith('/mobile_home') ||
+                  state.uri.path == '/') {
+                return MobileHomeLayout(
+                  tab: _getMobileTabIndex(state.uri.path),
+                );
+              }
+              return MobileFullLayout(child: child);
             },
             routes: [
               GoRoute(
@@ -261,6 +268,7 @@ class MyApp extends HookConsumerWidget {
                 path: '/local_songs/:title',
                 pageBuilder: (context, state) {
                   Future.microtask(() {
+                    if (!context.mounted) return;
                     ProviderScope.containerOf(
                       context,
                     ).invalidate(localSongsProvider);
@@ -299,6 +307,7 @@ class MyApp extends HookConsumerWidget {
                 path: '/most_play/:title',
                 pageBuilder: (context, state) {
                   Future.microtask(() {
+                    if (!context.mounted) return;
                     ProviderScope.containerOf(
                       context,
                     ).invalidate(mostPlayerProvider());
@@ -341,9 +350,13 @@ class MyApp extends HookConsumerWidget {
                 path: '/storage',
                 pageBuilder: (context, state) {
                   Future.microtask(() {
-                    ProviderScope.containerOf(
+                    if (!context.mounted) return;
+                    if (ScaffoldMessenger.maybeOf(context) == null) return;
+                    showSnackBar(
+                      'Storage manage page is not available on mobile',
                       context,
-                    ).invalidate(storageInfoProvider);
+                      colorScheme.secondaryContainer,
+                    );
                   });
                   return NoTransitionPage(child: StorageManagePage());
                 },
@@ -364,43 +377,19 @@ class MyApp extends HookConsumerWidget {
                     NoTransitionPage(child: AudioDevicePage()),
               ),
               GoRoute(
-                path: '/mobile/recommend',
+                path: '/mobile_home/recommend',
                 pageBuilder: (context, state) =>
                     NoTransitionPage(child: MobileHomeLayout(tab: 0)),
               ),
               GoRoute(
-                path: '/mobile/library',
+                path: '/mobile_home/library',
                 pageBuilder: (context, state) =>
                     NoTransitionPage(child: MobileHomeLayout(tab: 1)),
               ),
               GoRoute(
-                path: '/mobile/settings',
+                path: '/mobile_home/settings',
                 pageBuilder: (context, state) =>
                     NoTransitionPage(child: MobileHomeLayout(tab: 2)),
-              ),
-              GoRoute(
-                path: '/mobile/songs/:title',
-                pageBuilder: (context, state) {
-                  final (provider, total, sortAction) =
-                      state.extra
-                          as (
-                            $AsyncNotifierProvider<
-                              ExtraProvider<ToneHarborTrackObjectList>,
-                              ToneHarborTrackObjectList
-                            >,
-                            int,
-                            SongsPageSortAction,
-                          );
-                  return NoTransitionPage<void>(
-                    key: state.pageKey,
-                    child: SongsPage(
-                      title: state.pathParameters['title'] ?? 'Songs',
-                      baseProvider: provider,
-                      limitTotal: total,
-                      sortAction: sortAction,
-                    ),
-                  );
-                },
               ),
             ],
           ),
