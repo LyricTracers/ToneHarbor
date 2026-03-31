@@ -150,7 +150,7 @@ mixin BuildItem {
     Widget child,
   ) {
     return [
-      buildSectionTitle(title, colorScheme),
+      if (title.isNotEmpty) buildSectionTitle(title, colorScheme),
       Container(
         width: double.infinity,
         alignment: Alignment.centerLeft,

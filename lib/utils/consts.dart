@@ -28,6 +28,7 @@ const String aiTemperatureKey = 'ai_temperature';
 const String aiTargetLanguageKey = 'ai_target_language';
 
 // pic path
+const String appIcon = 'assets/icons/app_icon.png';
 const String iconPlaceholder = 'assets/icons/icon_placeholder.png';
 const String bgPlaceholder = 'assets/icons/bg_placeholder.png';
 const String statusBarIcon = 'assets/icons/status_bar_icon.png';
