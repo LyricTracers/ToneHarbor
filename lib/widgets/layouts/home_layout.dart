@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -21,10 +22,7 @@ class HomeLayout extends BaseBgLayout {
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
     final colorScheme = getColorSchemeWhenReady(ref);
     final l10n = ref.watch(l10nProvider);
-    final allMusicPath = '/songs/${Uri.encodeComponent(l10n.all_music)}';
-    final allFoldersPath = '/folders/';
 
-    final favoritePlaylist = ref.watch(favoritePlaylistStateProvider);
     var selectionTypeState = ref.watch(
       songSelectionProvider.select((state) {
         return SongSelectionState(
@@ -43,10 +41,6 @@ class HomeLayout extends BaseBgLayout {
               colorScheme: colorScheme,
               l10n: l10n,
               currentPath: currentPath,
-              allMusicPath: allMusicPath,
-              allFoldersPath: allFoldersPath,
-              favoritePlaylist: favoritePlaylist,
-              width: 200,
             ),
             Expanded(
               child: Column(
@@ -66,28 +60,24 @@ class HomeLayout extends BaseBgLayout {
   }
 }
 
-class ResponsiveSidebar extends StatelessWidget {
+class ResponsiveSidebar extends ConsumerWidget {
   final ColorScheme colorScheme;
-  final dynamic l10n;
+  final AppLocalizations l10n;
   final String currentPath;
-  final String allMusicPath;
-  final String allFoldersPath;
-  final dynamic favoritePlaylist;
-  final double width;
 
   const ResponsiveSidebar({
     super.key,
     required this.colorScheme,
     required this.l10n,
     required this.currentPath,
-    required this.allMusicPath,
-    required this.allFoldersPath,
-    required this.favoritePlaylist,
-    this.width = double.infinity,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final allMusicPath = '/songs/${Uri.encodeComponent(l10n.all_music)}';
+    final allFoldersPath = '/folders/';
+    final favoritePlaylist = ref.watch(favoritePlaylistStateProvider);
+
     final gradientDecoration = BoxDecoration(
       gradient: LinearGradient(
         begin: Alignment(-0.8, -0.8),
@@ -104,7 +94,7 @@ class ResponsiveSidebar extends StatelessWidget {
     );
 
     return SizedBox(
-      width: width,
+      width: 200,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 2000),
         curve: Curves.easeInOutSine,

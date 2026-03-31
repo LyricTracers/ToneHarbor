@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -75,7 +77,11 @@ abstract class BaseBgLayout extends HookConsumerWidget {
               decoration: gradientDecoration,
             ),
           ),
-          buildContent(context, ref, requestFlag),
+          SafeArea(
+            top: true,
+            bottom: false,
+            child: buildContent(context, ref, requestFlag),
+          ),
           showLoading
               ? requestFlag
                     ? const Center(child: AudioEqualizerLoader())

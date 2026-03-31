@@ -82,7 +82,13 @@ class SongCoverImage extends HookConsumerWidget {
             } else {
               final syncSongIcon = ref.read(syncSongIconProvider);
               if (syncSongIcon == false && context.mounted) {
-                _showSetBackgroundDialog(context, ref, coverUrl, cacheKey);
+                _showSetBackgroundDialog(
+                  context,
+                  ref,
+                  coverUrl,
+                  cacheKey,
+                  colorScheme,
+                );
               }
             }
           },
@@ -126,53 +132,101 @@ class SongCoverImage extends HookConsumerWidget {
     WidgetRef ref,
     String coverUrl,
     String cacheKey,
+    ColorScheme colorScheme,
   ) async {
     final l10n = ref.read(l10nProvider);
     if (context.mounted == false) {
       return;
     }
-    showDialog(
+    showGeneralDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          l10n.setThemeBackground,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        content: Text(
-          l10n.setThemeBackgroundConfirm,
-          style: TextStyle(fontSize: 16),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierColor: Colors.black54,
+      transitionDuration: const Duration(milliseconds: 200),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Center(
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: colorScheme.brightness == Brightness.dark
+                    ? const Color(0xFF2D2D2D)
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(28),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.setThemeBackground,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.setThemeBackgroundConfirm,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(l10n.cancel),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          Navigator.pop(context);
+                          try {
+                            final bytes = await ref.watch(
+                              fetchCoverBytesProvider(
+                                url: coverUrl,
+                                key: cacheKey,
+                                liveKeepDuration: const Duration(minutes: 10),
+                              ).future,
+                            );
+                            if (bytes == null) {
+                              return;
+                            }
+                            logger.i(
+                              'Setting theme icon from image: ${bytes.length} bytes',
+                            );
+                            saveDefaultThemeIcon(ref, bytes);
+                          } catch (e) {
+                            logger.e('Failed to save theme icon: $e');
+                          }
+                        },
+                        child: Text(l10n.confirm),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              try {
-                final bytes = await ref.watch(
-                  fetchCoverBytesProvider(
-                    url: coverUrl,
-                    key: cacheKey,
-                    liveKeepDuration: const Duration(minutes: 10),
-                  ).future,
-                );
-                if (bytes == null) {
-                  return;
-                }
-                logger.i(
-                  'Setting theme icon from image: ${bytes.length} bytes',
-                );
-                saveDefaultThemeIcon(ref, bytes);
-              } catch (e) {
-                logger.e('Failed to save theme icon: $e');
-              }
-            },
-            child: Text(l10n.confirm),
-          ),
-        ],
-      ),
+        );
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+          child: child,
+        );
+      },
     );
   }
 }

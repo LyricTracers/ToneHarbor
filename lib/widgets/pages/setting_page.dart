@@ -13,7 +13,8 @@ import 'package:toneharbor/widgets/pages/build_item.dart';
 import 'package:tray_manager/tray_manager.dart';
 
 class SettingPage extends HookConsumerWidget with BuildItem {
-  const SettingPage({super.key});
+  final bool needAppBar;
+  const SettingPage({super.key, this.needAppBar = true});
 
   Widget _other(BuildContext context, WidgetRef ref, l10n, colorScheme) {
     return Column(
@@ -416,7 +417,8 @@ class SettingPage extends HookConsumerWidget with BuildItem {
     final colorScheme = getColorSchemeWhenReady(ref);
     return Column(
       children: [
-        buildAppBar(context, ref, l10n, colorScheme, l10n.settings),
+        if (needAppBar)
+          buildAppBar(context, ref, l10n, colorScheme, l10n.settings),
         buildContent(context, ref, l10n, colorScheme, [
           ...buildItem(
             ref,
