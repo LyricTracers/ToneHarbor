@@ -4,6 +4,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class _LayoutConfig {
@@ -43,6 +44,19 @@ class _LayoutConfig {
     titleFontWeight: FontWeight.w500,
     subtitleFontSize: 11,
   );
+
+  _LayoutConfig multiply({required double multiplier}) => _LayoutConfig(
+    height: height * multiplier,
+    itemWidth: itemWidth * multiplier,
+    itemSpacing: itemSpacing * multiplier,
+    horizontalPadding: horizontalPadding * multiplier,
+    coverSize: coverSize * multiplier,
+    coverBorderRadius: coverBorderRadius,
+    textSpacing: textSpacing,
+    titleFontSize: titleFontSize,
+    titleFontWeight: titleFontWeight,
+    subtitleFontSize: subtitleFontSize * multiplier,
+  );
 }
 
 class CommonSongs extends ConsumerWidget {
@@ -60,10 +74,19 @@ class CommonSongs extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = getColorSchemeWhenReady(ref);
-
+    var config = _LayoutConfig.defaultConfig;
+    final size = MediaQuery.of(context).size;
+    if (size.smAndDown) {
+      config = config.multiply(multiplier: 0.7);
+    } else if (size.isMd) {
+      config = config.multiply(multiplier: 0.8);
+    } else if (size.isLg) {
+      config = config.multiply(multiplier: 0.9);
+    }
     return songs.when(
-      data: (data) => _buildHorizontalList(context, data.songs, colorScheme),
-      loading: () => _buildShimmerLoading(context, colorScheme),
+      data: (data) =>
+          _buildHorizontalList(context, data.songs, colorScheme, config),
+      loading: () => _buildShimmerLoading(context, colorScheme, config),
       error: (error, stackTrace) {
         return buildErrorView(context, ref, colorScheme, onErrorTap);
       },
@@ -74,8 +97,8 @@ class CommonSongs extends ConsumerWidget {
     BuildContext context,
     List<ToneHarborTrackObject> songs,
     ColorScheme colorScheme,
+    _LayoutConfig config,
   ) {
-    final config = _LayoutConfig.defaultConfig;
     var length = songs.length > limit ? limit : songs.length;
     return SizedBox(
       height: config.height,
@@ -103,8 +126,11 @@ class CommonSongs extends ConsumerWidget {
     );
   }
 
-  Widget _buildShimmerLoading(BuildContext context, ColorScheme colorScheme) {
-    final config = _LayoutConfig.defaultConfig;
+  Widget _buildShimmerLoading(
+    BuildContext context,
+    ColorScheme colorScheme,
+    _LayoutConfig config,
+  ) {
     return Shimmer.fromColors(
       baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
       highlightColor: colorScheme.surface.withValues(alpha: 1.0),
