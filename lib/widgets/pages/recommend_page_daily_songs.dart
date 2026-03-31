@@ -6,6 +6,7 @@ import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class _LayoutConfig {
@@ -13,21 +14,18 @@ class _LayoutConfig {
     required this.sidebarWidth,
     required this.horizontalPadding,
     required this.itemSpacing,
-    required this.minItemWidth,
     required this.rows,
   });
 
   final double sidebarWidth;
   final double horizontalPadding;
   final double itemSpacing;
-  final double minItemWidth;
   final int rows;
 
   static const _LayoutConfig defaultConfig = _LayoutConfig(
     sidebarWidth: 200.0,
     horizontalPadding: 32.0,
     itemSpacing: 12.0,
-    minItemWidth: 280.0,
     rows: 3,
   );
 }
@@ -102,26 +100,27 @@ class RecommendPageDailySongs extends ConsumerWidget {
     }
 
     final config = _LayoutConfig.defaultConfig;
-    final columns = _calculateColumns(context, config);
+    final columns = _calculateColumns(context);
 
     return _buildSongGrid(context, ref, songs, colorScheme, config, columns);
   }
 
   Widget _buildShimmerLoading(BuildContext context, ColorScheme colorScheme) {
     final config = _LayoutConfig.defaultConfig;
-    final columns = _calculateColumns(context, config);
+    final columns = _calculateColumns(context);
 
     return _buildShimmerGrid(colorScheme, config, columns);
   }
 
-  int _calculateColumns(BuildContext context, _LayoutConfig config) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final availableScreenWidth = screenWidth - config.sidebarWidth;
-
-    return ((availableScreenWidth - config.horizontalPadding) /
-            (config.minItemWidth + config.itemSpacing))
-        .floor()
-        .clamp(2, 3);
+  int _calculateColumns(BuildContext context) {
+    var size = MediaQuery.sizeOf(context);
+    if (size.xlAndUp) {
+      return 3;
+    } else if (size.isXs) {
+      return 1;
+    } else {
+      return 2;
+    }
   }
 
   Widget _buildSongGrid(
