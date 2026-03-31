@@ -144,7 +144,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
               children: [
                 const SizedBox(width: 30),
                 Image.asset(appIcon, width: 70, height: 70),
-                const SizedBox(width: 30),
+                const SizedBox(width: 15),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,6 +160,8 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                     const SizedBox(height: 4),
                     Text(
                       l10n.appSubtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 14,
                         color: colorScheme.onSurface.withValues(alpha: 0.7),

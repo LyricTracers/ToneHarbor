@@ -151,6 +151,7 @@ class SongCoverImage extends HookConsumerWidget {
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 24),
               padding: const EdgeInsets.all(24),
+              constraints: const BoxConstraints(maxWidth: 400),
               decoration: BoxDecoration(
                 color: colorScheme.brightness == Brightness.dark
                     ? const Color(0xFF2D2D2D)

@@ -34,6 +34,12 @@ void main() async {
   );
 }
 
+int _getMobileTabIndex(String path) {
+  if (path.startsWith('/mobile/library')) return 1;
+  if (path.startsWith('/mobile/settings')) return 2;
+  return 0;
+}
+
 class MyApp extends HookConsumerWidget {
   const MyApp({super.key});
 
@@ -131,254 +137,273 @@ class MyApp extends HookConsumerWidget {
       };
     }, []);
 
-    final size = MediaQuery.of(context).size;
-
     final router = useMemoized(() {
       return GoRouter(
         routes: [
-          if (size.lgAndUp)
-            ShellRoute(
-              routes: [
-                GoRoute(
-                  path: '/',
-                  pageBuilder: (context, state) => NoTransitionPage<void>(
+          ShellRoute(
+            builder: (context, state, child) {
+              final size = MediaQuery.of(context).size;
+              if (size.lgAndUp) {
+                return HomeLayout(currentPath: state.uri.path, child: child);
+              }
+              return MobileHomeLayout(tab: _getMobileTabIndex(state.uri.path));
+            },
+            routes: [
+              GoRoute(
+                path: '/',
+                pageBuilder: (context, state) => NoTransitionPage<void>(
+                  key: state.pageKey,
+                  child: const RecommendPage(),
+                ),
+              ),
+              GoRoute(
+                path: '/songs/:title',
+                pageBuilder: (context, state) {
+                  final (provider, total, sortAction) =
+                      state.extra
+                          as (
+                            $AsyncNotifierProvider<
+                              ExtraProvider<ToneHarborTrackObjectList>,
+                              ToneHarborTrackObjectList
+                            >,
+                            int,
+                            SongsPageSortAction,
+                          );
+                  return NoTransitionPage<void>(
                     key: state.pageKey,
-                    child: const RecommendPage(),
-                  ),
-                ),
-                GoRoute(
-                  path: '/songs/:title',
-                  pageBuilder: (context, state) {
-                    final (provider, total, sortAction) =
-                        state.extra
-                            as (
-                              $AsyncNotifierProvider<
-                                ExtraProvider<ToneHarborTrackObjectList>,
-                                ToneHarborTrackObjectList
-                              >,
-                              int,
-                              SongsPageSortAction,
-                            );
-                    return NoTransitionPage<void>(
-                      key: state.pageKey,
-                      child: SongsPage(
-                        title: state.pathParameters['title'] ?? 'Songs',
-                        baseProvider: provider,
-                        limitTotal: total,
-                        sortAction: sortAction,
-                      ),
-                    );
-                  },
-                ),
-                GoRoute(
-                  path: '/folders/:id',
-                  pageBuilder: (context, state) {
-                    final (provider, lastFoldItems) =
-                        state.extra
-                            as (
-                              $AsyncNotifierProvider<
-                                ExtraProvider<FolderResponse>,
-                                FolderResponse
-                              >,
-                              List<ToneHarborTrackObject>,
-                            );
-                    var id = state.pathParameters['id'];
-                    if (id == null || id == 'None') {
-                      id = '';
-                    }
-                    return NoTransitionPage<void>(
-                      key: state.pageKey,
-                      child: FoldersPage(
-                        currentId: id,
-                        baseProvider: provider,
-                        lastFoldItems: lastFoldItems,
-                      ),
-                    );
-                  },
-                ),
-                GoRoute(
-                  path: '/albums/:title',
-                  pageBuilder: (context, state) {
-                    var title = state.pathParameters['title'];
-                    if (title == null || title == 'None') {
-                      title = '';
-                    }
-                    final provider =
-                        state.extra
-                            as $AsyncNotifierProvider<
-                              ExtraProvider<AlbumResponse>,
-                              AlbumResponse
-                            >;
-                    return NoTransitionPage<void>(
-                      key: state.pageKey,
-                      child: AlbumPage(title: title, baseProvider: provider),
-                    );
-                  },
-                ),
-                GoRoute(
-                  path: '/artists',
-                  pageBuilder: (context, state) => NoTransitionPage<void>(
-                    key: state.pageKey,
-                    child: ArtistPage(baseProvider: artistsProvider()),
-                  ),
-                ),
-                GoRoute(
-                  path: '/playlist',
-                  pageBuilder: (context, state) => NoTransitionPage<void>(
-                    key: state.pageKey,
-                    child: PlaylistsPage(
-                      baseProvider: playlistResponseProvider(),
+                    child: SongsPage(
+                      title: state.pathParameters['title'] ?? 'Songs',
+                      baseProvider: provider,
+                      limitTotal: total,
+                      sortAction: sortAction,
                     ),
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/folders/:id',
+                pageBuilder: (context, state) {
+                  final (provider, lastFoldItems) =
+                      state.extra
+                          as (
+                            $AsyncNotifierProvider<
+                              ExtraProvider<FolderResponse>,
+                              FolderResponse
+                            >,
+                            List<ToneHarborTrackObject>,
+                          );
+                  var id = state.pathParameters['id'];
+                  if (id == null || id == 'None') {
+                    id = '';
+                  }
+                  return NoTransitionPage<void>(
+                    key: state.pageKey,
+                    child: FoldersPage(
+                      currentId: id,
+                      baseProvider: provider,
+                      lastFoldItems: lastFoldItems,
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/albums/:title',
+                pageBuilder: (context, state) {
+                  var title = state.pathParameters['title'];
+                  if (title == null || title == 'None') {
+                    title = '';
+                  }
+                  final provider =
+                      state.extra
+                          as $AsyncNotifierProvider<
+                            ExtraProvider<AlbumResponse>,
+                            AlbumResponse
+                          >;
+                  return NoTransitionPage<void>(
+                    key: state.pageKey,
+                    child: AlbumPage(title: title, baseProvider: provider),
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/artists',
+                pageBuilder: (context, state) => NoTransitionPage<void>(
+                  key: state.pageKey,
+                  child: ArtistPage(baseProvider: artistsProvider()),
+                ),
+              ),
+              GoRoute(
+                path: '/playlist',
+                pageBuilder: (context, state) => NoTransitionPage<void>(
+                  key: state.pageKey,
+                  child: PlaylistsPage(
+                    baseProvider: playlistResponseProvider(),
                   ),
                 ),
-                GoRoute(
-                  path: '/download',
-                  pageBuilder: (context, state) =>
-                      NoTransitionPage(child: DownloadPage()),
-                ),
-                GoRoute(
-                  path: '/search/:query',
-                  pageBuilder: (context, state) {
-                    return NoTransitionPage<void>(
-                      key: state.pageKey,
-                      child: SearchResulutPage(
-                        query: state.pathParameters['query'] ?? '',
-                      ),
-                    );
-                  },
-                ),
-
-                GoRoute(
-                  path: '/local_songs/:title',
-                  pageBuilder: (context, state) {
-                    Future.microtask(() {
-                      ref.invalidate(localSongsProvider);
-                    });
-                    return NoTransitionPage<void>(
-                      key: state.pageKey,
-                      child: SongsPage(
-                        title: state.pathParameters['title'] ?? 'Local Songs',
-                        baseProvider: localSongsProvider,
-                        limitTotal: -1,
-                        sortAction: SongsPageSortAction.all,
-                        isLocal: true,
-                      ),
-                    );
-                  },
-                ),
-                GoRoute(
-                  path: '/random_songs/:title',
-                  pageBuilder: (context, state) {
-                    return NoTransitionPage<void>(
-                      key: state.pageKey,
-                      child: SongsPage(
-                        title: state.pathParameters['title'] ?? 'Random Songs',
-                        baseProvider: randomSongsProvider(
-                          limit: 100,
-                          cacheDuration: Duration(hours: 24),
-                        ),
-                        limitTotal: 100,
-                        sortAction: SongsPageSortAction.none,
-                        refreshRandom: true,
-                      ),
-                    );
-                  },
-                ),
-                GoRoute(
-                  path: '/most_play/:title',
-                  pageBuilder: (context, state) {
-                    Future.microtask(() {
-                      ref.invalidate(mostPlayerProvider());
-                    });
-                    return NoTransitionPage<void>(
-                      key: state.pageKey,
-                      child: SongsPage(
-                        title: state.pathParameters['title'] ?? 'Most Play',
-                        baseProvider: mostPlayerProvider(),
-                        limitTotal: -1,
-                        sortAction: SongsPageSortAction.none,
-                        isLocal: false,
-                      ),
-                    );
-                  },
-                ),
-                GoRoute(
-                  path: '/playlist_song/:title',
-                  pageBuilder: (context, state) {
-                    var playlistId = state.extra as String;
-                    return NoTransitionPage<void>(
-                      key: state.pageKey,
-                      child: SongsPage(
-                        title:
-                            state.pathParameters['title'] ?? 'Playlist Songs',
-                        baseProvider: playlistDetailProvider(id: playlistId),
-                        playlistId: playlistId,
-                        limitTotal: -1,
-                        sortAction: SongsPageSortAction.none,
-                        isLocal: false,
-                      ),
-                    );
-                  },
-                ),
-                GoRoute(
-                  path: '/setting',
-                  pageBuilder: (context, state) =>
-                      NoTransitionPage(child: SettingPage()),
-                ),
-                GoRoute(
-                  path: '/storage',
-                  pageBuilder: (context, state) {
-                    Future.microtask(() {
-                      ref.invalidate(storageInfoProvider);
-                    });
-                    return NoTransitionPage(child: StorageManagePage());
-                  },
-                ),
-                GoRoute(
-                  path: '/ai-translate',
-                  pageBuilder: (context, state) =>
-                      NoTransitionPage(child: AITranslateSettingPage()),
-                ),
-                GoRoute(
-                  path: '/account',
-                  pageBuilder: (context, state) =>
-                      NoTransitionPage(child: AccountPage()),
-                ),
-                GoRoute(
-                  path: '/audio-device',
-                  pageBuilder: (context, state) =>
-                      NoTransitionPage(child: AudioDevicePage()),
-                ),
-              ],
-              builder: (context, state, child) {
-                final currentPath = state.uri.path;
-                return HomeLayout(currentPath: currentPath, child: child);
-              },
-            ),
-          if (size.mdAndDown) ...[
-            GoRoute(
-              path: '/',
-              redirect: (context, state) => '/mobile/recommend',
-            ),
-            GoRoute(
-              path: '/mobile/recommend',
-              pageBuilder: (context, state) => NoTransitionPage(
-                child: MobileHomeLayout(tab: 0), // 推荐 Tab
               ),
-            ),
-            GoRoute(
-              path: '/mobile/library',
-              pageBuilder: (context, state) => NoTransitionPage(
-                child: MobileHomeLayout(tab: 1), // 资源库 Tab
+              GoRoute(
+                path: '/download',
+                pageBuilder: (context, state) =>
+                    NoTransitionPage(child: DownloadPage()),
               ),
-            ),
-            GoRoute(
-              path: '/mobile/settings',
-              pageBuilder: (context, state) => NoTransitionPage(
-                child: MobileHomeLayout(tab: 2), // 设置 Tab
+              GoRoute(
+                path: '/search/:query',
+                pageBuilder: (context, state) {
+                  return NoTransitionPage<void>(
+                    key: state.pageKey,
+                    child: SearchResulutPage(
+                      query: state.pathParameters['query'] ?? '',
+                    ),
+                  );
+                },
               ),
-            ),
-          ],
+              GoRoute(
+                path: '/local_songs/:title',
+                pageBuilder: (context, state) {
+                  Future.microtask(() {
+                    ProviderScope.containerOf(
+                      context,
+                    ).invalidate(localSongsProvider);
+                  });
+                  return NoTransitionPage<void>(
+                    key: state.pageKey,
+                    child: SongsPage(
+                      title: state.pathParameters['title'] ?? 'Local Songs',
+                      baseProvider: localSongsProvider,
+                      limitTotal: -1,
+                      sortAction: SongsPageSortAction.all,
+                      isLocal: true,
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/random_songs/:title',
+                pageBuilder: (context, state) {
+                  return NoTransitionPage<void>(
+                    key: state.pageKey,
+                    child: SongsPage(
+                      title: state.pathParameters['title'] ?? 'Random Songs',
+                      baseProvider: randomSongsProvider(
+                        limit: 100,
+                        cacheDuration: const Duration(hours: 24),
+                      ),
+                      limitTotal: 100,
+                      sortAction: SongsPageSortAction.none,
+                      refreshRandom: true,
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/most_play/:title',
+                pageBuilder: (context, state) {
+                  Future.microtask(() {
+                    ProviderScope.containerOf(
+                      context,
+                    ).invalidate(mostPlayerProvider());
+                  });
+                  return NoTransitionPage<void>(
+                    key: state.pageKey,
+                    child: SongsPage(
+                      title: state.pathParameters['title'] ?? 'Most Play',
+                      baseProvider: mostPlayerProvider(),
+                      limitTotal: -1,
+                      sortAction: SongsPageSortAction.none,
+                      isLocal: false,
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/playlist_song/:title',
+                pageBuilder: (context, state) {
+                  var playlistId = state.extra as String;
+                  return NoTransitionPage<void>(
+                    key: state.pageKey,
+                    child: SongsPage(
+                      title: state.pathParameters['title'] ?? 'Playlist Songs',
+                      baseProvider: playlistDetailProvider(id: playlistId),
+                      playlistId: playlistId,
+                      limitTotal: -1,
+                      sortAction: SongsPageSortAction.none,
+                      isLocal: false,
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/setting',
+                pageBuilder: (context, state) =>
+                    NoTransitionPage(child: SettingPage()),
+              ),
+              GoRoute(
+                path: '/storage',
+                pageBuilder: (context, state) {
+                  Future.microtask(() {
+                    ProviderScope.containerOf(
+                      context,
+                    ).invalidate(storageInfoProvider);
+                  });
+                  return NoTransitionPage(child: StorageManagePage());
+                },
+              ),
+              GoRoute(
+                path: '/ai-translate',
+                pageBuilder: (context, state) =>
+                    NoTransitionPage(child: AITranslateSettingPage()),
+              ),
+              GoRoute(
+                path: '/account',
+                pageBuilder: (context, state) =>
+                    NoTransitionPage(child: AccountPage()),
+              ),
+              GoRoute(
+                path: '/audio-device',
+                pageBuilder: (context, state) =>
+                    NoTransitionPage(child: AudioDevicePage()),
+              ),
+              GoRoute(
+                path: '/mobile/recommend',
+                pageBuilder: (context, state) =>
+                    NoTransitionPage(child: MobileHomeLayout(tab: 0)),
+              ),
+              GoRoute(
+                path: '/mobile/library',
+                pageBuilder: (context, state) =>
+                    NoTransitionPage(child: MobileHomeLayout(tab: 1)),
+              ),
+              GoRoute(
+                path: '/mobile/settings',
+                pageBuilder: (context, state) =>
+                    NoTransitionPage(child: MobileHomeLayout(tab: 2)),
+              ),
+              GoRoute(
+                path: '/mobile/songs/:title',
+                pageBuilder: (context, state) {
+                  final (provider, total, sortAction) =
+                      state.extra
+                          as (
+                            $AsyncNotifierProvider<
+                              ExtraProvider<ToneHarborTrackObjectList>,
+                              ToneHarborTrackObjectList
+                            >,
+                            int,
+                            SongsPageSortAction,
+                          );
+                  return NoTransitionPage<void>(
+                    key: state.pageKey,
+                    child: SongsPage(
+                      title: state.pathParameters['title'] ?? 'Songs',
+                      baseProvider: provider,
+                      limitTotal: total,
+                      sortAction: sortAction,
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
           GoRoute(
             path: "/switch_lyrics",
             pageBuilder: (context, state) => NoTransitionPage<void>(
@@ -416,7 +441,6 @@ class MyApp extends HookConsumerWidget {
           ),
         ],
         redirect: (context, state) {
-          logger.d('redirect: ${state.fullPath}');
           final currentPath = state.uri.path;
 
           final publicPaths = [
@@ -444,11 +468,10 @@ class MyApp extends HookConsumerWidget {
             return '/login';
           }
 
-          logger.d('已认证');
           return null;
         },
       );
-    }, [synotokenAsync, size]);
+    }, [synotokenAsync]);
 
     return MaterialApp.router(
       title: 'ToneHarbor',
