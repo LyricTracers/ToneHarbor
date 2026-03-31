@@ -12,6 +12,7 @@ import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/components/common_search_field.dart';
 import 'package:toneharbor/widgets/components/song_context_menu.dart';
@@ -49,77 +50,171 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
     ColorScheme colorScheme,
     int total,
     TextEditingController searchController,
+    Size size,
   ) {
     final l10n = ref.watch(l10nProvider);
-    return AppBar(
-      title: Column(
-        children: [
-          if (fromNoLoginLocal) SizedBox(height: 16),
-          Row(
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+    final showSearch = useState(false);
+    useEffect(() {
+      showSearch.value = false;
+      searchController.clear();
+      return null;
+    }, [size.lgAndUp]);
+    final toolbarHeight = 56 * size.multiplier2;
+    final color = colorScheme.tertiary.withValues(alpha: 0.1);
+    return showSearch.value
+        ? AppBar(
+            leading: IconButton(
+              onPressed: () {
+                showSearch.value = false;
+                searchController.clear();
+              },
+              icon: Icon(Icons.arrow_back_ios_sharp),
+            ),
+            toolbarHeight: toolbarHeight,
+            backgroundColor: color,
+            actions: [
+              CommonSearchField(
+                searchController: searchController,
+                autofocus: true,
               ),
-
-              if (total > 0)
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Text(
-                    " ${l10n.total_songs.replaceFirst("%s", total.toString())}",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: colorScheme.onSurface.withValues(alpha: 0.7),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
             ],
-          ),
-        ],
+          )
+        : AppBar(
+            toolbarHeight: toolbarHeight,
+            backgroundColor: color,
+            title: Column(
+              children: [
+                if (fromNoLoginLocal) SizedBox(height: 16),
+                Row(
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16 * size.multiplier2,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    if (total > 0)
+                      Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Text(
+                          " ${l10n.total_songs.replaceFirst("%s", total.toString())}",
+                          style: TextStyle(
+                            fontSize: 12 * size.multiplier2,
+                            color: colorScheme.onSurface.withValues(alpha: 0.7),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+            actions: [
+              size.lgAndUp
+                  ? CommonSearchField(searchController: searchController)
+                  : IconButton(
+                      onPressed: () {
+                        showSearch.value = true;
+                        searchController.clear();
+                      },
+                      icon: const Icon(Icons.search, size: 18),
+                    ),
+              if (size.lgAndUp)
+                ..._moreAction(
+                  ref,
+                  colorScheme,
+                  total,
+                  searchController,
+                  size,
+                  l10n,
+                ),
+              if (!size.lgAndUp) ...[
+                _buildSortAction(ref, l10n, searchController),
+                PopupMenuButton(
+                  itemBuilder: (context) {
+                    return [
+                      _getActionMenuItem(
+                        () {
+                          ref.read(songSelectionProvider.notifier).toggle();
+                        },
+                        l10n.select_all,
+                        Icons.fact_check_rounded,
+                      ),
+
+                      if (refreshRandom)
+                        _getActionMenuItem(
+                          () async {
+                            await audioStationRequestCache.clearGroup(
+                              "randomSongs",
+                            );
+                            ref.invalidate(randomSongsProvider);
+                          },
+                          l10n.refresh,
+                          Icons.update_rounded,
+                        ),
+
+                      if (fromNoLoginLocal)
+                        _getActionMenuItem(
+                          () async {
+                            ref.context.go("/login");
+                          },
+                          l10n.login,
+                          Icons.login_rounded,
+                        ),
+                    ];
+                  },
+                ),
+              ],
+            ],
+            centerTitle: false,
+          );
+  }
+
+  List<Widget> _moreAction(
+    WidgetRef ref,
+    ColorScheme colorScheme,
+    int total,
+    TextEditingController searchController,
+    Size size,
+    AppLocalizations l10n,
+  ) {
+    return <Widget>[
+      _buildSortAction(ref, l10n, searchController),
+      IconButton(
+        onPressed: () {
+          ref.read(songSelectionProvider.notifier).toggle();
+        },
+        icon: const Icon(Icons.fact_check_rounded, size: 18),
+        tooltip: l10n.select_all,
       ),
-      actions: [
-        CommonSearchField(searchController: searchController),
-        const SizedBox(width: 16),
-        _buildSortAction(ref, l10n, searchController),
+      if (refreshRandom)
+        IconButton(
+          icon: Icon(Icons.update_rounded, size: 18),
+          onPressed: () async {
+            await audioStationRequestCache.clearGroup("randomSongs");
+            ref.invalidate(randomSongsProvider);
+          },
+          tooltip: l10n.refresh,
+        ),
+      if (!fromNoLoginLocal)
         IconButton(
           onPressed: () {
-            ref.read(songSelectionProvider.notifier).toggle();
+            ref.context.push("/setting");
           },
-          icon: const Icon(Icons.fact_check_rounded, size: 18),
-          tooltip: l10n.select_all,
+          icon: const Icon(Icons.settings_rounded, size: 18),
+          tooltip: l10n.settings,
         ),
-        if (refreshRandom)
-          IconButton(
-            icon: Icon(Icons.update_rounded, size: 18),
-            onPressed: () async {
-              await audioStationRequestCache.clearGroup("randomSongs");
-              ref.invalidate(randomSongsProvider);
-            },
-            tooltip: l10n.refresh,
-          ),
-        if (!fromNoLoginLocal)
-          IconButton(
-            onPressed: () {
-              ref.context.push("/setting");
-            },
-            icon: const Icon(Icons.settings_rounded, size: 18),
-            tooltip: l10n.settings,
-          ),
-        if (fromNoLoginLocal)
-          IconButton(
-            onPressed: () {
-              ref.context.go("/login");
-            },
-            icon: const Icon(Icons.login, size: 18),
-            tooltip: l10n.login,
-          ),
-      ],
-      centerTitle: false,
-    );
+      if (fromNoLoginLocal)
+        IconButton(
+          onPressed: () {
+            ref.context.go("/login");
+          },
+          icon: const Icon(Icons.login, size: 18),
+          tooltip: l10n.login,
+        ),
+    ];
   }
 
   @override
@@ -202,13 +297,13 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
       scrollController.addListener(onScroll);
       return () => scrollController.removeListener(onScroll);
     }, [scrollController]);
-
+    final size = MediaQuery.of(context).size;
     return Column(
       children: [
         if (songSelectionState.selectionType)
           SubSongSelectionTop(songs: filteredItems),
         if (!songSelectionState.selectionType)
-          _buildAppBar(ref, colorScheme, total, searchController),
+          _buildAppBar(ref, colorScheme, total, searchController, size),
         Expanded(
           child: songs.when(
             data: (data) {

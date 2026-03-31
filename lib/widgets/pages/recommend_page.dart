@@ -9,13 +9,24 @@ import 'package:toneharbor/widgets/widgets.dart';
 class RecommendPage extends HookConsumerWidget {
   const RecommendPage({super.key});
 
-  PreferredSizeWidget buildAppBar(BuildContext context, WidgetRef ref) {
+  PreferredSizeWidget buildAppBar(
+    BuildContext context,
+    WidgetRef ref,
+    ColorScheme colorScheme,
+  ) {
     final i10n = ref.watch(l10nProvider);
-
+    final color = colorScheme.tertiary.withValues(alpha: 0.1);
+    final size = MediaQuery.of(context).size;
+    final toolbarHeight = 56 * size.multiplier2;
     return AppBar(
+      toolbarHeight: toolbarHeight,
+      backgroundColor: color,
       title: Text(
         i10n.recommend,
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 16 * size.multiplier2,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       actions: [
         IconButton(
@@ -37,7 +48,7 @@ class RecommendPage extends HookConsumerWidget {
     final needAppBar = MediaQuery.of(context).lgAndUp;
     return Column(
       children: [
-        if (needAppBar) buildAppBar(context, ref),
+        if (needAppBar) buildAppBar(context, ref, colorScheme),
         Expanded(
           child: SingleChildScrollView(
             child: SizedBox(

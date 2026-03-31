@@ -9,11 +9,13 @@ class CommonSearchField extends HookConsumerWidget {
     required this.searchController,
     this.onChanged,
     this.showClearButton = true,
+    this.autofocus = false,
   });
 
   final TextEditingController searchController;
   final ValueChanged<String>? onChanged;
   final bool showClearButton;
+  final bool autofocus;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,6 +26,7 @@ class CommonSearchField extends HookConsumerWidget {
       constraints: const BoxConstraints(maxWidth: 200, maxHeight: 35),
       child: TextField(
         controller: searchController,
+        autofocus: autofocus,
         decoration: InputDecoration(
           hintText: l10n.searchHint,
           hintStyle: const TextStyle(fontSize: 14),
@@ -37,7 +40,10 @@ class CommonSearchField extends HookConsumerWidget {
                   },
                 )
               : null,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 8,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
             borderSide: BorderSide.none,
@@ -54,15 +60,15 @@ class CommonSearchField extends HookConsumerWidget {
 
 String useSearchQuery(TextEditingController controller) {
   final searchQuery = useState('');
-  
+
   useEffect(() {
     void listener() {
       searchQuery.value = controller.text;
     }
-    
+
     controller.addListener(listener);
     return () => controller.removeListener(listener);
   }, [controller]);
-  
+
   return searchQuery.value;
 }

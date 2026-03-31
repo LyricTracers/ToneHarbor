@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/responsive.dart';
 
 class SubSongSelectionTop extends HookConsumerWidget {
   final List<ToneHarborTrackObject> songs;
@@ -10,8 +12,13 @@ class SubSongSelectionTop extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = ref.watch(l10nProvider);
-
+    final colorScheme = getColorSchemeWhenReady(ref);
+    final size = MediaQuery.of(context).size;
+    final toolbarHeight = 56 * size.multiplier2;
+    final color = colorScheme.tertiary.withValues(alpha: 0.1);
     return AppBar(
+      toolbarHeight: toolbarHeight,
+      backgroundColor: color,
       automaticallyImplyLeading: false,
       leading: IconButton(
         onPressed: () {
@@ -25,14 +32,20 @@ class SubSongSelectionTop extends HookConsumerWidget {
           final selection = ref.watch(songSelectionProvider);
           return Text(
             l10n.selected_count.replaceFirst('%s', '${selection.ids.length}'),
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 16 * size.multiplier2,
+              fontWeight: FontWeight.bold,
+            ),
           );
         },
       ),
       actions: [
         Text(
           l10n.select_all,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 14 * size.multiplier2,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         Consumer(
           builder: (context, ref, child) {

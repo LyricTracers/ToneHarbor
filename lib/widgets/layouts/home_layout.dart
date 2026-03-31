@@ -6,6 +6,7 @@ import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class HomeLayout extends BaseBgLayout {
@@ -49,6 +50,8 @@ class HomeLayout extends BaseBgLayout {
         );
       }),
     );
+    final color = colorScheme.tertiary.withValues(alpha: 0.1);
+
     return Stack(
       children: [
         Row(

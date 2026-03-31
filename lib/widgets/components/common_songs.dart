@@ -76,13 +76,7 @@ class CommonSongs extends ConsumerWidget {
     final colorScheme = getColorSchemeWhenReady(ref);
     var config = _LayoutConfig.defaultConfig;
     final size = MediaQuery.of(context).size;
-    if (size.smAndDown) {
-      config = config.multiply(multiplier: 0.7);
-    } else if (size.isMd) {
-      config = config.multiply(multiplier: 0.8);
-    } else if (size.isLg) {
-      config = config.multiply(multiplier: 0.9);
-    }
+    config = config.multiply(multiplier: size.multiplier);
     return songs.when(
       data: (data) =>
           _buildHorizontalList(context, data.songs, colorScheme, config),

@@ -89,4 +89,24 @@ extension Sizebreakpoints on Size {
   bool get mdAndDown => isXs || isSm || isMd;
   bool get lgAndDown => isXs || isSm || isMd || isLg;
   bool get xlAndDown => isXs || isSm || isMd || isLg || isXl;
+
+  double get multiplier {
+    if (smAndDown) {
+      return 0.7;
+    } else if (isMd) {
+      return 0.8;
+    } else if (isLg) {
+      return 0.9;
+    }
+    return 1.0;
+  }
+
+  double get multiplier2 {
+    if (smAndDown) {
+      return 0.8;
+    } else if (isMd) {
+      return 0.9;
+    }
+    return 1.0;
+  }
 }
