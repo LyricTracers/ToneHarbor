@@ -141,8 +141,8 @@ flutter_native_splash:
   color: "#F8F6F0"
   window_width: 1230
   window_height: 780
-  window_minimum_width: 1230  
-  window_minimum_height: 780
+  window_minimum_width: 320
+  window_minimum_height: 500
   window_button_visibility: true
   skip_taskbar: false
   center: true

@@ -18,12 +18,7 @@ enum ShowArrowType { up, down, none }
 
 class BottomPlayer extends HookConsumerWidget {
   final ShowArrowType showArrowType;
-  final bool isMobile;
-  const BottomPlayer({
-    super.key,
-    this.showArrowType = ShowArrowType.up,
-    this.isMobile = false,
-  });
+  const BottomPlayer({super.key, this.showArrowType = ShowArrowType.up});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

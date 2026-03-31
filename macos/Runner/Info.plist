@@ -53,8 +53,8 @@
 		<key>NSDarkBackgroundColor</key>
 		<string>0f0f1a</string>
 		<key>NSWindowMinWidth</key>
-		<real>1230.0</real>
+		<real>320.0</real>
 		<key>NSWindowMinHeight</key>
-		<real>780.0</real>
+		<real>450.0</real>
 	</dict>
 </plist>

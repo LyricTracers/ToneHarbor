@@ -5,7 +5,6 @@ import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
-import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class HomeLayout extends BaseBgLayout {
@@ -36,44 +35,33 @@ class HomeLayout extends BaseBgLayout {
       }),
     );
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isDesktop = constraints.lgAndUp;
-        final isTablet = constraints.mdAndUp && !constraints.lgAndUp;
-        final isMobile = constraints.smAndDown;
-
-        return Stack(
+    return Stack(
+      children: [
+        Row(
           children: [
-            Row(
-              children: [
-                if (!isMobile)
-                  ResponsiveSidebar(
-                    colorScheme: colorScheme,
-                    l10n: l10n,
-                    currentPath: currentPath,
-                    allMusicPath: allMusicPath,
-                    allFoldersPath: allFoldersPath,
-                    favoritePlaylist: favoritePlaylist,
-                    isDesktop: isDesktop,
-                    isTablet: isTablet,
-                  ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Expanded(child: child),
-                      if (!selectionTypeState.selectionType)
-                        BottomPlayer(isMobile: isMobile),
-                    ],
-                  ),
-                ),
-              ],
+            ResponsiveSidebar(
+              colorScheme: colorScheme,
+              l10n: l10n,
+              currentPath: currentPath,
+              allMusicPath: allMusicPath,
+              allFoldersPath: allFoldersPath,
+              favoritePlaylist: favoritePlaylist,
+              width: 200,
             ),
-            requestFlag
-                ? const Center(child: AudioEqualizerLoader())
-                : const SizedBox.shrink(),
+            Expanded(
+              child: Column(
+                children: [
+                  Expanded(child: child),
+                  if (!selectionTypeState.selectionType) BottomPlayer(),
+                ],
+              ),
+            ),
           ],
-        );
-      },
+        ),
+        requestFlag
+            ? const Center(child: AudioEqualizerLoader())
+            : const SizedBox.shrink(),
+      ],
     );
   }
 }
@@ -85,8 +73,7 @@ class ResponsiveSidebar extends StatelessWidget {
   final String allMusicPath;
   final String allFoldersPath;
   final dynamic favoritePlaylist;
-  final bool isDesktop;
-  final bool isTablet;
+  final double width;
 
   const ResponsiveSidebar({
     super.key,
@@ -96,15 +83,11 @@ class ResponsiveSidebar extends StatelessWidget {
     required this.allMusicPath,
     required this.allFoldersPath,
     required this.favoritePlaylist,
-    required this.isDesktop,
-    required this.isTablet,
+    this.width = double.infinity,
   });
 
   @override
   Widget build(BuildContext context) {
-    final sidebarWidth = isDesktop ? 200.0 : 72.0;
-    final showLabels = isDesktop;
-
     final gradientDecoration = BoxDecoration(
       gradient: LinearGradient(
         begin: Alignment(-0.8, -0.8),
@@ -121,7 +104,7 @@ class ResponsiveSidebar extends StatelessWidget {
     );
 
     return SizedBox(
-      width: sidebarWidth,
+      width: width,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 2000),
         curve: Curves.easeInOutSine,
@@ -134,9 +117,9 @@ class ResponsiveSidebar extends StatelessWidget {
                 showHistoryIcon: false,
                 listTextStyle: const TextStyle(fontSize: 14),
                 decoration: InputDecoration(
-                  labelText: showLabels ? l10n.search : null,
+                  labelText: l10n.search,
                   labelStyle: const TextStyle(fontSize: 14),
-                  hintText: showLabels ? l10n.searchHint : l10n.search,
+                  hintText: l10n.searchHint,
                   hintStyle: const TextStyle(fontSize: 14),
                   prefixIcon: const Icon(Icons.search, size: 16),
                   contentPadding: const EdgeInsets.symmetric(
@@ -159,29 +142,29 @@ class ResponsiveSidebar extends StatelessWidget {
               () => context.go('/'),
             ),
             const SizedBox(height: 8),
-            if (showLabels) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      l10n.music_house,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: colorScheme.onSurface.withValues(alpha: 0.7),
-                      ),
-                    ),
-                    Icon(
-                      Icons.house_rounded,
-                      size: 16,
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l10n.music_house,
+                    style: TextStyle(
+                      fontSize: 15,
                       color: colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
-                  ],
-                ),
+                  ),
+                  Icon(
+                    Icons.house_rounded,
+                    size: 16,
+                    color: colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-            ],
+            ),
+            const SizedBox(height: 8),
+
             _buildNavItem(
               currentPath == allMusicPath,
               Icons.library_music_rounded,
@@ -223,29 +206,28 @@ class ResponsiveSidebar extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            if (showLabels) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      l10n.other,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: colorScheme.onSurface.withValues(alpha: 0.7),
-                      ),
-                    ),
-                    Icon(
-                      Icons.more_horiz_rounded,
-                      size: 16,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l10n.other,
+                    style: TextStyle(
+                      fontSize: 15,
                       color: colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
-                  ],
-                ),
+                  ),
+                  Icon(
+                    Icons.more_horiz_rounded,
+                    size: 16,
+                    color: colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-            ],
+            ),
+            const SizedBox(height: 8),
+
             _buildNavItem(
               currentPath == '/download',
               Icons.download_for_offline,
