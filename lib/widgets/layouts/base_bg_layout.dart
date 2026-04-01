@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'dart:ui' as ui;
 
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
@@ -30,6 +31,7 @@ abstract class BaseBgLayout extends HookConsumerWidget {
         ],
       ),
     );
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       body: Stack(
         children: [
@@ -73,6 +75,17 @@ abstract class BaseBgLayout extends HookConsumerWidget {
               duration: const Duration(milliseconds: 2000),
               curve: Curves.easeInOutSine,
               decoration: gradientDecoration,
+            ),
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height:
+                  MediaQuery.of(context).padding.top +
+                  kToolbarHeight * size.multiplier3,
+              color: colorScheme.tertiary.withValues(alpha: 0.1),
             ),
           ),
           SafeArea(

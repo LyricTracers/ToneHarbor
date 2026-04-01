@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -69,7 +68,9 @@ class SubSongSelectionBottom extends HookConsumerWidget {
     final size = MediaQuery.of(context).size;
     return AppBar(
       backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
-      toolbarHeight: 70 * size.multiplier,
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      toolbarHeight: kToolbarHeight * size.multiplier3,
       automaticallyImplyLeading: false,
       actions: [
         if (!isLocal) ...[

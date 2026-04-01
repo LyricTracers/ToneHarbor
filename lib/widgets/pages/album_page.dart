@@ -30,8 +30,7 @@ class AlbumPage extends HookConsumerWidget {
       searchController.clear();
       return null;
     }, [size.lgAndUp]);
-    final toolbarHeight = 56 * size.multiplier3;
-    final color = colorScheme.tertiary.withValues(alpha: 0.1);
+    final toolbarHeight = kToolbarHeight * size.multiplier3;
     return showSearch.value
         ? AppBar(
             leading: IconButton(
@@ -42,7 +41,9 @@ class AlbumPage extends HookConsumerWidget {
               icon: Icon(Icons.arrow_back_ios_sharp),
             ),
             toolbarHeight: toolbarHeight,
-            backgroundColor: color,
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
             actions: [
               CommonSearchField(
                 searchController: searchController,
@@ -53,7 +54,9 @@ class AlbumPage extends HookConsumerWidget {
           )
         : AppBar(
             toolbarHeight: toolbarHeight,
-            backgroundColor: color,
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
             title: Row(
               children: [
                 Text(

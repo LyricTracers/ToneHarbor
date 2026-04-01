@@ -152,8 +152,7 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
       searchController.clear();
       return null;
     }, [size.lgAndUp]);
-    final toolbarHeight = 56 * size.multiplier3;
-    final color = colorScheme.tertiary.withValues(alpha: 0.1);
+    final toolbarHeight = kToolbarHeight * size.multiplier3;
     return showSearch.value
         ? AppBar(
             leading: IconButton(
@@ -164,7 +163,9 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
               icon: Icon(Icons.arrow_back_ios_sharp),
             ),
             toolbarHeight: toolbarHeight,
-            backgroundColor: color,
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
             actions: [
               CommonSearchField(
                 searchController: searchController,
@@ -174,7 +175,9 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
             ],
           )
         : AppBar(
-            backgroundColor: color,
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
             toolbarHeight: toolbarHeight,
             title: Row(
               children: [

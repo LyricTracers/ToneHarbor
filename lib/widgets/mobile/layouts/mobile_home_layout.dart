@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/mobile/pages/library_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
@@ -24,10 +25,11 @@ class MobileHomeLayout extends BaseBgLayout {
         );
       }),
     );
+    final size = MediaQuery.of(context).size;
     return Column(
       children: [
-        Material(
-          color: colorScheme.tertiary.withValues(alpha: 0.1),
+        SizedBox(
+          height: size.multiplier3 * kToolbarHeight,
           child: TabBar(
             controller: tabController,
             labelColor: colorScheme.primary,

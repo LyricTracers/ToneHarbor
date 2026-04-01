@@ -68,7 +68,6 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
                 ),
               ),
             if (size.mdAndDown) ...[
-              SizedBox(height: 30),
               Center(
                 child: Material(
                   color: colorScheme.tertiary.withValues(alpha: 0.1),
@@ -112,7 +111,7 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
                       colorScheme,
                       showTranslated,
                       size,
-                      size.width * 0.75,
+                      size.width * 0.8,
                     ),
                     buildLyrics(ref, showTranslated),
                   ],

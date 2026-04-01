@@ -12,11 +12,12 @@ mixin BuildItem {
     String title,
     Size size,
   ) {
-    final toolbarHeight = 56 * size.multiplier3;
-    final color = colorScheme.tertiary.withValues(alpha: 0.1);
+    final toolbarHeight = kToolbarHeight * size.multiplier3;
     return AppBar(
       toolbarHeight: toolbarHeight,
-      backgroundColor: color,
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
       title: Text(
         title,
         style: TextStyle(

@@ -95,7 +95,7 @@ class AddToPlaylistsPage extends HookConsumerWidget {
           child: Column(
             children: [
               AppBar(
-                toolbarHeight: 56 * size.multiplier3,
+                toolbarHeight: kToolbarHeight * size.multiplier3,
                 title: Text(
                   i10n.add_to_playlists,
                   style: TextStyle(

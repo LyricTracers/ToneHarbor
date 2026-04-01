@@ -49,7 +49,7 @@ class DownloadPage extends HookConsumerWidget {
     }
     final size = MediaQuery.of(context).size;
     final multiplier = size.multiplier2;
-    final toolbarHeight = 56 * size.multiplier3;
+    final toolbarHeight = kToolbarHeight * size.multiplier3;
     final color = colorScheme.tertiary.withValues(alpha: 0.1);
     return Column(
       children: [

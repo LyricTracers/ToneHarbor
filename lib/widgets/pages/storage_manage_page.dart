@@ -29,8 +29,10 @@ class StorageManagePage extends HookConsumerWidget {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 56 * size.multiplier3,
-        backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
+        toolbarHeight: kToolbarHeight * size.multiplier3,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         title: Text(
           l10n.storage_management,
           style: TextStyle(
