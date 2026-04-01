@@ -49,6 +49,7 @@ class MobileHomeLayout extends BaseBgLayout {
             ],
           ),
         ),
+        const BottomPlayer(),
       ],
     );
   }
