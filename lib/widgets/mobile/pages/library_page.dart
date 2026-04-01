@@ -58,7 +58,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
               onSubmitSearch: (value) {
                 var r = value.trim();
                 if (r.isEmpty) return;
-                context.push("/mobile/search/${Uri.encodeComponent(r)}");
+                context.push("/search/${Uri.encodeComponent(r)}");
               },
             ),
           ),
@@ -187,7 +187,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textButtonStyle: textButtonStyle,
                 onTap: () {
                   ref.context.push(
-                    '/mobile/songs/${Uri.encodeComponent(l10n.all_music)}',
+                    '/songs/${Uri.encodeComponent(l10n.all_music)}',
                     extra: (
                       songsProvider(limit: 100),
                       -1,
@@ -203,10 +203,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textStyle: textStyle,
                 textButtonStyle: textButtonStyle,
                 onTap: () {
-                  ref.context.push(
-                    'mobile/albums/None',
-                    extra: albumsProvider(),
-                  );
+                  ref.context.push('/albums/None', extra: albumsProvider());
                 },
               ),
               _buildIconButton(
@@ -216,7 +213,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textStyle: textStyle,
                 textButtonStyle: textButtonStyle,
                 onTap: () {
-                  ref.context.push('mobile/artists');
+                  ref.context.push('/artists');
                 },
               ),
             ],
@@ -234,7 +231,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textStyle: textStyle,
                 textButtonStyle: textButtonStyle,
                 onTap: () {
-                  ref.context.push('mobile/playlist');
+                  ref.context.push('/playlist');
                 },
               ),
               _buildIconButton(
@@ -245,7 +242,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textButtonStyle: textButtonStyle,
                 onTap: () {
                   ref.context.push(
-                    'mobile/folders/None',
+                    '/folders/None',
                     extra: (
                       foldersProvider(limit: 100),
                       <ToneHarborTrackObject>[],
@@ -260,7 +257,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textStyle: textStyle,
                 textButtonStyle: textButtonStyle,
                 onTap: () {
-                  ref.context.push('/mobile/download');
+                  ref.context.push('/download');
                 },
               ),
             ],
@@ -279,7 +276,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textButtonStyle: textButtonStyle,
                 onTap: () {
                   ref.context.push(
-                    '/mobile/local_songs/${Uri.encodeComponent(l10n.local_songs)}',
+                    '/local_songs/${Uri.encodeComponent(l10n.local_songs)}',
                   );
                 },
               ),
@@ -291,7 +288,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textButtonStyle: textButtonStyle,
                 onTap: () {
                   ref.context.push(
-                    '/mobile/most_play/${Uri.encodeComponent(l10n.most_play)}',
+                    '/most_play/${Uri.encodeComponent(l10n.most_play)}',
                   );
                 },
               ),
@@ -312,81 +309,89 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
     Icon trailingIcon,
     Divider divider,
   ) {
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: favoritePlaylists.length,
-      separatorBuilder: (context, index) => divider,
-      itemBuilder: (context, index) {
-        final item = favoritePlaylists[index];
-        return GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onLongPressStart: (detail) async {
-            await showCustomMenu<FavoritePlaylistItem>(
-              context: context,
-              globalPosition: detail.globalPosition,
-              items: [
-                PopupMenuItem(
-                  height: 30,
-                  enabled: false,
-                  child: Text(
-                    item.title,
-                    maxLines: 1,
-                    style: const TextStyle(fontSize: 13),
-                  ),
-                ),
-                PopupMenuDivider(),
-                PopupMenuItem(
-                  height: 25,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.favorite_border_rounded,
-                        size: 18,
-                        color: colorScheme.onSurface.withValues(alpha: 0.7),
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        l10n.no_favorite_playlist,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: colorScheme.onSurface.withValues(alpha: 0.7),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (int index = 0; index < favoritePlaylists.length; index++)
+          Column(
+            children: [
+              GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onLongPressStart: (detail) async {
+                  final item = favoritePlaylists[index];
+                  await showCustomMenu<FavoritePlaylistItem>(
+                    context: ref.context,
+                    globalPosition: detail.globalPosition,
+                    items: [
+                      PopupMenuItem(
+                        height: 30,
+                        enabled: false,
+                        child: Text(
+                          item.title,
+                          maxLines: 1,
+                          style: const TextStyle(fontSize: 13),
                         ),
                       ),
+                      PopupMenuDivider(),
+                      PopupMenuItem(
+                        height: 25,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.favorite_border_rounded,
+                              size: 18,
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.7,
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              l10n.no_favorite_playlist,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: colorScheme.onSurface.withValues(
+                                  alpha: 0.7,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          ref
+                              .read(favoritePlaylistStateProvider.notifier)
+                              .removeFavoritePlaylist(item.playlistId);
+                        },
+                      ),
                     ],
+                  );
+                },
+                onTap: () {
+                  final item = favoritePlaylists[index];
+                  final path = "/songs/${Uri.encodeComponent(item.title)}";
+                  ref.context.push(
+                    path,
+                    extra: (
+                      playlistDetailProvider(id: item.playlistId),
+                      -1,
+                      SongsPageSortAction.none,
+                    ),
+                  );
+                },
+                child: ListTile(
+                  leading: Icon(Icons.file_present_rounded, size: 18),
+                  title: Text(
+                    favoritePlaylists[index].title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: textStyle,
                   ),
-                  onTap: () {
-                    ref
-                        .read(favoritePlaylistStateProvider.notifier)
-                        .removeFavoritePlaylist(item.playlistId);
-                  },
+                  trailing: trailingIcon,
                 ),
-              ],
-            );
-          },
-          onTap: () {
-            final path = "/mobile/songs/${Uri.encodeComponent(item.title)}";
-            ref.context.push(
-              path,
-              extra: (
-                playlistDetailProvider(id: item.playlistId),
-                -1,
-                SongsPageSortAction.none,
               ),
-            );
-          },
-          child: ListTile(
-            leading: Icon(Icons.file_present_rounded, size: 18),
-            title: Text(
-              item.title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: textStyle,
-            ),
-            trailing: trailingIcon,
+              if (index < favoritePlaylists.length - 1) divider,
+            ],
           ),
-        );
-      },
+      ],
     );
   }
 }

@@ -81,7 +81,7 @@ class SubSongSelectionBottom extends HookConsumerWidget {
                   .read(downloadManagerProvider.notifier)
                   .addAllToQueue(_getSelectedTracks(ids));
             },
-            icon: Icon(Icons.download_rounded, size: 18 * size.multiplier),
+            icon: Icon(Icons.download_rounded, size: 18),
             tooltip: l10n.download,
           ),
           IconButton(
@@ -118,7 +118,7 @@ class SubSongSelectionBottom extends HookConsumerWidget {
                 ref.read(requestFlagProvider.notifier).setRequestFlag(false);
               }
             },
-            icon: Icon(Icons.favorite_rounded, size: 18 * size.multiplier),
+            icon: Icon(Icons.favorite_rounded, size: 18),
             tooltip: l10n.favorite,
           ),
           IconButton(
@@ -155,10 +155,7 @@ class SubSongSelectionBottom extends HookConsumerWidget {
                 ref.read(requestFlagProvider.notifier).setRequestFlag(false);
               }
             },
-            icon: Icon(
-              Icons.favorite_border_rounded,
-              size: 18 * size.multiplier,
-            ),
+            icon: Icon(Icons.favorite_border_rounded, size: 18),
             tooltip: l10n.no_favorite_playlist,
           ),
           IconButton(
@@ -180,7 +177,7 @@ class SubSongSelectionBottom extends HookConsumerWidget {
                 builder: (context) => AddToPlaylistsPage(ids.join(',')),
               );
             },
-            icon: Icon(Icons.playlist_add_rounded, size: 18 * size.multiplier),
+            icon: Icon(Icons.playlist_add_rounded, size: 18),
             tooltip: l10n.song_playlist,
           ),
         ],
@@ -211,10 +208,7 @@ class SubSongSelectionBottom extends HookConsumerWidget {
               ref.invalidate(songSelectionProvider);
               ref.invalidate(localSongsProvider);
             },
-            icon: Icon(
-              Icons.delete_forever_rounded,
-              size: 18 * size.multiplier,
-            ),
+            icon: Icon(Icons.delete_forever_rounded, size: 18),
             tooltip: l10n.delete,
           ),
         IconButton(
@@ -247,7 +241,7 @@ class SubSongSelectionBottom extends HookConsumerWidget {
             }
             ref.invalidate(songSelectionProvider);
           },
-          icon: Icon(Icons.queue_play_next_rounded, size: 18 * size.multiplier),
+          icon: Icon(Icons.queue_play_next_rounded, size: 18),
           tooltip: l10n.next_song,
         ),
         IconButton(
@@ -280,7 +274,7 @@ class SubSongSelectionBottom extends HookConsumerWidget {
             }
             ref.invalidate(songSelectionProvider);
           },
-          icon: Icon(Icons.queue_music_rounded, size: 18 * size.multiplier),
+          icon: Icon(Icons.queue_music_rounded, size: 18),
           tooltip: l10n.play_queue,
         ),
 

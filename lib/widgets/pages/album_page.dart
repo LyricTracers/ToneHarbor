@@ -48,6 +48,7 @@ class AlbumPage extends HookConsumerWidget {
                 searchController: searchController,
                 autofocus: true,
               ),
+              SizedBox(width: 16),
             ],
           )
         : AppBar(
