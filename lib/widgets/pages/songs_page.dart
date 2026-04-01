@@ -138,39 +138,47 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                 ),
               if (!size.lgAndUp) ...[
                 _buildSortAction(ref, l10n, searchController),
-                PopupMenuButton(
-                  itemBuilder: (context) {
-                    return [
-                      getActionMenuItem(
-                        () {
-                          ref.read(songSelectionProvider.notifier).toggle();
-                        },
-                        l10n.select_all,
-                        Icons.fact_check_rounded,
-                      ),
-
-                      if (refreshRandom)
+                InkWell(
+                  customBorder: const CircleBorder(),
+                  onTapDown: (details) async {
+                    await showCustomMenu<void>(
+                      context: ref.context,
+                      globalPosition: details.globalPosition,
+                      items: [
                         getActionMenuItem(
-                          () async {
-                            await audioStationRequestCache.clearGroup(
-                              "randomSongs",
-                            );
-                            ref.invalidate(randomSongsProvider);
+                          () {
+                            ref.read(songSelectionProvider.notifier).toggle();
                           },
-                          l10n.refresh,
-                          Icons.update_rounded,
+                          l10n.select_all,
+                          Icons.fact_check_rounded,
                         ),
-
-                      if (fromNoLoginLocal)
-                        getActionMenuItem(
-                          () async {
-                            ref.context.go("/login");
-                          },
-                          l10n.login,
-                          Icons.login_rounded,
-                        ),
-                    ];
+                        if (refreshRandom)
+                          getActionMenuItem(
+                            () async {
+                              await audioStationRequestCache.clearGroup(
+                                "randomSongs",
+                              );
+                              ref.invalidate(randomSongsProvider);
+                            },
+                            l10n.refresh,
+                            Icons.update_rounded,
+                          ),
+                        if (fromNoLoginLocal)
+                          getActionMenuItem(
+                            () async {
+                              ref.context.go("/login");
+                            },
+                            l10n.login,
+                            Icons.login_rounded,
+                          ),
+                      ],
+                    );
                   },
+                  onTap: () {},
+                  child: const Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Icon(Icons.more_vert, size: 18),
+                  ),
                 ),
               ],
             ],

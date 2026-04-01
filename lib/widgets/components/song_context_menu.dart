@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:path/path.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -155,14 +153,16 @@ class SongContextMenu {
             MenuItem(
               label: Text(l10n.song_playlist),
               onSelected: (value) {
-                if (size.lgAndUp) {
+                if (size.mdAndUp) {
                   showSlidePanel(
                     context: ref.context,
                     builder: (context) => AddToPlaylistsPage(itemId),
                   );
                 } else {
-                  ref.context.push(
-                    "/add_to_playlist/${Uri.encodeComponent(itemId)}",
+                  showModalBottomSheetWidget(
+                    ref.context,
+                    colorScheme,
+                    (context) => AddToPlaylistsPage(itemId),
                   );
                 }
               },

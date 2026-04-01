@@ -76,7 +76,7 @@ class PlayingDetailLayout extends BaseBgLayout {
                                   onPressed: isLocal
                                       ? null
                                       : () {
-                                          if (size.lgAndUp) {
+                                          if (size.mdAndUp) {
                                             showSlidePanel(
                                               context: ref.context,
                                               builder: (context) =>
@@ -85,8 +85,12 @@ class PlayingDetailLayout extends BaseBgLayout {
                                                   ),
                                             );
                                           } else {
-                                            ref.context.push(
-                                              "/add_to_playlist/${Uri.encodeComponent(activeTrack.id)}",
+                                            showModalBottomSheetWidget(
+                                              ref.context,
+                                              colorScheme,
+                                              (context) => AddToPlaylistsPage(
+                                                activeTrack.id,
+                                              ),
                                             );
                                           }
                                         },
@@ -302,12 +306,10 @@ class PlayingDetailLayout extends BaseBgLayout {
     final hasTranslation = ref.read(translateTextProvider).value != null;
     final l10n = ref.read(l10nProvider);
 
-    showModalBottomSheet(
-      context: ref.context,
-      backgroundColor: colorScheme.brightness == Brightness.dark
-          ? const Color(0xFF2D2D2D)
-          : Colors.white,
-      builder: (context) => SafeArea(
+    showModalBottomSheetWidget(
+      ref.context,
+      colorScheme,
+      (context) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -492,12 +494,10 @@ class PlayingDetailLayout extends BaseBgLayout {
     final devices = audioPlayer.audioDevices;
     final selectedDevice = audioPlayer.currentAudioDevice;
 
-    showModalBottomSheet(
-      context: ref.context,
-      backgroundColor: colorScheme.brightness == Brightness.dark
-          ? const Color(0xFF2D2D2D)
-          : Colors.white,
-      builder: (context) => SafeArea(
+    showModalBottomSheetWidget(
+      ref.context,
+      colorScheme,
+      (context) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

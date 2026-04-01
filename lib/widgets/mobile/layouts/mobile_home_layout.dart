@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/widgets/mobile/pages/library_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
@@ -14,7 +15,15 @@ class MobileHomeLayout extends BaseBgLayout {
     final tabController = useTabController(initialLength: 3);
     final l10n = ref.watch(l10nProvider);
     final colorScheme = Theme.of(context).colorScheme;
-
+    var selectionTypeState = ref.watch(
+      songSelectionProvider.select((state) {
+        return SongSelectionState(
+          selectionType: state.selectionType,
+          ids: {},
+          boxState: false,
+        );
+      }),
+    );
     return Column(
       children: [
         Material(
@@ -49,7 +58,7 @@ class MobileHomeLayout extends BaseBgLayout {
             ],
           ),
         ),
-        const BottomPlayer(),
+        if (!selectionTypeState.selectionType) const BottomPlayer(),
       ],
     );
   }

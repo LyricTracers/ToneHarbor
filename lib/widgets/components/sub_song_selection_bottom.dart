@@ -174,13 +174,17 @@ class SubSongSelectionBottom extends HookConsumerWidget {
               }
 
               final itemId = ids.join(',');
-              if (size.lgAndUp) {
+              if (size.mdAndUp) {
                 showSlidePanel(
                   context: context,
                   builder: (context) => AddToPlaylistsPage(itemId),
                 );
               } else {
-                context.push("/add_to_playlist/${Uri.encodeComponent(itemId)}");
+                showModalBottomSheetWidget(
+                  ref.context,
+                  colorScheme,
+                  (context) => AddToPlaylistsPage(itemId),
+                );
               }
             },
             icon: Icon(Icons.playlist_add_rounded, size: 18),

@@ -609,3 +609,17 @@ PopupMenuItem getActionMenuItem(
     ),
   );
 }
+
+void showModalBottomSheetWidget(
+  BuildContext context,
+  ColorScheme colorScheme,
+  Widget Function(BuildContext context) builder,
+) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: colorScheme.brightness == Brightness.dark
+        ? const Color(0xFF2D2D2D)
+        : Colors.white,
+    builder: (context) => builder(context),
+  );
+}

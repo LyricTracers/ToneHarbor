@@ -76,10 +76,20 @@ class AddToPlaylistsPage extends HookConsumerWidget {
       }
     }
 
+    var targetWidth = 0.0;
+    if (size.xlAndUp) {
+      targetWidth = width * 0.35;
+    } else if (size.isLg) {
+      targetWidth = width * 0.45;
+    } else if (size.isMd) {
+      targetWidth = width * 0.55;
+    } else {
+      targetWidth = double.infinity;
+    }
     return Stack(
       children: [
         Container(
-          width: size.lgAndUp ? width * 0.35 : double.infinity,
+          width: targetWidth,
           color: colorScheme.surface.withValues(alpha: 0.8),
           height: double.infinity,
           child: Column(

@@ -326,42 +326,52 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                 ),
               ],
               if (!size.lgAndUp) ...[
-                PopupMenuButton(
-                  itemBuilder: (context) {
-                    return [
-                      getActionMenuItem(
-                        () async {
-                          var direction = ref
-                              .read(baseProvider.notifier)
-                              .extraSortDirection;
-                          await ref
-                              .read(baseProvider.notifier)
-                              .setSort(
-                                sortBy: "title",
-                                sortDirection: direction == "ASC"
-                                    ? "DESC"
-                                    : "ASC",
-                              );
-                        },
-                        l10n.sort,
-                        Icons.sort,
-                      ),
-                      getActionMenuItem(
-                        () {
-                          ref.read(songSelectionProvider.notifier).toggle();
-                        },
-                        l10n.select_all,
-                        Icons.fact_check_rounded,
-                      ),
-                      getActionMenuItem(
-                        () {
-                          context.go("/");
-                        },
-                        l10n.music_house,
-                        Icons.home,
-                      ),
-                    ];
+                InkWell(
+                  customBorder: const CircleBorder(),
+                  onTapDown: (details) async {
+                    await showCustomMenu<void>(
+                      context: ref.context,
+                      globalPosition: details.globalPosition,
+                      items: [
+                        getActionMenuItem(
+                          () async {
+                            var direction = ref
+                                .read(baseProvider.notifier)
+                                .extraSortDirection;
+                            await ref
+                                .read(baseProvider.notifier)
+                                .setSort(
+                                  sortBy: "title",
+                                  sortDirection: direction == "ASC"
+                                      ? "DESC"
+                                      : "ASC",
+                                );
+                          },
+                          l10n.sort,
+                          Icons.sort,
+                        ),
+                        getActionMenuItem(
+                          () {
+                            ref.read(songSelectionProvider.notifier).toggle();
+                          },
+                          l10n.select_all,
+                          Icons.fact_check_rounded,
+                        ),
+                        getActionMenuItem(
+                          () {
+                            context.go("/");
+                          },
+                          l10n.music_house,
+                          Icons.home,
+                        ),
+                      ],
+                    );
                   },
+                  onTap: () {},
+                  child: const Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Icon(Icons.more_vert, size: 18),
+                  ),
                 ),
               ],
             ],
