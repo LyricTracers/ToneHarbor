@@ -13,7 +13,7 @@ import "package:toneharbor/utils/base_funs.dart";
 import "package:toneharbor/utils/responsive.dart";
 import "package:toneharbor/widgets/widgets.dart";
 
-class PlayingDetailLayout extends BaseBgLayout {
+class PlayingDetailLayout extends HookConsumerWidget {
   const PlayingDetailLayout({super.key});
 
   @override
