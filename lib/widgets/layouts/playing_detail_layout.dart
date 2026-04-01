@@ -304,10 +304,25 @@ class PlayingDetailLayout extends BaseBgLayout {
 
     showModalBottomSheet(
       context: ref.context,
+      backgroundColor: colorScheme.brightness == Brightness.dark
+          ? const Color(0xFF2D2D2D)
+          : Colors.white,
       builder: (context) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text(
+                l10n.translate_lyrics,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+            ),
+            const Divider(height: 1),
             if (hasTranslation) ...[
               ListTile(
                 leading: Icon(
@@ -479,6 +494,9 @@ class PlayingDetailLayout extends BaseBgLayout {
 
     showModalBottomSheet(
       context: ref.context,
+      backgroundColor: colorScheme.brightness == Brightness.dark
+          ? const Color(0xFF2D2D2D)
+          : Colors.white,
       builder: (context) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
