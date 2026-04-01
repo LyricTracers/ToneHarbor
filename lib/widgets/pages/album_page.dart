@@ -7,6 +7,7 @@ import 'package:toneharbor/models/audio_station/album.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class AlbumPage extends HookConsumerWidget {
@@ -20,57 +21,98 @@ class AlbumPage extends HookConsumerWidget {
     ColorScheme colorScheme,
     int total,
     TextEditingController searchController,
+    Size size,
   ) {
     final l10n = ref.watch(l10nProvider);
-    return AppBar(
-      backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
-      title: Row(
-        children: [
-          Text(
-            l10n.albums,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-
-          if (total > 0)
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Text(
-                " ${l10n.total_albums.replaceFirst("%s", total.toString())}",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: colorScheme.onSurface.withValues(alpha: 0.7),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+    final showSearch = useState(false);
+    useEffect(() {
+      showSearch.value = false;
+      searchController.clear();
+      return null;
+    }, [size.lgAndUp]);
+    final toolbarHeight = 56 * size.multiplier2;
+    final color = colorScheme.tertiary.withValues(alpha: 0.1);
+    return showSearch.value
+        ? AppBar(
+            leading: IconButton(
+              onPressed: () {
+                showSearch.value = false;
+                searchController.clear();
+              },
+              icon: Icon(Icons.arrow_back_ios_sharp),
             ),
-        ],
-      ),
-      centerTitle: false,
-      actions: [
-        CommonSearchField(searchController: searchController),
-        const SizedBox(width: 16),
-        IconButton(
-          onPressed: () async {
-            var direction = ref.read(baseProvider.notifier).extraSortDirection;
-            await ref
-                .read(baseProvider.notifier)
-                .setSort(
-                  sortBy: "name",
-                  sortDirection: direction == "ASC" ? "DESC" : "ASC",
-                );
-          },
-          icon: const Icon(Icons.sort, size: 18),
-          tooltip: l10n.sort,
-        ),
-        IconButton(
-          onPressed: () {
-            ref.context.push("/setting");
-          },
-          icon: const Icon(Icons.settings_rounded, size: 18),
-          tooltip: l10n.settings,
-        ),
-      ],
-    );
+            toolbarHeight: toolbarHeight,
+            backgroundColor: color,
+            actions: [
+              CommonSearchField(
+                searchController: searchController,
+                autofocus: true,
+              ),
+            ],
+          )
+        : AppBar(
+            toolbarHeight: toolbarHeight,
+            backgroundColor: color,
+            title: Row(
+              children: [
+                Text(
+                  l10n.albums,
+                  style: TextStyle(
+                    fontSize: 16 * size.multiplier2,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                if (total > 0)
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Text(
+                      " ${l10n.total_albums.replaceFirst("%s", total.toString())}",
+                      style: TextStyle(
+                        fontSize: 12 * size.multiplier2,
+                        color: colorScheme.onSurface.withValues(alpha: 0.7),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            centerTitle: false,
+            actions: [
+              size.lgAndUp
+                  ? CommonSearchField(searchController: searchController)
+                  : IconButton(
+                      onPressed: () {
+                        showSearch.value = true;
+                        searchController.clear();
+                      },
+                      icon: Icon(Icons.search, size: 18),
+                    ),
+              IconButton(
+                onPressed: () async {
+                  var direction = ref
+                      .read(baseProvider.notifier)
+                      .extraSortDirection;
+                  await ref
+                      .read(baseProvider.notifier)
+                      .setSort(
+                        sortBy: "name",
+                        sortDirection: direction == "ASC" ? "DESC" : "ASC",
+                      );
+                },
+                icon: const Icon(Icons.sort, size: 18),
+                tooltip: l10n.sort,
+              ),
+              if (size.lgAndUp)
+                IconButton(
+                  onPressed: () {
+                    ref.context.push("/setting");
+                  },
+                  icon: const Icon(Icons.settings_rounded, size: 18),
+                  tooltip: l10n.settings,
+                ),
+            ],
+          );
   }
 
   @override
@@ -130,9 +172,10 @@ class AlbumPage extends HookConsumerWidget {
       return () => scrollController.removeListener(onScroll);
     }, [scrollController]);
 
+    final size = MediaQuery.of(context).size;
     return Column(
       children: [
-        _buildAppBar(ref, colorScheme, total, searchController),
+        _buildAppBar(ref, colorScheme, total, searchController, size),
         Expanded(
           child: albums.when(
             data: (data) {
@@ -144,15 +187,15 @@ class AlbumPage extends HookConsumerWidget {
                 child: GridView.builder(
                   controller: scrollController,
                   itemCount: filteredItems.length + (displayHasMore ? 1 : 0),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 180,
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 16,
-                    childAspectRatio: 0.75,
+                    childAspectRatio: 0.7,
                   ),
                   itemBuilder: (context, index) {
                     if (index == filteredItems.length) {
-                      return const Padding(
+                      return Padding(
                         padding: EdgeInsets.all(16),
                         child: Center(child: CircularProgressIndicator()),
                       );
@@ -229,9 +272,9 @@ class _AlbumItem extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                padding: EdgeInsets.symmetric(horizontal: 4),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -246,7 +289,7 @@ class _AlbumItem extends StatelessWidget {
                         color: colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       artistName,
                       maxLines: 1,
