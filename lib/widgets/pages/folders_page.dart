@@ -37,16 +37,25 @@ class _FolderItemWidget extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     var isHovered = useState(false);
     var folderItem = folderItems[index];
+    var isPressed = useState(false);
+    useEffect(() {
+      return () {
+        isPressed.value = false;
+      };
+    }, []);
     return MouseRegion(
       onEnter: (event) => isHovered.value = true,
       onExit: (event) => isHovered.value = false,
       child: Container(
         height: itemHeightFolder,
-        color: isHovered.value
+        color: isHovered.value || isPressed.value
             ? colorScheme.outline.withValues(alpha: .1)
             : Colors.transparent,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
+          onTapDown: (details) => isPressed.value = true,
+          onTapUp: (details) => isPressed.value = false,
+          onTapCancel: () => isPressed.value = false,
           onTap: () async {
             if (!songSelectionState.selectionType) {
               context.push(

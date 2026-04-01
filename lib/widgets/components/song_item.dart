@@ -44,6 +44,12 @@ class SongItem extends HookConsumerWidget {
     double itemHeight = 66.0 * multiplier;
     var isHovered = useState(false);
     var localSelected = useState(false);
+    var isPressed = useState(false);
+    useEffect(() {
+      return () {
+        isPressed.value = false;
+      };
+    }, []);
 
     useEffect(() {
       localSelected.value = ref
@@ -104,7 +110,7 @@ class SongItem extends HookConsumerWidget {
             ),
           Container(
             height: itemHeight,
-            color: isHovered.value
+            color: isHovered.value || isPressed.value
                 ? colorScheme.outline.withValues(alpha: .1)
                 : Colors.transparent,
             child: GestureDetector(
@@ -114,6 +120,9 @@ class SongItem extends HookConsumerWidget {
                   onTap();
                 }
               },
+              onTapDown: (details) => isPressed.value = true,
+              onTapUp: (details) => isPressed.value = false,
+              onTapCancel: () => isPressed.value = false,
               onTap: () {
                 updateState();
               },

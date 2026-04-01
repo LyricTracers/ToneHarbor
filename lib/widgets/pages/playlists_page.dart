@@ -35,6 +35,12 @@ class _PlaylistItemWidget extends HookConsumerWidget {
     double itemHeight = 44.0 * multiplier;
     var playlistItem = playlists[index];
     var personalState = playlistItem.library == "personal";
+    var isPressed = useState(false);
+    useEffect(() {
+      return () {
+        isPressed.value = false;
+      };
+    }, []);
     return MouseRegion(
       onEnter: (event) => isHovered.value = true,
       onExit: (event) => isHovered.value = false,
@@ -67,11 +73,14 @@ class _PlaylistItemWidget extends HookConsumerWidget {
             ),
           Container(
             height: itemHeight,
-            color: isHovered.value
+            color: isHovered.value || isPressed.value
                 ? colorScheme.outline.withValues(alpha: .1)
                 : Colors.transparent,
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
+              onTapDown: (details) => isPressed.value = true,
+              onTapUp: (details) => isPressed.value = false,
+              onTapCancel: () => isPressed.value = false,
               onTap: () async {
                 context.push(
                   "/playlist_song/${Uri.encodeComponent(playlistItem.name)}",
