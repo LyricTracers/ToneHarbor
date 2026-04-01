@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/utils/use_progress.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
@@ -100,7 +101,7 @@ class BottomPlayer extends HookConsumerWidget {
 
     final volume = ref.watch(volumeProvider);
 
-    final width = MediaQuery.of(context).size.width;
+    final size = MediaQuery.of(context).size;
 
     return Container(
       color: colorScheme.surface.withValues(alpha: 0.2),
@@ -234,106 +235,112 @@ class BottomPlayer extends HookConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        _formatDuration(duration, position),
-                        style: textStyle11,
-                      ),
-
-                      const SizedBox(width: 2),
-                      IconButton(
-                        icon: Icon(
-                          volume > 0.5
-                              ? Icons.volume_up_rounded
-                              : volume > 0
-                              ? Icons.volume_down_rounded
-                              : Icons.volume_off_rounded,
-                          size: 18,
-                        ),
-                        onPressed: () {
-                          if (volume > 0.5) {
-                            ref.read(volumeProvider.notifier).setVolume(0.5);
-                          } else if (volume > 0) {
-                            ref.read(volumeProvider.notifier).setVolume(0);
-                          } else {
-                            ref.read(volumeProvider.notifier).setVolume(1);
-                          }
-                        },
-                      ),
-                      if (width > 1250)
-                        SizedBox(
-                          width: 80,
-                          child: SliderTheme(
-                            data: SliderTheme.of(context).copyWith(
-                              trackHeight: 2,
-                              thumbShape: const RoundSliderThumbShape(
-                                enabledThumbRadius: 5,
-                              ),
-                              overlayShape: const RoundSliderOverlayShape(
-                                overlayRadius: 10,
-                              ),
-                              trackShape: const RectangularSliderTrackShape(),
-                            ),
-                            child: Slider(
-                              value: volume,
-                              min: 0,
-                              max: 1,
-                              onChanged: (value) {
-                                ref
-                                    .read(volumeProvider.notifier)
-                                    .setVolume(value);
-                              },
-                            ),
+                      if (size.xlAndUp) ...[
+                        if (size.is2Xl)
+                          Text(
+                            _formatDuration(duration, position),
+                            style: textStyle11,
                           ),
-                        ),
-                      if (!activeTrack.isLocal) ...[
                         const SizedBox(width: 2),
                         IconButton(
                           icon: Icon(
-                            rating
-                                ? Icons.favorite_rounded
-                                : Icons.favorite_border_rounded,
+                            volume > 0.5
+                                ? Icons.volume_up_rounded
+                                : volume > 0
+                                ? Icons.volume_down_rounded
+                                : Icons.volume_off_rounded,
                             size: 18,
                           ),
-                          onPressed: () async {
-                            try {
-                              ref
-                                  .read(requestFlagProvider.notifier)
-                                  .setRequestFlag(true);
-                              SetRatingResponse response;
-                              if (rating) {
-                                response = await ref
-                                    .read(songRatingProvider.notifier)
-                                    .setRating(id: activeTrack.id, rating: 0);
-                              } else {
-                                response = await ref
-                                    .read(songRatingProvider.notifier)
-                                    .setRating(id: activeTrack.id, rating: 5);
-                              }
-                              if (response.success) {
-                                ref
-                                    .read(
-                                      favoriteSongsProvider(limit: 50).notifier,
-                                    )
-                                    .invalidateCache();
-                                ref.invalidate(favoriteSongsProvider);
-                              }
-                            } catch (e) {
-                              if (context.mounted) {
-                                showSnackBarError(
-                                  e,
-                                  context,
-                                  colorScheme.secondary,
-                                );
-                              }
-                            } finally {
-                              ref
-                                  .read(requestFlagProvider.notifier)
-                                  .setRequestFlag(false);
+                          onPressed: () {
+                            if (volume > 0.5) {
+                              ref.read(volumeProvider.notifier).setVolume(0.5);
+                            } else if (volume > 0) {
+                              ref.read(volumeProvider.notifier).setVolume(0);
+                            } else {
+                              ref.read(volumeProvider.notifier).setVolume(1);
                             }
                           },
                         ),
+                        if (size.is2Xl)
+                          SizedBox(
+                            width: 80,
+                            child: SliderTheme(
+                              data: SliderTheme.of(context).copyWith(
+                                trackHeight: 2,
+                                thumbShape: const RoundSliderThumbShape(
+                                  enabledThumbRadius: 5,
+                                ),
+                                overlayShape: const RoundSliderOverlayShape(
+                                  overlayRadius: 10,
+                                ),
+                                trackShape: const RectangularSliderTrackShape(),
+                              ),
+                              child: Slider(
+                                value: volume,
+                                min: 0,
+                                max: 1,
+                                onChanged: (value) {
+                                  ref
+                                      .read(volumeProvider.notifier)
+                                      .setVolume(value);
+                                },
+                              ),
+                            ),
+                          ),
+
+                        if (!activeTrack.isLocal) ...[
+                          const SizedBox(width: 2),
+                          IconButton(
+                            icon: Icon(
+                              rating
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_border_rounded,
+                              size: 18,
+                            ),
+                            onPressed: () async {
+                              try {
+                                ref
+                                    .read(requestFlagProvider.notifier)
+                                    .setRequestFlag(true);
+                                SetRatingResponse response;
+                                if (rating) {
+                                  response = await ref
+                                      .read(songRatingProvider.notifier)
+                                      .setRating(id: activeTrack.id, rating: 0);
+                                } else {
+                                  response = await ref
+                                      .read(songRatingProvider.notifier)
+                                      .setRating(id: activeTrack.id, rating: 5);
+                                }
+                                if (response.success) {
+                                  ref
+                                      .read(
+                                        favoriteSongsProvider(
+                                          limit: 50,
+                                        ).notifier,
+                                      )
+                                      .invalidateCache();
+                                  ref.invalidate(favoriteSongsProvider);
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  showSnackBarError(
+                                    e,
+                                    context,
+                                    colorScheme.secondary,
+                                  );
+                                }
+                              } finally {
+                                ref
+                                    .read(requestFlagProvider.notifier)
+                                    .setRequestFlag(false);
+                              }
+                            },
+                          ),
+                        ],
+                        const SizedBox(width: 2),
                       ],
-                      const SizedBox(width: 2),
+
                       IconButton(
                         icon: Icon(
                           _getLoopIcon(loopMode),
