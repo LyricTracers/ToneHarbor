@@ -10,6 +10,7 @@ import "package:toneharbor/providers/providers.dart";
 import "package:toneharbor/services/audio_player/audio_player.dart";
 import "package:toneharbor/services/translate/translate_service.dart";
 import "package:toneharbor/utils/base_funs.dart";
+import "package:toneharbor/utils/responsive.dart";
 import "package:toneharbor/widgets/widgets.dart";
 
 class PlayingDetailLayout extends BaseBgLayout {
@@ -75,13 +76,19 @@ class PlayingDetailLayout extends BaseBgLayout {
                                   onPressed: isLocal
                                       ? null
                                       : () {
-                                          showSlidePanel(
-                                            context: ref.context,
-                                            builder: (context) =>
-                                                AddToPlaylistsPage(
-                                                  activeTrack.id,
-                                                ),
-                                          );
+                                          if (size.lgAndUp) {
+                                            showSlidePanel(
+                                              context: ref.context,
+                                              builder: (context) =>
+                                                  AddToPlaylistsPage(
+                                                    activeTrack.id,
+                                                  ),
+                                            );
+                                          } else {
+                                            ref.context.push(
+                                              "/add_to_playlist/${Uri.encodeComponent(activeTrack.id)}",
+                                            );
+                                          }
                                         },
                                   icon: Icon(
                                     Icons.playlist_add_rounded,

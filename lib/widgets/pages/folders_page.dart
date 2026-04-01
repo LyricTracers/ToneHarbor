@@ -502,6 +502,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                             ref,
                             colorScheme,
                             l10n,
+                            size,
                             item,
                           ),
                           padding: const EdgeInsets.all(8.0),

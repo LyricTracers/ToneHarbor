@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -172,10 +173,15 @@ class SubSongSelectionBottom extends HookConsumerWidget {
                 return;
               }
 
-              showSlidePanel(
-                context: context,
-                builder: (context) => AddToPlaylistsPage(ids.join(',')),
-              );
+              final itemId = ids.join(',');
+              if (size.lgAndUp) {
+                showSlidePanel(
+                  context: context,
+                  builder: (context) => AddToPlaylistsPage(itemId),
+                );
+              } else {
+                context.push("/add_to_playlist/${Uri.encodeComponent(itemId)}");
+              }
             },
             icon: Icon(Icons.playlist_add_rounded, size: 18),
             tooltip: l10n.song_playlist,

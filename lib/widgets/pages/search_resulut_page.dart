@@ -30,7 +30,8 @@ class SearchResulutPage extends HookConsumerWidget {
         ),
       ),
     );
-    final multiplier = MediaQuery.of(context).size.multiplier2;
+    final size = MediaQuery.of(context).size;
+    final multiplier = size.multiplier2;
     return Column(
       children: [
         if (songSelectionState.selectionType)
@@ -174,6 +175,7 @@ class SearchResulutPage extends HookConsumerWidget {
                                               ref,
                                               colorScheme,
                                               l10n,
+                                              size,
                                               item,
                                             ),
                                         padding: const EdgeInsets.all(8.0),

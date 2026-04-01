@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/excetions.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 
 class AddToPlaylistsPage extends HookConsumerWidget {
@@ -27,7 +28,7 @@ class AddToPlaylistsPage extends HookConsumerWidget {
     final isLoadingMore = useState(false);
     final l10n = ref.watch(l10nProvider);
     final favoritePlaylistsState = ref.watch(favoritePlaylistStateProvider);
-
+    final size = MediaQuery.of(context).size;
     useEffect(() {
       void onScroll() {
         if (!scrollController.hasClients) return;
@@ -78,41 +79,37 @@ class AddToPlaylistsPage extends HookConsumerWidget {
     return Stack(
       children: [
         Container(
-          width: width * 0.35,
+          width: size.lgAndUp ? width * 0.35 : double.infinity,
           color: colorScheme.surface.withValues(alpha: 0.8),
           height: double.infinity,
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 10),
-                child: Row(
-                  children: [
-                    Text(
-                      i10n.add_to_playlists,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    Expanded(child: SizedBox()),
-
-                    IconButton(
-                      onPressed: () async {
-                        showCreatePlaylistDialog(
-                          ref,
-                          nameController,
-                          colorScheme,
-                          callBackAddPlaylists,
-                        );
-                      },
-                      icon: Icon(Icons.create_rounded, size: 18),
-                      tooltip: i10n.create_playlist,
-                    ),
-                  ],
+              AppBar(
+                toolbarHeight: 56 * size.multiplier3,
+                title: Text(
+                  i10n.add_to_playlists,
+                  style: TextStyle(
+                    fontSize: 16 * size.multiplier2,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+                actions: [
+                  IconButton(
+                    onPressed: () async {
+                      showCreatePlaylistDialog(
+                        ref,
+                        nameController,
+                        colorScheme,
+                        callBackAddPlaylists,
+                      );
+                    },
+                    icon: Icon(Icons.create_rounded, size: 18),
+                    tooltip: i10n.create_playlist,
+                  ),
+                ],
+                centerTitle: false,
+                backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
               ),
-              Divider(thickness: 2, height: 2, indent: 5, endIndent: 5),
               Expanded(
                 child: playlistsState.when(
                   data: (data) {

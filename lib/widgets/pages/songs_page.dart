@@ -341,6 +341,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                           ref,
                           colorScheme,
                           l10n,
+                          size,
                           item,
                           playlistId: playlistId,
                           index: searchQuery.isEmpty ? index : -1,

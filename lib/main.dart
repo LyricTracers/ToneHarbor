@@ -378,6 +378,14 @@ class MyApp extends HookConsumerWidget {
                     NoTransitionPage(child: AudioDevicePage()),
               ),
               GoRoute(
+                path: '/add_to_playlist/:songIds',
+                pageBuilder: (context, state) => NoTransitionPage(
+                  child: AddToPlaylistsPage(
+                    state.pathParameters['songIds'] ?? '',
+                  ),
+                ),
+              ),
+              GoRoute(
                 path: '/mobile_home/recommend',
                 pageBuilder: (context, state) =>
                     NoTransitionPage(child: MobileHomeLayout(tab: 0)),

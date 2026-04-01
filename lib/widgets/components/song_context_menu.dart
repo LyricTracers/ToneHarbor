@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:path/path.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/pages/add_to_playlists_page.dart';
 
 class SongContextMenu {
@@ -12,6 +15,7 @@ class SongContextMenu {
     WidgetRef ref,
     ColorScheme colorScheme,
     AppLocalizations l10n,
+    Size size,
     ToneHarborTrackObject item, {
     String playlistId = '',
     int index = -1,
@@ -151,10 +155,16 @@ class SongContextMenu {
             MenuItem(
               label: Text(l10n.song_playlist),
               onSelected: (value) {
-                showSlidePanel(
-                  context: ref.context,
-                  builder: (context) => AddToPlaylistsPage(itemId),
-                );
+                if (size.lgAndUp) {
+                  showSlidePanel(
+                    context: ref.context,
+                    builder: (context) => AddToPlaylistsPage(itemId),
+                  );
+                } else {
+                  ref.context.push(
+                    "/add_to_playlist/${Uri.encodeComponent(itemId)}",
+                  );
+                }
               },
             ),
           ],
