@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 
 const _chartColors = [
@@ -25,13 +26,17 @@ class StorageManagePage extends HookConsumerWidget {
     final storageAsync = ref.watch(storageInfoProvider);
     final colorScheme = getColorSchemeWhenReady(ref);
     final l10n = ref.watch(l10nProvider);
-
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 56 * size.multiplier3,
         backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
         title: Text(
           l10n.storage_management,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 16 * size.multiplier2,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: false,
       ),

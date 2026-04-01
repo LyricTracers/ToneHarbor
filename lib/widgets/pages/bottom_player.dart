@@ -437,10 +437,18 @@ class BottomPlayer extends HookConsumerWidget {
                               size: 18,
                             ),
                             onPressed: () {
-                              showSlidePanel(
-                                context: context,
-                                builder: (context) => const PlaylistPage(),
-                              );
+                              if (size.mdAndUp) {
+                                showSlidePanel(
+                                  context: context,
+                                  builder: (context) => const PlaylistPage(),
+                                );
+                              } else {
+                                showModalBottomSheetWidget(
+                                  ref.context,
+                                  colorScheme,
+                                  (context) => const PlaylistPage(),
+                                );
+                              }
                             },
                           ),
                           if (size.smAndUp) ...[

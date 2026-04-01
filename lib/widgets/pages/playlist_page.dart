@@ -7,6 +7,7 @@ import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class _PlaylistItem extends HookConsumerWidget {
@@ -189,47 +190,56 @@ class PlaylistPage extends HookConsumerWidget {
       });
       return null;
     }, [playlist.currentIndex]);
-    var width = MediaQuery.of(context).size.width;
+    final size = MediaQuery.of(context).size;
+    var width = size.width;
+    var targetWidth = 0.0;
+    if (size.xlAndUp) {
+      targetWidth = width * 0.35;
+    } else if (size.isLg) {
+      targetWidth = width * 0.45;
+    } else if (size.isMd) {
+      targetWidth = width * 0.55;
+    } else {
+      targetWidth = double.infinity;
+    }
     return Container(
-      width: width * 0.35,
+      width: targetWidth,
       color: colorScheme.surface.withValues(alpha: 0.8),
       height: double.infinity,
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20, right: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  i10n.playlist_text.replaceFirst(
-                    '%s',
-                    '${playlist.tracks.length}',
-                  ),
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    if (shuffled) {
-                      audioPlayer.setShuffle(false);
-                    } else {
-                      audioPlayer.setShuffle(true);
-                    }
-                  },
-                  icon: Icon(
-                    Icons.shuffle_rounded,
-                    color: shuffled ? colorScheme.primary : null,
-                    size: 18,
-                  ),
-                ),
-              ],
+          AppBar(
+            toolbarHeight: 56 * size.multiplier3,
+            title: Text(
+              i10n.playlist_text.replaceFirst(
+                '%s',
+                '${playlist.tracks.length}',
+              ),
+              style: TextStyle(
+                fontSize: 16 * size.multiplier2,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  if (shuffled) {
+                    audioPlayer.setShuffle(false);
+                  } else {
+                    audioPlayer.setShuffle(true);
+                  }
+                },
+                icon: Icon(
+                  Icons.shuffle_rounded,
+                  color: shuffled ? colorScheme.primary : null,
+                  size: 18,
+                ),
+              ),
+            ],
+            centerTitle: false,
+            backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
           ),
-          Divider(thickness: 2, height: 2, indent: 5, endIndent: 5),
           Expanded(
             child: ReorderableListView.builder(
               scrollController: scrollController,

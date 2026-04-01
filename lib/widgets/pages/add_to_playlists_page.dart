@@ -120,6 +120,7 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                 centerTitle: false,
                 backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
               ),
+
               Expanded(
                 child: playlistsState.when(
                   data: (data) {
