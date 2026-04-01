@@ -164,7 +164,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
       searchController.clear();
       return null;
     }, [size.lgAndUp]);
-    final toolbarHeight = 56 * size.multiplier2;
+    final toolbarHeight = 56 * size.multiplier3;
     final color = colorScheme.tertiary.withValues(alpha: 0.1);
     return showSearch.value
         ? AppBar(
@@ -343,6 +343,13 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                         },
                         l10n.select_all,
                         Icons.fact_check_rounded,
+                      ),
+                      getActionMenuItem(
+                        () {
+                          context.go("/");
+                        },
+                        l10n.music_house,
+                        Icons.home,
                       ),
                     ];
                   },

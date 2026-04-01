@@ -11,6 +11,7 @@ import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/utils/responsive.dart';
 
 class DownloadPage extends HookConsumerWidget {
   const DownloadPage({super.key});
@@ -46,11 +47,16 @@ class DownloadPage extends HookConsumerWidget {
       downloadTaskRecords = ref.watch(downloadHistoryProvider());
       total = downloadTaskRecords!.length;
     }
-
+    final size = MediaQuery.of(context).size;
+    final multiplier = size.multiplier2;
+    final toolbarHeight = 56 * size.multiplier3;
+    final color = colorScheme.tertiary.withValues(alpha: 0.1);
     return Column(
       children: [
         if (songSelectionState.selectionType)
           AppBar(
+            backgroundColor: color,
+            toolbarHeight: toolbarHeight,
             automaticallyImplyLeading: false,
             leading: IconButton(
               onPressed: () {
@@ -67,8 +73,8 @@ class DownloadPage extends HookConsumerWidget {
                     '%s',
                     '${selection.ids.length}',
                   ),
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: TextStyle(
+                    fontSize: 16 * multiplier,
                     fontWeight: FontWeight.bold,
                   ),
                 );
@@ -77,8 +83,8 @@ class DownloadPage extends HookConsumerWidget {
             actions: [
               Text(
                 l10n.select_all,
-                style: const TextStyle(
-                  fontSize: 14,
+                style: TextStyle(
+                  fontSize: 14 * multiplier,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -119,9 +125,14 @@ class DownloadPage extends HookConsumerWidget {
           ),
         if (!songSelectionState.selectionType)
           AppBar(
+            backgroundColor: color,
+            toolbarHeight: toolbarHeight,
             title: Text(
               l10n.download_center,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 16 * multiplier,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             actions: [
               _buildTabButton(
@@ -148,13 +159,14 @@ class DownloadPage extends HookConsumerWidget {
                 icon: Icon(Icons.fact_check_rounded, size: 18),
                 tooltip: l10n.select_all,
               ),
-              IconButton(
-                onPressed: () {
-                  ref.context.push("/setting");
-                },
-                icon: Icon(Icons.settings_rounded, size: 18),
-                tooltip: l10n.settings,
-              ),
+              if (size.lgAndUp)
+                IconButton(
+                  onPressed: () {
+                    ref.context.push("/setting");
+                  },
+                  icon: Icon(Icons.settings_rounded, size: 18),
+                  tooltip: l10n.settings,
+                ),
             ],
             centerTitle: false,
           ),
@@ -174,7 +186,8 @@ class DownloadPage extends HookConsumerWidget {
         ),
         if (songSelectionState.selectionType && selectedTab.value == 0)
           AppBar(
-            toolbarHeight: 70,
+            backgroundColor: color,
+            toolbarHeight: 70 * multiplier,
             automaticallyImplyLeading: false,
             actions: [
               IconButton(
@@ -214,7 +227,8 @@ class DownloadPage extends HookConsumerWidget {
 
         if (songSelectionState.selectionType && selectedTab.value == 1)
           AppBar(
-            toolbarHeight: 70,
+            backgroundColor: color,
+            toolbarHeight: 70 * multiplier,
             automaticallyImplyLeading: false,
             actions: [
               IconButton(

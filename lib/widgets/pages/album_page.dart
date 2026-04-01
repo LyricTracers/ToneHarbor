@@ -30,7 +30,7 @@ class AlbumPage extends HookConsumerWidget {
       searchController.clear();
       return null;
     }, [size.lgAndUp]);
-    final toolbarHeight = 56 * size.multiplier2;
+    final toolbarHeight = 56 * size.multiplier3;
     final color = colorScheme.tertiary.withValues(alpha: 0.1);
     return showSearch.value
         ? AppBar(

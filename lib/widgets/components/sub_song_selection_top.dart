@@ -14,7 +14,7 @@ class SubSongSelectionTop extends HookConsumerWidget {
     final l10n = ref.watch(l10nProvider);
     final colorScheme = getColorSchemeWhenReady(ref);
     final size = MediaQuery.of(context).size;
-    final toolbarHeight = 56 * size.multiplier2;
+    final toolbarHeight = 56 * size.multiplier3;
     final color = colorScheme.tertiary.withValues(alpha: 0.1);
     return AppBar(
       toolbarHeight: toolbarHeight,
