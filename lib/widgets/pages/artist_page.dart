@@ -7,6 +7,7 @@ import 'package:toneharbor/models/audio_station/artist.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class ArtistPage extends HookConsumerWidget {
@@ -18,57 +19,99 @@ class ArtistPage extends HookConsumerWidget {
     ColorScheme colorScheme,
     int total,
     TextEditingController searchController,
+    Size size,
   ) {
     final l10n = ref.watch(l10nProvider);
-    return AppBar(
-      backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
-      title: Row(
-        children: [
-          Text(
-            l10n.artist,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-
-          if (total > 0)
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Text(
-                " ${l10n.total_artists.replaceFirst("%s", total.toString())}",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: colorScheme.onSurface.withValues(alpha: 0.7),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+    final showSearch = useState(false);
+    useEffect(() {
+      showSearch.value = false;
+      searchController.clear();
+      return null;
+    }, [size.lgAndUp]);
+    final toolbarHeight = 56 * size.multiplier3;
+    final color = colorScheme.tertiary.withValues(alpha: 0.1);
+    return showSearch.value
+        ? AppBar(
+            leading: IconButton(
+              onPressed: () {
+                showSearch.value = false;
+                searchController.clear();
+              },
+              icon: Icon(Icons.arrow_back_ios_sharp),
             ),
-        ],
-      ),
-      centerTitle: false,
-      actions: [
-        CommonSearchField(searchController: searchController),
-        const SizedBox(width: 16),
-        IconButton(
-          onPressed: () async {
-            var direction = ref.read(baseProvider.notifier).extraSortDirection;
-            await ref
-                .read(baseProvider.notifier)
-                .setSort(
-                  sortBy: "name",
-                  sortDirection: direction == "ASC" ? "DESC" : "ASC",
-                );
-          },
-          icon: const Icon(Icons.sort, size: 18),
-          tooltip: l10n.sort,
-        ),
-        IconButton(
-          onPressed: () {
-            ref.context.push("/setting");
-          },
-          icon: const Icon(Icons.settings_rounded, size: 18),
-          tooltip: l10n.settings,
-        ),
-      ],
-    );
+            toolbarHeight: toolbarHeight,
+            backgroundColor: color,
+            actions: [
+              CommonSearchField(
+                searchController: searchController,
+                autofocus: true,
+              ),
+              SizedBox(width: 16),
+            ],
+          )
+        : AppBar(
+            toolbarHeight: toolbarHeight,
+            backgroundColor: color,
+            title: Row(
+              children: [
+                Text(
+                  l10n.artist,
+                  style: TextStyle(
+                    fontSize: 16 * size.multiplier2,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                if (total > 0)
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Text(
+                      " ${l10n.total_artists.replaceFirst("%s", total.toString())}",
+                      style: TextStyle(
+                        fontSize: 12 * size.multiplier2,
+                        color: colorScheme.onSurface.withValues(alpha: 0.7),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            centerTitle: false,
+            actions: [
+              size.lgAndUp
+                  ? CommonSearchField(searchController: searchController)
+                  : IconButton(
+                      onPressed: () {
+                        showSearch.value = true;
+                        searchController.clear();
+                      },
+                      icon: const Icon(Icons.search, size: 18),
+                    ),
+              IconButton(
+                onPressed: () async {
+                  var direction = ref
+                      .read(baseProvider.notifier)
+                      .extraSortDirection;
+                  await ref
+                      .read(baseProvider.notifier)
+                      .setSort(
+                        sortBy: "name",
+                        sortDirection: direction == "ASC" ? "DESC" : "ASC",
+                      );
+                },
+                icon: const Icon(Icons.sort, size: 18),
+                tooltip: l10n.sort,
+              ),
+              if (size.lgAndUp)
+                IconButton(
+                  onPressed: () {
+                    ref.context.push("/setting");
+                  },
+                  icon: const Icon(Icons.settings_rounded, size: 18),
+                  tooltip: l10n.settings,
+                ),
+            ],
+          );
   }
 
   @override
@@ -124,9 +167,10 @@ class ArtistPage extends HookConsumerWidget {
       return () => scrollController.removeListener(onScroll);
     }, [scrollController]);
 
+    final size = MediaQuery.of(context).size;
     return Column(
       children: [
-        _buildAppBar(ref, colorScheme, total, searchController),
+        _buildAppBar(ref, colorScheme, total, searchController, size),
         Expanded(
           child: albums.when(
             data: (data) {

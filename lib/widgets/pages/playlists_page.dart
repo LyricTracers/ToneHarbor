@@ -8,6 +8,7 @@ import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/playlist_list.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/components/common_search_field.dart';
 
@@ -17,6 +18,7 @@ class _PlaylistItemWidget extends HookConsumerWidget {
   final int index;
   final bool isFavorite;
   final AppLocalizations l10n;
+  final double multiplier;
 
   const _PlaylistItemWidget({
     required this.index,
@@ -24,12 +26,13 @@ class _PlaylistItemWidget extends HookConsumerWidget {
     required this.colorScheme,
     required this.isFavorite,
     required this.l10n,
+    required this.multiplier,
   });
-  static const double itemHeight = 44.0;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var isHovered = useState(false);
+    double itemHeight = 44.0 * multiplier;
     var playlistItem = playlists[index];
     var personalState = playlistItem.library == "personal";
     return MouseRegion(
@@ -42,7 +45,10 @@ class _PlaylistItemWidget extends HookConsumerWidget {
               top: 0,
               left: 0,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 6 * multiplier,
+                  vertical: 2 * multiplier,
+                ),
                 decoration: BoxDecoration(
                   color: colorScheme.primary,
                   borderRadius: const BorderRadius.only(
@@ -53,7 +59,7 @@ class _PlaylistItemWidget extends HookConsumerWidget {
                   l10n.favorite,
                   style: TextStyle(
                     color: colorScheme.onPrimary,
-                    fontSize: 8,
+                    fontSize: 8 * multiplier,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -73,9 +79,9 @@ class _PlaylistItemWidget extends HookConsumerWidget {
                 );
               },
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 4,
+                padding: EdgeInsets.symmetric(
+                  horizontal: 20 * multiplier,
+                  vertical: 4 * multiplier,
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -83,24 +89,26 @@ class _PlaylistItemWidget extends HookConsumerWidget {
                     Text(
                       '${index + 1}',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 14 * multiplier,
                         color: colorScheme.primary,
                       ),
                     ),
-                    const SizedBox(width: 15),
+                    SizedBox(width: 15 * multiplier),
                     ...[
                       Icon(
                         personalState
                             ? Icons.folder_open_rounded
                             : Icons.folder_shared_rounded,
-                        size: 20,
+                        size: 20 * multiplier,
                       ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10 * multiplier),
                       Expanded(
                         flex: 1,
                         child: Text(
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           playlistItem.name,
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 16 * multiplier),
                         ),
                       ),
                     ],
@@ -126,44 +134,84 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
     ColorScheme colorScheme,
     int total,
     TextEditingController searchController,
+    Size size,
   ) {
     final l10n = ref.watch(l10nProvider);
-    return AppBar(
-      backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
-      title: Row(
-        children: [
-          Text(
-            l10n.playlists,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-
-          if (total > 0)
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Text(
-                " ${l10n.total_albums.replaceFirst("%s", total.toString())}",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: colorScheme.onSurface.withValues(alpha: 0.7),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+    final showSearch = useState(false);
+    useEffect(() {
+      showSearch.value = false;
+      searchController.clear();
+      return null;
+    }, [size.lgAndUp]);
+    final toolbarHeight = 56 * size.multiplier3;
+    final color = colorScheme.tertiary.withValues(alpha: 0.1);
+    return showSearch.value
+        ? AppBar(
+            leading: IconButton(
+              onPressed: () {
+                showSearch.value = false;
+                searchController.clear();
+              },
+              icon: Icon(Icons.arrow_back_ios_sharp),
             ),
-        ],
-      ),
-      actions: [
-        CommonSearchField(searchController: searchController),
-        const SizedBox(width: 16),
-        IconButton(
-          onPressed: () {
-            context.push("/setting");
-          },
-          icon: const Icon(Icons.settings_rounded, size: 18),
-          tooltip: l10n.settings,
-        ),
-      ],
-      centerTitle: false,
-    );
+            toolbarHeight: toolbarHeight,
+            backgroundColor: color,
+            actions: [
+              CommonSearchField(
+                searchController: searchController,
+                autofocus: true,
+              ),
+              SizedBox(width: 16),
+            ],
+          )
+        : AppBar(
+            backgroundColor: color,
+            toolbarHeight: toolbarHeight,
+            title: Row(
+              children: [
+                Text(
+                  l10n.playlists,
+                  style: TextStyle(
+                    fontSize: 16 * size.multiplier2,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                if (total > 0)
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Text(
+                      " ${l10n.total_albums.replaceFirst("%s", total.toString())}",
+                      style: TextStyle(
+                        fontSize: 12 * size.multiplier2,
+                        color: colorScheme.onSurface.withValues(alpha: 0.7),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            actions: [
+              size.lgAndUp
+                  ? CommonSearchField(searchController: searchController)
+                  : IconButton(
+                      onPressed: () {
+                        showSearch.value = true;
+                        searchController.clear();
+                      },
+                      icon: const Icon(Icons.search, size: 18),
+                    ),
+              if (size.lgAndUp)
+                IconButton(
+                  onPressed: () {
+                    context.push("/setting");
+                  },
+                  icon: const Icon(Icons.settings_rounded, size: 18),
+                  tooltip: l10n.settings,
+                ),
+            ],
+            centerTitle: false,
+          );
   }
 
   @override
@@ -270,9 +318,11 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
       }
     }
 
+    final size = MediaQuery.of(context).size;
+
     return Column(
       children: [
-        _buildAppBar(context, ref, colorScheme, total, searchController),
+        _buildAppBar(context, ref, colorScheme, total, searchController, size),
         Expanded(
           child: playlistsState.when(
             data: (data) {
@@ -374,6 +424,7 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                       colorScheme: colorScheme,
                       isFavorite: isFavorite,
                       l10n: l10n,
+                      multiplier: size.multiplier3,
                     ),
                   );
                 },

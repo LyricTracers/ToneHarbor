@@ -88,18 +88,23 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                 if (fromNoLoginLocal) SizedBox(height: 16),
                 Row(
                   children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 16 * size.multiplier2,
-                        fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 16 * size.multiplier2,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-
                     if (total > 0)
                       Align(
                         alignment: Alignment.bottomLeft,
                         child: Text(
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           " ${l10n.total_songs.replaceFirst("%s", total.toString())}",
                           style: TextStyle(
                             fontSize: 12 * size.multiplier2,
