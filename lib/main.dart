@@ -149,6 +149,7 @@ class MyApp extends HookConsumerWidget {
               }
               if (state.uri.path.startsWith('/mobile_home') ||
                   state.uri.path == '/') {
+                logger.i('Mobile Home Path: ${state.uri.path}');
                 return MobileHomeLayout(
                   tab: _getMobileTabIndex(state.uri.path),
                 );

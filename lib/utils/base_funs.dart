@@ -587,3 +587,25 @@ Future<T?> showSlidePanel<T>({
     },
   );
 }
+
+PopupMenuItem getActionMenuItem(
+  Function() onPressed,
+  String sortName,
+  IconData icon,
+) {
+  return PopupMenuItem(
+    onTap: onPressed,
+    child: Wrap(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: Icon(icon, size: 18),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: Text(sortName),
+        ),
+      ],
+    ),
+  );
+}

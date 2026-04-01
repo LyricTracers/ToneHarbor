@@ -3,28 +3,6 @@ part of 'songs_page.dart';
 enum SongsPageSortAction { none, titleName, artistName, time, all }
 
 extension _SongsPageActionExtension on SongsPage {
-  PopupMenuItem _getActionMenuItem(
-    Function() onPressed,
-    String sortName,
-    IconData icon,
-  ) {
-    return PopupMenuItem(
-      onTap: onPressed,
-      child: Wrap(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: Icon(icon, size: 18),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20),
-            child: Text(sortName),
-          ),
-        ],
-      ),
-    );
-  }
-
   List<PopupMenuItem> _sortMenuItmes(
     WidgetRef ref,
     AppLocalizations l10n,
@@ -33,7 +11,7 @@ extension _SongsPageActionExtension on SongsPage {
     return [
       if (sortAction == SongsPageSortAction.all ||
           sortAction == SongsPageSortAction.titleName) ...[
-        _getActionMenuItem(
+        getActionMenuItem(
           () {
             searchController.clear();
             ref
@@ -43,7 +21,7 @@ extension _SongsPageActionExtension on SongsPage {
           l10n.sort_name,
           Icons.arrow_upward_rounded,
         ),
-        _getActionMenuItem(
+        getActionMenuItem(
           () {
             searchController.clear();
             ref
@@ -56,7 +34,7 @@ extension _SongsPageActionExtension on SongsPage {
       ],
       if (sortAction == SongsPageSortAction.all ||
           sortAction == SongsPageSortAction.time) ...[
-        _getActionMenuItem(
+        getActionMenuItem(
           () {
             searchController.clear();
             ref
@@ -66,7 +44,7 @@ extension _SongsPageActionExtension on SongsPage {
           l10n.sort_time,
           Icons.arrow_upward_rounded,
         ),
-        _getActionMenuItem(
+        getActionMenuItem(
           () {
             searchController.clear();
             ref
@@ -79,7 +57,7 @@ extension _SongsPageActionExtension on SongsPage {
       ],
       if (sortAction == SongsPageSortAction.all ||
           sortAction == SongsPageSortAction.artistName) ...[
-        _getActionMenuItem(
+        getActionMenuItem(
           () {
             searchController.clear();
             ref
@@ -89,7 +67,7 @@ extension _SongsPageActionExtension on SongsPage {
           l10n.sort_artist_name,
           Icons.arrow_upward_rounded,
         ),
-        _getActionMenuItem(
+        getActionMenuItem(
           () {
             searchController.clear();
             ref

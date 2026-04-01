@@ -136,7 +136,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                 PopupMenuButton(
                   itemBuilder: (context) {
                     return [
-                      _getActionMenuItem(
+                      getActionMenuItem(
                         () {
                           ref.read(songSelectionProvider.notifier).toggle();
                         },
@@ -145,7 +145,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                       ),
 
                       if (refreshRandom)
-                        _getActionMenuItem(
+                        getActionMenuItem(
                           () async {
                             await audioStationRequestCache.clearGroup(
                               "randomSongs",
@@ -157,7 +157,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                         ),
 
                       if (fromNoLoginLocal)
-                        _getActionMenuItem(
+                        getActionMenuItem(
                           () async {
                             ref.context.go("/login");
                           },

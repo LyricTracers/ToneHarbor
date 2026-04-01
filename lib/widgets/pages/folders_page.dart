@@ -91,6 +91,7 @@ class _BreadCrumbItem extends HookConsumerWidget {
   final Color hoverTitleColor;
   final ColorScheme colorScheme;
   final double arrowWidth;
+  final double multiplier;
   const _BreadCrumbItem({
     required this.onTap,
     required this.crumbType,
@@ -99,6 +100,7 @@ class _BreadCrumbItem extends HookConsumerWidget {
     required this.hoverTitleColor,
     required this.colorScheme,
     required this.arrowWidth,
+    required this.multiplier,
   });
 
   @override
@@ -112,12 +114,15 @@ class _BreadCrumbItem extends HookConsumerWidget {
         child: ClipPath(
           clipper: BreadcrumbClipper(type: crumbType, arrowWidth: arrowWidth),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            padding: EdgeInsets.symmetric(
+              horizontal: 16 * multiplier,
+              vertical: 5 * multiplier,
+            ),
             color: colorScheme.outline.withValues(alpha: 0.3),
             child: Text(
               title,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 14 * multiplier,
                 fontWeight: isHovered.value
                     ? FontWeight.bold
                     : FontWeight.normal,
@@ -149,124 +154,203 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
     ColorScheme colorScheme,
     int total,
     TextEditingController searchController,
+    Size size,
   ) {
     final l10n = ref.watch(l10nProvider);
     double arrowWidth = 12;
-    return AppBar(
-      title: Row(
-        children: [
-          if (lastFoldItems.isEmpty)
-            Text(
-              l10n.folder,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+    final showSearch = useState(false);
+    useEffect(() {
+      showSearch.value = false;
+      searchController.clear();
+      return null;
+    }, [size.lgAndUp]);
+    final toolbarHeight = 56 * size.multiplier2;
+    final color = colorScheme.tertiary.withValues(alpha: 0.1);
+    return showSearch.value
+        ? AppBar(
+            leading: IconButton(
+              onPressed: () {
+                showSearch.value = false;
+                searchController.clear();
+              },
+              icon: Icon(Icons.arrow_back_ios_sharp),
             ),
-          if (lastFoldItems.isNotEmpty) ...[
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    ...List.generate(lastFoldItems.length + 1, (index) {
-                      Widget item;
-                      if (index == 0) {
-                        item = _BreadCrumbItem(
-                          onTap: () {
-                            context.push(
-                              "/folders/None",
-                              extra: (
-                                foldersProvider(limit: 100),
-                                <ToneHarborTrackObject>[],
-                              ),
-                            );
-                          },
-                          crumbType: BreadcrumbType.first,
-                          title: l10n.folder,
-                          titleColor: colorScheme.onSurface,
-                          hoverTitleColor: colorScheme.primary,
-                          colorScheme: colorScheme,
-                          arrowWidth: arrowWidth,
-                        );
-                      } else if (index == lastFoldItems.length) {
-                        item = _BreadCrumbItem(
-                          onTap: () {},
-                          crumbType: BreadcrumbType.last,
-                          title: lastFoldItems[index - 1].title,
-                          titleColor: colorScheme.secondary,
-                          hoverTitleColor: colorScheme.primary,
-                          colorScheme: colorScheme,
-                          arrowWidth: arrowWidth,
-                        );
-                      } else {
-                        item = _BreadCrumbItem(
-                          onTap: () {
-                            context.push(
-                              "/folders/${lastFoldItems[index - 1].id}",
-                              extra: (
-                                foldersProvider(
-                                  limit: 100,
-                                  id: lastFoldItems[index - 1].id,
-                                ),
-                                [...lastFoldItems.sublist(0, index)],
-                              ),
-                            );
-                          },
-                          crumbType: BreadcrumbType.middle,
-                          title: lastFoldItems[index - 1].title,
-                          titleColor: colorScheme.onSurface,
-                          hoverTitleColor: colorScheme.primary,
-                          colorScheme: colorScheme,
-                          arrowWidth: arrowWidth,
-                        );
-                      }
-
-                      if (index != 0) {
-                        item = Transform.translate(
-                          offset: Offset(-arrowWidth / 2 * index, 0),
-                          child: item,
-                        );
-                      }
-                      return item;
-                    }),
-                  ],
-                ),
+            toolbarHeight: toolbarHeight,
+            backgroundColor: color,
+            actions: [
+              CommonSearchField(
+                searchController: searchController,
+                autofocus: true,
               ),
+              SizedBox(width: 16),
+            ],
+          )
+        : AppBar(
+            backgroundColor: color,
+            toolbarHeight: toolbarHeight,
+            title: Row(
+              children: [
+                if (lastFoldItems.isEmpty)
+                  Text(
+                    l10n.folder,
+                    style: TextStyle(
+                      fontSize: 16 * size.multiplier2,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                if (lastFoldItems.isNotEmpty) ...[
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          ...List.generate(lastFoldItems.length + 1, (index) {
+                            Widget item;
+                            if (index == 0) {
+                              item = _BreadCrumbItem(
+                                onTap: () {
+                                  context.push(
+                                    "/folders/None",
+                                    extra: (
+                                      foldersProvider(limit: 100),
+                                      <ToneHarborTrackObject>[],
+                                    ),
+                                  );
+                                },
+                                crumbType: BreadcrumbType.first,
+                                title: l10n.folder,
+                                titleColor: colorScheme.onSurface,
+                                hoverTitleColor: colorScheme.primary,
+                                colorScheme: colorScheme,
+                                arrowWidth: arrowWidth,
+                                multiplier: size.multiplier2,
+                              );
+                            } else if (index == lastFoldItems.length) {
+                              item = _BreadCrumbItem(
+                                onTap: () {},
+                                crumbType: BreadcrumbType.last,
+                                title: lastFoldItems[index - 1].title,
+                                titleColor: colorScheme.secondary,
+                                hoverTitleColor: colorScheme.primary,
+                                colorScheme: colorScheme,
+                                arrowWidth: arrowWidth,
+                                multiplier: size.multiplier2,
+                              );
+                            } else {
+                              item = _BreadCrumbItem(
+                                onTap: () {
+                                  context.push(
+                                    "/folders/${lastFoldItems[index - 1].id}",
+                                    extra: (
+                                      foldersProvider(
+                                        limit: 100,
+                                        id: lastFoldItems[index - 1].id,
+                                      ),
+                                      [...lastFoldItems.sublist(0, index)],
+                                    ),
+                                  );
+                                },
+                                crumbType: BreadcrumbType.middle,
+                                title: lastFoldItems[index - 1].title,
+                                titleColor: colorScheme.onSurface,
+                                hoverTitleColor: colorScheme.primary,
+                                colorScheme: colorScheme,
+                                arrowWidth: arrowWidth,
+                                multiplier: size.multiplier2,
+                              );
+                            }
+
+                            if (index != 0) {
+                              item = Transform.translate(
+                                offset: Offset(-arrowWidth / 2 * index, 0),
+                                child: item,
+                              );
+                            }
+                            return item;
+                          }),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
-          ],
-        ],
-      ),
-      actions: [
-        CommonSearchField(searchController: searchController),
-        const SizedBox(width: 16),
-        IconButton(
-          onPressed: () async {
-            var direction = ref.read(baseProvider.notifier).extraSortDirection;
-            await ref
-                .read(baseProvider.notifier)
-                .setSort(
-                  sortBy: "title",
-                  sortDirection: direction == "ASC" ? "DESC" : "ASC",
-                );
-          },
-          icon: const Icon(Icons.sort, size: 18),
-          tooltip: l10n.sort,
-        ),
-        IconButton(
-          onPressed: () {
-            ref.read(songSelectionProvider.notifier).toggle();
-          },
-          icon: const Icon(Icons.fact_check_rounded, size: 18),
-          tooltip: l10n.select_all,
-        ),
-        IconButton(
-          onPressed: () {
-            context.push("/setting");
-          },
-          icon: const Icon(Icons.settings_rounded, size: 18),
-          tooltip: l10n.settings,
-        ),
-      ],
-      centerTitle: false,
-    );
+            actions: [
+              size.lgAndUp
+                  ? CommonSearchField(searchController: searchController)
+                  : IconButton(
+                      onPressed: () {
+                        showSearch.value = true;
+                        searchController.clear();
+                      },
+                      icon: const Icon(Icons.search, size: 18),
+                    ),
+              if (size.lgAndUp) ...[
+                IconButton(
+                  onPressed: () async {
+                    var direction = ref
+                        .read(baseProvider.notifier)
+                        .extraSortDirection;
+                    await ref
+                        .read(baseProvider.notifier)
+                        .setSort(
+                          sortBy: "title",
+                          sortDirection: direction == "ASC" ? "DESC" : "ASC",
+                        );
+                  },
+                  icon: const Icon(Icons.sort, size: 18),
+                  tooltip: l10n.sort,
+                ),
+                IconButton(
+                  onPressed: () {
+                    ref.read(songSelectionProvider.notifier).toggle();
+                  },
+                  icon: const Icon(Icons.fact_check_rounded, size: 18),
+                  tooltip: l10n.select_all,
+                ),
+                IconButton(
+                  onPressed: () {
+                    context.push("/setting");
+                  },
+                  icon: const Icon(Icons.settings_rounded, size: 18),
+                  tooltip: l10n.settings,
+                ),
+              ],
+              if (!size.lgAndUp) ...[
+                PopupMenuButton(
+                  itemBuilder: (context) {
+                    return [
+                      getActionMenuItem(
+                        () async {
+                          var direction = ref
+                              .read(baseProvider.notifier)
+                              .extraSortDirection;
+                          await ref
+                              .read(baseProvider.notifier)
+                              .setSort(
+                                sortBy: "title",
+                                sortDirection: direction == "ASC"
+                                    ? "DESC"
+                                    : "ASC",
+                              );
+                        },
+                        l10n.sort,
+                        Icons.sort,
+                      ),
+                      getActionMenuItem(
+                        () {
+                          ref.read(songSelectionProvider.notifier).toggle();
+                        },
+                        l10n.select_all,
+                        Icons.fact_check_rounded,
+                      ),
+                    ];
+                  },
+                ),
+              ],
+            ],
+            centerTitle: false,
+          );
   }
 
   @override
@@ -346,13 +430,22 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
       scrollController.addListener(onScroll);
       return () => scrollController.removeListener(onScroll);
     }, [scrollController]);
-    final multiplier = MediaQuery.of(context).size.multiplier2;
+    final size = MediaQuery.of(context).size;
+    final multiplier = size.multiplier2;
+
     return Column(
       children: [
         if (songSelectionState.selectionType)
           SubSongSelectionTop(songs: filteredItems),
         if (!songSelectionState.selectionType)
-          _buildAppBar(context, ref, colorScheme, total, searchController),
+          _buildAppBar(
+            context,
+            ref,
+            colorScheme,
+            total,
+            searchController,
+            size,
+          ),
         Expanded(
           child: folderResponse.when(
             data: (data) {
