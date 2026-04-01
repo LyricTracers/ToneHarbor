@@ -21,6 +21,7 @@ class ArtistPage extends HookConsumerWidget {
   ) {
     final l10n = ref.watch(l10nProvider);
     return AppBar(
+      backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
       title: Row(
         children: [
           Text(

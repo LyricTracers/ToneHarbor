@@ -107,7 +107,7 @@ class CommonAlbums extends ConsumerWidget {
     final colorScheme = getColorSchemeWhenReady(ref);
     var config = _LayoutConfig.defaultConfig;
     final size = MediaQuery.of(context).size;
-    config = config.multiply(multiplier: size.multiplier);
+    config = config.multiply(multiplier: size.multiplier3);
     return albums.when(
       data: (data) => _buildHorizontalList(
         context,

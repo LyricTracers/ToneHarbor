@@ -11,6 +11,7 @@ mixin BuildItem {
     String title,
   ) {
     return AppBar(
+      backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
       title: Text(
         title,
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

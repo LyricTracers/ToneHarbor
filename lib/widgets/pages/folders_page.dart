@@ -9,6 +9,7 @@ import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/components/bread_crumb_clipper.dart';
 import 'package:toneharbor/widgets/components/common_search_field.dart';
@@ -345,6 +346,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
       scrollController.addListener(onScroll);
       return () => scrollController.removeListener(onScroll);
     }, [scrollController]);
+    final multiplier = MediaQuery.of(context).size.multiplier2;
     return Column(
       children: [
         if (songSelectionState.selectionType)
@@ -404,6 +406,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                           selectionState: songSelectionState,
                           l10n: l10n,
                           isFavorite: songRating.contains(item.id),
+                          multiplier: multiplier,
                           onTap: () async {
                             final (trackList, targetIndex) = filteredItems
                                 .asTrackSongList(index);

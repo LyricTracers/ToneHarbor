@@ -53,7 +53,7 @@ class _LayoutConfig {
     coverSize: coverSize * multiplier,
     coverBorderRadius: coverBorderRadius,
     textSpacing: textSpacing,
-    titleFontSize: titleFontSize,
+    titleFontSize: titleFontSize * multiplier,
     titleFontWeight: titleFontWeight,
     subtitleFontSize: subtitleFontSize * multiplier,
   );
@@ -76,7 +76,7 @@ class CommonSongs extends ConsumerWidget {
     final colorScheme = getColorSchemeWhenReady(ref);
     var config = _LayoutConfig.defaultConfig;
     final size = MediaQuery.of(context).size;
-    config = config.multiply(multiplier: size.multiplier);
+    config = config.multiply(multiplier: size.multiplier3);
     return songs.when(
       data: (data) =>
           _buildHorizontalList(context, data.songs, colorScheme, config),

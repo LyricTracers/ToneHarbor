@@ -5,6 +5,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/pages/add_to_playlists_page.dart';
 
 class SubSongSelectionBottom extends HookConsumerWidget {
@@ -64,8 +65,10 @@ class SubSongSelectionBottom extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = ref.watch(l10nProvider);
     final colorScheme = getColorSchemeWhenReady(ref);
+    final size = MediaQuery.of(context).size;
     return AppBar(
-      toolbarHeight: 70,
+      backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
+      toolbarHeight: 70 * size.multiplier,
       automaticallyImplyLeading: false,
       actions: [
         if (!isLocal) ...[
@@ -78,7 +81,7 @@ class SubSongSelectionBottom extends HookConsumerWidget {
                   .read(downloadManagerProvider.notifier)
                   .addAllToQueue(_getSelectedTracks(ids));
             },
-            icon: const Icon(Icons.download_rounded, size: 18),
+            icon: Icon(Icons.download_rounded, size: 18 * size.multiplier),
             tooltip: l10n.download,
           ),
           IconButton(
@@ -115,7 +118,7 @@ class SubSongSelectionBottom extends HookConsumerWidget {
                 ref.read(requestFlagProvider.notifier).setRequestFlag(false);
               }
             },
-            icon: const Icon(Icons.favorite_rounded, size: 18),
+            icon: Icon(Icons.favorite_rounded, size: 18 * size.multiplier),
             tooltip: l10n.favorite,
           ),
           IconButton(
@@ -152,7 +155,10 @@ class SubSongSelectionBottom extends HookConsumerWidget {
                 ref.read(requestFlagProvider.notifier).setRequestFlag(false);
               }
             },
-            icon: const Icon(Icons.favorite_border_rounded, size: 18),
+            icon: Icon(
+              Icons.favorite_border_rounded,
+              size: 18 * size.multiplier,
+            ),
             tooltip: l10n.no_favorite_playlist,
           ),
           IconButton(
@@ -174,7 +180,7 @@ class SubSongSelectionBottom extends HookConsumerWidget {
                 builder: (context) => AddToPlaylistsPage(ids.join(',')),
               );
             },
-            icon: const Icon(Icons.playlist_add_rounded, size: 18),
+            icon: Icon(Icons.playlist_add_rounded, size: 18 * size.multiplier),
             tooltip: l10n.song_playlist,
           ),
         ],
@@ -205,7 +211,10 @@ class SubSongSelectionBottom extends HookConsumerWidget {
               ref.invalidate(songSelectionProvider);
               ref.invalidate(localSongsProvider);
             },
-            icon: const Icon(Icons.delete_forever_rounded, size: 18),
+            icon: Icon(
+              Icons.delete_forever_rounded,
+              size: 18 * size.multiplier,
+            ),
             tooltip: l10n.delete,
           ),
         IconButton(
@@ -238,7 +247,7 @@ class SubSongSelectionBottom extends HookConsumerWidget {
             }
             ref.invalidate(songSelectionProvider);
           },
-          icon: const Icon(Icons.queue_play_next_rounded, size: 18),
+          icon: Icon(Icons.queue_play_next_rounded, size: 18 * size.multiplier),
           tooltip: l10n.next_song,
         ),
         IconButton(
@@ -271,11 +280,11 @@ class SubSongSelectionBottom extends HookConsumerWidget {
             }
             ref.invalidate(songSelectionProvider);
           },
-          icon: const Icon(Icons.queue_music_rounded, size: 18),
+          icon: Icon(Icons.queue_music_rounded, size: 18 * size.multiplier),
           tooltip: l10n.play_queue,
         ),
 
-        const SizedBox(width: 15),
+        SizedBox(width: 15 * size.multiplier),
       ],
     );
   }

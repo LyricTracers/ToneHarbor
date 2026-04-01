@@ -350,6 +350,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                         l10n: l10n,
                         isFavorite: songRating.contains(item.id),
                         selectionState: songSelectionState,
+                        multiplier: size.multiplier2,
                         onTap: () async {
                           {
                             var tracks = <ToneHarborTrackObject>[];

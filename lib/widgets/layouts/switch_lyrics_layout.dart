@@ -262,6 +262,9 @@ class SwitchLyricsLayout extends BaseBgLayout {
               child: Column(
                 children: [
                   AppBar(
+                    backgroundColor: colorScheme.tertiary.withValues(
+                      alpha: 0.1,
+                    ),
                     centerTitle: false,
                     title: Text(
                       l10n.switch_lyrics,

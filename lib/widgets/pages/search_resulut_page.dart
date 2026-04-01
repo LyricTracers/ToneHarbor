@@ -6,6 +6,7 @@ import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class SearchResulutPage extends HookConsumerWidget {
@@ -29,12 +30,14 @@ class SearchResulutPage extends HookConsumerWidget {
         ),
       ),
     );
+    final multiplier = MediaQuery.of(context).size.multiplier2;
     return Column(
       children: [
         if (songSelectionState.selectionType)
           SubSongSelectionTop(songs: searchResult.value?.songs?.songs ?? []),
         if (!songSelectionState.selectionType)
           AppBar(
+            backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
             centerTitle: false,
             title: Row(
               children: [
@@ -182,6 +185,7 @@ class SearchResulutPage extends HookConsumerWidget {
                                         activeSongId: activeSongId,
                                         colorScheme: colorScheme,
                                         l10n: l10n,
+                                        multiplier: multiplier,
                                         isFavorite: songRating.contains(
                                           item.id,
                                         ),

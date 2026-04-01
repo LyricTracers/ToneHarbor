@@ -28,6 +28,7 @@ class StorageManagePage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
         title: Text(
           l10n.storage_management,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

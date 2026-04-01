@@ -109,4 +109,11 @@ extension Sizebreakpoints on Size {
     }
     return 1.0;
   }
+
+  double get multiplier3 {
+    if (smAndDown) {
+      return 0.9;
+    }
+    return 1.0;
+  }
 }

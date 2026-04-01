@@ -17,6 +17,7 @@ class SongItem extends HookConsumerWidget {
   final bool isFavorite;
   final SongSelectionState selectionState;
   final Function onTap;
+  final double multiplier;
   const SongItem({
     super.key,
     required this.index,
@@ -26,13 +27,13 @@ class SongItem extends HookConsumerWidget {
     required this.l10n,
     required this.isFavorite,
     required this.onTap,
+    required this.multiplier,
     this.selectionState = const SongSelectionState(
       selectionType: false,
       ids: {},
       boxState: false,
     ),
   });
-  static const double itemHeight = 66.0;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,7 +41,7 @@ class SongItem extends HookConsumerWidget {
     var container = song.container;
     var artist = song.artist;
     var album = song.album;
-
+    double itemHeight = 66.0 * multiplier;
     var isHovered = useState(false);
     var localSelected = useState(false);
 
@@ -81,18 +82,21 @@ class SongItem extends HookConsumerWidget {
               top: 0,
               left: 0,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 6 * multiplier,
+                  vertical: 2 * multiplier,
+                ),
                 decoration: BoxDecoration(
                   color: colorScheme.primary,
-                  borderRadius: const BorderRadius.only(
-                    bottomRight: Radius.circular(8),
+                  borderRadius: BorderRadius.only(
+                    bottomRight: Radius.circular(8 * multiplier),
                   ),
                 ),
                 child: Text(
                   l10n.favorite,
                   style: TextStyle(
                     color: colorScheme.onPrimary,
-                    fontSize: 8,
+                    fontSize: 8 * multiplier,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -114,11 +118,11 @@ class SongItem extends HookConsumerWidget {
                 updateState();
               },
               child: Padding(
-                padding: const EdgeInsets.only(
-                  left: 15,
-                  right: 20,
-                  top: 4,
-                  bottom: 4,
+                padding: EdgeInsets.only(
+                  left: 15 * multiplier,
+                  right: 20 * multiplier,
+                  top: 4 * multiplier,
+                  bottom: 4 * multiplier,
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -126,8 +130,8 @@ class SongItem extends HookConsumerWidget {
                     activeSongId == song.id
                         ? SvgPicture.string(
                             placeholderErrorIconString,
-                            width: 24,
-                            height: 24,
+                            width: 24 * multiplier,
+                            height: 24 * multiplier,
                             fit: BoxFit.fitWidth,
                             colorFilter: ColorFilter.mode(
                               colorScheme.primary,
@@ -137,11 +141,11 @@ class SongItem extends HookConsumerWidget {
                         : Text(
                             '${index + 1}',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 14 * multiplier,
                               color: colorScheme.primary,
                             ),
                           ),
-                    const SizedBox(width: 15),
+                    SizedBox(width: 15 * multiplier),
                     Expanded(
                       flex: 1,
                       child: Column(
@@ -152,18 +156,18 @@ class SongItem extends HookConsumerWidget {
                             song.title,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
-                            style: const TextStyle(
-                              fontSize: 16,
+                            style: TextStyle(
+                              fontSize: 16 * multiplier,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          SizedBox(height: 4 * multiplier),
                           Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 4,
-                                  vertical: 2,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 4 * multiplier,
+                                  vertical: 2 * multiplier,
                                 ),
                                 decoration: BoxDecoration(
                                   border: Border.all(
@@ -174,17 +178,17 @@ class SongItem extends HookConsumerWidget {
                                 child: Text(
                                   '$container ${bitrate}k',
                                   style: TextStyle(
-                                    fontSize: 9,
+                                    fontSize: 9 * multiplier,
                                     color: colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 15),
+                              SizedBox(width: 15 * multiplier),
                               Expanded(
                                 child: Text(
                                   '$artist-$album',
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: 12 * multiplier,
                                     color: colorScheme.onSurfaceVariant,
                                   ),
                                   overflow: TextOverflow.ellipsis,
