@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/utils/responsive.dart';
 
 mixin BuildItem {
   Widget buildAppBar(
@@ -9,12 +10,19 @@ mixin BuildItem {
     AppLocalizations l10n,
     ColorScheme colorScheme,
     String title,
+    Size size,
   ) {
+    final toolbarHeight = 56 * size.multiplier3;
+    final color = colorScheme.tertiary.withValues(alpha: 0.1);
     return AppBar(
-      backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
+      toolbarHeight: toolbarHeight,
+      backgroundColor: color,
       title: Text(
         title,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 16 * size.multiplier2,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       centerTitle: false,
     );

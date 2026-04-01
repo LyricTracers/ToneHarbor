@@ -391,7 +391,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = ref.watch(l10nProvider);
     final colorScheme = getColorSchemeWhenReady(ref);
-
+    final size = MediaQuery.of(context).size;
     return Column(
       children: [
         buildAppBar(
@@ -400,6 +400,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
           l10n,
           colorScheme,
           l10n.ai_translate_settings,
+          size,
         ),
         buildContent(context, ref, l10n, colorScheme, [
           ...buildItem(

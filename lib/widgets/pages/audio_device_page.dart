@@ -24,10 +24,10 @@ class AudioDevicePage extends HookConsumerWidget with BuildItem {
     final devices = devicesStream.data ?? devicesFuture.data;
     final selectedDevice =
         selectedDeviceStream.data ?? selectedDeviceFuture.data;
-
+    final size = MediaQuery.of(context).size;
     return Column(
       children: [
-        buildAppBar(context, ref, l10n, colorScheme, l10n.audio_device),
+        buildAppBar(context, ref, l10n, colorScheme, l10n.audio_device, size),
         buildContent(context, ref, l10n, colorScheme, [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

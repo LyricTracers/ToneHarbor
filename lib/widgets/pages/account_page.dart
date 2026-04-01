@@ -234,10 +234,10 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     final colorScheme = getColorSchemeWhenReady(ref);
     var dsmInfo = ref.watch(dsmInfoProvider());
     var obscurePassword = useState(true);
-
+    final size = MediaQuery.of(context).size;
     return Column(
       children: [
-        buildAppBar(context, ref, l10n, colorScheme, l10n.account),
+        buildAppBar(context, ref, l10n, colorScheme, l10n.account, size),
         dsmInfo.when(
           data: (value) {
             final uptime = useState(value.data?.uptime ?? 0);

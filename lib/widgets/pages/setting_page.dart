@@ -416,10 +416,11 @@ class SettingPage extends HookConsumerWidget with BuildItem {
     final l10n = ref.watch(l10nProvider);
     final colorScheme = getColorSchemeWhenReady(ref);
     final needAppBar = MediaQuery.of(context).lgAndUp;
+    final size = MediaQuery.of(context).size;
     return Column(
       children: [
         if (needAppBar)
-          buildAppBar(context, ref, l10n, colorScheme, l10n.settings),
+          buildAppBar(context, ref, l10n, colorScheme, l10n.settings, size),
         buildContent(context, ref, l10n, colorScheme, [
           ...buildItem(
             ref,
