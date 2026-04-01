@@ -356,6 +356,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get all_music => 'Music';
 
   @override
+  String get music => 'Music';
+
+  @override
   String get folder => 'Folder';
 
   @override

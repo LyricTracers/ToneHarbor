@@ -112,6 +112,7 @@
   "sort_time": "Order Of Time",
   "music_house": "Music Library",
   "all_music": "Music",
+  "music": "Music",
   "folder": "Folder",
   "sort_artist_name": "Order Of Artist",
   "total_songs":"(Total %s)",

@@ -342,6 +342,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get all_music => '歌曲';
 
   @override
+  String get music => '音乐';
+
+  @override
   String get folder => '文件夹';
 
   @override

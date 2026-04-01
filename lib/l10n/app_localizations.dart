@@ -764,6 +764,12 @@ abstract class AppLocalizations {
   /// **'Music'**
   String get all_music;
 
+  /// No description provided for @music.
+  ///
+  /// In en, this message translates to:
+  /// **'Music'**
+  String get music;
+
   /// No description provided for @folder.
   ///
   /// In en, this message translates to:
