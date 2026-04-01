@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -138,6 +139,15 @@ class MyApp extends HookConsumerWidget {
       };
     }, []);
 
+    Page<void> buildPage<T>({required LocalKey key, required Widget child}) {
+      if (Platform.isIOS) {
+        return CupertinoPage<void>(key: key, child: child);
+      } else if (Platform.isAndroid) {
+        return MaterialPage<void>(key: key, child: child);
+      }
+      return NoTransitionPage<void>(key: key, child: child);
+    }
+
     final router = useMemoized(() {
       return GoRouter(
         routes: [
@@ -158,10 +168,8 @@ class MyApp extends HookConsumerWidget {
             routes: [
               GoRoute(
                 path: '/',
-                pageBuilder: (context, state) => NoTransitionPage<void>(
-                  key: state.pageKey,
-                  child: const RecommendPage(),
-                ),
+                pageBuilder: (context, state) =>
+                    buildPage(key: state.pageKey, child: const RecommendPage()),
               ),
               GoRoute(
                 path: '/songs/:title',
@@ -176,7 +184,7 @@ class MyApp extends HookConsumerWidget {
                             int,
                             SongsPageSortAction,
                           );
-                  return NoTransitionPage<void>(
+                  return buildPage(
                     key: state.pageKey,
                     child: SongsPage(
                       title: state.pathParameters['title'] ?? 'Songs',
@@ -203,7 +211,7 @@ class MyApp extends HookConsumerWidget {
                   if (id == null || id == 'None') {
                     id = '';
                   }
-                  return NoTransitionPage<void>(
+                  return buildPage(
                     key: state.pageKey,
                     child: FoldersPage(
                       currentId: id,
@@ -226,7 +234,7 @@ class MyApp extends HookConsumerWidget {
                             ExtraProvider<AlbumResponse>,
                             AlbumResponse
                           >;
-                  return NoTransitionPage<void>(
+                  return buildPage(
                     key: state.pageKey,
                     child: AlbumPage(title: title, baseProvider: provider),
                   );
@@ -234,14 +242,14 @@ class MyApp extends HookConsumerWidget {
               ),
               GoRoute(
                 path: '/artists',
-                pageBuilder: (context, state) => NoTransitionPage<void>(
+                pageBuilder: (context, state) => buildPage(
                   key: state.pageKey,
                   child: ArtistPage(baseProvider: artistsProvider()),
                 ),
               ),
               GoRoute(
                 path: '/playlist',
-                pageBuilder: (context, state) => NoTransitionPage<void>(
+                pageBuilder: (context, state) => buildPage(
                   key: state.pageKey,
                   child: PlaylistsPage(
                     baseProvider: playlistResponseProvider(),
@@ -251,12 +259,12 @@ class MyApp extends HookConsumerWidget {
               GoRoute(
                 path: '/download',
                 pageBuilder: (context, state) =>
-                    NoTransitionPage(child: DownloadPage()),
+                    buildPage(key: state.pageKey, child: DownloadPage()),
               ),
               GoRoute(
                 path: '/search/:query',
                 pageBuilder: (context, state) {
-                  return NoTransitionPage<void>(
+                  return buildPage(
                     key: state.pageKey,
                     child: SearchResulutPage(
                       query: state.pathParameters['query'] ?? '',
@@ -273,7 +281,7 @@ class MyApp extends HookConsumerWidget {
                       context,
                     ).invalidate(localSongsProvider);
                   });
-                  return NoTransitionPage<void>(
+                  return buildPage(
                     key: state.pageKey,
                     child: SongsPage(
                       title: state.pathParameters['title'] ?? 'Local Songs',
@@ -288,7 +296,7 @@ class MyApp extends HookConsumerWidget {
               GoRoute(
                 path: '/random_songs/:title',
                 pageBuilder: (context, state) {
-                  return NoTransitionPage<void>(
+                  return buildPage(
                     key: state.pageKey,
                     child: SongsPage(
                       title: state.pathParameters['title'] ?? 'Random Songs',
@@ -312,7 +320,7 @@ class MyApp extends HookConsumerWidget {
                       context,
                     ).invalidate(mostPlayerProvider());
                   });
-                  return NoTransitionPage<void>(
+                  return buildPage(
                     key: state.pageKey,
                     child: SongsPage(
                       title: state.pathParameters['title'] ?? 'Most Play',
@@ -328,7 +336,7 @@ class MyApp extends HookConsumerWidget {
                 path: '/playlist_song/:title',
                 pageBuilder: (context, state) {
                   var playlistId = state.extra as String;
-                  return NoTransitionPage<void>(
+                  return buildPage(
                     key: state.pageKey,
                     child: SongsPage(
                       title: state.pathParameters['title'] ?? 'Playlist Songs',
@@ -344,7 +352,7 @@ class MyApp extends HookConsumerWidget {
               GoRoute(
                 path: '/setting',
                 pageBuilder: (context, state) =>
-                    NoTransitionPage(child: SettingPage()),
+                    buildPage(key: state.pageKey, child: SettingPage()),
               ),
               GoRoute(
                 path: '/storage',
@@ -358,44 +366,55 @@ class MyApp extends HookConsumerWidget {
                       colorScheme.secondaryContainer,
                     );
                   });
-                  return NoTransitionPage(child: StorageManagePage());
+                  return buildPage(
+                    key: state.pageKey,
+                    child: StorageManagePage(),
+                  );
                 },
               ),
               GoRoute(
                 path: '/ai-translate',
-                pageBuilder: (context, state) =>
-                    NoTransitionPage(child: AITranslateSettingPage()),
+                pageBuilder: (context, state) => buildPage(
+                  key: state.pageKey,
+                  child: AITranslateSettingPage(),
+                ),
               ),
               GoRoute(
                 path: '/account',
                 pageBuilder: (context, state) =>
-                    NoTransitionPage(child: AccountPage()),
+                    buildPage(key: state.pageKey, child: AccountPage()),
               ),
               GoRoute(
                 path: '/audio-device',
                 pageBuilder: (context, state) =>
-                    NoTransitionPage(child: AudioDevicePage()),
+                    buildPage(key: state.pageKey, child: AudioDevicePage()),
               ),
               GoRoute(
                 path: '/mobile_home/recommend',
-                pageBuilder: (context, state) =>
-                    NoTransitionPage(child: MobileHomeLayout(tab: 0)),
+                pageBuilder: (context, state) => buildPage(
+                  key: state.pageKey,
+                  child: MobileHomeLayout(tab: 0),
+                ),
               ),
               GoRoute(
                 path: '/mobile_home/library',
-                pageBuilder: (context, state) =>
-                    NoTransitionPage(child: MobileHomeLayout(tab: 1)),
+                pageBuilder: (context, state) => buildPage(
+                  key: state.pageKey,
+                  child: MobileHomeLayout(tab: 1),
+                ),
               ),
               GoRoute(
                 path: '/mobile_home/settings',
-                pageBuilder: (context, state) =>
-                    NoTransitionPage(child: MobileHomeLayout(tab: 2)),
+                pageBuilder: (context, state) => buildPage(
+                  key: state.pageKey,
+                  child: MobileHomeLayout(tab: 2),
+                ),
               ),
             ],
           ),
           GoRoute(
             path: "/switch_lyrics",
-            pageBuilder: (context, state) => NoTransitionPage<void>(
+            pageBuilder: (context, state) => buildPage(
               key: state.pageKey,
               child: SwitchLyricsLayout(
                 songTrackObject: state.extra as ToneHarborTrackObject,
@@ -404,29 +423,25 @@ class MyApp extends HookConsumerWidget {
           ),
           GoRoute(
             path: "/playing_detail",
-            pageBuilder: (context, state) => NoTransitionPage(
+            pageBuilder: (context, state) => buildPage(
               key: state.pageKey,
               child: const PlayingDetailLayout(),
             ),
           ),
           GoRoute(
             path: '/login',
-            pageBuilder: (context, state) => NoTransitionPage(
-              key: state.pageKey,
-              child: const LoginLayout(),
-            ),
+            pageBuilder: (context, state) =>
+                buildPage(key: state.pageKey, child: const LoginLayout()),
           ),
           GoRoute(
             path: '/local_music',
-            pageBuilder: (context, state) => NoTransitionPage(
-              key: state.pageKey,
-              child: const LocalSongsLayout(),
-            ),
+            pageBuilder: (context, state) =>
+                buildPage(key: state.pageKey, child: const LocalSongsLayout()),
           ),
           GoRoute(
             path: '/test',
             pageBuilder: (context, state) =>
-                NoTransitionPage(key: state.pageKey, child: const TestLayout()),
+                buildPage(key: state.pageKey, child: const TestLayout()),
           ),
         ],
         redirect: (context, state) {
@@ -600,4 +615,8 @@ class _DesktopListener implements WindowListener, MusicPlayerListener {
   void onMusicPlayerQuit() {
     windowManager.destroy();
   }
+}
+
+usicPlayerQuit() {
+  windowManager.destroy();
 }
