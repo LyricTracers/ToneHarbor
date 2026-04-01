@@ -45,6 +45,7 @@ Future<void> initialized() async {
 
   await appDependencies.initColorScheme();
   await appDependencies.initPlaceholderErrorIconString();
+  await initDeviceInfo();
 
   if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
     _initTray();
@@ -58,6 +59,29 @@ Future<void> initialized() async {
       FlutterNativeSplash.remove();
     });
   }
+}
+
+Future<void> initDeviceInfo() async {
+  bool isTablet = false;
+
+  if (Platform.isIOS || Platform.isAndroid) {
+    try {
+      final view = WidgetsBinding.instance.platformDispatcher.views.first;
+      final screenSize = view.physicalSize / view.devicePixelRatio;
+      final shortestSide = screenSize.shortestSide;
+      isTablet = shortestSide >= 600;
+    } catch (e) {
+      logger.e('Error getting screen size: $e');
+    }
+  }
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    if (isTablet) ...[
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ],
+  ]);
 }
 
 Future<void> _initTray() async {
