@@ -88,7 +88,6 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
             scrolledUnderElevation: 0,
             title: Column(
               children: [
-                if (fromNoLoginLocal) SizedBox(height: 16),
                 Row(
                   children: [
                     Flexible(

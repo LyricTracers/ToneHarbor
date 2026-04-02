@@ -29,22 +29,20 @@ class LocalSongsLayout extends BaseBgLayout {
       }),
     );
 
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: SongsPage(
-              title: l10n.local_songs,
-              baseProvider: localSongsProvider,
-              limitTotal: -1,
-              sortAction: SongsPageSortAction.none,
-              isLocal: true,
-              fromNoLoginLocal: true,
-            ),
+    return Column(
+      children: [
+        Expanded(
+          child: SongsPage(
+            title: l10n.local_songs,
+            baseProvider: localSongsProvider,
+            limitTotal: -1,
+            sortAction: SongsPageSortAction.none,
+            isLocal: true,
+            fromNoLoginLocal: true,
           ),
-          if (!selectionTypeState.selectionType) const BottomPlayer(),
-        ],
-      ),
+        ),
+        if (!selectionTypeState.selectionType) const BottomPlayer(),
+      ],
     );
   }
 }

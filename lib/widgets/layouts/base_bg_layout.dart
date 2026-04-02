@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
@@ -10,8 +11,9 @@ import 'dart:ui' as ui;
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 
 abstract class BaseBgLayout extends HookConsumerWidget {
-  const BaseBgLayout({super.key, this.showLoading = true});
+  const BaseBgLayout({super.key, this.showLoading = true, this.appbar = true});
   final bool showLoading;
+  final bool appbar;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,6 +35,15 @@ abstract class BaseBgLayout extends HookConsumerWidget {
         route.animation?.removeListener(listener);
       };
     }, [route]);
+    var selectionTypeState = ref.watch(
+      songSelectionProvider.select((state) {
+        return SongSelectionState(
+          selectionType: state.selectionType,
+          ids: {},
+          boxState: false,
+        );
+      }),
+    );
     final gradientDecoration = BoxDecoration(
       gradient: LinearGradient(
         begin: Alignment(-0.8, -0.8),
@@ -48,6 +59,12 @@ abstract class BaseBgLayout extends HookConsumerWidget {
       ),
     );
     final size = MediaQuery.of(context).size;
+    final appContainer = Container(
+      height:
+          MediaQuery.of(context).padding.top +
+          kToolbarHeight * size.multiplier3,
+      color: colorScheme.tertiary.withValues(alpha: 0.1),
+    );
     return Scaffold(
       body: Stack(
         children: [
@@ -96,17 +113,10 @@ abstract class BaseBgLayout extends HookConsumerWidget {
               decoration: gradientDecoration,
             ),
           ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height:
-                  MediaQuery.of(context).padding.top +
-                  kToolbarHeight * size.multiplier3,
-              color: colorScheme.tertiary.withValues(alpha: 0.1),
-            ),
-          ),
+          if (appbar)
+            Positioned(top: 0, left: 0, right: 0, child: appContainer),
+          if (selectionTypeState.selectionType)
+            Positioned(bottom: 0, left: 0, right: 0, child: appContainer),
           SafeArea(
             top: true,
             bottom: false,

@@ -73,15 +73,14 @@ Future<void> initDeviceInfo() async {
     } catch (e) {
       logger.e('Error getting screen size: $e');
     }
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      if (isTablet) ...[
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ],
+    ]);
   }
-
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    if (isTablet) ...[
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ],
-  ]);
 }
 
 Future<void> _initTray() async {

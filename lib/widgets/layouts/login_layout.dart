@@ -10,7 +10,11 @@ import 'package:toneharbor/utils/excetions.dart';
 import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
 
 class LoginLayout extends BaseBgLayout {
-  const LoginLayout({super.key, super.showLoading = true});
+  const LoginLayout({
+    super.key,
+    super.showLoading = true,
+    super.appbar = false,
+  });
 
   @override
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {

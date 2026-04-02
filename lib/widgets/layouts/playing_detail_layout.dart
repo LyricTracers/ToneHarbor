@@ -9,7 +9,7 @@ import "package:toneharbor/widgets/layouts/playing_detail_mix.dart";
 import "package:toneharbor/widgets/widgets.dart";
 
 class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
-  const PlayingDetailLayout({super.key});
+  const PlayingDetailLayout({super.key, super.appbar = false});
 
   @override
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
