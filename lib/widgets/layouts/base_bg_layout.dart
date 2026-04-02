@@ -59,12 +59,6 @@ abstract class BaseBgLayout extends HookConsumerWidget {
       ),
     );
     final size = MediaQuery.of(context).size;
-    final appContainer = Container(
-      height:
-          MediaQuery.of(context).padding.top +
-          kToolbarHeight * size.multiplier3,
-      color: colorScheme.tertiary.withValues(alpha: 0.1),
-    );
     return Scaffold(
       body: Stack(
         children: [
@@ -114,9 +108,27 @@ abstract class BaseBgLayout extends HookConsumerWidget {
             ),
           ),
           if (appbar)
-            Positioned(top: 0, left: 0, right: 0, child: appContainer),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height:
+                    MediaQuery.of(context).padding.top +
+                    kToolbarHeight * size.multiplier3,
+                color: colorScheme.tertiary.withValues(alpha: 0.1),
+              ),
+            ),
           if (selectionTypeState.selectionType)
-            Positioned(bottom: 0, left: 0, right: 0, child: appContainer),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: kToolbarHeight * size.multiplier3,
+                color: colorScheme.tertiary.withValues(alpha: 0.1),
+              ),
+            ),
           SafeArea(
             top: true,
             bottom: false,

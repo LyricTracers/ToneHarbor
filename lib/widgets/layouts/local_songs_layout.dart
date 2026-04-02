@@ -38,7 +38,6 @@ class LocalSongsLayout extends BaseBgLayout {
             limitTotal: -1,
             sortAction: SongsPageSortAction.none,
             isLocal: true,
-            fromNoLoginLocal: true,
           ),
         ),
         if (!selectionTypeState.selectionType) const BottomPlayer(),

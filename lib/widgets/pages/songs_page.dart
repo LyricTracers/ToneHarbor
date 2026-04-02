@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -31,7 +30,6 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
     required this.limitTotal,
     this.sortAction = SongsPageSortAction.none,
     this.isLocal = false,
-    this.fromNoLoginLocal = false,
     this.refreshRandom = false,
     this.playlistId = '',
   });
@@ -43,7 +41,6 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
   final bool isLocal;
   final bool refreshRandom;
   final String playlistId;
-  final bool fromNoLoginLocal;
 
   PreferredSizeWidget _buildAppBar(
     WidgetRef ref,
@@ -165,14 +162,6 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                             l10n.refresh,
                             Icons.update_rounded,
                           ),
-                        if (fromNoLoginLocal)
-                          getActionMenuItem(
-                            () async {
-                              ref.context.go("/login");
-                            },
-                            l10n.login,
-                            Icons.login_rounded,
-                          ),
                       ],
                     );
                   },
@@ -214,21 +203,13 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
           },
           tooltip: l10n.refresh,
         ),
-      if (!fromNoLoginLocal)
+      if (size.mdAndDown)
         IconButton(
           onPressed: () {
             ref.context.pushWrapper("/setting");
           },
           icon: const Icon(Icons.settings_rounded, size: 18),
           tooltip: l10n.settings,
-        ),
-      if (fromNoLoginLocal)
-        IconButton(
-          onPressed: () {
-            ref.context.go("/login");
-          },
-          icon: const Icon(Icons.login, size: 18),
-          tooltip: l10n.login,
         ),
     ];
   }

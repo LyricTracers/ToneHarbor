@@ -7,6 +7,7 @@ import 'package:toneharbor/models/audio_station/auth.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/excetions.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
 
 class LoginLayout extends BaseBgLayout {
@@ -298,7 +299,7 @@ class LoginLayout extends BaseBgLayout {
                 const SizedBox(height: 16),
                 TextButton.icon(
                   onPressed: () {
-                    context.go('/local_music');
+                    context.pushWrapper('/local_music');
                   },
                   icon: const Icon(Icons.library_music_outlined, size: 18),
                   label: Text(l10n.local_songs),
