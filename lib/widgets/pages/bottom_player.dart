@@ -346,7 +346,7 @@ class BottomPlayer extends HookConsumerWidget {
       child: GestureDetector(
         onTap: isXs && showArrowType == ShowArrowType.up
             ? () {
-                context.push("/playing_detail");
+                context.pushWrapper("/playing_detail");
               }
             : null,
         child: Container(
@@ -702,7 +702,7 @@ class BottomPlayer extends HookConsumerWidget {
                                 ),
                                 onPressed: () {
                                   showArrowType == ShowArrowType.up
-                                      ? context.push("/playing_detail")
+                                      ? context.pushWrapper("/playing_detail")
                                       : context.pop();
                                 },
                               ),

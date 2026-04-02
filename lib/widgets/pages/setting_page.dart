@@ -48,7 +48,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             ),
           ),
           trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
-          onTap: () => context.push('/storage'),
+          onTap: () => context.pushWrapper('/storage'),
         ),
         Divider(
           height: 1,
@@ -66,7 +66,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             ),
           ),
           trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
-          onTap: () => context.push('/ai-translate'),
+          onTap: () => context.pushWrapper('/ai-translate'),
         ),
         Divider(
           height: 1,
@@ -143,7 +143,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             ),
           ),
           trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
-          onTap: () => context.push('/audio-device'),
+          onTap: () => context.pushWrapper('/audio-device'),
         ),
         Divider(
           height: 1,
@@ -406,7 +406,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
       leading: Icon(Icons.person, size: 24),
       trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
       onTap: () {
-        ref.context.push("/account");
+        ref.context.pushWrapper("/account");
       },
     );
   }

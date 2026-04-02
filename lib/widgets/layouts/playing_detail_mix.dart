@@ -90,7 +90,10 @@ mixin PlayingDetailMix {
                 ),
                 IconButton(
                   onPressed: () {
-                    ref.context.push("/switch_lyrics", extra: activeTrack);
+                    ref.context.pushWrapper(
+                      "/switch_lyrics",
+                      extra: activeTrack,
+                    );
                   },
                   icon: Icon(Icons.lyrics_rounded, size: size24),
                   tooltip: l10n.lyrics,

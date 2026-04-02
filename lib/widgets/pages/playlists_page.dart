@@ -82,7 +82,7 @@ class _PlaylistItemWidget extends HookConsumerWidget {
               onTapUp: (details) => isPressed.value = false,
               onTapCancel: () => isPressed.value = false,
               onTap: () async {
-                context.push(
+                context.pushWrapper(
                   "/playlist_song/${Uri.encodeComponent(playlistItem.name)}",
                   extra: playlistItem.id,
                 );
@@ -216,7 +216,7 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
               if (size.lgAndUp)
                 IconButton(
                   onPressed: () {
-                    context.push("/setting");
+                    context.pushWrapper("/setting");
                   },
                   icon: const Icon(Icons.settings_rounded, size: 18),
                   tooltip: l10n.settings,

@@ -1,4 +1,6 @@
 import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
+import 'package:toneharbor/main.dart';
 
 enum Breakpoint {
   xs, // 超小屏 (<=480)
@@ -115,5 +117,23 @@ extension Sizebreakpoints on Size {
       return 0.9;
     }
     return 1.0;
+  }
+}
+
+extension Contextbreakpoints on BuildContext {
+  Size get size => MediaQuery.of(this).size;
+  Future<T?> pushWrapper<T extends Object?>(String location, {Object? extra}) {
+    if (size.lgAndUp) {
+      return push<T>(location, extra: extra);
+    }
+    if (location == '/') return push<T>(location, extra: extra);
+    if (location.startsWith('/mobile_home')) {
+      return push<T>(location, extra: extra);
+    }
+    if (publicPaths.any((path) => location.startsWith(path))) {
+      return push<T>(location, extra: extra);
+    }
+    location = '/mobile$location';
+    return push<T>(location, extra: extra);
   }
 }

@@ -207,8 +207,7 @@ class _AlbumItem extends StatelessWidget {
         var tempArtistName = artistName;
         if (albumName == "Unknown Album") tempAlbumName = "";
         if (artistName == "Unknown Artist") tempArtistName = "";
-        ;
-        context.push(
+        context.pushWrapper(
           "/songs/${Uri.encodeComponent(albumName)}",
           extra: (
             albumSongsProvider(

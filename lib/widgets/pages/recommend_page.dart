@@ -27,7 +27,7 @@ class RecommendPage extends HookConsumerWidget {
         IconButton(
           icon: Icon(Icons.settings_rounded, size: 18),
           onPressed: () {
-            context.push("/setting");
+            context.pushWrapper("/setting");
           },
           tooltip: i10n.settings,
         ),
@@ -72,7 +72,7 @@ class RecommendPage extends HookConsumerWidget {
                           ),
                           TextButton(
                             onPressed: () {
-                              context.push(
+                              context.pushWrapper(
                                 "/songs/${Uri.encodeComponent(i10n.my_favorite)}",
                                 extra: (
                                   favoriteSongsProvider(limit: 50),
@@ -125,7 +125,7 @@ class RecommendPage extends HookConsumerWidget {
                           ),
                           TextButton(
                             onPressed: () {
-                              context.push(
+                              context.pushWrapper(
                                 "/random_songs/${Uri.encodeComponent(i10n.daily_recommend)}",
                               );
                             },

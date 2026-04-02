@@ -6,6 +6,7 @@ import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class HomeLayout extends BaseBgLayout {
@@ -75,7 +76,9 @@ class HomeLayout extends BaseBgLayout {
                         onSubmitSearch: (value) {
                           var r = value.trim();
                           if (r.isEmpty) return;
-                          context.push("/search/${Uri.encodeComponent(r)}");
+                          context.pushWrapper(
+                            "/search/${Uri.encodeComponent(r)}",
+                          );
                         },
                       ),
                     ),
@@ -118,7 +121,7 @@ class HomeLayout extends BaseBgLayout {
                       Icons.library_music_rounded,
                       l10n.all_music,
                       () {
-                        context.push(
+                        context.pushWrapper(
                           allMusicPath,
                           extra: (
                             songsProvider(limit: 100),
@@ -135,7 +138,10 @@ class HomeLayout extends BaseBgLayout {
                       Icons.album_rounded,
                       l10n.albums,
                       () {
-                        context.push('/albums/None', extra: albumsProvider());
+                        context.pushWrapper(
+                          '/albums/None',
+                          extra: albumsProvider(),
+                        );
                       },
                     ),
                     SizedBox(height: 8),
@@ -145,7 +151,7 @@ class HomeLayout extends BaseBgLayout {
                       Icons.people_rounded,
                       l10n.artist,
                       () {
-                        context.push('/artists');
+                        context.pushWrapper('/artists');
                       },
                     ),
                     SizedBox(height: 8),
@@ -155,7 +161,7 @@ class HomeLayout extends BaseBgLayout {
                       Icons.play_lesson_rounded,
                       l10n.playlists,
                       () {
-                        context.push('/playlist');
+                        context.pushWrapper('/playlist');
                       },
                     ),
 
@@ -166,7 +172,7 @@ class HomeLayout extends BaseBgLayout {
                       Icons.folder_rounded,
                       l10n.folder,
                       () {
-                        context.push(
+                        context.pushWrapper(
                           "${allFoldersPath}None",
                           extra: (
                             foldersProvider(limit: 100),
@@ -205,7 +211,7 @@ class HomeLayout extends BaseBgLayout {
                       Icons.download_for_offline,
                       l10n.download_center,
                       () {
-                        context.push('/download');
+                        context.pushWrapper('/download');
                       },
                     ),
                     SizedBox(height: 8),
@@ -215,7 +221,7 @@ class HomeLayout extends BaseBgLayout {
                       Icons.library_music_outlined,
                       l10n.local_songs,
                       () {
-                        context.push(
+                        context.pushWrapper(
                           '/local_songs/${Uri.encodeComponent(l10n.local_songs)}',
                         );
                       },
@@ -227,7 +233,7 @@ class HomeLayout extends BaseBgLayout {
                       Icons.local_play_rounded,
                       l10n.most_play,
                       () {
-                        context.push(
+                        context.pushWrapper(
                           '/most_play/${Uri.encodeComponent(l10n.most_play)}',
                         );
                       },
@@ -312,7 +318,7 @@ class HomeLayout extends BaseBgLayout {
                                     Icons.file_present,
                                     item.title,
                                     () {
-                                      context.push(
+                                      context.pushWrapper(
                                         path,
                                         extra: (
                                           playlistDetailProvider(

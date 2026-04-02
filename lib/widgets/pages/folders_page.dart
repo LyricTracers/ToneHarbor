@@ -58,7 +58,7 @@ class _FolderItemWidget extends HookConsumerWidget {
           onTapCancel: () => isPressed.value = false,
           onTap: () async {
             if (!songSelectionState.selectionType) {
-              context.push(
+              context.pushWrapper(
                 "/folders/${folderItem.id}",
                 extra: (
                   foldersProvider(limit: 100, id: folderItem.id),
@@ -221,7 +221,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                             if (index == 0) {
                               item = _BreadCrumbItem(
                                 onTap: () {
-                                  context.push(
+                                  context.pushWrapper(
                                     "/folders/None",
                                     extra: (
                                       foldersProvider(limit: 100),
@@ -251,7 +251,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                             } else {
                               item = _BreadCrumbItem(
                                 onTap: () {
-                                  context.push(
+                                  context.pushWrapper(
                                     "/folders/${lastFoldItems[index - 1].id}",
                                     extra: (
                                       foldersProvider(
@@ -322,7 +322,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                 ),
                 IconButton(
                   onPressed: () {
-                    context.push("/setting");
+                    context.pushWrapper("/setting");
                   },
                   icon: const Icon(Icons.settings_rounded, size: 18),
                   tooltip: l10n.settings,
@@ -541,7 +541,7 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                                   autoPlay: true,
                                 );
                             if (context.mounted) {
-                              context.push("/playing_detail");
+                              context.pushWrapper("/playing_detail");
                             }
                           },
                         ),

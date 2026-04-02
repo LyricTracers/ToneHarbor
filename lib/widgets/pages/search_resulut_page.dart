@@ -67,7 +67,7 @@ class SearchResulutPage extends HookConsumerWidget {
               ),
               IconButton(
                 onPressed: () {
-                  context.push("/setting");
+                  context.pushWrapper("/setting");
                 },
                 icon: const Icon(Icons.settings_rounded, size: 18),
                 tooltip: l10n.settings,
@@ -211,7 +211,9 @@ class SearchResulutPage extends HookConsumerWidget {
                                                 autoPlay: true,
                                               );
                                           if (context.mounted) {
-                                            context.push("/playing_detail");
+                                            context.pushWrapper(
+                                              "/playing_detail",
+                                            );
                                           }
                                         },
                                       ),

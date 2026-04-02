@@ -7,6 +7,7 @@ import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/consts.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class LibraryPage extends HookConsumerWidget with BuildItem {
@@ -58,7 +59,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
               onSubmitSearch: (value) {
                 var r = value.trim();
                 if (r.isEmpty) return;
-                context.push("/search/${Uri.encodeComponent(r)}");
+                context.pushWrapper("/search/${Uri.encodeComponent(r)}");
               },
             ),
           ),
@@ -186,7 +187,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textStyle: textStyle,
                 textButtonStyle: textButtonStyle,
                 onTap: () {
-                  ref.context.push(
+                  ref.context.pushWrapper(
                     '/songs/${Uri.encodeComponent(l10n.all_music)}',
                     extra: (
                       songsProvider(limit: 100),
@@ -203,7 +204,10 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textStyle: textStyle,
                 textButtonStyle: textButtonStyle,
                 onTap: () {
-                  ref.context.push('/albums/None', extra: albumsProvider());
+                  ref.context.pushWrapper(
+                    '/albums/None',
+                    extra: albumsProvider(),
+                  );
                 },
               ),
               _buildIconButton(
@@ -213,7 +217,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textStyle: textStyle,
                 textButtonStyle: textButtonStyle,
                 onTap: () {
-                  ref.context.push('/artists');
+                  ref.context.pushWrapper('/artists');
                 },
               ),
             ],
@@ -231,7 +235,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textStyle: textStyle,
                 textButtonStyle: textButtonStyle,
                 onTap: () {
-                  ref.context.push('/playlist');
+                  ref.context.pushWrapper('/playlist');
                 },
               ),
               _buildIconButton(
@@ -241,7 +245,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textStyle: textStyle,
                 textButtonStyle: textButtonStyle,
                 onTap: () {
-                  ref.context.push(
+                  ref.context.pushWrapper(
                     '/folders/None',
                     extra: (
                       foldersProvider(limit: 100),
@@ -257,7 +261,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textStyle: textStyle,
                 textButtonStyle: textButtonStyle,
                 onTap: () {
-                  ref.context.push('/download');
+                  ref.context.pushWrapper('/download');
                 },
               ),
             ],
@@ -275,7 +279,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textStyle: textStyle,
                 textButtonStyle: textButtonStyle,
                 onTap: () {
-                  ref.context.push(
+                  ref.context.pushWrapper(
                     '/local_songs/${Uri.encodeComponent(l10n.local_songs)}',
                   );
                 },
@@ -287,7 +291,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textStyle: textStyle,
                 textButtonStyle: textButtonStyle,
                 onTap: () {
-                  ref.context.push(
+                  ref.context.pushWrapper(
                     '/most_play/${Uri.encodeComponent(l10n.most_play)}',
                   );
                 },
@@ -368,7 +372,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 onTap: () {
                   final item = favoritePlaylists[index];
                   final path = "/songs/${Uri.encodeComponent(item.title)}";
-                  ref.context.push(
+                  ref.context.pushWrapper(
                     path,
                     extra: (
                       playlistDetailProvider(id: item.playlistId),

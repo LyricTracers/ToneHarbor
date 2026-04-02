@@ -108,7 +108,7 @@ class ArtistPage extends HookConsumerWidget {
               if (size.lgAndUp)
                 IconButton(
                   onPressed: () {
-                    ref.context.push("/setting");
+                    ref.context.pushWrapper("/setting");
                   },
                   icon: const Icon(Icons.settings_rounded, size: 18),
                   tooltip: l10n.settings,
@@ -233,7 +233,7 @@ class _ArtistItem extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        context.push(
+        context.pushWrapper(
           '/albums/${Uri.encodeComponent(artistName)}',
           extra: albumsProvider(
             artist: artistName == 'Unknown Artist' ? '' : artistName,

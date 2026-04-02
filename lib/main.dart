@@ -17,6 +17,7 @@ import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/layouts/local_songs_layout.dart';
 import 'package:toneharbor/widgets/mobile/layouts/mobile_full_layout.dart';
 import 'package:toneharbor/widgets/mobile/layouts/mobile_home_layout.dart';
+import 'package:toneharbor/widgets/pages/gesture_only_cupertino_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'init/initialized.dart';
@@ -26,6 +27,13 @@ import 'package:go_router/go_router.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
+final publicPaths = [
+  '/login',
+  '/playing_detail',
+  '/switch_lyrics',
+  '/local_music',
+  '/test',
+];
 void main() async {
   await initialized();
   runApp(
@@ -141,35 +149,69 @@ class MyApp extends HookConsumerWidget {
 
     Page<void> buildPage<T>({required LocalKey key, required Widget child}) {
       if (Platform.isIOS) {
-        return CupertinoPage<void>(key: key, child: child);
+        return GestureOnlyCupertinoPage<void>(key: key, child: child);
       } else if (Platform.isAndroid) {
         return MaterialPage<void>(key: key, child: child);
       }
       return NoTransitionPage<void>(key: key, child: child);
     }
 
+    final rootNavigatorKey = GlobalKey<NavigatorState>();
+    final shellKey = GlobalKey<NavigatorState>();
     final router = useMemoized(() {
       return GoRouter(
+        navigatorKey: rootNavigatorKey,
+        redirect: (context, state) {
+          final currentPath = state.uri.path;
+
+          if (publicPaths.any((path) => currentPath.startsWith(path))) {
+            return null;
+          }
+
+          if (synotokenAsync.isLoading) return null;
+          if (synotokenAsync.hasError) return '/login';
+          if (synotokenAsync.value == null) return '/login';
+
+          return null;
+        },
         routes: [
+          // ================================
+          // 桌面端 Shell（全部页面在 HomeLayout）
+          // ================================
           ShellRoute(
+            navigatorKey: shellKey,
             builder: (context, state, child) {
               final size = MediaQuery.of(context).size;
               if (size.lgAndUp) {
                 return HomeLayout(currentPath: state.uri.path, child: child);
               }
-              if (state.uri.path.startsWith('/mobile_home') ||
-                  state.uri.path == '/') {
-                return MobileHomeLayout(
-                  tab: _getMobileTabIndex(state.uri.path),
-                );
-              }
-              return MobileFullLayout(child: child);
+              return MobileHomeLayout(tab: _getMobileTabIndex(state.uri.path));
             },
             routes: [
               GoRoute(
                 path: '/',
                 pageBuilder: (context, state) =>
                     buildPage(key: state.pageKey, child: const RecommendPage()),
+              ),
+              GoRoute(
+                path: '/mobile_home',
+                pageBuilder: (context, state) =>
+                    buildPage(key: state.pageKey, child: const RecommendPage()),
+              ),
+              GoRoute(
+                path: '/mobile_home/recommend',
+                pageBuilder: (context, state) =>
+                    buildPage(key: state.pageKey, child: const RecommendPage()),
+              ),
+              GoRoute(
+                path: '/mobile_home/library',
+                pageBuilder: (context, state) =>
+                    buildPage(key: state.pageKey, child: const RecommendPage()),
+              ),
+              GoRoute(
+                path: '/mobile_home/settings',
+                pageBuilder: (context, state) =>
+                    buildPage(key: state.pageKey, child: SettingPage()),
               ),
               GoRoute(
                 path: '/songs/:title',
@@ -208,9 +250,7 @@ class MyApp extends HookConsumerWidget {
                             List<ToneHarborTrackObject>,
                           );
                   var id = state.pathParameters['id'];
-                  if (id == null || id == 'None') {
-                    id = '';
-                  }
+                  if (id == null || id == 'None') id = '';
                   return buildPage(
                     key: state.pageKey,
                     child: FoldersPage(
@@ -225,9 +265,7 @@ class MyApp extends HookConsumerWidget {
                 path: '/albums/:title',
                 pageBuilder: (context, state) {
                   var title = state.pathParameters['title'];
-                  if (title == null || title == 'None') {
-                    title = '';
-                  }
+                  if (title == null || title == 'None') title = '';
                   final provider =
                       state.extra
                           as $AsyncNotifierProvider<
@@ -335,7 +373,7 @@ class MyApp extends HookConsumerWidget {
               GoRoute(
                 path: '/playlist_song/:title',
                 pageBuilder: (context, state) {
-                  var playlistId = state.extra as String;
+                  final playlistId = state.extra as String;
                   return buildPage(
                     key: state.pageKey,
                     child: SongsPage(
@@ -389,31 +427,274 @@ class MyApp extends HookConsumerWidget {
                 pageBuilder: (context, state) =>
                     buildPage(key: state.pageKey, child: AudioDevicePage()),
               ),
-              GoRoute(
-                path: '/mobile_home/recommend',
-                pageBuilder: (context, state) => buildPage(
-                  key: state.pageKey,
-                  child: MobileHomeLayout(tab: 0),
-                ),
-              ),
-              GoRoute(
-                path: '/mobile_home/library',
-                pageBuilder: (context, state) => buildPage(
-                  key: state.pageKey,
-                  child: MobileHomeLayout(tab: 1),
-                ),
-              ),
-              GoRoute(
-                path: '/mobile_home/settings',
-                pageBuilder: (context, state) => buildPage(
-                  key: state.pageKey,
-                  child: MobileHomeLayout(tab: 2),
-                ),
-              ),
             ],
           ),
+          // ================================
+          // 移动端全页面（不在任何 Shell，都包 MobileFullLayout）
+          // ================================
+          GoRoute(
+            path: '/mobile/songs/:title',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) {
+              final (provider, total, sortAction) =
+                  state.extra
+                      as (
+                        $AsyncNotifierProvider<
+                          ExtraProvider<ToneHarborTrackObjectList>,
+                          ToneHarborTrackObjectList
+                        >,
+                        int,
+                        SongsPageSortAction,
+                      );
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(
+                  child: SongsPage(
+                    title: state.pathParameters['title'] ?? 'Songs',
+                    baseProvider: provider,
+                    limitTotal: total,
+                    sortAction: sortAction,
+                  ),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/mobile/folders/:id',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) {
+              final (provider, lastFoldItems) =
+                  state.extra
+                      as (
+                        $AsyncNotifierProvider<
+                          ExtraProvider<FolderResponse>,
+                          FolderResponse
+                        >,
+                        List<ToneHarborTrackObject>,
+                      );
+              var id = state.pathParameters['id'];
+              if (id == null || id == 'None') id = '';
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(
+                  child: FoldersPage(
+                    currentId: id,
+                    baseProvider: provider,
+                    lastFoldItems: lastFoldItems,
+                  ),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/mobile/albums/:title',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) {
+              var title = state.pathParameters['title'];
+              if (title == null || title == 'None') title = '';
+              final provider =
+                  state.extra
+                      as $AsyncNotifierProvider<
+                        ExtraProvider<AlbumResponse>,
+                        AlbumResponse
+                      >;
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(
+                  child: AlbumPage(title: title, baseProvider: provider),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/mobile/artists',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) => buildPage(
+              key: state.pageKey,
+              child: MobileFullLayout(
+                child: ArtistPage(baseProvider: artistsProvider()),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/mobile/playlist',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) => buildPage(
+              key: state.pageKey,
+              child: MobileFullLayout(
+                child: PlaylistsPage(baseProvider: playlistResponseProvider()),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/mobile/download',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) => buildPage(
+              key: state.pageKey,
+              child: MobileFullLayout(child: DownloadPage()),
+            ),
+          ),
+          GoRoute(
+            path: '/mobile/search/:query',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) {
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(
+                  child: SearchResulutPage(
+                    query: state.pathParameters['query'] ?? '',
+                  ),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/mobile/local_songs/:title',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) {
+              Future.microtask(() {
+                if (!context.mounted) return;
+                ProviderScope.containerOf(
+                  context,
+                ).invalidate(localSongsProvider);
+              });
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(
+                  child: SongsPage(
+                    title: state.pathParameters['title'] ?? 'Local Songs',
+                    baseProvider: localSongsProvider,
+                    limitTotal: -1,
+                    sortAction: SongsPageSortAction.all,
+                    isLocal: true,
+                  ),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/mobile/random_songs/:title',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) {
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(
+                  child: SongsPage(
+                    title: state.pathParameters['title'] ?? 'Random Songs',
+                    baseProvider: randomSongsProvider(
+                      limit: 100,
+                      cacheDuration: const Duration(hours: 24),
+                    ),
+                    limitTotal: 100,
+                    sortAction: SongsPageSortAction.none,
+                    refreshRandom: true,
+                  ),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/mobile/most_play/:title',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) {
+              Future.microtask(() {
+                if (!context.mounted) return;
+                ProviderScope.containerOf(
+                  context,
+                ).invalidate(mostPlayerProvider());
+              });
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(
+                  child: SongsPage(
+                    title: state.pathParameters['title'] ?? 'Most Play',
+                    baseProvider: mostPlayerProvider(),
+                    limitTotal: -1,
+                    sortAction: SongsPageSortAction.none,
+                    isLocal: false,
+                  ),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/mobile/playlist_song/:title',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) {
+              final playlistId = state.extra as String;
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(
+                  child: SongsPage(
+                    title: state.pathParameters['title'] ?? 'Playlist Songs',
+                    baseProvider: playlistDetailProvider(id: playlistId),
+                    playlistId: playlistId,
+                    limitTotal: -1,
+                    sortAction: SongsPageSortAction.none,
+                    isLocal: false,
+                  ),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/mobile/setting',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) => buildPage(
+              key: state.pageKey,
+              child: MobileFullLayout(child: SettingPage()),
+            ),
+          ),
+          GoRoute(
+            path: '/mobile/storage',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) {
+              Future.microtask(() {
+                if (!context.mounted) return;
+                if (ScaffoldMessenger.maybeOf(context) == null) return;
+                showSnackBar(
+                  'Storage manage page is not available on mobile',
+                  context,
+                  colorScheme.secondaryContainer,
+                );
+              });
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(child: StorageManagePage()),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/mobile/ai-translate',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) => buildPage(
+              key: state.pageKey,
+              child: MobileFullLayout(child: AITranslateSettingPage()),
+            ),
+          ),
+          GoRoute(
+            path: '/mobile/account',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) => buildPage(
+              key: state.pageKey,
+              child: MobileFullLayout(child: AccountPage()),
+            ),
+          ),
+          GoRoute(
+            path: '/mobile/audio-device',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) => buildPage(
+              key: state.pageKey,
+              child: MobileFullLayout(child: AudioDevicePage()),
+            ),
+          ),
+
+          // ================================
+          // 公共页面
+          // ================================
           GoRoute(
             path: "/switch_lyrics",
+            parentNavigatorKey: rootNavigatorKey,
             pageBuilder: (context, state) => buildPage(
               key: state.pageKey,
               child: SwitchLyricsLayout(
@@ -423,6 +704,7 @@ class MyApp extends HookConsumerWidget {
           ),
           GoRoute(
             path: "/playing_detail",
+            parentNavigatorKey: rootNavigatorKey,
             pageBuilder: (context, state) => buildPage(
               key: state.pageKey,
               child: const PlayingDetailLayout(),
@@ -430,50 +712,23 @@ class MyApp extends HookConsumerWidget {
           ),
           GoRoute(
             path: '/login',
+            parentNavigatorKey: rootNavigatorKey,
             pageBuilder: (context, state) =>
                 buildPage(key: state.pageKey, child: const LoginLayout()),
           ),
           GoRoute(
             path: '/local_music',
+            parentNavigatorKey: rootNavigatorKey,
             pageBuilder: (context, state) =>
                 buildPage(key: state.pageKey, child: const LocalSongsLayout()),
           ),
           GoRoute(
             path: '/test',
+            parentNavigatorKey: rootNavigatorKey,
             pageBuilder: (context, state) =>
                 buildPage(key: state.pageKey, child: const TestLayout()),
           ),
         ],
-        redirect: (context, state) {
-          final currentPath = state.uri.path;
-
-          final publicPaths = [
-            '/login',
-            '/playing_detail',
-            '/switch_lyrics',
-            '/local_music',
-            '/test',
-          ];
-          if (publicPaths.any((path) => currentPath.startsWith(path))) {
-            return null;
-          }
-
-          if (synotokenAsync.isLoading) {
-            return null;
-          }
-
-          if (synotokenAsync.hasError) {
-            logger.w('认证检查失败: ${synotokenAsync.error}');
-            return '/login';
-          }
-
-          if (synotokenAsync.value == null) {
-            logger.d('未认证，跳转到登录页');
-            return '/login';
-          }
-
-          return null;
-        },
       );
     }, [synotokenAsync]);
 

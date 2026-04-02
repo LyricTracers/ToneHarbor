@@ -218,7 +218,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
       if (!fromNoLoginLocal)
         IconButton(
           onPressed: () {
-            ref.context.push("/setting");
+            ref.context.pushWrapper("/setting");
           },
           icon: const Icon(Icons.settings_rounded, size: 18),
           tooltip: l10n.settings,
@@ -403,7 +403,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                                   autoPlay: true,
                                 );
                             if (context.mounted) {
-                              context.push("/playing_detail");
+                              context.pushWrapper("/playing_detail");
                             }
                           }
                         },

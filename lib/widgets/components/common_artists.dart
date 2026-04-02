@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:toneharbor/models/audio_station/artist.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class _LayoutConfig {
@@ -44,7 +44,7 @@ class ArtistItem extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        context.push(
+        context.pushWrapper(
           '/albums/${Uri.encodeComponent(artistName)}',
           extra: albumsProvider(
             artist: artistName == 'Unknown Artist' ? '' : artistName,

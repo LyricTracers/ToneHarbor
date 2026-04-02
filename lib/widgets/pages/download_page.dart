@@ -162,7 +162,7 @@ class DownloadPage extends HookConsumerWidget {
               if (size.lgAndUp)
                 IconButton(
                   onPressed: () {
-                    ref.context.push("/setting");
+                    ref.context.pushWrapper("/setting");
                   },
                   icon: Icon(Icons.settings_rounded, size: 18),
                   tooltip: l10n.settings,

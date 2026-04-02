@@ -110,7 +110,7 @@ class AlbumPage extends HookConsumerWidget {
               if (size.lgAndUp)
                 IconButton(
                   onPressed: () {
-                    ref.context.push("/setting");
+                    ref.context.pushWrapper("/setting");
                   },
                   icon: const Icon(Icons.settings_rounded, size: 18),
                   tooltip: l10n.settings,
@@ -244,7 +244,7 @@ class _AlbumItem extends StatelessWidget {
         var tempArtistName = artistName;
         if (albumName == "Unknown Album") tempAlbumName = "";
         if (artistName == "Unknown Artist") tempArtistName = "";
-        context.push(
+        context.pushWrapper(
           "/songs/${Uri.encodeComponent(albumName)}",
           extra: (
             albumSongsProvider(

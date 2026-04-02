@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -17,6 +18,21 @@ abstract class BaseBgLayout extends HookConsumerWidget {
     final colorScheme = getColorSchemeWhenReady(ref);
     var requestFlag = ref.watch(requestFlagProvider);
     var targetIcon = ref.watch(getImageProviderProvider);
+    final useBlur = useState<double>(50);
+    final route = ModalRoute.of(context);
+    useEffect(() {
+      if (route == null) return null;
+
+      void listener() {
+        final value = route.animation?.value ?? 1.0;
+        useBlur.value = 50 * Curves.easeInOutQuad.transform(value);
+      }
+
+      route.animation?.addListener(listener);
+      return () {
+        route.animation?.removeListener(listener);
+      };
+    }, [route]);
     final gradientDecoration = BoxDecoration(
       gradient: LinearGradient(
         begin: Alignment(-0.8, -0.8),
@@ -62,7 +78,10 @@ abstract class BaseBgLayout extends HookConsumerWidget {
                   ),
                   Positioned.fill(
                     child: BackdropFilter(
-                      filter: ui.ImageFilter.blur(sigmaX: 50, sigmaY: 50),
+                      filter: ui.ImageFilter.blur(
+                        sigmaX: useBlur.value,
+                        sigmaY: useBlur.value,
+                      ),
                       child: Container(color: Colors.transparent),
                     ),
                   ),
