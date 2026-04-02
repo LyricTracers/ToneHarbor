@@ -15,10 +15,11 @@ class RecommendPage extends HookConsumerWidget {
     ColorScheme colorScheme,
   ) {
     final i10n = ref.watch(l10nProvider);
-    final color = colorScheme.tertiary.withValues(alpha: 0.1);
 
     return AppBar(
-      backgroundColor: color,
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
       title: Text(
         i10n.recommend,
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

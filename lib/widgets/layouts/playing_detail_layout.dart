@@ -44,6 +44,17 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
     final tabController = useTabController(initialLength: 2);
     return Stack(
       children: [
+        if (size.isXs)
+          Positioned(
+            left: 20,
+            top: 0,
+            child: IconButton(
+              onPressed: () {
+                context.pop();
+              },
+              icon: Icon(Icons.keyboard_arrow_down_rounded, size: 24),
+            ),
+          ),
         Column(
           children: [
             if (size.lgAndUp)
@@ -91,7 +102,6 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
                       ),
                       unselectedLabelColor: colorScheme.onSurface,
                       indicatorColor: colorScheme.primary,
-                      dividerColor: Colors.transparent,
                       tabs: [
                         Tab(text: l10n.music),
                         Tab(text: l10n.lyrics),
@@ -100,7 +110,6 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
                   ),
                 ),
               ),
-
               Expanded(
                 child: TabBarView(
                   controller: tabController,
@@ -111,7 +120,7 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
                       colorScheme,
                       showTranslated,
                       size,
-                      size.width * 0.8,
+                      size.width * 0.75,
                     ),
                     buildLyrics(ref, showTranslated),
                   ],

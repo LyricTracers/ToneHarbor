@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/utils/use_progress.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
@@ -45,7 +47,7 @@ class BottomPlayer extends HookConsumerWidget {
     final isBuffering = useStream(audioPlayer.bufferingStream).data ?? false;
     final currentLyrics = ref.watch(currentLyricsProvider).value;
     var currentLineLyrics = useState<String>(l10n.appTitle);
-
+    final authHeaders = ref.watch(authHeadersProvider);
     LyricsLine? currentLine;
     if (currentLyrics != null) {
       final lineIndex = currentLyrics.lineIndexAt(
@@ -105,7 +107,7 @@ class BottomPlayer extends HookConsumerWidget {
     final color = colorScheme.tertiary.withValues(alpha: 0.1);
     if (size.isXs && showArrowType == ShowArrowType.down) {
       return Padding(
-        padding: EdgeInsets.only(left: 15, right: 15, bottom: 40),
+        padding: EdgeInsets.only(left: 15, right: 15, bottom: 20),
         child: Column(
           children: [
             Row(
@@ -114,41 +116,22 @@ class BottomPlayer extends HookConsumerWidget {
               children: [
                 Flexible(
                   flex: 1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: Text(
-                          activeTrack.title,
-                          style: TextStyle(
-                            color: colorScheme.onSurface,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                      "$artist - ${activeTrack.title}",
+                      style: TextStyle(
+                        color: colorScheme.onSurface,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: Text(
-                          "$artist - $album",
-                          style: TextStyle(
-                            color: colorScheme.onSurface.withValues(alpha: 0.7),
-                            fontSize: 11,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                      ),
-                    ],
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
                   ),
                 ),
 
-                if (!activeTrack.isLocal) ...[
-                  const SizedBox(width: 2),
+                if (!activeTrack.isLocal && authHeaders.value != null) ...[
                   IconButton(
                     icon: Icon(
                       rating
@@ -189,6 +172,26 @@ class BottomPlayer extends HookConsumerWidget {
                     },
                   ),
                 ],
+
+                IconButton(
+                  icon: Icon(
+                    volume > 0.5
+                        ? Icons.volume_up_rounded
+                        : volume > 0
+                        ? Icons.volume_down_rounded
+                        : Icons.volume_off_rounded,
+                    size: 18,
+                  ),
+                  onPressed: () {
+                    if (volume > 0.5) {
+                      ref.read(volumeProvider.notifier).setVolume(0.5);
+                    } else if (volume > 0) {
+                      ref.read(volumeProvider.notifier).setVolume(0);
+                    } else {
+                      ref.read(volumeProvider.notifier).setVolume(1);
+                    }
+                  },
+                ),
                 IconButton(
                   tooltip: l10n.play_queue,
                   icon: const Icon(Icons.queue_music_rounded, size: 18),
@@ -209,31 +212,35 @@ class BottomPlayer extends HookConsumerWidget {
                 ),
               ],
             ),
-            if (currentLineLyrics.value != activeTrack.title)
-              Row(
-                children: [
-                  Flexible(
-                    flex: 1,
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: Text(
-                        currentLineLyrics.value,
-                        style: TextStyle(
-                          color: colorScheme.onSurface,
-                          fontSize: 14 * size.multiplier3,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
+            Row(
+              children: [
+                Flexible(
+                  flex: 1,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                      currentLineLyrics.value == activeTrack.title
+                          ? ''
+                          : currentLineLyrics.value,
+                      style: TextStyle(
+                        color: colorScheme.onSurface.withValues(alpha: 0.7),
+                        fontSize: 14,
                       ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ),
-                ],
-              ),
+                ),
+                SizedBox(width: 5),
+                Text(_formatDuration(duration, position), style: textStyle11),
+                SizedBox(width: 15),
+              ],
+            ),
             SliderTheme(
               data: SliderTheme.of(context).copyWith(
-                trackHeight: 6,
-                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
-                overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
+                trackHeight: 4,
+                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
+                overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
               ),
               child: Slider(
                 value: displayProgress,
@@ -251,84 +258,93 @@ class BottomPlayer extends HookConsumerWidget {
                 },
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: Icon(
-                    volume > 0.5
-                        ? Icons.volume_up_rounded
-                        : volume > 0
-                        ? Icons.volume_down_rounded
-                        : Icons.volume_off_rounded,
-                    size: 18,
-                  ),
-                  onPressed: () {
-                    if (volume > 0.5) {
-                      ref.read(volumeProvider.notifier).setVolume(0.5);
-                    } else if (volume > 0) {
-                      ref.read(volumeProvider.notifier).setVolume(0);
-                    } else {
-                      ref.read(volumeProvider.notifier).setVolume(1);
-                    }
-                  },
-                ),
-                const SizedBox(width: 2),
-                Text(_formatDuration(duration, position), style: textStyle11),
-              ],
-            ),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.skip_previous_rounded),
                   onPressed: () {
-                    if (loopMode == PlaylistMode.none) {
-                      if (audioPlayer.currentIndex == 0) {
-                        showSnackBar(
-                          l10n.tip_pre_song,
-                          context,
-                          colorScheme.secondary,
-                        );
-                        return;
-                      }
+                    if (shuffled) {
+                      audioPlayer.setShuffle(false);
+                    } else {
+                      audioPlayer.setShuffle(true);
                     }
-                    audioPlayer.skipToPrevious();
                   },
-                ),
-                const SizedBox(width: 2),
-                IconButton(
                   icon: Icon(
-                    isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                    Icons.shuffle_rounded,
+                    color: shuffled ? colorScheme.primary : null,
                     size: 18,
                   ),
-                  onPressed: isBuffering
-                      ? null
-                      : () {
-                          if (isPlaying) {
-                            audioPlayer.pauseWithFadeOut();
-                          } else {
-                            audioPlayer.resumeWithFadeIn();
-                          }
-                        },
                 ),
-                const SizedBox(width: 2),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.skip_previous_rounded, size: 24),
+                        onPressed: () {
+                          if (loopMode == PlaylistMode.none) {
+                            if (audioPlayer.currentIndex == 0) {
+                              showSnackBar(
+                                l10n.tip_pre_song,
+                                context,
+                                colorScheme.secondary,
+                              );
+                              return;
+                            }
+                          }
+                          audioPlayer.skipToPrevious();
+                        },
+                      ),
+                      const SizedBox(width: 2),
+                      IconButton(
+                        icon: Icon(
+                          isPlaying
+                              ? Icons.pause_rounded
+                              : Icons.play_arrow_rounded,
+                          size: 24,
+                        ),
+                        onPressed: isBuffering
+                            ? null
+                            : () {
+                                if (isPlaying) {
+                                  audioPlayer.pauseWithFadeOut();
+                                } else {
+                                  audioPlayer.resumeWithFadeIn();
+                                }
+                              },
+                      ),
+                      const SizedBox(width: 2),
+                      IconButton(
+                        icon: const Icon(Icons.skip_next_rounded, size: 24),
+                        onPressed: () {
+                          if (loopMode == PlaylistMode.none) {
+                            if (audioPlayer.currentIndex ==
+                                audioPlayer.sources.length - 1) {
+                              showSnackBar(
+                                l10n.tip_next_song,
+                                context,
+                                colorScheme.secondary,
+                              );
+                              return;
+                            }
+                          }
+                          audioPlayer.skipToNext();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
                 IconButton(
-                  icon: const Icon(Icons.skip_next_rounded),
+                  icon: Icon(
+                    _getLoopIcon(loopMode),
+                    size: 18,
+                    color: loopMode != PlaylistMode.none
+                        ? colorScheme.primary
+                        : null,
+                  ),
                   onPressed: () {
-                    if (loopMode == PlaylistMode.none) {
-                      if (audioPlayer.currentIndex ==
-                          audioPlayer.sources.length - 1) {
-                        showSnackBar(
-                          l10n.tip_next_song,
-                          context,
-                          colorScheme.secondary,
-                        );
-                        return;
-                      }
-                    }
-                    audioPlayer.skipToNext();
+                    _toggleLoopMode(loopMode);
                   },
                 ),
               ],
@@ -558,7 +574,8 @@ class BottomPlayer extends HookConsumerWidget {
                                 ),
                               ),
 
-                            if (!activeTrack.isLocal) ...[
+                            if (!activeTrack.isLocal &&
+                                authHeaders.value != null) ...[
                               const SizedBox(width: 2),
                               IconButton(
                                 icon: Icon(

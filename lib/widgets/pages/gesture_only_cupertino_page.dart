@@ -56,8 +56,10 @@ class _PageBasedCupertinoPageRoute<T> extends PageRoute<T>
   String get debugLabel => '${super.debugLabel}(${_page.name})';
 
   @override
-  Duration get transitionDuration => Duration.zero;
+  Duration get transitionDuration =>
+      fullscreenDialog ? const Duration(milliseconds: 400) : Duration.zero;
 
   @override
-  Duration get reverseTransitionDuration => Duration.zero;
+  Duration get reverseTransitionDuration =>
+      fullscreenDialog ? const Duration(milliseconds: 400) : Duration.zero;
 }

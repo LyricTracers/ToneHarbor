@@ -147,11 +147,19 @@ class MyApp extends HookConsumerWidget {
       };
     }, []);
 
-    Page<void> buildPage<T>({required LocalKey key, required Widget child}) {
-      if (Platform.isIOS || Platform.isAndroid) {
-        return GestureOnlyCupertinoPage<void>(key: key, child: child);
-      }
-      return NoTransitionPage<void>(key: key, child: child);
+    Page<void> buildPage<T>({
+      required LocalKey key,
+      required Widget child,
+      bool fullscreenDialog = false,
+    }) {
+      // if (Platform.isIOS || Platform.isAndroid) {
+      return GestureOnlyCupertinoPage<void>(
+        key: key,
+        child: child,
+        fullscreenDialog: fullscreenDialog,
+      );
+      // }
+      // return NoTransitionPage<void>(key: key, child: child);
     }
 
     final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -703,10 +711,12 @@ class MyApp extends HookConsumerWidget {
           GoRoute(
             path: "/playing_detail",
             parentNavigatorKey: rootNavigatorKey,
-            pageBuilder: (context, state) => buildPage(
-              key: state.pageKey,
-              child: const PlayingDetailLayout(),
-            ),
+            pageBuilder: (context, state) {
+              return buildPage(
+                key: state.pageKey,
+                child: const PlayingDetailLayout(),
+              );
+            },
           ),
           GoRoute(
             path: '/login',

@@ -11,9 +11,15 @@ import 'dart:ui' as ui;
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 
 abstract class BaseBgLayout extends HookConsumerWidget {
-  const BaseBgLayout({super.key, this.showLoading = true, this.appbar = true});
+  const BaseBgLayout({
+    super.key,
+    this.showLoading = true,
+    this.appbar = true,
+    this.offsetLeft = 0,
+  });
   final bool showLoading;
   final bool appbar;
+  final double offsetLeft;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -110,7 +116,7 @@ abstract class BaseBgLayout extends HookConsumerWidget {
           if (appbar)
             Positioned(
               top: 0,
-              left: 0,
+              left: offsetLeft,
               right: 0,
               child: Container(
                 height:
