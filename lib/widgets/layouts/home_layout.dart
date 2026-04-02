@@ -47,307 +47,308 @@ class HomeLayout extends BaseBgLayout {
           children: [
             SizedBox(
               width: 200,
+              height: double.infinity,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 2000),
                 curve: Curves.easeInOutSine,
                 decoration: gradientDecoration,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20, bottom: 8),
-                      child: SearchHistoryTextField(
-                        showHistoryIcon: false,
-                        listTextStyle: const TextStyle(fontSize: 14),
-                        decoration: InputDecoration(
-                          labelText: l10n.search,
-                          labelStyle: const TextStyle(fontSize: 14),
-                          hintText: l10n.searchHint,
-                          hintStyle: const TextStyle(fontSize: 14),
-                          prefixIcon: const Icon(Icons.search, size: 16),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20, bottom: 8),
+                        child: SearchHistoryTextField(
+                          showHistoryIcon: false,
+                          listTextStyle: const TextStyle(fontSize: 14),
+                          decoration: InputDecoration(
+                            labelText: l10n.search,
+                            labelStyle: const TextStyle(fontSize: 14),
+                            hintText: l10n.searchHint,
+                            hintStyle: const TextStyle(fontSize: 14),
+                            prefixIcon: const Icon(Icons.search, size: 16),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                           ),
+                          onFocusChanged: (v) {
+                            if (v) {
+                              ref.invalidate(songSelectionProvider);
+                            }
+                          },
+                          onSubmitSearch: (value) {
+                            var r = value.trim();
+                            if (r.isEmpty) return;
+                            context.pushWrapper(
+                              "/search/${Uri.encodeComponent(r)}",
+                            );
+                          },
                         ),
-                        onFocusChanged: (v) {
-                          if (v) {
-                            ref.invalidate(songSelectionProvider);
-                          }
+                      ),
+                      _getItem(
+                        currentPath == '/',
+                        colorScheme,
+                        Icons.recommend,
+                        l10n.recommend,
+                        () {
+                          context.go('/');
                         },
-                        onSubmitSearch: (value) {
-                          var r = value.trim();
-                          if (r.isEmpty) return;
+                      ),
+                      SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 18),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              l10n.music_house,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: colorScheme.onSurface.withValues(
+                                  alpha: 0.7,
+                                ),
+                              ),
+                            ),
+                            Icon(
+                              Icons.house_rounded,
+                              size: 16,
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.7,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      _getItem(
+                        currentPath == allMusicPath,
+                        colorScheme,
+                        Icons.library_music_rounded,
+                        l10n.all_music,
+                        () {
                           context.pushWrapper(
-                            "/search/${Uri.encodeComponent(r)}",
+                            allMusicPath,
+                            extra: (
+                              songsProvider(limit: 100),
+                              -1,
+                              SongsPageSortAction.all,
+                            ),
                           );
                         },
                       ),
-                    ),
-                    _getItem(
-                      currentPath == '/',
-                      colorScheme,
-                      Icons.recommend,
-                      l10n.recommend,
-                      () {
-                        context.go('/');
-                      },
-                    ),
-                    SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            l10n.music_house,
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: colorScheme.onSurface.withValues(
-                                alpha: 0.7,
-                              ),
-                            ),
-                          ),
-                          Icon(
-                            Icons.house_rounded,
-                            size: 16,
-                            color: colorScheme.onSurface.withValues(alpha: 0.7),
-                          ),
-                        ],
+                      SizedBox(height: 8),
+                      _getItem(
+                        currentPath == '/albums/None',
+                        colorScheme,
+                        Icons.album_rounded,
+                        l10n.albums,
+                        () {
+                          context.pushWrapper(
+                            '/albums/None',
+                            extra: albumsProvider(),
+                          );
+                        },
                       ),
-                    ),
-                    SizedBox(height: 8),
-                    _getItem(
-                      currentPath == allMusicPath,
-                      colorScheme,
-                      Icons.library_music_rounded,
-                      l10n.all_music,
-                      () {
-                        context.pushWrapper(
-                          allMusicPath,
-                          extra: (
-                            songsProvider(limit: 100),
-                            -1,
-                            SongsPageSortAction.all,
-                          ),
-                        );
-                      },
-                    ),
-                    SizedBox(height: 8),
-                    _getItem(
-                      currentPath == '/albums/None',
-                      colorScheme,
-                      Icons.album_rounded,
-                      l10n.albums,
-                      () {
-                        context.pushWrapper(
-                          '/albums/None',
-                          extra: albumsProvider(),
-                        );
-                      },
-                    ),
-                    SizedBox(height: 8),
-                    _getItem(
-                      currentPath == '/artists',
-                      colorScheme,
-                      Icons.people_rounded,
-                      l10n.artist,
-                      () {
-                        context.pushWrapper('/artists');
-                      },
-                    ),
-                    SizedBox(height: 8),
-                    _getItem(
-                      currentPath == '/playlist',
-                      colorScheme,
-                      Icons.play_lesson_rounded,
-                      l10n.playlists,
-                      () {
-                        context.pushWrapper('/playlist');
-                      },
-                    ),
+                      SizedBox(height: 8),
+                      _getItem(
+                        currentPath == '/artists',
+                        colorScheme,
+                        Icons.people_rounded,
+                        l10n.artist,
+                        () {
+                          context.pushWrapper('/artists');
+                        },
+                      ),
+                      SizedBox(height: 8),
+                      _getItem(
+                        currentPath == '/playlist',
+                        colorScheme,
+                        Icons.play_lesson_rounded,
+                        l10n.playlists,
+                        () {
+                          context.pushWrapper('/playlist');
+                        },
+                      ),
 
-                    SizedBox(height: 8),
-                    _getItem(
-                      currentPath.startsWith(allFoldersPath),
-                      colorScheme,
-                      Icons.folder_rounded,
-                      l10n.folder,
-                      () {
-                        context.pushWrapper(
-                          "${allFoldersPath}None",
-                          extra: (
-                            foldersProvider(limit: 100),
-                            <ToneHarborTrackObject>[],
-                          ),
-                        );
-                      },
-                    ),
-                    SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            l10n.other,
-                            style: TextStyle(
-                              fontSize: 15,
+                      SizedBox(height: 8),
+                      _getItem(
+                        currentPath.startsWith(allFoldersPath),
+                        colorScheme,
+                        Icons.folder_rounded,
+                        l10n.folder,
+                        () {
+                          context.pushWrapper(
+                            "${allFoldersPath}None",
+                            extra: (
+                              foldersProvider(limit: 100),
+                              <ToneHarborTrackObject>[],
+                            ),
+                          );
+                        },
+                      ),
+                      SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 18),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              l10n.other,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: colorScheme.onSurface.withValues(
+                                  alpha: 0.7,
+                                ),
+                              ),
+                            ),
+                            Icon(
+                              Icons.more_horiz_rounded,
+                              size: 16,
                               color: colorScheme.onSurface.withValues(
                                 alpha: 0.7,
                               ),
                             ),
-                          ),
-                          Icon(
-                            Icons.more_horiz_rounded,
-                            size: 16,
-                            color: colorScheme.onSurface.withValues(alpha: 0.7),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 8),
-                    _getItem(
-                      currentPath == '/download',
-                      colorScheme,
-                      Icons.download_for_offline,
-                      l10n.download_center,
-                      () {
-                        context.pushWrapper('/download');
-                      },
-                    ),
-                    SizedBox(height: 8),
-                    _getItem(
-                      currentPath.startsWith('/local_songs/'),
-                      colorScheme,
-                      Icons.library_music_outlined,
-                      l10n.local_songs,
-                      () {
-                        context.pushWrapper(
-                          '/local_songs/${Uri.encodeComponent(l10n.local_songs)}',
-                        );
-                      },
-                    ),
-                    SizedBox(height: 8),
-                    _getItem(
-                      currentPath.startsWith('/most_play/'),
-                      colorScheme,
-                      Icons.local_play_rounded,
-                      l10n.most_play,
-                      () {
-                        context.pushWrapper(
-                          '/most_play/${Uri.encodeComponent(l10n.most_play)}',
-                        );
-                      },
-                    ),
-                    if (favoritePlaylist.playlists.isNotEmpty) ...[
-                      SizedBox(height: 5),
-                      Divider(thickness: 1, indent: 12, endIndent: 12),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              left: 12,
-                              right: 12,
-                              bottom: 12,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: favoritePlaylist.playlists.map((item) {
-                                final path =
-                                    "/songs/${Uri.encodeComponent(item.title)}";
-                                final isSelected = path == currentPath;
-                                return GestureDetector(
-                                  behavior: HitTestBehavior.translucent,
-                                  onSecondaryTapDown: (detail) async {
-                                    if (isSelected) {
-                                      return;
-                                    }
-                                    await showCustomMenu<FavoritePlaylistItem>(
-                                      context: context,
-                                      globalPosition: detail.globalPosition,
-                                      items: [
-                                        PopupMenuItem(
-                                          height: 30,
-                                          enabled: false,
-                                          child: Text(
-                                            item.title,
-                                            maxLines: 1,
-                                            style: const TextStyle(
-                                              fontSize: 13,
-                                            ),
-                                          ),
+                      SizedBox(height: 8),
+                      _getItem(
+                        currentPath == '/download',
+                        colorScheme,
+                        Icons.download_for_offline,
+                        l10n.download_center,
+                        () {
+                          context.pushWrapper('/download');
+                        },
+                      ),
+                      SizedBox(height: 8),
+                      _getItem(
+                        currentPath.startsWith('/local_songs/'),
+                        colorScheme,
+                        Icons.library_music_outlined,
+                        l10n.local_songs,
+                        () {
+                          context.pushWrapper(
+                            '/local_songs/${Uri.encodeComponent(l10n.local_songs)}',
+                          );
+                        },
+                      ),
+                      SizedBox(height: 8),
+                      _getItem(
+                        currentPath.startsWith('/most_play/'),
+                        colorScheme,
+                        Icons.local_play_rounded,
+                        l10n.most_play,
+                        () {
+                          context.pushWrapper(
+                            '/most_play/${Uri.encodeComponent(l10n.most_play)}',
+                          );
+                        },
+                      ),
+                      if (favoritePlaylist.playlists.isNotEmpty) ...[
+                        SizedBox(height: 5),
+                        Divider(thickness: 1, indent: 12, endIndent: 12),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 12,
+                            right: 12,
+                            bottom: 12,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: favoritePlaylist.playlists.map((item) {
+                              final path =
+                                  "/songs/${Uri.encodeComponent(item.title)}";
+                              final isSelected = path == currentPath;
+                              return GestureDetector(
+                                behavior: HitTestBehavior.translucent,
+                                onSecondaryTapDown: (detail) async {
+                                  if (isSelected) {
+                                    return;
+                                  }
+                                  await showCustomMenu<FavoritePlaylistItem>(
+                                    context: context,
+                                    globalPosition: detail.globalPosition,
+                                    items: [
+                                      PopupMenuItem(
+                                        height: 30,
+                                        enabled: false,
+                                        child: Text(
+                                          item.title,
+                                          maxLines: 1,
+                                          style: const TextStyle(fontSize: 13),
                                         ),
-                                        PopupMenuDivider(),
-                                        PopupMenuItem(
-                                          height: 25,
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.favorite_border_rounded,
-                                                size: 18,
+                                      ),
+                                      PopupMenuDivider(),
+                                      PopupMenuItem(
+                                        height: 25,
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.favorite_border_rounded,
+                                              size: 18,
+                                              color: colorScheme.onSurface
+                                                  .withValues(alpha: 0.7),
+                                            ),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              l10n.no_favorite_playlist,
+                                              style: TextStyle(
+                                                fontSize: 13,
                                                 color: colorScheme.onSurface
                                                     .withValues(alpha: 0.7),
                                               ),
-                                              SizedBox(width: 10),
-                                              Text(
-                                                l10n.no_favorite_playlist,
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  color: colorScheme.onSurface
-                                                      .withValues(alpha: 0.7),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          onTap: () {
-                                            ref
-                                                .read(
-                                                  favoritePlaylistStateProvider
-                                                      .notifier,
-                                                )
-                                                .removeFavoritePlaylist(
-                                                  item.playlistId,
-                                                );
-                                          },
+                                            ),
+                                          ],
                                         ),
-                                      ],
+                                        onTap: () {
+                                          ref
+                                              .read(
+                                                favoritePlaylistStateProvider
+                                                    .notifier,
+                                              )
+                                              .removeFavoritePlaylist(
+                                                item.playlistId,
+                                              );
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                                child: _getItem(
+                                  isSelected,
+                                  colorScheme,
+                                  Icons.file_present,
+                                  item.title,
+                                  () {
+                                    context.pushWrapper(
+                                      path,
+                                      extra: (
+                                        playlistDetailProvider(
+                                          id: item.playlistId,
+                                        ),
+                                        -1,
+                                        SongsPageSortAction.none,
+                                      ),
                                     );
                                   },
-                                  child: _getItem(
-                                    isSelected,
-                                    colorScheme,
-                                    Icons.file_present,
-                                    item.title,
-                                    () {
-                                      context.pushWrapper(
-                                        path,
-                                        extra: (
-                                          playlistDetailProvider(
-                                            id: item.playlistId,
-                                          ),
-                                          -1,
-                                          SongsPageSortAction.none,
-                                        ),
-                                      );
-                                    },
-                                    paddingContent:
-                                        EdgeInsetsGeometry.symmetric(
-                                          horizontal: 4,
-                                          vertical: 4,
-                                        ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 2,
-                                    ),
-                                    offsetWidth: 2,
+                                  paddingContent:
+                                      const EdgeInsetsGeometry.symmetric(
+                                        horizontal: 4,
+                                        vertical: 4,
+                                      ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 2,
                                   ),
-                                );
-                              }).toList(),
-                            ),
+                                  offsetWidth: 2,
+                                ),
+                              );
+                            }).toList(),
                           ),
                         ),
-                      ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             ),
