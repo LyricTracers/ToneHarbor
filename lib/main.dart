@@ -148,12 +148,10 @@ class MyApp extends HookConsumerWidget {
     }, []);
 
     Page<void> buildPage<T>({required LocalKey key, required Widget child}) {
-      // if (Platform.isIOS) {
+      if (Platform.isIOS || Platform.isAndroid) {
         return GestureOnlyCupertinoPage<void>(key: key, child: child);
-      // } else if (Platform.isAndroid) {
-        // return MaterialPage<void>(key: key, child: child);
-      // }
-      // return NoTransitionPage<void>(key: key, child: child);
+      }
+      return NoTransitionPage<void>(key: key, child: child);
     }
 
     final rootNavigatorKey = GlobalKey<NavigatorState>();
