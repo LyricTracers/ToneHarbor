@@ -55,6 +55,6 @@
 		<key>NSWindowMinWidth</key>
 		<real>320.0</real>
 		<key>NSWindowMinHeight</key>
-		<real>450.0</real>
+		<real>600.0</real>
 	</dict>
 </plist>
