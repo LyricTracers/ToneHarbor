@@ -40,7 +40,7 @@ class ToneHarborMedia extends mk.Media {
     return ToneHarborMedia(ToneHarborTrackObject.fromJson(media.extras!));
   }
 
-  static String getCoverUrl(
+  static String getLocalCoverUrl(
     String songId,
     String albumName,
     String artistName,
@@ -57,7 +57,7 @@ class ToneHarborMedia extends mk.Media {
 
 extension MediaCoverExtension on Media {
   String getCoverUrl() {
-    return ToneHarborMedia.getCoverUrl(id, album, artist);
+    return ToneHarborMedia.getLocalCoverUrl(id, album, artist);
   }
 
   String get id {
