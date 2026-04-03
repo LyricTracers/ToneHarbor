@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:toneharbor/models/audio_player/audio_player_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -108,8 +109,12 @@ class AudioPlayerStreamListeners {
       try {
         if (percentProgress < 80 ||
             audioPlayerState.currentIndex == -1 ||
-            audioPlayerState.currentIndex ==
-                audioPlayerState.tracks.length - 1) {
+            audioPlayerState.loopMode == PlaylistMode.single) {
+          return;
+        }
+
+        if (audioPlayerState.currentIndex ==
+            audioPlayerState.tracks.length - 1) {
           return;
         }
 
