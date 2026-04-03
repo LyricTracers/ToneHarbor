@@ -806,7 +806,7 @@ class BottomPlayer extends HookConsumerWidget {
         ),
         child: HookBuilder(
           builder: (context) {
-            final volume = useState(0.0);
+            final volume = useState(audioPlayer.volume);
             useEffect(() {
               final subscription = audioPlayer.volumeStream.listen((v) {
                 volume.value = v;
