@@ -97,6 +97,9 @@ class PlaybackRoutes {
     required Map<String, String> headers,
     required String actualContainer,
   }) {
+    logger.i(
+      '[PlaybackRoutes] _buildStreamResponse: statusCode=$statusCode, content-type=${headers['content-type']}, content-length=${headers['content-length']}, content-range=${headers['content-range']}',
+    );
     return Response(
       statusCode,
       body: body,
@@ -170,7 +173,6 @@ class PlaybackRoutes {
             'content-type': _getMimeType(actualContainer),
             'content-length': '$fileLength',
             'accept-ranges': 'bytes',
-            'content-range': 'bytes 0-$fileLength/$fileLength',
           },
         );
       }
@@ -230,7 +232,7 @@ class PlaybackRoutes {
       }
 
       if (track.isLocal) {
-        return _serveLocalFile(track);
+        return _serveLocalFile(request, track);
       }
 
       final quality = ref.read(audioQualityProvider);
@@ -238,8 +240,11 @@ class PlaybackRoutes {
       final cacheFile = File(cachePath);
 
       if (await cacheFile.exists()) {
-        return _serveCachedFile(cacheFile, quality);
+        logger.i('[PlaybackRoutes] Serving from cache: $cachePath');
+        return _serveCachedFile(request, cacheFile, quality);
       }
+
+      logger.i('[PlaybackRoutes] No cache, streaming from remote: $cachePath');
 
       return await _serveRemoteStream(
         request,
@@ -258,12 +263,32 @@ class PlaybackRoutes {
     }
   }
 
-  Future<Response> _serveLocalFile(ToneHarborTrackObject track) async {
+  Future<Response> _serveLocalFile(
+    Request request,
+    ToneHarborTrackObject track,
+  ) async {
     final file = File(track.path);
     if (!await file.exists()) {
       return Response.notFound("Local file not found");
     }
     final fileLength = await file.length();
+    final rangeHeader = request.headers['range'];
+
+    if (rangeHeader != null) {
+      final rangeStart = _parseRangeStart(rangeHeader);
+      final rangeEnd = fileLength - 1;
+      final stream = file.openRead(rangeStart, rangeEnd + 1);
+      return Response(
+        206,
+        body: stream,
+        headers: {
+          'content-type': _getMimeType(track.container),
+          'content-length': '${rangeEnd - rangeStart + 1}',
+          'accept-ranges': 'bytes',
+          'content-range': 'bytes $rangeStart-$rangeEnd/$fileLength',
+        },
+      );
+    }
 
     return Response(
       200,
@@ -272,13 +297,12 @@ class PlaybackRoutes {
         'content-type': _getMimeType(track.container),
         'content-length': '$fileLength',
         'accept-ranges': 'bytes',
-        'content-range': 'bytes 0-${fileLength - 1}/$fileLength',
-        'connection': 'close',
       },
     );
   }
 
   Future<Response> _serveCachedFile(
+    Request request,
     File cacheFile,
     AudioQuality quality,
   ) async {
@@ -286,7 +310,30 @@ class PlaybackRoutes {
       return Response.notFound("Cache file not found");
     }
     final fileLength = await cacheFile.length();
+    logger.i(
+      '[PlaybackRoutes] _serveCachedFile: path=${cacheFile.path}, fileLength=$fileLength',
+    );
     final actualContainer = cacheFile.path.split('.').last;
+
+    final rangeHeader = request.headers['range'];
+    if (rangeHeader != null) {
+      final rangeStart = _parseRangeStart(rangeHeader);
+      final rangeEnd = fileLength - 1;
+      final stream = cacheFile.openRead(rangeStart, rangeEnd + 1);
+      logger.i(
+        '[PlaybackRoutes] Serving partial content: bytes $rangeStart-$rangeEnd/$fileLength',
+      );
+      return Response(
+        206,
+        body: stream,
+        headers: {
+          'content-type': _getMimeType(actualContainer),
+          'content-length': '${rangeEnd - rangeStart + 1}',
+          'accept-ranges': 'bytes',
+          'content-range': 'bytes $rangeStart-$rangeEnd/$fileLength',
+        },
+      );
+    }
 
     return Response(
       200,
@@ -295,8 +342,6 @@ class PlaybackRoutes {
         'content-type': _getMimeType(actualContainer),
         'content-length': '$fileLength',
         'accept-ranges': 'bytes',
-        'content-range': 'bytes 0-${fileLength - 1}/$fileLength',
-        'connection': 'close',
       },
     );
   }
@@ -326,12 +371,18 @@ class PlaybackRoutes {
 
     final rangeHeader = request.headers['range'] ?? 'bytes=0-';
 
+    logger.i('[PlaybackRoutes] GET stream: songId=$songId, range=$rangeHeader');
+
     final response = await downloadHttpClientWrapper.getStream(
       streamUrl,
       headers: rhttp.HttpHeaders.rawMap({...authHeaders, 'range': rangeHeader}),
     );
 
     final headers = _extractHeaders(response);
+
+    logger.i(
+      '[PlaybackRoutes] Upstream response: statusCode=${response.statusCode}, content-range=${headers['content-range']}, content-length=${headers['content-length']}',
+    );
 
     if (response.statusCode != 200 && response.statusCode != 206) {
       return Response(response.statusCode, body: 'Remote server error');
@@ -356,6 +407,10 @@ class PlaybackRoutes {
 
     final rangeStart = _parseRangeStart(rangeHeader);
     final isFromStart = rangeStart == 0;
+
+    logger.i(
+      '[PlaybackRoutes] Range processing: rangeStart=$rangeStart, isFromStart=$isFromStart',
+    );
 
     final contentRange = headers['content-range'] != null
         ? ContentRangeHeader.parse(headers['content-range']!)
@@ -403,6 +458,9 @@ class PlaybackRoutes {
 
     if (await trackPartialCacheFile.exists()) {
       final partLength = await trackPartialCacheFile.length();
+      logger.i(
+        '[PlaybackRoutes] Partial cache exists: partLength=$partLength, contentRange.total=${contentRange.total}',
+      );
       if (partLength == contentRange.total) {
         final finalCacheFile = File(cachePath);
         if (!await finalCacheFile.exists()) {
@@ -411,6 +469,9 @@ class PlaybackRoutes {
           await trackPartialCacheFile.delete();
         }
         CacheLockManager.instance.unlock(cacheKey);
+        logger.i(
+          '[PlaybackRoutes] Partial cache complete, renaming to final cache',
+        );
         return _buildStreamResponse(
           statusCode: response.statusCode,
           body: resStream,
@@ -418,8 +479,12 @@ class PlaybackRoutes {
           actualContainer: actualContainer,
         );
       }
+      logger.w(
+        '[PlaybackRoutes] Partial cache incomplete, deleting and re-downloading',
+      );
       await trackPartialCacheFile.delete();
     }
+    logger.i('[PlaybackRoutes] Creating new partial cache file');
     await trackPartialCacheFile.create(recursive: true);
 
     final partialCacheFileSink = trackPartialCacheFile.openWrite(
