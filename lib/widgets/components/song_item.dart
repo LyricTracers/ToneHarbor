@@ -45,11 +45,6 @@ class SongItem extends HookConsumerWidget {
     var isHovered = useState(false);
     var localSelected = useState(false);
     var isPressed = useState(false);
-    useEffect(() {
-      return () {
-        isPressed.value = false;
-      };
-    }, []);
 
     useEffect(() {
       localSelected.value = ref
