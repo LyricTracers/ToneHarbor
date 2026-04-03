@@ -367,26 +367,58 @@ class BottomPlayer extends HookConsumerWidget {
     required _PlayerState playerState,
     required _ProgressData progressInfo,
   }) {
-    return SliderTheme(
-      data: SliderTheme.of(context).copyWith(
-        trackHeight: 4,
-        thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
-        overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
-      ),
-      child: Slider(
-        value: progressInfo.displayProgress,
-        onChanged: playerState.isBuffering
-            ? null
-            : (value) => progressInfo.draggingProgress.value = value,
-        onChangeEnd: (value) {
-          final newPosition = Duration(
-            milliseconds: (value * progressInfo.duration.inMilliseconds)
-                .toInt(),
-          );
-          audioPlayer.seek(newPosition);
-          progressInfo.draggingProgress.value = null;
-        },
-      ),
+    return Stack(
+      children: [
+        Positioned(
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Align(
+            alignment: Alignment.center,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SizedBox(
+                width: double.infinity,
+                child: LinearProgressIndicator(
+                  value: progressInfo.bufferingPercentage,
+                  minHeight: 4,
+                  backgroundColor: Colors.transparent,
+                  valueColor: AlwaysStoppedAnimation(
+                    Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.3),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            trackHeight: 4,
+            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
+            overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
+            activeTrackColor: Theme.of(context).colorScheme.primary,
+            inactiveTrackColor: Colors.transparent,
+            trackShape: const RectangularSliderTrackShape(),
+          ),
+          child: Slider(
+            value: progressInfo.displayProgress,
+            onChanged: playerState.isBuffering
+                ? null
+                : (value) => progressInfo.draggingProgress.value = value,
+            onChangeEnd: (value) {
+              final newPosition = Duration(
+                milliseconds: (value * progressInfo.duration.inMilliseconds)
+                    .toInt(),
+              );
+              audioPlayer.seek(newPosition);
+              progressInfo.draggingProgress.value = null;
+            },
+          ),
+        ),
+      ],
     );
   }
 
