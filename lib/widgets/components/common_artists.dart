@@ -23,6 +23,14 @@ class _LayoutConfig {
     itemSpacing: 16,
     horizontalPadding: 16,
   );
+  _LayoutConfig withMultiplier(double multiplier) {
+    return _LayoutConfig(
+      height: height * multiplier,
+      itemWidth: itemWidth * multiplier,
+      itemSpacing: itemSpacing * multiplier,
+      horizontalPadding: horizontalPadding * multiplier,
+    );
+  }
 }
 
 class ArtistItem extends StatelessWidget {
@@ -96,7 +104,8 @@ class AritistHorizontalList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final config = _LayoutConfig.defaultConfig;
+    final size = MediaQuery.of(context).size;
+    final config = _LayoutConfig.defaultConfig.withMultiplier(size.multiplier2);
     return SizedBox(
       height: config.height,
       child: ListView.builder(

@@ -45,14 +45,17 @@ class SearchResulutPage extends HookConsumerWidget {
               children: [
                 Text(
                   "${l10n.search}:",
-                  style: TextStyle(color: colorScheme.onSurface, fontSize: 16),
+                  style: TextStyle(
+                    color: colorScheme.onSurface,
+                    fontSize: 16 * multiplier,
+                  ),
                 ),
                 SizedBox(width: 5),
                 Text(
                   query,
                   style: TextStyle(
                     color: colorScheme.primary,
-                    fontSize: 16,
+                    fontSize: 16 * multiplier,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -102,15 +105,12 @@ class SearchResulutPage extends HookConsumerWidget {
                                   artists.data!.artists != null &&
                                   artists.data!.artists!.isNotEmpty) ...[
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 20,
-                                  ),
+                                  padding: EdgeInsets.all(20 * multiplier),
                                   child: Text(
                                     l10n.artist,
                                     style: TextStyle(
                                       color: colorScheme.secondary,
-                                      fontSize: 18,
+                                      fontSize: 18 * multiplier,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -124,15 +124,12 @@ class SearchResulutPage extends HookConsumerWidget {
                                   albums.data!.albums != null &&
                                   albums.data!.albums!.isNotEmpty) ...[
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 20,
-                                  ),
+                                  padding: EdgeInsets.all(20 * multiplier),
                                   child: Text(
                                     l10n.albums,
                                     style: TextStyle(
                                       color: colorScheme.secondary,
-                                      fontSize: 18,
+                                      fontSize: 18 * multiplier,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -146,17 +143,17 @@ class SearchResulutPage extends HookConsumerWidget {
                             if (songs != null && songs.songs.isNotEmpty) ...[
                               if (!songSelectionState.selectionType)
                                 Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 20,
-                                    top: 20,
-                                    bottom: 20,
-                                    right: 15,
+                                  padding: EdgeInsets.only(
+                                    left: 20 * multiplier,
+                                    top: 20 * multiplier,
+                                    bottom: 20 * multiplier,
+                                    right: 15 * multiplier,
                                   ),
                                   child: Text(
                                     l10n.all_music,
                                     style: TextStyle(
                                       color: colorScheme.secondary,
-                                      fontSize: 18,
+                                      fontSize: 18 * multiplier,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),

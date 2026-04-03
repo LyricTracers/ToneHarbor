@@ -69,7 +69,10 @@ class AlbumHorizontalList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final config = _LayoutConfig.defaultConfig;
+    final size = MediaQuery.of(context).size;
+    final config = _LayoutConfig.defaultConfig.multiply(
+      multiplier: size.multiplier2,
+    );
     return SizedBox(
       height: config.height,
       child: ListView.builder(
