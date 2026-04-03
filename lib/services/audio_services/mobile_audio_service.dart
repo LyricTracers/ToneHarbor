@@ -14,53 +14,13 @@ class MobileAudioService extends BaseAudioHandler {
   AudioSession? session;
   final AudioPlayerStateNotifier playback;
   final _subscriptions = <StreamSubscription>[];
+  final _sessionCompleter = Completer<AudioSession>();
 
   // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
   AudioPlayerState get playlist => playback.state;
 
   MobileAudioService(this.playback) {
-    AudioSession.instance.then((s) {
-      session = s;
-      session?.configure(const AudioSessionConfiguration.music());
-
-      bool wasPausedByBeginEvent = false;
-
-      _subscriptions.add(
-        s.interruptionEventStream.listen((event) async {
-          if (event.begin) {
-            switch (event.type) {
-              case AudioInterruptionType.duck:
-                await _player.setVolume(0.5);
-                break;
-              case AudioInterruptionType.pause:
-              case AudioInterruptionType.unknown:
-                wasPausedByBeginEvent = _player.isPlaying;
-                await _player.pause();
-                break;
-            }
-          } else {
-            switch (event.type) {
-              case AudioInterruptionType.duck:
-                await _player.setVolume(1.0);
-                break;
-              case AudioInterruptionType.pause when wasPausedByBeginEvent:
-              case AudioInterruptionType.unknown when wasPausedByBeginEvent:
-                await _player.resume();
-                wasPausedByBeginEvent = false;
-                break;
-              default:
-                break;
-            }
-          }
-        }),
-      );
-
-      _subscriptions.add(
-        s.becomingNoisyEventStream.listen((_) {
-          _player.pause();
-        }),
-      );
-    });
+    _initSession();
 
     _subscriptions.add(
       _player.playerStateStream.listen((state) async {
@@ -84,11 +44,60 @@ class MobileAudioService extends BaseAudioHandler {
     );
   }
 
+  Future<void> _initSession() async {
+    session = await AudioSession.instance;
+    session?.configure(const AudioSessionConfiguration.music());
+    _sessionCompleter.complete(session!);
+
+    bool wasPausedByBeginEvent = false;
+
+    _subscriptions.add(
+      session!.interruptionEventStream.listen((event) async {
+        if (event.begin) {
+          switch (event.type) {
+            case AudioInterruptionType.duck:
+              await _player.setVolume(0.5);
+              break;
+            case AudioInterruptionType.pause:
+            case AudioInterruptionType.unknown:
+              wasPausedByBeginEvent = _player.isPlaying;
+              await _player.pause();
+              break;
+          }
+        } else {
+          switch (event.type) {
+            case AudioInterruptionType.duck:
+              await _player.setVolume(1.0);
+              break;
+            case AudioInterruptionType.pause when wasPausedByBeginEvent:
+            case AudioInterruptionType.unknown when wasPausedByBeginEvent:
+              await _player.resume();
+              wasPausedByBeginEvent = false;
+              break;
+            default:
+              break;
+          }
+        }
+      }),
+    );
+
+    _subscriptions.add(
+      session!.becomingNoisyEventStream.listen((_) {
+        _player.pause();
+      }),
+    );
+  }
+
   ToneHarborAudioPlayer get _player => audioPlayer;
 
-  void addItem(MediaItem item) {
-    session?.setActive(true);
+  Future<void> addItem(MediaItem item) async {
+    logger.i(
+      '[MobileAudioService] addItem: ${item.title} by ${item.artist}, artUri: ${item.artUri}',
+    );
+    await _sessionCompleter.future;
+    await session?.setActive(true);
     mediaItem.add(item);
+    logger.i('[MobileAudioService] addItem completed');
   }
 
   @override

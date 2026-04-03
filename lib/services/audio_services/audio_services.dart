@@ -6,6 +6,7 @@ import 'package:toneharbor/services/audio_services/mobile_audio_service.dart';
 import 'package:toneharbor/services/audio_services/windows_audio_service.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'dart:io';
 
 class AudioServices with WidgetsBindingObserver {
@@ -20,6 +21,9 @@ class AudioServices with WidgetsBindingObserver {
     Ref ref,
     AudioPlayerStateNotifier playback,
   ) async {
+    logger.i(
+      '[AudioServices] Creating AudioServices for platform: ${Platform.operatingSystem}',
+    );
     final mobile =
         Platform.isAndroid ||
             Platform.isIOS ||
@@ -39,13 +43,19 @@ class AudioServices with WidgetsBindingObserver {
         : null;
 
     final smtc = Platform.isWindows ? WindowsAudioService(ref, playback) : null;
+    logger.i(
+      '[AudioServices] AudioServices created, mobile: ${mobile != null}, smtc: ${smtc != null}',
+    );
 
     return AudioServices(mobile, smtc);
   }
 
   Future<void> addMedia(Media media) async {
+    logger.i(
+      '[AudioServices] addMedia called: ${media.title} by ${media.artist}',
+    );
     await smtc?.addMedia(media);
-    mobile?.addItem(
+    await mobile?.addItem(
       MediaItem(
         id: media.id,
         album: media.album,
@@ -56,6 +66,7 @@ class AudioServices with WidgetsBindingObserver {
         playable: true,
       ),
     );
+    logger.i('[AudioServices] addMedia completed: mobile=${mobile != null}');
   }
 
   void activateSession() {

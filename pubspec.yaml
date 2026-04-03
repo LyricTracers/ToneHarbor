@@ -27,7 +27,8 @@ dependencies:
     git:
       url: https://git.nxcloud.club:12750/LyricTracers/flutter_context_menu.git
       ref: v1.0.0-macos
-  audio_service: ^0.18.18
+  audio_service: 
+    path: ../audio_service/audio_service
   audio_session: ^0.2.3
   smtc_windows: ^1.1.0
   open_file: ^3.5.10

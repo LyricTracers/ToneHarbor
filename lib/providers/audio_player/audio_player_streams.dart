@@ -18,17 +18,28 @@ class AudioPlayerStreamListeners {
   final subscriptions = <StreamSubscription>[];
   AudioPlayerState get audioPlayerState => ref.read(audioPlayerStateProvider);
   AudioPlayerStreamListeners(this.ref) {
-    AudioServices.create(
+    _init();
+
+    ref.onDispose(dispose);
+  }
+
+  Future<void> _init() async {
+    notificationService = await AudioServices.create(
       ref,
       ref.read(audioPlayerStateProvider.notifier),
-    ).then((value) => notificationService = value);
+    );
 
     subscriptions.add(subscribeToPlaylist());
     subscriptions.add(subscribeToPosition());
     subscriptions.add(subscribeToPlayerError());
     updateMusicPlayer();
 
-    ref.onDispose(dispose);
+    final currentPlaylist = audioPlayer.playlist;
+    if (currentPlaylist.index >= 0 &&
+        currentPlaylist.index < currentPlaylist.medias.length) {
+      final activeMedia = currentPlaylist.medias[currentPlaylist.index];
+      notificationService?.addMedia(activeMedia);
+    }
   }
 
   void updateMusicPlayer() {
@@ -66,11 +77,7 @@ class AudioPlayerStreamListeners {
             activeMedia.title,
             activeMedia.artist,
           );
-          final coverUrl = ToneHarborMedia.getCoverUrl(
-            activeMedia.id,
-            activeMedia.album,
-            activeMedia.artist,
-          );
+          final coverUrl = activeMedia.getCoverUrl();
           TrayManager.instance
               .updateMusicPlayerArtworkFromUrl(coverUrl)
               .catchError((e) {
