@@ -95,7 +95,7 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
                       controller: tabController,
                       labelColor: colorScheme.primary,
                       labelStyle: TextStyle(
-                        fontSize: 15 * size.multiplier2,
+                        fontSize: 16 * size.multiplier2,
                         fontWeight: FontWeight.bold,
                       ),
                       unselectedLabelStyle: TextStyle(
