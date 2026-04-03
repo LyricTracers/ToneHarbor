@@ -203,14 +203,13 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
           },
           tooltip: l10n.refresh,
         ),
-      if (size.mdAndDown)
-        IconButton(
-          onPressed: () {
-            ref.context.pushWrapper("/setting");
-          },
-          icon: const Icon(Icons.settings_rounded, size: 18),
-          tooltip: l10n.settings,
-        ),
+      IconButton(
+        onPressed: () {
+          ref.context.pushWrapper("/setting");
+        },
+        icon: const Icon(Icons.settings_rounded, size: 18),
+        tooltip: l10n.settings,
+      ),
     ];
   }
 

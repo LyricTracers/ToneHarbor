@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
@@ -38,7 +37,9 @@ class SearchResulutPage extends HookConsumerWidget {
           SubSongSelectionTop(songs: searchResult.value?.songs?.songs ?? []),
         if (!songSelectionState.selectionType)
           AppBar(
-            backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
             centerTitle: false,
             title: Row(
               children: [
@@ -65,13 +66,14 @@ class SearchResulutPage extends HookConsumerWidget {
                 tooltip: l10n.select_all,
                 icon: const Icon(Icons.fact_check_rounded, size: 18),
               ),
-              IconButton(
-                onPressed: () {
-                  context.pushWrapper("/setting");
-                },
-                icon: const Icon(Icons.settings_rounded, size: 18),
-                tooltip: l10n.settings,
-              ),
+              if (size.lgAndUp)
+                IconButton(
+                  onPressed: () {
+                    context.pushWrapper("/setting");
+                  },
+                  icon: const Icon(Icons.settings_rounded, size: 18),
+                  tooltip: l10n.settings,
+                ),
             ],
           ),
         Expanded(
