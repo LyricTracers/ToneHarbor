@@ -31,121 +31,124 @@ class _PlaylistItem extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SizedBox(
-      height: 44,
-      child: Stack(
-        children: [
-          if (isDefault)
-            Positioned(
-              top: 0,
-              left: 0,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  borderRadius: const BorderRadius.only(
-                    bottomRight: Radius.circular(8),
+    var isPressed = useState(false);
+    return Dismissible(
+      key: Key(track.hashCode.toString()),
+      direction: DismissDirection.endToStart,
+      onDismissed: (direction) {
+        onDeleteTap();
+      },
+      background: Container(
+        color: colorScheme.surfaceContainerHigh,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Icon(Icons.delete, color: colorScheme.primary),
+      ),
+      child: Container(
+        height: 35,
+        color: isPressed.value
+            ? colorScheme.outline.withValues(alpha: .1)
+            : Colors.transparent,
+        child: Stack(
+          children: [
+            if (isDefault)
+              Positioned(
+                top: 0,
+                left: 0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
                   ),
-                ),
-                child: Text(
-                  i10n.playing,
-                  style: TextStyle(
-                    color: colorScheme.onPrimary,
-                    fontSize: 8,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ListTile(
-            contentPadding: const EdgeInsets.only(left: 10, right: 10),
-            horizontalTitleGap: 10,
-            leading: Text(
-              '${index + 1}',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: colorScheme.primary,
-              ),
-            ),
-            trailing: ReorderableDragStartListener(
-              index: index,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {},
-                child: const Icon(Icons.drag_handle, size: 16),
-              ),
-            ),
-            title: ContextMenuRegion<String>(
-              contextMenu: ContextMenu(
-                entriesBuilder: () => [
-                  MenuHeader(text: track.title),
-                  MenuDivider(),
-                  MenuItem<String>(
-                    label: Text(
-                      i10n.delete,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary,
+                    borderRadius: const BorderRadius.only(
+                      bottomRight: Radius.circular(8),
                     ),
-                    icon: const Icon(Icons.delete_forever),
-                    onSelected: (value) {
-                      ref
-                          .read(audioPlayerStateProvider.notifier)
-                          .removeTrack(track.id, index: index);
-                    },
                   ),
-
-                  MenuItem<String>(
-                    label: Text(i10n.copy),
-                    icon: const Icon(Icons.copy),
-                    onSelected: (value) {
+                  child: Text(
+                    i10n.playing,
+                    style: TextStyle(
+                      color: colorScheme.onPrimary,
+                      fontSize: 7,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTapDown: (details) => isPressed.value = true,
+                    onTapUp: (details) => isPressed.value = false,
+                    onTapCancel: () => isPressed.value = false,
+                    onTap: onTap,
+                    onDoubleTap: () {
                       copyToClipboard(
                         '${track.title}-${track.artist}',
                         context,
                         colorScheme.secondary,
                       );
                     },
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  const SizedBox(width: 5),
-                  Flexible(
-                    child: SmartMarquee(
-                      text: track.title,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                      manualScrollOnTap: true,
-                      alignment: AlignmentGeometry.centerLeft,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  SizedBox(
-                    width: 80,
-                    child: Text(
-                      track.artist,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.right,
-                      maxLines: 1,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: colorScheme.onSurfaceVariant.withValues(
-                          alpha: 0.7,
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 25),
+                        Text(
+                          '${index + 1}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.primary,
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 10),
+                        Flexible(
+                          child: SmartMarquee(
+                            text: track.title,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            manualScrollOnTap: true,
+                            alignment: AlignmentGeometry.centerLeft,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        SizedBox(
+                          width: 80,
+                          child: Text(
+                            track.artist,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.right,
+                            maxLines: 1,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colorScheme.onSurfaceVariant.withValues(
+                                alpha: 0.7,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 10),
-                ],
-              ),
+                ),
+
+                ReorderableDragStartListener(
+                  index: index,
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.drag_handle, size: 16),
+                  ),
+                ),
+                SizedBox(width: 5),
+              ],
             ),
-            selected: isDefault,
-            onTap: onTap,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
