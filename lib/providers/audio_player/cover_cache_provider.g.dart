@@ -22,7 +22,13 @@ final class FetchCoverBytesProvider
     with $FutureModifier<Uint8List?>, $FutureProvider<Uint8List?> {
   FetchCoverBytesProvider._({
     required FetchCoverBytesFamily super.from,
-    required ({String url, String key, Duration? liveKeepDuration})
+    required ({
+      String songId,
+      String albumName,
+      String artistName,
+      String key,
+      Duration? liveKeepDuration,
+    })
     super.argument,
   }) : super(
          retry: null,
@@ -50,10 +56,19 @@ final class FetchCoverBytesProvider
   @override
   FutureOr<Uint8List?> create(Ref ref) {
     final argument =
-        this.argument as ({String url, String key, Duration? liveKeepDuration});
+        this.argument
+            as ({
+              String songId,
+              String albumName,
+              String artistName,
+              String key,
+              Duration? liveKeepDuration,
+            });
     return fetchCoverBytes(
       ref,
-      url: argument.url,
+      songId: argument.songId,
+      albumName: argument.albumName,
+      artistName: argument.artistName,
       key: argument.key,
       liveKeepDuration: argument.liveKeepDuration,
     );
@@ -70,13 +85,19 @@ final class FetchCoverBytesProvider
   }
 }
 
-String _$fetchCoverBytesHash() => r'9335f643028a376171220a871e38d2509ebae513';
+String _$fetchCoverBytesHash() => r'717664fd288e0982b96a66e20b9f86eef854cc4a';
 
 final class FetchCoverBytesFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<Uint8List?>,
-          ({String url, String key, Duration? liveKeepDuration})
+          ({
+            String songId,
+            String albumName,
+            String artistName,
+            String key,
+            Duration? liveKeepDuration,
+          })
         > {
   FetchCoverBytesFamily._()
     : super(
@@ -88,11 +109,19 @@ final class FetchCoverBytesFamily extends $Family
       );
 
   FetchCoverBytesProvider call({
-    required String url,
+    required String songId,
+    required String albumName,
+    required String artistName,
     required String key,
     Duration? liveKeepDuration,
   }) => FetchCoverBytesProvider._(
-    argument: (url: url, key: key, liveKeepDuration: liveKeepDuration),
+    argument: (
+      songId: songId,
+      albumName: albumName,
+      artistName: artistName,
+      key: key,
+      liveKeepDuration: liveKeepDuration,
+    ),
     from: this,
   );
 

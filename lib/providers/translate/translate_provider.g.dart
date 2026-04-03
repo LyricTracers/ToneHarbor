@@ -421,7 +421,7 @@ final class TranslateServiceProvider
   }
 }
 
-String _$translateServiceHash() => r'b2263a102fe346f6fa7add2eaac24555bce44031';
+String _$translateServiceHash() => r'3070892285bbc363cd9e36ebb8ac2e553ac18cc5';
 
 @ProviderFor(TranslateText)
 final translateTextProvider = TranslateTextProvider._();

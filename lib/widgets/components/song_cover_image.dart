@@ -4,7 +4,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
-import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/components/cached_network_image.dart';
 
@@ -28,7 +27,6 @@ class SongCoverImage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final coverUrl = ToneHarborMedia.getCoverUrl(songId, albumName, artistName);
     String cacheKey = songId;
     if (cacheKey.isEmpty) {
       cacheKey = sanitizeCacheKey("$artistName-$albumName");
@@ -55,12 +53,14 @@ class SongCoverImage extends HookConsumerWidget {
       borderRadius: BorderRadius.circular(borderRadius),
       child: CachedNetworkImage(
         keepLiveDuration: const Duration(minutes: 1),
-        imageUrl: coverUrl,
+        songId: songId,
+        albumName: albumName,
+        artistName: artistName,
         cacheKey: cacheKey,
         width: config.size,
         height: config.size,
         fit: BoxFit.cover,
-        placeholder: (context, url) {
+        placeholder: (context) {
           return CoverPlaceholder(
             colorScheme: colorScheme,
             size: config.size,
@@ -68,7 +68,7 @@ class SongCoverImage extends HookConsumerWidget {
             isLoading: true,
           );
         },
-        errorWidget: (context, url, error) {
+        errorWidget: (context, error) {
           return CoverPlaceholder(
             colorScheme: colorScheme,
             size: config.size,
@@ -85,7 +85,9 @@ class SongCoverImage extends HookConsumerWidget {
                 _showSetBackgroundDialog(
                   context,
                   ref,
-                  coverUrl,
+                  songId,
+                  albumName,
+                  artistName,
                   cacheKey,
                   colorScheme,
                 );
@@ -130,7 +132,9 @@ class SongCoverImage extends HookConsumerWidget {
   static void _showSetBackgroundDialog(
     BuildContext context,
     WidgetRef ref,
-    String coverUrl,
+    String songId,
+    String albumName,
+    String artistName,
     String cacheKey,
     ColorScheme colorScheme,
   ) async {
@@ -196,7 +200,9 @@ class SongCoverImage extends HookConsumerWidget {
                           try {
                             final bytes = await ref.watch(
                               fetchCoverBytesProvider(
-                                url: coverUrl,
+                                songId: songId,
+                                albumName: albumName,
+                                artistName: artistName,
                                 key: cacheKey,
                                 liveKeepDuration: const Duration(minutes: 10),
                               ).future,

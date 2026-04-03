@@ -97,18 +97,14 @@ class SongIcon extends _$SongIcon {
     if (activeTrack == null) {
       return null;
     }
-
-    final coverUrl = ToneHarborMedia.getCoverUrl(
-      activeTrack.id,
-      activeTrack.album,
-      activeTrack.artist,
-    );
     final cacheKey = activeTrack.id.isNotEmpty
         ? activeTrack.id
         : sanitizeCacheKey("${activeTrack.artist}-${activeTrack.album}");
     final asyncValue = ref.watch(
       fetchCoverBytesProvider(
-        url: coverUrl,
+        songId: activeTrack.id,
+        albumName: activeTrack.album,
+        artistName: activeTrack.artist,
         key: cacheKey,
         liveKeepDuration: const Duration(minutes: 1),
       ),

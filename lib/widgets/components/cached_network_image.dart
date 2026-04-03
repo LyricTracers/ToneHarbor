@@ -7,14 +7,12 @@ import 'package:toneharbor/providers/providers.dart';
 typedef ImageWidgetBuilder =
     Widget Function(BuildContext context, ImageProvider imageProvider);
 
-typedef PlaceholderWidgetBuilder =
-    Widget Function(BuildContext context, String url);
+typedef PlaceholderWidgetBuilder = Widget Function(BuildContext context);
 
 typedef LoadingErrorWidgetBuilder =
-    Widget Function(BuildContext context, String url, Object error);
+    Widget Function(BuildContext context, Object error);
 
 class CachedNetworkImage extends ConsumerWidget {
-  final String imageUrl;
   final String? cacheKey;
   final ImageWidgetBuilder? imageBuilder;
   final PlaceholderWidgetBuilder? placeholder;
@@ -36,10 +34,15 @@ class CachedNetworkImage extends ConsumerWidget {
   final ValueChanged<Object>? errorListener;
   final Duration? keepLiveDuration;
   final Widget Function(Widget child)? packageChild;
+  final String songId;
+  final String albumName;
+  final String artistName;
 
   const CachedNetworkImage({
     super.key,
-    required this.imageUrl,
+    required this.songId,
+    required this.albumName,
+    required this.artistName,
     this.cacheKey,
     this.imageBuilder,
     this.placeholder,
@@ -67,8 +70,10 @@ class CachedNetworkImage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncValue = ref.watch(
       fetchCoverBytesProvider(
-        url: imageUrl,
-        key: cacheKey ?? imageUrl,
+        songId: songId,
+        albumName: albumName,
+        artistName: artistName,
+        key: cacheKey ?? songId,
         liveKeepDuration: keepLiveDuration,
       ),
     );
@@ -90,8 +95,10 @@ class CachedNetworkImage extends ConsumerWidget {
   Widget _buildImage(BuildContext context, Uint8List bytes) {
     ImageProvider imageProvider = MemoryImage(bytes);
 
-    final cacheWidth = memCacheWidth ?? (width != null ? (width! * 2).toInt() : null);
-    final cacheHeight = memCacheHeight ?? (height != null ? (height! * 2).toInt() : null);
+    final cacheWidth =
+        memCacheWidth ?? (width != null ? (width! * 2).toInt() : null);
+    final cacheHeight =
+        memCacheHeight ?? (height != null ? (height! * 2).toInt() : null);
 
     if (cacheWidth != null || cacheHeight != null) {
       imageProvider = ResizeImage(
@@ -137,7 +144,7 @@ class CachedNetworkImage extends ConsumerWidget {
 
   Widget _buildPlaceholder(BuildContext context) {
     if (placeholder != null) {
-      return placeholder!(context, imageUrl);
+      return placeholder!(context);
     }
 
     return Container(
@@ -150,7 +157,7 @@ class CachedNetworkImage extends ConsumerWidget {
 
   Widget _buildError(BuildContext context, Object error) {
     if (errorWidget != null) {
-      return errorWidget!(context, imageUrl, error);
+      return errorWidget!(context, error);
     }
 
     return Container(
