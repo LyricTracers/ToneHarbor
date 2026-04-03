@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
@@ -9,6 +8,7 @@ import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class _PlaylistItem extends HookConsumerWidget {
   const _PlaylistItem({
@@ -32,17 +32,25 @@ class _PlaylistItem extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var isPressed = useState(false);
-    return Dismissible(
-      key: Key(track.hashCode.toString()),
-      direction: DismissDirection.endToStart,
-      onDismissed: (direction) {
-        onDeleteTap();
-      },
-      background: Container(
-        color: colorScheme.surfaceContainerHigh,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Icon(Icons.delete, color: colorScheme.primary),
+    return Slidable(
+      endActionPane: ActionPane(
+        motion: const ScrollMotion(),
+        children: [
+          SlidableAction(
+            icon: Icons.delete,
+            backgroundColor: colorScheme.primaryContainer,
+            onPressed: (contex) => onDeleteTap(),
+          ),
+          SlidableAction(
+            onPressed: (ctx) => copyToClipboard(
+              '${track.title}-${track.artist}',
+              ctx,
+              colorScheme.secondary,
+            ),
+            backgroundColor: colorScheme.tertiaryContainer,
+            icon: Icons.copy_rounded,
+          ),
+        ],
       ),
       child: Container(
         height: 35,
