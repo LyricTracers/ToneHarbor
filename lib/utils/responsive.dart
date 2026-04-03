@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/main.dart';
 
 enum Breakpoint {
@@ -122,18 +123,29 @@ extension Sizebreakpoints on Size {
 
 extension Contextbreakpoints on BuildContext {
   Size get size => MediaQuery.of(this).size;
-  Future<T?> pushWrapper<T extends Object?>(String location, {Object? extra}) {
+  Future<void> pushWrapper<T extends Object?>(
+    String location, {
+    Object? extra,
+  }) async {
     if (size.lgAndUp) {
-      return push<T>(location, extra: extra);
+      final router = GoRouter.of(this);
+      if (router.state.path?.startsWith("/mobile") ?? false) {
+        go(location);
+        return;
+      }
+      await push<T>(location, extra: extra);
+      return;
     }
-    if (location == '/') return push<T>(location, extra: extra);
+    if (location == '/') await push<T>(location, extra: extra);
     if (location.startsWith('/mobile_home')) {
-      return push<T>(location, extra: extra);
+      await push<T>(location, extra: extra);
+      return;
     }
     if (publicPaths.any((path) => location.startsWith(path))) {
-      return push<T>(location, extra: extra);
+      await push<T>(location, extra: extra);
+      return;
     }
     location = '/mobile$location';
-    return push<T>(location, extra: extra);
+    await push<T>(location, extra: extra);
   }
 }
