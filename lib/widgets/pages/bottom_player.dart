@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -251,8 +252,13 @@ class BottomPlayer extends HookConsumerWidget {
     required _VolumeConfig volumeConfig,
     required ValueNotifier<String> currentLineLyrics,
   }) {
+    var padding = MediaQuery.paddingOf(context);
     return Padding(
-      padding: const EdgeInsets.only(left: 15, right: 15, bottom: 20),
+      padding: EdgeInsets.only(
+        left: 15,
+        right: 15,
+        bottom: max(padding.bottom, 10),
+      ),
       child: Column(
         children: [
           _buildXsDownHeader(
@@ -399,9 +405,6 @@ class BottomPlayer extends HookConsumerWidget {
             trackHeight: 4,
             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
             overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
-            activeTrackColor: Theme.of(context).colorScheme.primary,
-            inactiveTrackColor: Colors.transparent,
-            trackShape: const RectangularSliderTrackShape(),
           ),
           child: Slider(
             value: progressInfo.displayProgress,
@@ -479,11 +482,12 @@ class BottomPlayer extends HookConsumerWidget {
     required ValueNotifier<String> currentLineLyrics,
     required ValueNotifier<bool> isHovered,
   }) {
+    var padding = MediaQuery.paddingOf(context);
     return Padding(
       padding: EdgeInsets.only(
         left: uiConfig.isXs ? 10 : 0,
         right: uiConfig.isXs ? 10 : 0,
-        bottom: uiConfig.isXs ? 10 : 0,
+        bottom: uiConfig.isXs ? max(padding.bottom, 10) : 0,
       ),
       child: GestureDetector(
         onTap: uiConfig.isXs && showArrowType == ShowArrowType.up

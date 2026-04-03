@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -207,82 +208,113 @@ class PlaylistPage extends HookConsumerWidget {
     } else {
       targetWidth = double.infinity;
     }
-    return Container(
-      width: targetWidth,
-      color: colorScheme.surface.withValues(alpha: 0.8),
-      height: double.infinity,
-      child: Column(
-        children: [
-          AppBar(
-            toolbarHeight: kToolbarHeight * size.multiplier3,
-            title: Text(
-              i10n.playlist_text.replaceFirst(
-                '%s',
-                '${playlist.tracks.length}',
-              ),
-              style: TextStyle(
-                fontSize: 16 * size.multiplier2,
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  if (shuffled) {
-                    audioPlayer.setShuffle(false);
-                  } else {
-                    audioPlayer.setShuffle(true);
-                  }
-                },
-                icon: Icon(
-                  Icons.shuffle_rounded,
-                  color: shuffled ? colorScheme.primary : null,
-                  size: 18,
+    final loopMode =
+        useStream(audioPlayer.loopModeStream).data ?? audioPlayer.loopMode;
+    return SafeArea(
+      child: Container(
+        width: targetWidth,
+        color: colorScheme.surface.withValues(alpha: 0.8),
+        height: double.infinity,
+        child: Column(
+          children: [
+            AppBar(
+              toolbarHeight: kToolbarHeight * size.multiplier3,
+              title: Text(
+                i10n.playlist_text.replaceFirst(
+                  '%s',
+                  '${playlist.tracks.length}',
+                ),
+                style: TextStyle(
+                  fontSize: 16 * size.multiplier2,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
-            ],
-            centerTitle: false,
-            backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
-          ),
-          Expanded(
-            child: SlidableAutoCloseBehavior(
-              child: ReorderableListView.builder(
-                scrollController: scrollController,
-                itemCount: playlist.tracks.length,
-                itemExtent: 44,
-                cacheExtent: 50,
-                buildDefaultDragHandles: false,
-                onReorder: (oldIndex, newIndex) {
-                  ref
-                      .read(audioPlayerStateProvider.notifier)
-                      .moveTrack(oldIndex, newIndex);
-                },
-                itemBuilder: (context, index) {
-                  var isDefault = playlist.currentIndex == index;
-                  var track = playlist.tracks[index];
-                  return RepaintBoundary(
-                    key: ValueKey(index),
-                    child: _PlaylistItem(
-                      index: index,
-                      track: track,
-                      isDefault: isDefault,
-                      colorScheme: colorScheme,
-                      i10n: i10n,
-                      onTap: () => audioPlayer.jumpTo(index),
-                      onDeleteTap: () {
-                        ref
-                            .read(audioPlayerStateProvider.notifier)
-                            .removeTrack(track.id, index: index);
-                      },
-                    ),
-                  );
-                },
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    if (shuffled) {
+                      audioPlayer.setShuffle(false);
+                    } else {
+                      audioPlayer.setShuffle(true);
+                    }
+                  },
+                  icon: Icon(
+                    Icons.shuffle_rounded,
+                    color: shuffled ? colorScheme.primary : null,
+                    size: 18,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    _getLoopIcon(loopMode),
+                    size: 18,
+                    color: loopMode != PlaylistMode.none
+                        ? colorScheme.primary
+                        : null,
+                  ),
+                  onPressed: () => _toggleLoopMode(loopMode),
+                ),
+              ],
+              centerTitle: false,
+              backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
+            ),
+            Expanded(
+              child: SlidableAutoCloseBehavior(
+                child: ReorderableListView.builder(
+                  scrollController: scrollController,
+                  itemCount: playlist.tracks.length,
+                  itemExtent: 44,
+                  cacheExtent: 50,
+                  buildDefaultDragHandles: false,
+                  onReorder: (oldIndex, newIndex) {
+                    ref
+                        .read(audioPlayerStateProvider.notifier)
+                        .moveTrack(oldIndex, newIndex);
+                  },
+                  itemBuilder: (context, index) {
+                    var isDefault = playlist.currentIndex == index;
+                    var track = playlist.tracks[index];
+                    return RepaintBoundary(
+                      key: ValueKey(index),
+                      child: _PlaylistItem(
+                        index: index,
+                        track: track,
+                        isDefault: isDefault,
+                        colorScheme: colorScheme,
+                        i10n: i10n,
+                        onTap: () => audioPlayer.jumpTo(index),
+                        onDeleteTap: () {
+                          ref
+                              .read(audioPlayerStateProvider.notifier)
+                              .removeTrack(track.id, index: index);
+                        },
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  void _toggleLoopMode(PlaylistMode currentMode) {
+    final newMode = switch (currentMode) {
+      PlaylistMode.none => PlaylistMode.loop,
+      PlaylistMode.loop => PlaylistMode.single,
+      PlaylistMode.single => PlaylistMode.none,
+    };
+    audioPlayer.setLoopMode(newMode);
+  }
+
+  IconData _getLoopIcon(PlaylistMode mode) {
+    return switch (mode) {
+      PlaylistMode.single => Icons.repeat_one,
+      PlaylistMode.loop => Icons.repeat,
+      PlaylistMode.none => Icons.repeat,
+    };
   }
 }
