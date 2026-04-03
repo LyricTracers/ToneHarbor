@@ -93,13 +93,7 @@ class _PlaylistItem extends HookConsumerWidget {
                     onTapUp: (details) => isPressed.value = false,
                     onTapCancel: () => isPressed.value = false,
                     onTap: onTap,
-                    onDoubleTap: () {
-                      copyToClipboard(
-                        '${track.title}-${track.artist}',
-                        context,
-                        colorScheme.secondary,
-                      );
-                    },
+                    onDoubleTap: onTap,
                     child: Row(
                       children: [
                         const SizedBox(width: 25),
@@ -252,37 +246,39 @@ class PlaylistPage extends HookConsumerWidget {
             backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
           ),
           Expanded(
-            child: ReorderableListView.builder(
-              scrollController: scrollController,
-              itemCount: playlist.tracks.length,
-              itemExtent: 44,
-              cacheExtent: 50,
-              buildDefaultDragHandles: false,
-              onReorder: (oldIndex, newIndex) {
-                ref
-                    .read(audioPlayerStateProvider.notifier)
-                    .moveTrack(oldIndex, newIndex);
-              },
-              itemBuilder: (context, index) {
-                var isDefault = playlist.currentIndex == index;
-                var track = playlist.tracks[index];
-                return RepaintBoundary(
-                  key: ValueKey(index),
-                  child: _PlaylistItem(
-                    index: index,
-                    track: track,
-                    isDefault: isDefault,
-                    colorScheme: colorScheme,
-                    i10n: i10n,
-                    onTap: () => audioPlayer.jumpTo(index),
-                    onDeleteTap: () {
-                      ref
-                          .read(audioPlayerStateProvider.notifier)
-                          .removeTrack(track.id, index: index);
-                    },
-                  ),
-                );
-              },
+            child: SlidableAutoCloseBehavior(
+              child: ReorderableListView.builder(
+                scrollController: scrollController,
+                itemCount: playlist.tracks.length,
+                itemExtent: 44,
+                cacheExtent: 50,
+                buildDefaultDragHandles: false,
+                onReorder: (oldIndex, newIndex) {
+                  ref
+                      .read(audioPlayerStateProvider.notifier)
+                      .moveTrack(oldIndex, newIndex);
+                },
+                itemBuilder: (context, index) {
+                  var isDefault = playlist.currentIndex == index;
+                  var track = playlist.tracks[index];
+                  return RepaintBoundary(
+                    key: ValueKey(index),
+                    child: _PlaylistItem(
+                      index: index,
+                      track: track,
+                      isDefault: isDefault,
+                      colorScheme: colorScheme,
+                      i10n: i10n,
+                      onTap: () => audioPlayer.jumpTo(index),
+                      onDeleteTap: () {
+                        ref
+                            .read(audioPlayerStateProvider.notifier)
+                            .removeTrack(track.id, index: index);
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],
