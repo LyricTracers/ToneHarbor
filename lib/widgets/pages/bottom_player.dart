@@ -300,6 +300,7 @@ class BottomPlayer extends HookConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        Padding(padding: EdgeInsets.only(left: 10)),
         Flexible(
           flex: 1,
           child: SizedBox(
@@ -316,6 +317,7 @@ class BottomPlayer extends HookConsumerWidget {
             ),
           ),
         ),
+        _buildVolumeButton(volume: volumeConfig.volume, ref: ref),
         if (!trackInfo.activeTrack.isLocal &&
             volumeConfig.authHeaders.value != null)
           _buildRatingButton(
@@ -325,7 +327,6 @@ class BottomPlayer extends HookConsumerWidget {
             rating: trackInfo.rating,
             colorScheme: uiConfig.colorScheme,
           ),
-        _buildVolumeButton(volume: volumeConfig.volume, ref: ref),
         _buildPlaylistButton(
           context: context,
           colorScheme: uiConfig.colorScheme,
@@ -344,6 +345,7 @@ class BottomPlayer extends HookConsumerWidget {
   }) {
     return Row(
       children: [
+        Padding(padding: EdgeInsets.only(left: 10)),
         Flexible(
           flex: 1,
           child: SizedBox(
@@ -482,52 +484,81 @@ class BottomPlayer extends HookConsumerWidget {
     required ValueNotifier<String> currentLineLyrics,
     required ValueNotifier<bool> isHovered,
   }) {
-    var padding = MediaQuery.paddingOf(context);
-    return Padding(
-      padding: EdgeInsets.only(
-        left: uiConfig.isXs ? 10 : 0,
-        right: uiConfig.isXs ? 10 : 0,
-        bottom: uiConfig.isXs ? max(padding.bottom, 10) : 0,
-      ),
-      child: GestureDetector(
-        onTap: uiConfig.isXs && showArrowType == ShowArrowType.up
-            ? () => context.pushWrapper("/playing_detail")
-            : null,
-        child: Container(
-          color: uiConfig.isXs ? null : uiConfig.backgroundColor,
-          height: uiConfig.isXs ? 60 : 70,
-          decoration: uiConfig.isXs
-              ? BoxDecoration(
-                  color: uiConfig.backgroundColor,
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: uiConfig.backgroundColor),
-                )
-              : null,
-          child: Stack(
-            clipBehavior: Clip.none,
+    return Column(
+      children: [
+        if (!uiConfig.isXs && showArrowType == ShowArrowType.down)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              _buildDefaultContent(
-                context,
-                ref,
-                playerState: playerState,
-                progressInfo: progressInfo,
-                trackInfo: trackInfo,
-                uiConfig: uiConfig,
-                volumeConfig: volumeConfig,
-                currentLineLyrics: currentLineLyrics,
-                isHovered: isHovered,
-              ),
-              if (!uiConfig.isXs)
-                _buildDefaultProgressBar(
+              if (uiConfig.size.smAndDown)
+                _buildVolumeButton(volume: volumeConfig.volume, ref: ref),
+              if (uiConfig.size.smAndDown &&
+                  !trackInfo.activeTrack.isLocal &&
+                  volumeConfig.authHeaders.value != null)
+                _buildRatingButton(
+                  ref,
                   context,
+                  activeTrack: trackInfo.activeTrack,
+                  rating: trackInfo.rating,
                   colorScheme: uiConfig.colorScheme,
-                  progressInfo: progressInfo,
-                  isBuffering: playerState.isBuffering,
                 ),
+              if (uiConfig.size.mdAndDown)
+                Text(
+                  _formatDuration(progressInfo.duration, progressInfo.position),
+                  style: uiConfig.textStyle11,
+                ),
+              SizedBox(width: 15 * uiConfig.size.multiplier2),
             ],
           ),
+        Padding(
+          padding: EdgeInsets.only(
+            left: uiConfig.isXs ? 10 : 0,
+            right: uiConfig.isXs ? 10 : 0,
+            bottom: uiConfig.isXs
+                ? max(MediaQuery.paddingOf(context).bottom, 10)
+                : 0,
+          ),
+          child: GestureDetector(
+            onTap: uiConfig.isXs && showArrowType == ShowArrowType.up
+                ? () => context.pushWrapper("/playing_detail")
+                : null,
+            child: Container(
+              color: uiConfig.isXs ? null : uiConfig.backgroundColor,
+              height: uiConfig.isXs ? 60 : 70,
+              decoration: uiConfig.isXs
+                  ? BoxDecoration(
+                      color: uiConfig.backgroundColor,
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(color: uiConfig.backgroundColor),
+                    )
+                  : null,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  _buildDefaultContent(
+                    context,
+                    ref,
+                    playerState: playerState,
+                    progressInfo: progressInfo,
+                    trackInfo: trackInfo,
+                    uiConfig: uiConfig,
+                    volumeConfig: volumeConfig,
+                    currentLineLyrics: currentLineLyrics,
+                    isHovered: isHovered,
+                  ),
+                  if (!uiConfig.isXs)
+                    _buildDefaultProgressBar(
+                      context,
+                      colorScheme: uiConfig.colorScheme,
+                      progressInfo: progressInfo,
+                      isBuffering: playerState.isBuffering,
+                    ),
+                ],
+              ),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -708,27 +739,29 @@ class BottomPlayer extends HookConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          if (uiConfig.size.xlAndUp) ...[
-            if (uiConfig.size.is2Xl)
-              Text(
-                _formatDuration(progressInfo.duration, progressInfo.position),
-                style: uiConfig.textStyle11,
-              ),
-            const SizedBox(width: 2),
+          if (uiConfig.size.is2Xl && showArrowType == ShowArrowType.up ||
+              uiConfig.size.lgAndUp && showArrowType == ShowArrowType.down)
+            Text(
+              _formatDuration(progressInfo.duration, progressInfo.position),
+              style: uiConfig.textStyle11,
+            ),
+
+          if (uiConfig.size.mdAndUp)
             _buildVolumeButton(volume: volumeConfig.volume, ref: ref),
-            if (uiConfig.size.is2Xl) _buildVolumeSlider(context),
-            if (!trackInfo.activeTrack.isLocal &&
-                volumeConfig.authHeaders.value != null)
-              _buildRatingButton(
-                ref,
-                context,
-                activeTrack: trackInfo.activeTrack,
-                rating: trackInfo.rating,
-                colorScheme: uiConfig.colorScheme,
-              ),
-            const SizedBox(width: 2),
-          ],
-          if (uiConfig.size.mdAndUp) ...[
+          if (uiConfig.size.is2Xl) _buildVolumeSlider(context),
+
+          if (uiConfig.size.mdAndUp &&
+              !trackInfo.activeTrack.isLocal &&
+              volumeConfig.authHeaders.value != null)
+            _buildRatingButton(
+              ref,
+              context,
+              activeTrack: trackInfo.activeTrack,
+              rating: trackInfo.rating,
+              colorScheme: uiConfig.colorScheme,
+            ),
+          const SizedBox(width: 2),
+          if (uiConfig.size.xlAndUp) ...[
             _buildLoopButton(
               loopMode: playerState.loopMode,
               colorScheme: uiConfig.colorScheme,
