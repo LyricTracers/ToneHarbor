@@ -480,6 +480,66 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
     );
   }
 
+  bool _isRefreshing = false;
+
+  Future<void> refreshPlaylistUrls() async {
+    if (_isRefreshing) {
+      logger.w('[AudioPlayer] Already refreshing playlist, skip');
+      return;
+    }
+
+    if (state.tracks.isEmpty) {
+      logger.i('[AudioPlayer] No tracks to refresh');
+      return;
+    }
+
+    final hasStreamTracks = state.tracks.any((track) => !track.isLocal);
+    if (!hasStreamTracks) {
+      logger.i(
+        '[AudioPlayer] No stream tracks to refresh, all tracks are local',
+      );
+      return;
+    }
+
+    _isRefreshing = true;
+
+    try {
+      final wasPlaying = state.playing;
+      final currentPosition = audioPlayer.position;
+      final currentIndex = state.currentIndex;
+
+      final tracksToRefresh = List<ToneHarborTrackObject>.from(state.tracks);
+
+      logger.i(
+        '[AudioPlayer] Refreshing playlist URLs for ${tracksToRefresh.length} tracks, '
+        'wasPlaying: $wasPlaying, position: $currentPosition',
+      );
+
+      final medias = tracksToRefresh.asMediaList();
+
+      await audioPlayer.openPlaylist(
+        medias,
+        initialIndex: currentIndex,
+        autoPlay: wasPlaying,
+      );
+
+      if (wasPlaying && currentPosition > Duration.zero) {
+        try {
+          await audioPlayer.positionStream
+              .firstWhere((pos) => pos > Duration.zero)
+              .timeout(const Duration(seconds: 2));
+          await audioPlayer.seek(currentPosition);
+        } catch (e) {
+          logger.w('[AudioPlayer] Failed to restore position: $e');
+        }
+      }
+
+      logger.i('[AudioPlayer] Playlist URLs refreshed successfully');
+    } finally {
+      _isRefreshing = false;
+    }
+  }
+
   Future<void> jumpToTrack(ToneHarborTrackObject track) async {
     final index = state.tracks.toList().indexWhere(
       (element) => element.id == track.id,

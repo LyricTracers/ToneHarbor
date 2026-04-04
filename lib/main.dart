@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -13,6 +12,7 @@ import 'package:toneharbor/models/audio_station/album.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/connection_checker_service.dart';
+import 'package:toneharbor/services/server/server_health_check.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/layouts/local_songs_layout.dart';
 import 'package:toneharbor/widgets/mobile/layouts/mobile_full_layout.dart';
@@ -55,13 +55,32 @@ class MyApp extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(serverProvider);
+    ref.watch(serverControllerProvider);
     ref.listen(audioPlayerStreamListenersProvider, (_, __) {});
 
-    ref.listen<AsyncValue<HttpServer>>(serverProvider, (previous, next) {
+    final previousServerPort = useRef<int?>(null);
+
+    ref.listen<AsyncValue<HttpServer>>(serverControllerProvider, (
+      previous,
+      next,
+    ) {
       next.when(
         data: (server) {
+          final oldPort = previousServerPort.value;
+          final newPort = server.port;
+
+          if (oldPort != null && oldPort != newPort) {
+            logger.i(
+              '[Server] Port changed from $oldPort to $newPort, refreshing playlist...',
+            );
+            ref.read(audioPlayerStateProvider.notifier).refreshPlaylistUrls();
+          }
+          previousServerPort.value = newPort;
+
           logger.i('Server started successfully on port ${server.port}');
+          if (Platform.isIOS || Platform.isAndroid) {
+            ref.read(serverHealthCheckProvider).startPeriodicHealthCheck();
+          }
         },
         loading: () {
           logger.i('Server is starting...');
@@ -152,14 +171,14 @@ class MyApp extends HookConsumerWidget {
       required Widget child,
       bool fullscreenDialog = false,
     }) {
-      // if (Platform.isIOS || Platform.isAndroid) {
-      return GestureOnlyCupertinoPage<void>(
-        key: key,
-        child: child,
-        fullscreenDialog: fullscreenDialog,
-      );
-      // }
-      // return NoTransitionPage<void>(key: key, child: child);
+      if (Platform.isIOS || Platform.isAndroid) {
+        return GestureOnlyCupertinoPage<void>(
+          key: key,
+          child: child,
+          fullscreenDialog: fullscreenDialog,
+        );
+      }
+      return NoTransitionPage<void>(key: key, child: child);
     }
 
     final rootNavigatorKey = GlobalKey<NavigatorState>();
