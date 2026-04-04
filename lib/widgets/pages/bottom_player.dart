@@ -486,7 +486,7 @@ class BottomPlayer extends HookConsumerWidget {
   }) {
     return Column(
       children: [
-        if (!uiConfig.isXs && showArrowType == ShowArrowType.down)
+        if (!uiConfig.isXs && showArrowType == ShowArrowType.down) ...[
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -502,14 +502,26 @@ class BottomPlayer extends HookConsumerWidget {
                   rating: trackInfo.rating,
                   colorScheme: uiConfig.colorScheme,
                 ),
-              if (uiConfig.size.mdAndDown)
-                Text(
-                  _formatDuration(progressInfo.duration, progressInfo.position),
-                  style: uiConfig.textStyle11,
-                ),
-              SizedBox(width: 15 * uiConfig.size.multiplier2),
+              SizedBox(width: 5 * uiConfig.size.multiplier2),
             ],
           ),
+          if (uiConfig.size.mdAndDown)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (uiConfig.size.mdAndDown)
+                  Text(
+                    _formatDuration(
+                      progressInfo.duration,
+                      progressInfo.position,
+                    ),
+                    style: uiConfig.textStyle11,
+                  ),
+                SizedBox(width: 15 * uiConfig.size.multiplier2),
+              ],
+            ),
+          Padding(padding: EdgeInsets.only(bottom: 5)),
+        ],
         Padding(
           padding: EdgeInsets.only(
             left: uiConfig.isXs ? 10 : 0,
