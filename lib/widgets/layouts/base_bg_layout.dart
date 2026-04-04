@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -27,20 +29,6 @@ abstract class BaseBgLayout extends HookConsumerWidget {
     var requestFlag = ref.watch(requestFlagProvider);
     var targetIcon = ref.watch(getImageProviderProvider);
     final useBlur = useState<double>(50);
-    final route = ModalRoute.of(context);
-    useEffect(() {
-      if (route == null) return null;
-
-      void listener() {
-        final value = route.animation?.value ?? 1.0;
-        useBlur.value = 50 * Curves.easeInOutQuad.transform(value);
-      }
-
-      route.animation?.addListener(listener);
-      return () {
-        route.animation?.removeListener(listener);
-      };
-    }, [route]);
     var selectionTypeState = ref.watch(
       songSelectionProvider.select((state) {
         return SongSelectionState(
@@ -94,12 +82,14 @@ abstract class BaseBgLayout extends HookConsumerWidget {
                     ),
                   ),
                   Positioned.fill(
-                    child: BackdropFilter(
-                      filter: ui.ImageFilter.blur(
-                        sigmaX: useBlur.value,
-                        sigmaY: useBlur.value,
+                    child: ClipRect(
+                      child: BackdropFilter(
+                        filter: ui.ImageFilter.blur(
+                          sigmaX: useBlur.value,
+                          sigmaY: useBlur.value,
+                        ),
+                        child: Container(color: Colors.transparent),
                       ),
-                      child: Container(color: Colors.transparent),
                     ),
                   ),
                 ],
