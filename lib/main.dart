@@ -155,7 +155,7 @@ class MyApp extends HookConsumerWidget {
             if (!context.mounted) return;
             if (ScaffoldMessenger.maybeOf(context) == null) return;
             showSnackBar(
-              connected ? i10n.you_are_offline : i10n.connection_restored,
+              connected ? i10n.connection_restored : i10n.you_are_offline,
               context,
               colorScheme.secondary,
             );

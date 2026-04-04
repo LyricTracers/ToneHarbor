@@ -113,7 +113,9 @@ class ConnectionCheckerService with WidgetsBindingObserver {
       final response = await request.close().timeout(
         const Duration(seconds: 5),
       );
-      return response.statusCode >= 200 && response.statusCode < 400;
+      final statusCode = response.statusCode;
+      await response.drain<void>();
+      return statusCode >= 200 && statusCode < 400;
     } catch (_) {
       return false;
     }
@@ -121,7 +123,7 @@ class ConnectionCheckerService with WidgetsBindingObserver {
 
   Future<bool> _isConnected() async {
     return await doesConnectTo('www.baidu.com') ||
-        await doesConnectTo('google.com') ||
+        await doesConnectTo('www.google.com') ||
         await isVpnActive();
   }
 
