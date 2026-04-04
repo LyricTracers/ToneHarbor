@@ -506,13 +506,16 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
     try {
       final wasPlaying = state.playing;
       final currentPosition = audioPlayer.position;
-      final currentIndex = state.currentIndex;
-
+      final rawIndex = state.currentIndex;
       final tracksToRefresh = List<ToneHarborTrackObject>.from(state.tracks);
+
+      final currentIndex = rawIndex
+          .clamp(0, max(tracksToRefresh.length - 1, 0))
+          .toInt();
 
       logger.i(
         '[AudioPlayer] Refreshing playlist URLs for ${tracksToRefresh.length} tracks, '
-        'wasPlaying: $wasPlaying, position: $currentPosition',
+        'wasPlaying: $wasPlaying, position: $currentPosition, index: $currentIndex',
       );
 
       final medias = tracksToRefresh.asMediaList();
