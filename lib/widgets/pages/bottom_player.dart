@@ -531,7 +531,10 @@ class BottomPlayer extends HookConsumerWidget {
                 : 0,
           ),
           child: GestureDetector(
-            onTap: uiConfig.isXs && showArrowType == ShowArrowType.up
+            onTap:
+                uiConfig.isXs &&
+                    (showArrowType == ShowArrowType.up ||
+                        showArrowType == ShowArrowType.none)
                 ? () => context.pushWrapper("/playing_detail")
                 : null,
             child: Container(
