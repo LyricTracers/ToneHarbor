@@ -26,7 +26,7 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
             automaticallyImplyLeading: false,
             leading: IconButton(
               onPressed: () {
-                ref.context.pop();
+                ref.context.popWrap();
               },
               icon: Icon(Icons.keyboard_arrow_down_rounded),
             ),
@@ -52,11 +52,7 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
             top: 0,
             child: IconButton(
               onPressed: () {
-                if (context.canPop()) {
-                  context.pop();
-                } else {
-                  context.go("/");
-                }
+                context.popWrap();
               },
               icon: Icon(Icons.keyboard_arrow_down_rounded, size: 24),
             ),

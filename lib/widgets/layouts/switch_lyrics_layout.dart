@@ -8,6 +8,7 @@ import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class SwitchLyricsLayout extends BaseBgLayout {
@@ -275,7 +276,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
                     ),
                     leading: IconButton(
                       onPressed: () {
-                        context.pop();
+                        context.popWrap();
                       },
                       icon: Icon(Icons.arrow_back),
                     ),

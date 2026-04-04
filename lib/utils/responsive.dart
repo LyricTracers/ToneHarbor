@@ -148,4 +148,12 @@ extension Contextbreakpoints on BuildContext {
     location = '/mobile$location';
     await push<T>(location, extra: extra);
   }
+
+  void popWrap() {
+    if (canPop()) {
+      pop();
+    } else {
+      go("/");
+    }
+  }
 }

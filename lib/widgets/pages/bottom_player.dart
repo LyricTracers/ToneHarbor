@@ -1097,11 +1097,7 @@ class BottomPlayer extends HookConsumerWidget {
         if (showArrowType == ShowArrowType.up) {
           context.pushWrapper("/playing_detail");
         } else {
-          if (context.canPop()) {
-            context.pop();
-          } else {
-            context.go("/");
-          }
+          context.popWrap();
         }
       },
     );
