@@ -52,7 +52,11 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
             top: 0,
             child: IconButton(
               onPressed: () {
-                context.pop();
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  context.go("/");
+                }
               },
               icon: Icon(Icons.keyboard_arrow_down_rounded, size: 24),
             ),
