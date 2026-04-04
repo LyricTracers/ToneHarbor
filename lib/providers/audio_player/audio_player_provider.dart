@@ -481,13 +481,9 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
   }
 
   bool _isRefreshing = false;
+  int? _refreshingForPort;
 
   Future<void> refreshPlaylistUrls() async {
-    if (_isRefreshing) {
-      logger.w('[AudioPlayer] Already refreshing playlist, skip');
-      return;
-    }
-
     if (state.tracks.isEmpty) {
       logger.i('[AudioPlayer] No tracks to refresh');
       return;
@@ -501,7 +497,19 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
       return;
     }
 
+    final targetPort = ToneHarborMedia.serverPort;
+    if (targetPort == 0) {
+      logger.w('[AudioPlayer] Server port is 0, skip refresh');
+      return;
+    }
+
+    if (_isRefreshing && _refreshingForPort == targetPort) {
+      logger.i('[AudioPlayer] Already refreshing for port $targetPort, skip');
+      return;
+    }
+
     _isRefreshing = true;
+    _refreshingForPort = targetPort;
 
     try {
       final wasPlaying = state.playing;
@@ -515,7 +523,8 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
 
       logger.i(
         '[AudioPlayer] Refreshing playlist URLs for ${tracksToRefresh.length} tracks, '
-        'wasPlaying: $wasPlaying, position: $currentPosition, index: $currentIndex',
+        'wasPlaying: $wasPlaying, position: $currentPosition, index: $currentIndex, '
+        'port: $targetPort',
       );
 
       final medias = tracksToRefresh.asMediaList();
@@ -538,8 +547,20 @@ class AudioPlayerStateNotifier extends _$AudioPlayerStateNotifier {
       }
 
       logger.i('[AudioPlayer] Playlist URLs refreshed successfully');
+
+      final currentPort = ToneHarborMedia.serverPort;
+      if (currentPort != targetPort) {
+        logger.i(
+          '[AudioPlayer] Port changed during refresh ($targetPort → $currentPort), '
+          'refreshing again...',
+        );
+        _isRefreshing = false;
+        _refreshingForPort = null;
+        await refreshPlaylistUrls();
+      }
     } finally {
       _isRefreshing = false;
+      _refreshingForPort = null;
     }
   }
 
