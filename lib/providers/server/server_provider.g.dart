@@ -9,40 +9,46 @@ part of 'server_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(server)
-final serverProvider = ServerProvider._();
+@ProviderFor(ServerController)
+final serverControllerProvider = ServerControllerProvider._();
 
-final class ServerProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<HttpServer>,
-          HttpServer,
-          FutureOr<HttpServer>
-        >
-    with $FutureModifier<HttpServer>, $FutureProvider<HttpServer> {
-  ServerProvider._()
+final class ServerControllerProvider
+    extends $AsyncNotifierProvider<ServerController, HttpServer> {
+  ServerControllerProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'serverProvider',
+        name: r'serverControllerProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$serverHash();
+  String debugGetCreateSourceHash() => _$serverControllerHash();
 
   @$internal
   @override
-  $FutureProviderElement<HttpServer> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<HttpServer> create(Ref ref) {
-    return server(ref);
-  }
+  ServerController create() => ServerController();
 }
 
-String _$serverHash() => r'e9ccf97871aabd657d69b79d40b7146baf92ffcf';
+String _$serverControllerHash() => r'7145649f66f72a260f2f8d4c783db0ae943a1ea9';
+
+abstract class _$ServerController extends $AsyncNotifier<HttpServer> {
+  FutureOr<HttpServer> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<HttpServer>, HttpServer>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<HttpServer>, HttpServer>,
+              AsyncValue<HttpServer>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
