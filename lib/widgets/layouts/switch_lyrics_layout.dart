@@ -1,6 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -13,9 +14,12 @@ import 'package:toneharbor/widgets/widgets.dart';
 
 class SwitchLyricsLayout extends BaseBgLayout {
   final ToneHarborTrackObject songTrackObject;
-  const SwitchLyricsLayout({super.key, required this.songTrackObject});
+  const SwitchLyricsLayout({
+    super.key,
+    required this.songTrackObject,
+    super.appbar = false,
+  });
 
-  static const double _sidebarWidthRatio = 0.25;
   static const double _itemHeight = 56.0;
 
   @override
@@ -103,233 +107,394 @@ class SwitchLyricsLayout extends BaseBgLayout {
       ref.invalidate(combinedSearchProvider);
     }, []);
 
-    var width = MediaQuery.of(context).size.width;
+    var size = MediaQuery.of(context).size;
+    if (size.lgAndUp) {
+      return Row(
+        children: [
+          SizedBox(
+            width: min(size.width * 0.3, 300),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 2000),
+              curve: Curves.easeInOutSine,
+              decoration: gradientDecoration,
+              child: _getListLyrics(
+                titleController,
+                artistController,
+                l10n,
+                activeTrack,
+                currentTrack,
+                title,
+                artist,
+                colorScheme,
+                searchProvider,
+                callBack,
+                selectedIndex,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                _appBar(
+                  ref,
+                  l10n,
+                  selectedIndex,
+                  songId,
+                  searchProvider,
+                  colorScheme,
+                ),
+
+                Expanded(
+                  child: _lyricsContent(
+                    selectedIndex,
+                    songId,
+                    searchProvider,
+                    defaultLyrics,
+                  ),
+                ),
+                BottomPlayer(showArrowType: ShowArrowType.none),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+    final tabController = useTabController(initialLength: 2);
     return Stack(
       children: [
-        Row(
+        Positioned(
+          left: 20,
+          top: 0,
+          child: IconButton(
+            onPressed: () {
+              context.popWrap();
+            },
+            icon: Icon(Icons.keyboard_arrow_down_rounded, size: 24),
+          ),
+        ),
+        Positioned(
+          right: 40,
+          top: 0,
+          child: IconButton(
+            onPressed: () {
+              selectedIndex.value = -1;
+            },
+            icon: Icon(Icons.restore_rounded, size: 18),
+          ),
+        ),
+        Positioned(
+          right: 10,
+          top: 0,
+          child: IconButton(
+            onPressed: () async {
+              if (searchProvider.hasValue && selectedIndex.value != -1) {
+                var currentLyrics = searchProvider.value![selectedIndex.value];
+                await lyricCache.set(
+                  songId.value,
+                  currentLyrics.toJson(),
+                  permanent: true,
+                );
+                ref.invalidate(getLyricsProvider);
+                ref.invalidate(currentLyricsProvider);
+                if (ref.context.mounted) {
+                  showSnackBar(
+                    l10n.save_success,
+                    ref.context,
+                    colorScheme.primary,
+                  );
+                }
+              }
+            },
+            icon: Icon(Icons.save_rounded, size: 18),
+          ),
+        ),
+        Column(
           children: [
-            SizedBox(
-              width: width * _sidebarWidthRatio,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 2000),
-                curve: Curves.easeInOutSine,
-                decoration: gradientDecoration,
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.only(
-                        top: 30,
-                        bottom: 15,
-                        left: 15,
-                        right: 15,
-                      ),
-                      child: Column(
-                        children: [
-                          TextField(
-                            style: TextStyle(fontSize: 14),
-                            controller: titleController,
-                            decoration: InputDecoration(
-                              labelText: l10n.title,
-                              hintText: l10n.input_song_title,
-                              prefixIcon: Icon(Icons.music_note, size: 18),
-                              suffixIcon:
-                                  activeTrack != currentTrack.value &&
-                                      activeTrack != null
-                                  ? (IconButton(
-                                      onPressed: () {
-                                        currentTrack.value = activeTrack;
-                                      },
-                                      icon: Icon(Icons.sync, size: 18),
-                                      tooltip: l10n.sync,
-                                    ))
-                                  : (currentTrack.value.title != title.value)
-                                  ? IconButton(
-                                      onPressed: () {
-                                        titleController.text =
-                                            currentTrack.value.title;
-                                      },
-                                      icon: Icon(Icons.restore, size: 18),
-                                      tooltip: l10n.restore_default,
-                                    )
-                                  : null,
-                            ),
-                            textInputAction: TextInputAction.next,
-                          ),
-                          const SizedBox(height: 15),
-                          TextField(
-                            style: TextStyle(fontSize: 14),
-                            controller: artistController,
-                            decoration: InputDecoration(
-                              labelText: l10n.artist,
-                              hintText: l10n.input_song_artist,
-                              prefixIcon: Icon(Icons.person, size: 18),
-                              suffixIcon:
-                                  activeTrack != currentTrack.value &&
-                                      activeTrack != null
-                                  ? (IconButton(
-                                      onPressed: () {
-                                        currentTrack.value = activeTrack;
-                                      },
-                                      icon: Icon(Icons.sync, size: 18),
-                                      tooltip: l10n.sync,
-                                    ))
-                                  : (currentTrack.value.artist !=
-                                            artist.value &&
-                                        currentTrack.value.artist !=
-                                            "Unknown Artist")
-                                  ? IconButton(
-                                      onPressed: () {
-                                        artistController.text =
-                                            currentTrack.value.artist;
-                                      },
-                                      icon: Icon(Icons.restore, size: 18),
-                                      tooltip: l10n.restore_default,
-                                    )
-                                  : null,
-                            ),
-                            textInputAction: TextInputAction.search,
-                            onSubmitted: (value) => callBack(),
-                          ),
-                        ],
-                      ),
+            Center(
+              child: Material(
+                color: colorScheme.tertiary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(30),
+                clipBehavior: Clip.antiAlias,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: 200 * size.multiplier2,
+                    maxHeight: 40 * size.multiplier2,
+                  ),
+                  child: TabBar(
+                    controller: tabController,
+                    labelColor: colorScheme.primary,
+                    labelStyle: TextStyle(
+                      fontSize: 16 * size.multiplier2,
+                      fontWeight: FontWeight.bold,
                     ),
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        fixedSize: const Size(120, 35),
-                      ),
-                      onPressed: callBack,
-                      icon: Icon(Icons.search, size: 16),
-                      label: Text(l10n.search, style: TextStyle(fontSize: 14)),
+                    unselectedLabelStyle: TextStyle(
+                      fontSize: 14 * size.multiplier2,
+                      fontWeight: FontWeight.normal,
                     ),
-
-                    SizedBox(height: 15),
-                    if (searchProvider.isLoading)
-                      Expanded(
-                        child: Center(
-                          child: Transform.scale(
-                            scale: 0.7,
-                            child: const AudioEqualizerLoader(),
-                          ),
-                        ),
-                      ),
-                    if (searchProvider.hasError)
-                      Expanded(
-                        child: Center(
-                          child: Column(
-                            children: [
-                              Text(
-                                searchProvider.error.toString(),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 14),
-                              ),
-                              SizedBox(height: 15),
-                              ElevatedButton.icon(
-                                onPressed: () => callBack(),
-                                label: Text(
-                                  l10n.retry,
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                                icon: Icon(Icons.refresh_rounded, size: 18),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                    if (searchProvider.hasValue &&
-                        !searchProvider.isLoading &&
-                        !searchProvider.hasError)
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: searchProvider.value!.length,
-                          itemBuilder: (context, index) {
-                            return _LyricsListItem(
-                              index: index,
-                              lyric: searchProvider.value![index],
-                              isSelected: selectedIndex.value == index,
-                              onTap: () => selectedIndex.value = index,
-                              colorScheme: colorScheme,
-                              l10n: l10n,
-                            );
-                          },
-                        ),
-                      ),
-                  ],
+                    unselectedLabelColor: colorScheme.onSurface,
+                    indicatorColor: colorScheme.primary,
+                    tabs: [
+                      Tab(text: l10n.lyrics_provider),
+                      Tab(text: l10n.lyrics),
+                    ],
+                  ),
                 ),
               ),
             ),
             Expanded(
-              child: Column(
+              child: TabBarView(
+                controller: tabController,
                 children: [
-                  AppBar(
-                    backgroundColor: colorScheme.tertiary.withValues(
-                      alpha: 0.1,
-                    ),
-                    centerTitle: false,
-                    title: Text(
-                      l10n.switch_lyrics,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    leading: IconButton(
-                      onPressed: () {
-                        context.popWrap();
-                      },
-                      icon: Icon(Icons.arrow_back),
-                    ),
-                    actions: [
-                      IconButton(
-                        onPressed: () {
-                          selectedIndex.value = -1;
-                        },
-                        icon: Icon(Icons.restore_rounded, size: 18),
-                      ),
-                      IconButton(
-                        onPressed: () async {
-                          if (searchProvider.hasValue &&
-                              selectedIndex.value != -1) {
-                            var currentLyrics =
-                                searchProvider.value![selectedIndex.value];
-                            await lyricCache.set(
-                              songId.value,
-                              currentLyrics.toJson(),
-                              permanent: true,
-                            );
-                            ref.invalidate(getLyricsProvider);
-                            ref.invalidate(currentLyricsProvider);
-                            if (context.mounted) {
-                              showSnackBar(
-                                l10n.save_success,
-                                context,
-                                colorScheme.primary,
-                              );
-                            }
-                          }
-                        },
-                        icon: Icon(Icons.save_rounded, size: 18),
-                      ),
-                    ],
+                  _getListLyrics(
+                    titleController,
+                    artistController,
+                    l10n,
+                    activeTrack,
+                    currentTrack,
+                    title,
+                    artist,
+                    colorScheme,
+                    searchProvider,
+                    callBack,
+                    selectedIndex,
+                    tabController: tabController,
                   ),
-
-                  Expanded(
-                    child: LyricsContentPage(
-                      currentLyrics:
-                          (selectedIndex.value != -1 &&
-                              !searchProvider.hasError &&
-                              !searchProvider.isLoading)
-                          ? searchProvider.value![selectedIndex.value]
-                          : defaultLyrics.value,
-                    ),
+                  _lyricsContent(
+                    selectedIndex,
+                    songId,
+                    searchProvider,
+                    defaultLyrics,
                   ),
-                  BottomPlayer(showArrowType: ShowArrowType.none),
                 ],
               ),
             ),
+            BottomPlayer(showArrowType: ShowArrowType.none),
           ],
         ),
+      ],
+    );
+  }
+
+  Widget _lyricsContent(
+    ValueNotifier<int> selectedIndex,
+    ValueNotifier<String> songId,
+    AsyncValue<List<Lyrics>> searchProvider,
+    AsyncValue<Lyrics?> defaultLyrics,
+  ) {
+    return LyricsContentPage(
+      currentLyrics:
+          (selectedIndex.value != -1 &&
+              !searchProvider.hasError &&
+              !searchProvider.isLoading)
+          ? searchProvider.value![selectedIndex.value]
+          : defaultLyrics.value,
+    );
+  }
+
+  Widget _appBar(
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ValueNotifier<int> selectedIndex,
+    ValueNotifier<String> songId,
+    AsyncValue<List<Lyrics>> searchProvider,
+    ColorScheme colorScheme,
+  ) {
+    return AppBar(
+      toolbarHeight: kToolbarHeight,
+      backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      centerTitle: false,
+      title: Text(
+        l10n.switch_lyrics,
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+      leading: IconButton(
+        onPressed: () {
+          ref.context.popWrap();
+        },
+        icon: Icon(Icons.arrow_back),
+      ),
+      actions: [
+        IconButton(
+          onPressed: () {
+            selectedIndex.value = -1;
+          },
+          icon: Icon(Icons.restore_rounded, size: 18),
+        ),
+        IconButton(
+          onPressed: () async {
+            if (searchProvider.hasValue && selectedIndex.value != -1) {
+              var currentLyrics = searchProvider.value![selectedIndex.value];
+              await lyricCache.set(
+                songId.value,
+                currentLyrics.toJson(),
+                permanent: true,
+              );
+              ref.invalidate(getLyricsProvider);
+              ref.invalidate(currentLyricsProvider);
+              if (ref.context.mounted) {
+                showSnackBar(
+                  l10n.save_success,
+                  ref.context,
+                  colorScheme.primary,
+                );
+              }
+            }
+          },
+          icon: Icon(Icons.save_rounded, size: 18),
+        ),
+      ],
+    );
+  }
+
+  Widget _getListLyrics(
+    TextEditingController titleController,
+    TextEditingController artistController,
+    AppLocalizations l10n,
+    ToneHarborTrackObject? activeTrack,
+    ValueNotifier<ToneHarborTrackObject> currentTrack,
+    ValueNotifier<String> title,
+    ValueNotifier<String> artist,
+    ColorScheme colorScheme,
+    AsyncValue<List<Lyrics>> searchProvider,
+    Function() callBack,
+    ValueNotifier<int> selectedIndex, {
+    TabController? tabController,
+  }) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.only(
+            top: 30,
+            bottom: 15,
+            left: 15,
+            right: 15,
+          ),
+          child: Column(
+            children: [
+              TextField(
+                style: TextStyle(fontSize: 14),
+                controller: titleController,
+                decoration: InputDecoration(
+                  labelText: l10n.title,
+                  hintText: l10n.input_song_title,
+                  prefixIcon: Icon(Icons.music_note, size: 18),
+                  suffixIcon:
+                      activeTrack != currentTrack.value && activeTrack != null
+                      ? (IconButton(
+                          onPressed: () {
+                            currentTrack.value = activeTrack;
+                          },
+                          icon: Icon(Icons.sync, size: 18),
+                          tooltip: l10n.sync,
+                        ))
+                      : (currentTrack.value.title != title.value)
+                      ? IconButton(
+                          onPressed: () {
+                            titleController.text = currentTrack.value.title;
+                          },
+                          icon: Icon(Icons.restore, size: 18),
+                          tooltip: l10n.restore_default,
+                        )
+                      : null,
+                ),
+                textInputAction: TextInputAction.next,
+              ),
+              const SizedBox(height: 15),
+              TextField(
+                style: TextStyle(fontSize: 14),
+                controller: artistController,
+                decoration: InputDecoration(
+                  labelText: l10n.artist,
+                  hintText: l10n.input_song_artist,
+                  prefixIcon: Icon(Icons.person, size: 18),
+                  suffixIcon:
+                      activeTrack != currentTrack.value && activeTrack != null
+                      ? (IconButton(
+                          onPressed: () {
+                            currentTrack.value = activeTrack;
+                          },
+                          icon: Icon(Icons.sync, size: 18),
+                          tooltip: l10n.sync,
+                        ))
+                      : (currentTrack.value.artist != artist.value &&
+                            currentTrack.value.artist != "Unknown Artist")
+                      ? IconButton(
+                          onPressed: () {
+                            artistController.text = currentTrack.value.artist;
+                          },
+                          icon: Icon(Icons.restore, size: 18),
+                          tooltip: l10n.restore_default,
+                        )
+                      : null,
+                ),
+                textInputAction: TextInputAction.search,
+                onSubmitted: (value) => callBack(),
+              ),
+            ],
+          ),
+        ),
+        ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(fixedSize: const Size(120, 35)),
+          onPressed: callBack,
+          icon: Icon(Icons.search, size: 16),
+          label: Text(l10n.search, style: TextStyle(fontSize: 14)),
+        ),
+
+        SizedBox(height: 15),
+        if (searchProvider.isLoading)
+          Expanded(
+            child: Center(
+              child: Transform.scale(
+                scale: 0.7,
+                child: const AudioEqualizerLoader(),
+              ),
+            ),
+          ),
+        if (searchProvider.hasError)
+          Expanded(
+            child: Center(
+              child: Column(
+                children: [
+                  Text(
+                    searchProvider.error.toString(),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  SizedBox(height: 15),
+                  ElevatedButton.icon(
+                    onPressed: () => callBack(),
+                    label: Text(l10n.retry, style: TextStyle(fontSize: 16)),
+                    icon: Icon(Icons.refresh_rounded, size: 18),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+        if (searchProvider.hasValue &&
+            !searchProvider.isLoading &&
+            !searchProvider.hasError)
+          Expanded(
+            child: ListView.builder(
+              itemCount: searchProvider.value!.length,
+              itemBuilder: (context, index) {
+                return _LyricsListItem(
+                  index: index,
+                  lyric: searchProvider.value![index],
+                  isSelected: selectedIndex.value == index,
+                  onTap: () {
+                    selectedIndex.value = index;
+                    tabController?.index = 1;
+                  },
+                  colorScheme: colorScheme,
+                  l10n: l10n,
+                );
+              },
+            ),
+          ),
       ],
     );
   }

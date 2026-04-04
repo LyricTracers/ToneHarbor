@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
@@ -48,14 +47,15 @@ class DownloadPage extends HookConsumerWidget {
       total = downloadTaskRecords!.length;
     }
     final size = MediaQuery.of(context).size;
-    final multiplier = size.multiplier2;
+    final multiplier = size.multiplier3;
     final toolbarHeight = kToolbarHeight * size.multiplier3;
-    final color = colorScheme.tertiary.withValues(alpha: 0.1);
     return Column(
       children: [
         if (songSelectionState.selectionType)
           AppBar(
-            backgroundColor: color,
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
             toolbarHeight: toolbarHeight,
             automaticallyImplyLeading: false,
             leading: IconButton(
@@ -125,7 +125,9 @@ class DownloadPage extends HookConsumerWidget {
           ),
         if (!songSelectionState.selectionType)
           AppBar(
-            backgroundColor: color,
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
             toolbarHeight: toolbarHeight,
             title: Text(
               l10n.download_center,
@@ -186,8 +188,10 @@ class DownloadPage extends HookConsumerWidget {
         ),
         if (songSelectionState.selectionType && selectedTab.value == 0)
           AppBar(
-            backgroundColor: color,
-            toolbarHeight: 70 * multiplier,
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
+            toolbarHeight: kToolbarHeight * multiplier,
             automaticallyImplyLeading: false,
             actions: [
               IconButton(
@@ -227,8 +231,10 @@ class DownloadPage extends HookConsumerWidget {
 
         if (songSelectionState.selectionType && selectedTab.value == 1)
           AppBar(
-            backgroundColor: color,
-            toolbarHeight: 70 * multiplier,
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
+            toolbarHeight: kToolbarHeight * multiplier,
             automaticallyImplyLeading: false,
             actions: [
               IconButton(
