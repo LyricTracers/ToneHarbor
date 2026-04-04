@@ -108,10 +108,10 @@ class SongItem extends HookConsumerWidget {
             color: isHovered.value || isPressed.value
                 ? colorScheme.outline.withValues(alpha: .1)
                 : Colors.transparent,
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
+            child: InkWell(
               onDoubleTap: () {
                 if (!selectionState.selectionType) {
+                  isPressed.value = false;
                   onTap();
                 }
               },
@@ -119,7 +119,10 @@ class SongItem extends HookConsumerWidget {
               onTapUp: (details) => isPressed.value = false,
               onTapCancel: () => isPressed.value = false,
               onTap: () {
-                updateState();
+                isPressed.value = false;
+                if (selectionState.selectionType) {
+                  updateState();
+                }
               },
               child: Padding(
                 padding: EdgeInsets.only(

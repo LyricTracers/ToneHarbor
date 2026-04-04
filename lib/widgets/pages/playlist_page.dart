@@ -33,6 +33,7 @@ class _PlaylistItem extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var isPressed = useState(false);
+    var isHovered = useState(false);
     return Slidable(
       endActionPane: ActionPane(
         motion: const ScrollMotion(),
@@ -53,104 +54,113 @@ class _PlaylistItem extends HookConsumerWidget {
           ),
         ],
       ),
-      child: Container(
-        height: 35,
-        color: isPressed.value
-            ? colorScheme.outline.withValues(alpha: .1)
-            : Colors.transparent,
-        child: Stack(
-          children: [
-            if (isDefault)
-              Positioned(
-                top: 0,
-                left: 0,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary,
-                    borderRadius: const BorderRadius.only(
-                      bottomRight: Radius.circular(8),
+      child: MouseRegion(
+        onEnter: (event) => isHovered.value = true,
+        onExit: (event) => isHovered.value = false,
+        child: Container(
+          height: 35,
+          color: isPressed.value || isHovered.value
+              ? colorScheme.outline.withValues(alpha: .1)
+              : Colors.transparent,
+          child: Stack(
+            children: [
+              if (isDefault)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
                     ),
-                  ),
-                  child: Text(
-                    i10n.playing,
-                    style: TextStyle(
-                      color: colorScheme.onPrimary,
-                      fontSize: 7,
-                      fontWeight: FontWeight.bold,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: const BorderRadius.only(
+                        bottomRight: Radius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      i10n.playing,
+                      style: TextStyle(
+                        color: colorScheme.onPrimary,
+                        fontSize: 7,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTapDown: (details) => isPressed.value = true,
-                    onTapUp: (details) => isPressed.value = false,
-                    onTapCancel: () => isPressed.value = false,
-                    onTap: onTap,
-                    onDoubleTap: onTap,
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 25),
-                        Text(
-                          '${index + 1}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.primary,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Flexible(
-                          child: SmartMarquee(
-                            text: track.title,
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTapDown: (details) => isPressed.value = true,
+                      onTapUp: (details) => isPressed.value = false,
+                      onTapCancel: () => isPressed.value = false,
+                      onTap: () {
+                        isPressed.value = false;
+                        onTap();
+                      },
+                      onDoubleTap: () {
+                        isPressed.value = false;
+                        onTap();
+                      },
+                      child: Row(
+                        children: [
+                          const SizedBox(width: 25),
+                          Text(
+                            '${index + 1}',
                             style: TextStyle(
                               fontSize: 14,
-                              color: colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.primary,
                             ),
-                            manualScrollOnTap: true,
-                            alignment: AlignmentGeometry.centerLeft,
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        SizedBox(
-                          width: 80,
-                          child: Text(
-                            track.artist,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.right,
-                            maxLines: 1,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: colorScheme.onSurfaceVariant.withValues(
-                                alpha: 0.7,
+                          const SizedBox(width: 10),
+                          Flexible(
+                            child: SmartMarquee(
+                              text: track.title,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                              manualScrollOnTap: true,
+                              alignment: AlignmentGeometry.centerLeft,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          SizedBox(
+                            width: 80,
+                            child: Text(
+                              track.artist,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.right,
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: colorScheme.onSurfaceVariant.withValues(
+                                  alpha: 0.7,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                      ],
+                          const SizedBox(width: 10),
+                        ],
+                      ),
                     ),
                   ),
-                ),
 
-                ReorderableDragStartListener(
-                  index: index,
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.drag_handle, size: 16),
+                  ReorderableDragStartListener(
+                    index: index,
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.drag_handle, size: 16),
+                    ),
                   ),
-                ),
-                SizedBox(width: 5),
-              ],
-            ),
-          ],
+                  SizedBox(width: 5),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
