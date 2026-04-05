@@ -173,39 +173,49 @@ class SwitchLyricsLayout extends BaseBgLayout {
           ),
         ),
         Positioned(
-          right: 40,
+          right: 20,
           top: 0,
-          child: IconButton(
-            onPressed: () {
-              selectedIndex.value = -1;
+          child: PopupMenuButton(
+            itemBuilder: (context) {
+              return [
+                getActionMenuItem(
+                  () {
+                    selectedIndex.value = -1;
+                  },
+                  l10n.reset_default,
+                  Icons.restore_rounded,
+                ),
+                getActionMenuItem(
+                  () async {
+                    if (searchProvider.hasValue && selectedIndex.value != -1) {
+                      var currentLyrics =
+                          searchProvider.value![selectedIndex.value];
+                      await lyricCache.set(
+                        songId.value,
+                        currentLyrics.toJson(),
+                        permanent: true,
+                      );
+                      ref.invalidate(getLyricsProvider);
+                      ref.invalidate(currentLyricsProvider);
+                      if (ref.context.mounted) {
+                        showSnackBar(
+                          l10n.save_success,
+                          ref.context,
+                          colorScheme.primary,
+                        );
+                      }
+                    }
+                  },
+                  l10n.save,
+                  Icons.save_rounded,
+                ),
+              ];
             },
-            icon: Icon(Icons.restore_rounded, size: 18),
-          ),
-        ),
-        Positioned(
-          right: 10,
-          top: 0,
-          child: IconButton(
-            onPressed: () async {
-              if (searchProvider.hasValue && selectedIndex.value != -1) {
-                var currentLyrics = searchProvider.value![selectedIndex.value];
-                await lyricCache.set(
-                  songId.value,
-                  currentLyrics.toJson(),
-                  permanent: true,
-                );
-                ref.invalidate(getLyricsProvider);
-                ref.invalidate(currentLyricsProvider);
-                if (ref.context.mounted) {
-                  showSnackBar(
-                    l10n.save_success,
-                    ref.context,
-                    colorScheme.primary,
-                  );
-                }
-              }
-            },
-            icon: Icon(Icons.save_rounded, size: 18),
+            icon: Icon(Icons.more_vert_rounded, size: 18),
+            tooltip: l10n.more,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         ),
         Column(
