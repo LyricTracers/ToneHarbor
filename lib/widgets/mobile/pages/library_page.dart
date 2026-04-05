@@ -18,7 +18,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
     final l10n = ref.watch(l10nProvider);
     final favoritePlaylist = ref.watch(favoritePlaylistStateProvider);
     final size = MediaQuery.of(context).size;
-    final multiplier = size.multiplier2;
+    final multiplier = size.multiplier3;
     final textStyle = TextStyle(
       fontSize: 15 * multiplier,
       fontWeight: FontWeight.bold,
