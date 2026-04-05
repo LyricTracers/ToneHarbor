@@ -10,7 +10,7 @@ import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
 
 class TestLayout extends BaseBgLayout {
-  const TestLayout({super.key, super.showLoading = true});
+  const TestLayout({super.key, super.enableLoading = true});
 
   @override
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {

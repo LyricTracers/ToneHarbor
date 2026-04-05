@@ -7,13 +7,15 @@ import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 
 class AudioEqualizerLoader extends HookConsumerWidget {
-  const AudioEqualizerLoader({super.key});
+  const AudioEqualizerLoader({super.key, this.color});
+
+  final Color? color;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = getColorSchemeWhenReady(ref);
+    final effectiveColor =
+        color ?? getColorSchemeWhenReady(ref).primary.withValues(alpha: 0.7);
     final l10n = AppLocalizations.of(context)!;
-    final color = colorScheme.primary.withValues(alpha: .7);
 
     final controller1 = useAnimationController(
       duration: const Duration(milliseconds: 400),
@@ -124,25 +126,28 @@ class AudioEqualizerLoader extends HookConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               RepaintBoundary(
-                child: _Bar(animation: animation1, color: color),
+                child: _Bar(animation: animation1, color: effectiveColor),
               ),
               RepaintBoundary(
-                child: _Bar(animation: animation2, color: color),
+                child: _Bar(animation: animation2, color: effectiveColor),
               ),
               RepaintBoundary(
-                child: _Bar(animation: animation3, color: color),
+                child: _Bar(animation: animation3, color: effectiveColor),
               ),
               RepaintBoundary(
-                child: _Bar(animation: animation4, color: color),
+                child: _Bar(animation: animation4, color: effectiveColor),
               ),
               RepaintBoundary(
-                child: _Bar(animation: animation5, color: color),
+                child: _Bar(animation: animation5, color: effectiveColor),
               ),
             ],
           ),
         ),
         SizedBox(height: 12.0),
-        Text(l10n.loading, style: TextStyle(fontSize: 14.0, color: color)),
+        Text(
+          l10n.loading,
+          style: TextStyle(fontSize: 14.0, color: effectiveColor),
+        ),
       ],
     );
   }

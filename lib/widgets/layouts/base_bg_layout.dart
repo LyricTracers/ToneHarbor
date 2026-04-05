@@ -8,18 +8,17 @@ import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
-import 'dart:ui' as ui;
-
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
+import 'dart:ui' as ui;
 
 abstract class BaseBgLayout extends HookConsumerWidget {
   const BaseBgLayout({
     super.key,
-    this.showLoading = true,
+    this.enableLoading = true,
     this.appbar = true,
     this.offsetLeft = 0,
   });
-  final bool showLoading;
+  final bool enableLoading;
   final bool appbar;
   final double offsetLeft;
 
@@ -53,6 +52,25 @@ abstract class BaseBgLayout extends HookConsumerWidget {
       ),
     );
     final size = MediaQuery.of(context).size;
+
+    useEffect(() {
+      if (enableLoading && requestFlag) {
+        showLoading(
+          context,
+          AudioEqualizerLoader(
+            color: colorScheme.primary.withValues(alpha: .7),
+          ),
+        );
+      } else {
+        hideLoading();
+      }
+      return null;
+    }, [enableLoading, requestFlag]);
+
+    useEffect(() {
+      return hideLoading;
+    }, []);
+
     return Scaffold(
       body: Stack(
         children: [
@@ -130,11 +148,6 @@ abstract class BaseBgLayout extends HookConsumerWidget {
             bottom: false,
             child: buildContent(context, ref, requestFlag),
           ),
-          showLoading
-              ? requestFlag
-                    ? const Center(child: AudioEqualizerLoader())
-                    : const SizedBox.shrink()
-              : const SizedBox.shrink(),
         ],
       ),
     );

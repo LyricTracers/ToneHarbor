@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/misc.dart';
@@ -113,6 +114,39 @@ void showSnackBar(String text, BuildContext context, Color color) {
         ),
         gravity: ToastGravity.BOTTOM,
       );
+}
+
+OverlayEntry? _loadingEntry;
+
+void showLoading(BuildContext context, Widget child) {
+  hideLoading();
+  final overlay = Overlay.of(context);
+  final entry = OverlayEntry(
+    builder: (context) => Stack(
+      children: [
+        ModalBarrier(color: Colors.black38, dismissible: false),
+        Center(
+          child: Material(color: Colors.transparent, child: child),
+        ),
+      ],
+    ),
+  );
+  _loadingEntry = entry;
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    overlay.insert(entry);
+  });
+}
+
+void hideLoading() {
+  final entry = _loadingEntry;
+  _loadingEntry = null;
+  if (entry != null) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (entry.mounted) {
+        entry.remove();
+      }
+    });
+  }
 }
 
 void copyToClipboard(String text, BuildContext context, Color color) {

@@ -13,7 +13,7 @@ import 'package:toneharbor/widgets/layouts/base_bg_layout.dart';
 class LoginLayout extends BaseBgLayout {
   const LoginLayout({
     super.key,
-    super.showLoading = true,
+    super.enableLoading = true,
     super.appbar = false,
   });
 
