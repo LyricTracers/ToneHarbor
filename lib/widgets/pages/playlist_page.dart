@@ -243,6 +243,13 @@ class PlaylistPage extends HookConsumerWidget {
               actions: [
                 IconButton(
                   onPressed: () {
+                    audioPlayer.clearPlaylist();
+                  },
+                  icon: Icon(Icons.delete_sweep_rounded, size: 18),
+                  tooltip: i10n.clear_all,
+                ),
+                IconButton(
+                  onPressed: () {
                     if (shuffled) {
                       audioPlayer.setShuffle(false);
                     } else {
