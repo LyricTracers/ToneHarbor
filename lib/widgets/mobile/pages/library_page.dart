@@ -40,7 +40,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
             child: SearchHistoryTextField(
               showHistoryIcon: false,
-              listTextStyle: TextStyle(fontSize: 14 * multiplier),
+              listTextStyle: TextStyle(fontSize: 14),
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -53,7 +53,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                   alpha: 0.5,
                 ),
                 hintText: l10n.searchHint,
-                hintStyle: TextStyle(fontSize: 14 * multiplier),
+                hintStyle: TextStyle(fontSize: 14),
                 prefixIcon: const Icon(Icons.search, size: 16),
               ),
               onFocusChanged: (v) {},
