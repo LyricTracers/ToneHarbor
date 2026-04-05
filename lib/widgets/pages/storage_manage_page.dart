@@ -1,12 +1,11 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
-import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
+import 'package:toneharbor/widgets/widgets.dart';
 
 const _chartColors = [
   Colors.blue,
@@ -19,7 +18,7 @@ const _chartColors = [
   Colors.indigo,
 ];
 
-class StorageManagePage extends HookConsumerWidget {
+class StorageManagePage extends HookConsumerWidget with BuildItem {
   const StorageManagePage({super.key});
 
   @override
@@ -29,54 +28,52 @@ class StorageManagePage extends HookConsumerWidget {
     final l10n = ref.watch(l10nProvider);
     final size = MediaQuery.of(context).size;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: kToolbarHeight * size.multiplier3,
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        title: Text(
+    return Column(
+      children: [
+        buildAppBar(
+          context,
+          ref,
+          l10n,
+          colorScheme,
           l10n.storage_management,
-          style: TextStyle(
-            fontSize: 16 * size.multiplier2,
-            fontWeight: FontWeight.bold,
+          size,
+        ),
+        Expanded(
+          child: storageAsync.when(
+            loading: () => const Center(child: AudioEqualizerLoader()),
+            error: (e, _) =>
+                Center(child: buildErrorView(context, ref, colorScheme, () {})),
+            data: (infos) {
+              final totalSize = infos.fold<int>(0, (sum, i) => sum + i.size);
+              if (size.lgAndUp) {
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Expanded(child: _PieChartWithTouch(infos: infos)),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildLegend(
+                          infos,
+                          totalSize,
+                          ref,
+                          colorScheme,
+                          l10n,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+                  child: _buildLegend(infos, totalSize, ref, colorScheme, l10n),
+                );
+              }
+            },
           ),
         ),
-        centerTitle: false,
-      ),
-      body: storageAsync.when(
-        loading: () => const Center(child: AudioEqualizerLoader()),
-        error: (e, _) =>
-            Center(child: buildErrorView(context, ref, colorScheme, () {})),
-        data: (infos) {
-          final totalSize = infos.fold<int>(0, (sum, i) => sum + i.size);
-          if (size.lgAndUp) {
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Expanded(child: _PieChartWithTouch(infos: infos)),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildLegend(
-                      infos,
-                      totalSize,
-                      ref,
-                      colorScheme,
-                      l10n,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          } else {
-            return Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16),
-              child: _buildLegend(infos, totalSize, ref, colorScheme, l10n),
-            );
-          }
-        },
-      ),
+      ],
     );
   }
 

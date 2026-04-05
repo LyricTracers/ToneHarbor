@@ -665,14 +665,6 @@ class MyApp extends HookConsumerWidget {
             path: '/mobile/storage',
             parentNavigatorKey: rootNavigatorKey,
             pageBuilder: (context, state) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (!context.mounted) return;
-                showSnackBar(
-                  'Storage manage page is not available on mobile',
-                  context,
-                  colorScheme.secondaryContainer,
-                );
-              });
               return buildPage(
                 key: state.pageKey,
                 child: MobileFullLayout(child: StorageManagePage()),
