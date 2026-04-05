@@ -15,7 +15,13 @@ import 'package:tray_manager/tray_manager.dart';
 class SettingPage extends HookConsumerWidget with BuildItem {
   const SettingPage({super.key});
 
-  Widget _other(BuildContext context, WidgetRef ref, l10n, colorScheme) {
+  Widget _other(
+    BuildContext context,
+    WidgetRef ref,
+    l10n,
+    colorScheme,
+    double multiplier,
+  ) {
     return Column(
       children: [
         buildDropdownTile(
@@ -23,6 +29,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           items: Language.values,
           value: Language.fromLocale(ref.watch(localeProvider)),
           colorScheme: colorScheme,
+          multiplier: multiplier,
           onChanged: (value) {
             if (value != null) {
               ref
@@ -41,7 +48,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           title: Text(
             l10n.storage_management,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 15 * multiplier,
               fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
             ),
@@ -59,7 +66,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           title: Text(
             l10n.ai_translate_settings,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 15 * multiplier,
               fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
             ),
@@ -77,7 +84,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           title: Text(
             l10n.about,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 15 * multiplier,
               fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
             ),
@@ -94,6 +101,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
     WidgetRef ref,
     AppLocalizations l10n,
     ColorScheme colorScheme,
+    double multiplier,
   ) {
     return Column(
       children: [
@@ -101,6 +109,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           l10n.replay_gain,
           l10n.replay_gain_desc,
           ref.watch(normalizeAudioProvider),
+          multiplier,
           (value) async {
             ref.read(normalizeAudioProvider.notifier).set(value);
             await audioPlayer.setAudioNormalization(value);
@@ -118,6 +127,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           items: AudioQuality.values,
           value: ref.watch(audioQualityProvider),
           colorScheme: colorScheme,
+          multiplier: multiplier,
           labelBuilder: (q) => q.localizedLabel(l10n),
           onChanged: (value) {
             if (value != null) {
@@ -136,7 +146,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           title: Text(
             l10n.audio_device,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 15 * multiplier,
               fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
             ),
@@ -154,7 +164,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           title: Text(
             l10n.lyrics_provider,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 15 * multiplier,
               fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
             ),
@@ -170,7 +180,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
                     return Text(
                       l10n.lyrics_provider_desc,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 12 * multiplier,
                         color: colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     );
@@ -179,7 +189,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
                   return Text(
                     names,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 12 * multiplier,
                       color: colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                     maxLines: 1,
@@ -189,14 +199,14 @@ class SettingPage extends HookConsumerWidget with BuildItem {
                 loading: () => Text(
                   l10n.lyrics_provider_desc,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 12 * multiplier,
                     color: colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
                 error: (_, __) => Text(
                   l10n.lyrics_provider_desc,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 12 * multiplier,
                     color: colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
@@ -302,6 +312,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
     WidgetRef ref,
     AppLocalizations l10n,
     ColorScheme colorScheme,
+    double multiplier,
   ) {
     return Column(
       children: [
@@ -309,6 +320,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           l10n.status_bar_display,
           l10n.icon,
           ref.watch(statusBarLyricProvider),
+          multiplier,
           (value) async {
             ref.read(statusBarLyricProvider.notifier).set(value);
           },
@@ -330,24 +342,31 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           },
           minValue: 12.0,
           maxValue: 15.0,
+          multiplier: multiplier,
           colorScheme: colorScheme,
         ),
       ],
     );
   }
 
-  Widget _theme(WidgetRef ref, AppLocalizations l10n, ColorScheme colorScheme) {
+  Widget _theme(
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+    double multiplier,
+  ) {
     return Column(
       children: [
         buildSwitchTile(
           l10n.auto_switch_background,
           l10n.manual_switch_background,
-          title2: l10n.follow_song_cover,
-          subtitle2: l10n.long_press_set_background,
           ref.watch(syncSongIconProvider),
+          multiplier,
           (value) =>
               ref.read(syncSongIconProvider.notifier).setSyncSongIcon(value),
           colorScheme,
+          title2: l10n.follow_song_cover,
+          subtitle2: l10n.long_press_set_background,
         ),
         Divider(
           height: 1,
@@ -360,6 +379,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           items: DynamicSchemeVariant.values,
           value: ref.watch(dynamicSchemeProvider),
           colorScheme: colorScheme,
+          multiplier: multiplier,
           onChanged: (value) {
             if (value != null) {
               ref.read(dynamicSchemeProvider.notifier).setSchemeVariant(value);
@@ -375,6 +395,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
         buildSliderTile(
           title: l10n.brightness_contrast,
           value: ref.watch(contrastLevelProvider),
+          multiplier: multiplier,
           onChanged: (value) =>
               ref.read(contrastLevelProvider.notifier).setContrastLevel(value),
           minValue: -1.0,
@@ -416,6 +437,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
     final colorScheme = getColorSchemeWhenReady(ref);
     final needAppBar = MediaQuery.of(context).lgAndUp;
     final size = MediaQuery.of(context).size;
+    final multiplier = size.multiplier2;
     return Column(
       children: [
         if (needAppBar)
@@ -427,6 +449,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             colorScheme,
             l10n.account,
             _account(ref, l10n, colorScheme),
+            multiplier,
           ),
           SizedBox(height: 20),
           ...buildItem(
@@ -434,7 +457,8 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             l10n,
             colorScheme,
             l10n.playback_settings,
-            _audioPlay(context, ref, l10n, colorScheme),
+            _audioPlay(context, ref, l10n, colorScheme, multiplier),
+            multiplier,
           ),
           SizedBox(height: 20),
           ...buildItem(
@@ -442,7 +466,8 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             l10n,
             colorScheme,
             l10n.theme_settings,
-            _theme(ref, l10n, colorScheme),
+            _theme(ref, l10n, colorScheme, multiplier),
+            multiplier,
           ),
 
           if (Platform.isMacOS) ...[
@@ -452,7 +477,8 @@ class SettingPage extends HookConsumerWidget with BuildItem {
               l10n,
               colorScheme,
               l10n.status_bar_settings,
-              _statusBar(ref, l10n, colorScheme),
+              _statusBar(ref, l10n, colorScheme, multiplier),
+              multiplier,
             ),
           ],
           SizedBox(height: 20),
@@ -461,7 +487,8 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             l10n,
             colorScheme,
             l10n.other_settings,
-            _other(context, ref, l10n, colorScheme),
+            _other(context, ref, l10n, colorScheme, multiplier),
+            multiplier,
           ),
         ]),
       ],

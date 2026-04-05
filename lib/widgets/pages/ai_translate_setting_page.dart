@@ -4,6 +4,7 @@ import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/translate/translate_service.dart';
 import 'package:toneharbor/utils/base_utils.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/pages/build_item.dart';
 
 class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
@@ -22,6 +23,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
     WidgetRef ref,
     AppLocalizations l10n,
     ColorScheme colorScheme,
+    double multiplier,
   ) {
     final currentPlatform = ref.watch(aIPlatformSettingProvider);
 
@@ -32,6 +34,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
           items: AIPlatform.values,
           value: currentPlatform,
           colorScheme: colorScheme,
+          multiplier: multiplier,
           labelBuilder: (p) => p.displayName,
           onChanged: (value) {
             if (value != null) {
@@ -55,6 +58,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
     WidgetRef ref,
     AppLocalizations l10n,
     ColorScheme colorScheme,
+    double multiplier,
   ) {
     final platform = ref.watch(aIPlatformSettingProvider);
     final apiKey = ref.watch(aIApiKeyProvider);
@@ -67,7 +71,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
             title: Text(
               l10n.api_key,
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 15 * multiplier,
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onSurface,
               ),
@@ -77,7 +81,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
                   ? '${apiKey.substring(0, 8)}...${apiKey.substring(apiKey.length - 4)}'
                   : l10n.not_configured,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 12 * multiplier,
                 color: colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
@@ -89,7 +93,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
             title: Text(
               l10n.api_key,
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 15 * multiplier,
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onSurface,
               ),
@@ -97,7 +101,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
             subtitle: Text(
               'Built-in API Key',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 12 * multiplier,
                 color: colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
@@ -112,6 +116,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
     WidgetRef ref,
     AppLocalizations l10n,
     ColorScheme colorScheme,
+    double multiplier,
   ) {
     final platform = ref.watch(aIPlatformSettingProvider);
     final selectedModel = ref.watch(aIModelSettingProvider);
@@ -128,6 +133,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
                 ? selectedModel
                 : availableModels.first,
             colorScheme: colorScheme,
+            multiplier: multiplier,
             labelBuilder: (m) => m.displayName,
             onChanged: (value) {
               if (value != null) {
@@ -185,6 +191,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
           value: ref.watch(aITargetLanguageSettingProvider),
           colorScheme: colorScheme,
           labelBuilder: (l) => '→ ${l.displayName}',
+          multiplier: multiplier,
           onChanged: (value) {
             if (value != null) {
               ref
@@ -201,6 +208,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
     WidgetRef ref,
     AppLocalizations l10n,
     ColorScheme colorScheme,
+    double multiplier,
   ) {
     return Column(
       children: [
@@ -208,7 +216,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
           title: Text(
             l10n.api_endpoint,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 15 * multiplier,
               fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
             ),
@@ -216,7 +224,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
           subtitle: Text(
             ref.watch(aIEndpointSettingProvider),
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 12 * multiplier,
               color: colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
@@ -234,6 +242,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
           },
           minValue: 0.0,
           maxValue: 2.0,
+          multiplier: multiplier,
           colorScheme: colorScheme,
         ),
       ],
@@ -254,7 +263,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
       builder: (context) => AlertDialog(
         title: Text(
           l10n.api_key,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         content: TextField(
           controller: controller,
@@ -392,6 +401,7 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
     final l10n = ref.watch(l10nProvider);
     final colorScheme = getColorSchemeWhenReady(ref);
     final size = MediaQuery.of(context).size;
+    final multiplier = size.multiplier2;
     return Column(
       children: [
         buildAppBar(
@@ -408,7 +418,8 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
             l10n,
             colorScheme,
             l10n.platform_settings,
-            _platformSettings(ref, l10n, colorScheme),
+            _platformSettings(ref, l10n, colorScheme, multiplier),
+            multiplier,
           ),
           const SizedBox(height: 20),
           ...buildItem(
@@ -416,7 +427,8 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
             l10n,
             colorScheme,
             l10n.api_settings,
-            _apiSettings(ref, l10n, colorScheme),
+            _apiSettings(ref, l10n, colorScheme, multiplier),
+            multiplier,
           ),
           const SizedBox(height: 20),
           ...buildItem(
@@ -424,7 +436,8 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
             l10n,
             colorScheme,
             l10n.model_settings,
-            _modelSettings(ref, l10n, colorScheme),
+            _modelSettings(ref, l10n, colorScheme, multiplier),
+            multiplier,
           ),
           const SizedBox(height: 20),
           ...buildItem(
@@ -432,7 +445,8 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
             l10n,
             colorScheme,
             l10n.advanced_settings,
-            _advancedSettings(ref, l10n, colorScheme),
+            _advancedSettings(ref, l10n, colorScheme, multiplier),
+            multiplier,
           ),
         ]),
       ],

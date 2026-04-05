@@ -29,13 +29,17 @@ mixin BuildItem {
     );
   }
 
-  Widget buildSectionTitle(String title, ColorScheme colorScheme) {
+  Widget buildSectionTitle(
+    String title,
+    ColorScheme colorScheme,
+    double multiplier,
+  ) {
     return Padding(
       padding: const EdgeInsets.all(4),
       child: Text(
         title,
         style: TextStyle(
-          fontSize: 12,
+          fontSize: 12 * multiplier,
           fontWeight: FontWeight.bold,
           color: colorScheme.secondary,
         ),
@@ -49,13 +53,14 @@ mixin BuildItem {
     required T value,
     required ColorScheme colorScheme,
     required ValueChanged<T?>? onChanged,
+    required double multiplier,
     String Function(T)? labelBuilder,
   }) {
     return ListTile(
       title: Text(
         title,
         style: TextStyle(
-          fontSize: 15,
+          fontSize: 15 * multiplier,
           fontWeight: FontWeight.bold,
           color: colorScheme.onSurface,
         ),
@@ -68,7 +73,7 @@ mixin BuildItem {
                 value: e,
                 child: Text(
                   labelBuilder?.call(e) ?? e.toString().split('.').last,
-                  style: const TextStyle(fontSize: 14),
+                  style: TextStyle(fontSize: 14 * multiplier),
                 ),
               ),
             )
@@ -85,12 +90,13 @@ mixin BuildItem {
     required double minValue,
     required double maxValue,
     required ColorScheme colorScheme,
+    required double multiplier,
   }) {
     return ListTile(
       title: Text(
         '$title: ${value.toStringAsFixed(1)}',
         style: TextStyle(
-          fontSize: 15,
+          fontSize: 15 * multiplier,
           fontWeight: FontWeight.bold,
           color: colorScheme.onSurface,
         ),
@@ -115,6 +121,7 @@ mixin BuildItem {
     String title,
     String subtitle,
     bool value,
+    double multiplier,
     Function(bool) onChanged,
     ColorScheme colorScheme, {
     String? title2,
@@ -130,7 +137,7 @@ mixin BuildItem {
       title: Text(
         value ? title : title2,
         style: TextStyle(
-          fontSize: 15,
+          fontSize: 15 * multiplier,
           fontWeight: FontWeight.bold,
           color: colorScheme.onSurface,
         ),
@@ -138,7 +145,7 @@ mixin BuildItem {
       subtitle: Text(
         value ? subtitle : subtitle2,
         style: TextStyle(
-          fontSize: 12,
+          fontSize: 12 * multiplier,
           color: colorScheme.onSurface.withValues(alpha: 0.7),
         ),
       ),
@@ -158,9 +165,10 @@ mixin BuildItem {
     ColorScheme colorScheme,
     String title,
     Widget child,
+    double multiplier,
   ) {
     return [
-      if (title.isNotEmpty) buildSectionTitle(title, colorScheme),
+      if (title.isNotEmpty) buildSectionTitle(title, colorScheme, multiplier),
       Container(
         width: double.infinity,
         alignment: Alignment.centerLeft,

@@ -17,8 +17,10 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
     final colorScheme = getColorSchemeWhenReady(ref);
     final l10n = ref.watch(l10nProvider);
     final favoritePlaylist = ref.watch(favoritePlaylistStateProvider);
+    final size = MediaQuery.of(context).size;
+    final multiplier = size.multiplier2;
     final textStyle = TextStyle(
-      fontSize: 15,
+      fontSize: 15 * multiplier,
       fontWeight: FontWeight.bold,
       color: colorScheme.onSurface,
     );
@@ -38,7 +40,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
             child: SearchHistoryTextField(
               showHistoryIcon: false,
-              listTextStyle: const TextStyle(fontSize: 14),
+              listTextStyle: TextStyle(fontSize: 14 * multiplier),
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -51,7 +53,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                   alpha: 0.5,
                 ),
                 hintText: l10n.searchHint,
-                hintStyle: const TextStyle(fontSize: 14),
+                hintStyle: TextStyle(fontSize: 14 * multiplier),
                 prefixIcon: const Icon(Icons.search, size: 16),
               ),
               onFocusChanged: (v) {},
@@ -69,7 +71,8 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
             l10n,
             colorScheme,
             '',
-            _musicHouse(ref, l10n, colorScheme, divider),
+            _musicHouse(ref, l10n, colorScheme, divider, multiplier),
+            multiplier,
           ),
           if (favoritePlaylist.playlists.isNotEmpty) ...[
             SizedBox(height: 8),
@@ -86,7 +89,9 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 textStyle,
                 trailingIcon,
                 divider,
+                multiplier,
               ),
+              multiplier,
             ),
           ],
         ]),
@@ -123,6 +128,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
     AppLocalizations l10n,
     ColorScheme colorScheme,
     Divider divider,
+    double multiplier,
   ) {
     final textButtonStyle = TextButton.styleFrom(
       fixedSize: const Size(40, 60),
@@ -130,7 +136,10 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
       iconColor: colorScheme.onSurface,
       iconSize: 24,
     );
-    final textStyle = TextStyle(fontSize: 14, color: colorScheme.onSurface);
+    final textStyle = TextStyle(
+      fontSize: 14 * multiplier,
+      color: colorScheme.onSurface,
+    );
 
     return Column(
       children: [
@@ -152,7 +161,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                     Text(
                       l10n.appTitle,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 18 * multiplier,
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onSurface,
                       ),
@@ -163,7 +172,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 14 * multiplier,
                         color: colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
@@ -311,6 +320,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
     TextStyle textStyle,
     Icon trailingIcon,
     Divider divider,
+    double multiplier,
   ) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -332,7 +342,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                         child: Text(
                           item.title,
                           maxLines: 1,
-                          style: const TextStyle(fontSize: 13),
+                          style: TextStyle(fontSize: 13 * multiplier),
                         ),
                       ),
                       PopupMenuDivider(),
@@ -351,7 +361,7 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                             Text(
                               l10n.no_favorite_playlist,
                               style: TextStyle(
-                                fontSize: 13,
+                                fontSize: 13 * multiplier,
                                 color: colorScheme.onSurface.withValues(
                                   alpha: 0.7,
                                 ),

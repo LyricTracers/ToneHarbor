@@ -674,9 +674,8 @@ class MyApp extends HookConsumerWidget {
             path: '/mobile/storage',
             parentNavigatorKey: rootNavigatorKey,
             pageBuilder: (context, state) {
-              Future.microtask(() {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (!context.mounted) return;
-                if (ScaffoldMessenger.maybeOf(context) == null) return;
                 showSnackBar(
                   'Storage manage page is not available on mobile',
                   context,

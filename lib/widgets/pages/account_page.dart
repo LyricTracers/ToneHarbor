@@ -8,6 +8,7 @@ import 'package:toneharbor/models/audio_station/syno_api_info.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/pages/build_item.dart';
 
@@ -35,6 +36,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     required String title,
     required String value,
     required ColorScheme colorScheme,
+    required double multiplier,
     VoidCallback? onTap,
     Widget? trailing,
   }) {
@@ -43,7 +45,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
       title: Text(
         title,
         style: TextStyle(
-          fontSize: 16,
+          fontSize: 16 * multiplier,
           fontWeight: FontWeight.bold,
           color: colorScheme.onSurface,
         ),
@@ -53,7 +55,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
           Text(
             value,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 14 * multiplier,
               color: colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
@@ -73,6 +75,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     WidgetRef ref,
     AppLocalizations l10n,
     ColorScheme colorScheme,
+    double multiplier,
   ) {
     return ListTile(
       onTap: () async {
@@ -84,7 +87,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
         l10n.logout,
         textAlign: TextAlign.center,
         style: TextStyle(
-          fontSize: 16,
+          fontSize: 16 * multiplier,
           fontWeight: FontWeight.bold,
           color: colorScheme.tertiary,
         ),
@@ -97,6 +100,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     AppLocalizations l10n,
     ColorScheme colorScheme,
     ValueNotifier<bool> obscurePassword,
+    double multiplier,
   ) {
     var account = ref.read(accountInfoProvider);
     var url = ref.read(baseUrlProvider);
@@ -107,6 +111,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
           title: l10n.serverUrl,
           value: url,
           colorScheme: colorScheme,
+          multiplier: multiplier,
           onTap: () => copyToClipboard(url, ref.context, colorScheme.secondary),
         ),
         _buildDivider(colorScheme),
@@ -114,6 +119,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
           title: l10n.proxy_url,
           value: ToneHarborMedia.baseUrl,
           colorScheme: colorScheme,
+          multiplier: multiplier,
           onTap: () {
             copyToClipboard(
               ToneHarborMedia.baseUrl,
@@ -127,6 +133,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
           title: l10n.username,
           value: account?.account ?? '',
           colorScheme: colorScheme,
+          multiplier: multiplier,
           onTap: () => copyToClipboard(
             account?.account ?? '',
             ref.context,
@@ -138,6 +145,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
           title: l10n.password,
           value: '',
           colorScheme: colorScheme,
+          multiplier: multiplier,
           onTap: () => copyToClipboard(
             account?.passwd ?? '',
             ref.context,
@@ -160,7 +168,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
               Text(
                 obscurePassword.value ? '********' : (account?.passwd ?? ''),
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 14 * multiplier,
                   color: colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
@@ -177,6 +185,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     ColorScheme colorScheme,
     DSMInfoData? dsmInfo,
     int currentUptime,
+    double multiplier,
   ) {
     if (dsmInfo == null) {
       return ListTile(
@@ -192,24 +201,28 @@ class AccountPage extends HookConsumerWidget with BuildItem {
           title: l10n.model,
           value: dsmInfo.model,
           colorScheme: colorScheme,
+          multiplier: multiplier,
         ),
         _buildDivider(colorScheme),
         _buildListTile(
           title: l10n.serialNumber,
           value: dsmInfo.serial,
           colorScheme: colorScheme,
+          multiplier: multiplier,
         ),
         _buildDivider(colorScheme),
         _buildListTile(
           title: l10n.dsmVersion,
           value: dsmInfo.versionString,
           colorScheme: colorScheme,
+          multiplier: multiplier,
         ),
         _buildDivider(colorScheme),
         _buildListTile(
           title: l10n.deviceTemperature,
           value: "${dsmInfo.temperature}°C",
           colorScheme: colorScheme,
+          multiplier: multiplier,
           trailing: Text(
             "${dsmInfo.temperature}°C",
             style: TextStyle(
@@ -223,6 +236,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
           title: l10n.uptime,
           value: _formatUptime(currentUptime, l10n),
           colorScheme: colorScheme,
+          multiplier: multiplier,
         ),
       ],
     );
@@ -235,6 +249,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     var dsmInfo = ref.watch(dsmInfoProvider());
     var obscurePassword = useState(true);
     final size = MediaQuery.of(context).size;
+    final multiplier = size.multiplier2;
     return Column(
       children: [
         buildAppBar(context, ref, l10n, colorScheme, l10n.account, size),
@@ -253,7 +268,15 @@ class AccountPage extends HookConsumerWidget with BuildItem {
                 l10n,
                 colorScheme,
                 l10n.deviceInfo,
-                _deviceInfo(ref, l10n, colorScheme, value.data, uptime.value),
+                _deviceInfo(
+                  ref,
+                  l10n,
+                  colorScheme,
+                  value.data,
+                  uptime.value,
+                  multiplier,
+                ),
+                multiplier,
               ),
               SizedBox(height: 20),
               ...buildItem(
@@ -261,7 +284,8 @@ class AccountPage extends HookConsumerWidget with BuildItem {
                 l10n,
                 colorScheme,
                 l10n.userInfo,
-                _userInfo(ref, l10n, colorScheme, obscurePassword),
+                _userInfo(ref, l10n, colorScheme, obscurePassword, multiplier),
+                multiplier,
               ),
               SizedBox(height: 20),
               ...buildItem(
@@ -269,7 +293,8 @@ class AccountPage extends HookConsumerWidget with BuildItem {
                 l10n,
                 colorScheme,
                 l10n.operation,
-                _logout(ref, l10n, colorScheme),
+                _logout(ref, l10n, colorScheme, multiplier),
+                multiplier,
               ),
             ]);
           },

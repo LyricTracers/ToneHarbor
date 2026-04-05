@@ -94,7 +94,12 @@ void showSnackBarError(Object e, BuildContext context, Color color) {
 }
 
 void showSnackBar(String text, BuildContext context, Color color) {
-  if (text.isEmpty) {
+  if (text.isEmpty) return;
+  if (!context.mounted) return;
+
+  try {
+    Overlay.of(context);
+  } catch (e) {
     return;
   }
 
