@@ -420,15 +420,6 @@ class MyApp extends HookConsumerWidget {
               GoRoute(
                 path: '/storage',
                 pageBuilder: (context, state) {
-                  Future.microtask(() {
-                    if (!context.mounted) return;
-                    if (ScaffoldMessenger.maybeOf(context) == null) return;
-                    showSnackBar(
-                      'Storage manage page is not available on mobile',
-                      context,
-                      colorScheme.secondaryContainer,
-                    );
-                  });
                   return buildPage(
                     key: state.pageKey,
                     child: StorageManagePage(),

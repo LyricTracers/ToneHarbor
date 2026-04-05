@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -27,6 +28,7 @@ class StorageManagePage extends HookConsumerWidget {
     final colorScheme = getColorSchemeWhenReady(ref);
     final l10n = ref.watch(l10nProvider);
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: kToolbarHeight * size.multiplier3,
@@ -48,18 +50,31 @@ class StorageManagePage extends HookConsumerWidget {
             Center(child: buildErrorView(context, ref, colorScheme, () {})),
         data: (infos) {
           final totalSize = infos.fold<int>(0, (sum, i) => sum + i.size);
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(child: _PieChartWithTouch(infos: infos)),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildLegend(infos, totalSize, ref, colorScheme, l10n),
-                ),
-              ],
-            ),
-          );
+          if (size.lgAndUp) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Expanded(child: _PieChartWithTouch(infos: infos)),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildLegend(
+                      infos,
+                      totalSize,
+                      ref,
+                      colorScheme,
+                      l10n,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              child: _buildLegend(infos, totalSize, ref, colorScheme, l10n),
+            );
+          }
         },
       ),
     );
