@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/misc.dart';
 import 'package:path/path.dart';
@@ -95,22 +96,23 @@ void showSnackBar(String text, BuildContext context, Color color) {
   if (text.isEmpty) {
     return;
   }
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Row(
-        children: [
-          Icon(Icons.check_circle, size: 20),
-          SizedBox(width: 8),
-          Expanded(child: Text(text)),
-        ],
-      ),
-      duration: const Duration(seconds: 1),
-      backgroundColor: color,
-      behavior: SnackBarBehavior.floating,
-      margin: EdgeInsets.all(8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-    ),
-  );
+
+  FToast()
+      .init(context)
+      .showToast(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 16, color: Colors.black),
+          ),
+        ),
+        gravity: ToastGravity.BOTTOM,
+      );
 }
 
 void copyToClipboard(String text, BuildContext context, Color color) {
