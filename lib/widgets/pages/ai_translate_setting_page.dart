@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/translate/translate_service.dart';
+import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/pages/build_item.dart';
@@ -258,37 +259,23 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
       text: ref.read(aIApiKeyProvider) ?? '',
     );
 
-    showDialog(
+    showCommonDialog(
       context: ref.context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          l10n.api_key,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      colorScheme: colorScheme,
+      title: l10n.api_key,
+      content: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          hintText: l10n.enter_api_key,
+          border: const OutlineInputBorder(),
         ),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            hintText: l10n.enter_api_key,
-            border: const OutlineInputBorder(),
-          ),
-          obscureText: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () async {
-              await ref
-                  .read(aIApiKeyProvider.notifier)
-                  .setApiKey(controller.text);
-              if (context.mounted) Navigator.pop(context);
-            },
-            child: Text(l10n.save),
-          ),
-        ],
+        obscureText: true,
       ),
+      cancelText: l10n.cancel,
+      confirmText: l10n.save,
+      onConfirm: () async {
+        await ref.read(aIApiKeyProvider.notifier).setApiKey(controller.text);
+      },
     );
   }
 
@@ -301,49 +288,37 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
       text: ref.read(aICustomModelProvider) ?? '',
     );
 
-    showDialog(
+    showCommonDialog(
       context: ref.context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          l10n.custom_model,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                hintText: 'Qwen/Qwen2.5-7B-Instruct, deepseek-chat, etc.',
-                border: const OutlineInputBorder(),
-              ),
+      colorScheme: colorScheme,
+      title: l10n.custom_model,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: 'Qwen/Qwen2.5-7B-Instruct, deepseek-chat, etc.',
+              border: const OutlineInputBorder(),
             ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.custom_model_hint,
-              style: TextStyle(
-                fontSize: 12,
-                color: colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
           ),
-          TextButton(
-            onPressed: () {
-              ref
-                  .read(aICustomModelProvider.notifier)
-                  .setCustomModel(controller.text);
-              Navigator.pop(context);
-            },
-            child: Text(l10n.save),
+          const SizedBox(height: 8),
+          Text(
+            l10n.custom_model_hint,
+            style: TextStyle(
+              fontSize: 12,
+              color: colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
           ),
         ],
       ),
+      cancelText: l10n.cancel,
+      confirmText: l10n.save,
+      onConfirm: () async {
+        ref
+            .read(aICustomModelProvider.notifier)
+            .setCustomModel(controller.text);
+      },
     );
   }
 
@@ -356,43 +331,28 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
       text: ref.read(aIEndpointSettingProvider),
     );
 
-    showDialog(
+    showCommonDialog(
       context: ref.context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          l10n.api_endpoint,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      colorScheme: colorScheme,
+      title: l10n.api_endpoint,
+      content: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          hintText: 'https://api.example.com/v1/chat/completions',
+          border: const OutlineInputBorder(),
         ),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            hintText: 'https://api.example.com/v1/chat/completions',
-            border: const OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              ref
-                  .read(aIEndpointSettingProvider.notifier)
-                  .setEndpoint(controller.text);
-              Navigator.pop(context);
-            },
-            child: Text(l10n.save),
-          ),
-          TextButton(
-            onPressed: () {
-              ref.read(aIEndpointSettingProvider.notifier).resetToDefault();
-              Navigator.pop(context);
-            },
-            child: Text(l10n.reset_default),
-          ),
-        ],
       ),
+      cancelText: l10n.cancel,
+      confirmText: l10n.save,
+      thirdButtonText: l10n.reset_default,
+      onConfirm: () async {
+        ref
+            .read(aIEndpointSettingProvider.notifier)
+            .setEndpoint(controller.text);
+      },
+      onThirdButton: () async {
+        ref.read(aIEndpointSettingProvider.notifier).resetToDefault();
+      },
     );
   }
 

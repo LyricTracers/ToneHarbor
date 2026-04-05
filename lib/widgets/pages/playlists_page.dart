@@ -404,6 +404,7 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                             icon: Icon(Icons.create_rounded),
                             onSelected: (value) {
                               showCreatePlaylistDialog(
+                                context,
                                 ref,
                                 nameController,
                                 colorScheme,
@@ -417,6 +418,7 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                               icon: Icon(Icons.delete_rounded),
                               onSelected: (value) {
                                 showDeletePlaylistDialog(
+                                  context,
                                   ref,
                                   title,
                                   playlistId,

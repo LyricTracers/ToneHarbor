@@ -7,6 +7,7 @@ import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
+import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/pages/build_item.dart';
@@ -233,78 +234,67 @@ class SettingPage extends HookConsumerWidget with BuildItem {
     AppLocalizations l10n,
     ColorScheme colorScheme,
   ) {
-    showDialog(
+    showCommonDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          l10n.lyrics_provider,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        content: Consumer(
-          builder: (context, ref, child) {
-            final selectedProviders = ref.watch(
-              lyricsProviderSelectionProvider,
-            );
-            return selectedProviders.when(
-              data: (providers) => SizedBox(
-                width: 300,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            ref
-                                .read(lyricsProviderSelectionProvider.notifier)
-                                .selectAll();
-                          },
-                          child: Text(l10n.select_all),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            ref
-                                .read(lyricsProviderSelectionProvider.notifier)
-                                .clearAll();
-                          },
-                          child: Text(l10n.clear_all),
-                        ),
-                      ],
-                    ),
-                    const Divider(height: 1),
-                    ...LyricsProviderType.values.map((provider) {
-                      final isSelected = providers.contains(provider);
-                      return CheckboxListTile(
-                        title: Text(provider.displayName),
-                        value: isSelected,
-                        onChanged: (value) {
+      colorScheme: colorScheme,
+      title: l10n.lyrics_provider,
+      content: Consumer(
+        builder: (context, ref, child) {
+          final selectedProviders = ref.watch(lyricsProviderSelectionProvider);
+          return selectedProviders.when(
+            data: (providers) => SizedBox(
+              width: 300,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
                           ref
                               .read(lyricsProviderSelectionProvider.notifier)
-                              .toggleProvider(provider);
+                              .selectAll();
                         },
-                        controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding: EdgeInsets.zero,
-                      );
-                    }),
-                  ],
-                ),
+                        child: Text(l10n.select_all),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          ref
+                              .read(lyricsProviderSelectionProvider.notifier)
+                              .clearAll();
+                        },
+                        child: Text(l10n.clear_all),
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 1),
+                  ...LyricsProviderType.values.map((provider) {
+                    final isSelected = providers.contains(provider);
+                    return CheckboxListTile(
+                      title: Text(provider.displayName),
+                      value: isSelected,
+                      onChanged: (value) {
+                        ref
+                            .read(lyricsProviderSelectionProvider.notifier)
+                            .toggleProvider(provider);
+                      },
+                      controlAffinity: ListTileControlAffinity.leading,
+                      contentPadding: EdgeInsets.zero,
+                    );
+                  }),
+                ],
               ),
-              loading: () => const SizedBox(
-                height: 100,
-                child: Center(child: CircularProgressIndicator()),
-              ),
-              error: (_, __) => Text('Error loading providers'),
-            );
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n.confirm),
-          ),
-        ],
+            ),
+            loading: () => const SizedBox(
+              height: 100,
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (_, __) => Text('Error loading providers'),
+          );
+        },
       ),
+      confirmText: l10n.confirm,
     );
   }
 

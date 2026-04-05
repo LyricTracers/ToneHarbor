@@ -137,102 +137,40 @@ class SongCoverImage extends HookConsumerWidget {
     String artistName,
     String cacheKey,
     ColorScheme colorScheme,
-  ) async {
+  ) {
     final l10n = ref.read(l10nProvider);
     if (context.mounted == false) {
       return;
     }
-    showGeneralDialog(
+    showCommonDialog(
       context: context,
-      barrierDismissible: true,
-      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      barrierColor: Colors.black54,
-      transitionDuration: const Duration(milliseconds: 200),
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return Center(
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              padding: const EdgeInsets.all(24),
-              constraints: const BoxConstraints(maxWidth: 400),
-              decoration: BoxDecoration(
-                color: colorScheme.brightness == Brightness.dark
-                    ? const Color(0xFF2D2D2D)
-                    : Colors.white,
-                borderRadius: BorderRadius.circular(28),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.setThemeBackground,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.setThemeBackgroundConfirm,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(l10n.cancel),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          Navigator.pop(context);
-                          try {
-                            final bytes = await ref.watch(
-                              fetchCoverBytesProvider(
-                                songId: songId,
-                                albumName: albumName,
-                                artistName: artistName,
-                                key: cacheKey,
-                                liveKeepDuration: const Duration(minutes: 10),
-                              ).future,
-                            );
-                            if (bytes == null) {
-                              return;
-                            }
-                            logger.i(
-                              'Setting theme icon from image: ${bytes.length} bytes',
-                            );
-                            saveDefaultThemeIcon(ref, bytes);
-                          } catch (e) {
-                            logger.e('Failed to save theme icon: $e');
-                          }
-                        },
-                        child: Text(l10n.confirm),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-      transitionBuilder: (context, animation, secondaryAnimation, child) {
-        return FadeTransition(
-          opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
-          child: child,
-        );
+      colorScheme: colorScheme,
+      title: l10n.setThemeBackground,
+      content: Text(
+        l10n.setThemeBackgroundConfirm,
+        style: TextStyle(fontSize: 16, color: colorScheme.onSurface),
+      ),
+      cancelText: l10n.cancel,
+      confirmText: l10n.confirm,
+      onConfirm: () async {
+        try {
+          final bytes = await ref.watch(
+            fetchCoverBytesProvider(
+              songId: songId,
+              albumName: albumName,
+              artistName: artistName,
+              key: cacheKey,
+              liveKeepDuration: const Duration(minutes: 10),
+            ).future,
+          );
+          if (bytes == null) {
+            return;
+          }
+          logger.i('Setting theme icon from image: ${bytes.length} bytes');
+          saveDefaultThemeIcon(ref, bytes);
+        } catch (e) {
+          logger.e('Failed to save theme icon: $e');
+        }
       },
     );
   }

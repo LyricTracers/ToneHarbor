@@ -165,33 +165,19 @@ class StorageManagePage extends HookConsumerWidget with BuildItem {
     ColorScheme colorScheme,
     AppLocalizations l10n,
   ) {
-    showDialog(
+    showCommonDialog(
       context: ref.context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          l10n.confirm_clear,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        content: Text(
-          '${l10n.confirm_clear_message.replaceFirst('%s', info.category.localizedLabel(l10n))}\n${l10n.size}: ${info.formattedSize}',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              await ref.read(clearStorageProvider)(info);
-            },
-            child: Text(
-              l10n.delete,
-              style: TextStyle(color: colorScheme.error),
-            ),
-          ),
-        ],
+      colorScheme: colorScheme,
+      title: l10n.confirm_clear,
+      content: Text(
+        '${l10n.confirm_clear_message.replaceFirst('%s', info.category.localizedLabel(l10n))}\n${l10n.size}: ${info.formattedSize}',
       ),
+      cancelText: l10n.cancel,
+      confirmText: l10n.delete,
+      confirmTextColor: colorScheme.error,
+      onConfirm: () async {
+        await ref.read(clearStorageProvider)(info);
+      },
     );
   }
 }

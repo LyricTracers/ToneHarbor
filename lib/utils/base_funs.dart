@@ -433,86 +433,155 @@ String buildTrackPath(String filename, String container, AudioQuality quality) {
   }
 }
 
+void showCommonDialog({
+  required BuildContext context,
+  required ColorScheme colorScheme,
+  required String title,
+  required Widget content,
+  String? cancelText,
+  String? confirmText,
+  String? thirdButtonText,
+  Future<void> Function()? onConfirm,
+  Future<void> Function()? onThirdButton,
+  Color? confirmTextColor,
+}) {
+  showGeneralDialog(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+    barrierColor: Colors.black54,
+    transitionDuration: const Duration(milliseconds: 200),
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return Center(
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.all(24),
+            constraints: const BoxConstraints(maxWidth: 400),
+            decoration: BoxDecoration(
+              color: colorScheme.brightness == Brightness.dark
+                  ? const Color(0xFF2D2D2D)
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(28),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                content,
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    if (cancelText != null)
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(cancelText),
+                      ),
+                    if (thirdButtonText != null)
+                      TextButton(
+                        onPressed: () async {
+                          await onThirdButton?.call();
+                          if (context.mounted) Navigator.pop(context);
+                        },
+                        child: Text(thirdButtonText),
+                      ),
+                    if (confirmText != null)
+                      TextButton(
+                        onPressed: () async {
+                          await onConfirm?.call();
+                          if (context.mounted) Navigator.pop(context);
+                        },
+                        child: Text(
+                          confirmText,
+                          style: confirmTextColor != null
+                              ? TextStyle(color: confirmTextColor)
+                              : null,
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+    transitionBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+        child: child,
+      );
+    },
+  );
+}
+
 void showCreatePlaylistDialog(
+  BuildContext context,
   WidgetRef ref,
   TextEditingController controller,
   ColorScheme colorScheme,
   void Function(String name) onCreated,
-) async {
-  var i10n = ref.read(l10nProvider);
-  showDialog(
-    context: ref.context,
-    builder: (context) => AlertDialog(
-      title: Text(
-        i10n.create_playlist,
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+) {
+  final l10n = ref.read(l10nProvider);
+  showCommonDialog(
+    context: context,
+    colorScheme: colorScheme,
+    title: l10n.create_playlist,
+    content: TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        hintText: l10n.input_playlist_name,
+        labelText: l10n.playlist_name,
+        border: OutlineInputBorder(),
+        prefixIcon: Icon(Icons.playlist_add),
       ),
-      content: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          hintText: i10n.input_playlist_name,
-          labelText: i10n.playlist_name,
-          border: OutlineInputBorder(),
-          prefixIcon: Icon(Icons.playlist_add),
-        ),
-      ),
-      actions: [
-        ElevatedButton.icon(
-          onPressed: () {
-            controller.text = "";
-            Navigator.of(context).pop();
-          },
-          icon: Icon(Icons.cancel),
-          label: Text(i10n.cancel),
-        ),
-        ElevatedButton.icon(
-          onPressed: () {
-            if (controller.text.isNotEmpty) {
-              onCreated(controller.text);
-            }
-            controller.text = "";
-            Navigator.of(context).pop();
-          },
-          icon: Icon(Icons.playlist_add),
-          label: Text(i10n.create_playlist),
-        ),
-      ],
     ),
+    cancelText: l10n.cancel,
+    confirmText: l10n.create_playlist,
+    onConfirm: () async {
+      if (controller.text.isNotEmpty) {
+        onCreated(controller.text);
+      }
+      controller.text = "";
+    },
   );
 }
 
 void showDeletePlaylistDialog(
+  BuildContext context,
   WidgetRef ref,
   String name,
   String id,
   ColorScheme colorScheme,
   void Function(String id) ondelete,
 ) {
-  var i10n = ref.read(l10nProvider);
-  showDialog(
-    context: ref.context,
-    builder: (context) => AlertDialog(
-      title: Text(
-        i10n.delete_playlist,
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-      content: Text(i10n.ask_delete_playlist.replaceFirst("%s", name)),
-      actions: [
-        ElevatedButton.icon(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          label: Text(i10n.cancel),
-        ),
-        ElevatedButton.icon(
-          onPressed: () {
-            ondelete(id);
-            Navigator.of(context).pop();
-          },
-          label: Text("确定"),
-        ),
-      ],
+  final l10n = ref.read(l10nProvider);
+  showCommonDialog(
+    context: context,
+    colorScheme: colorScheme,
+    title: l10n.delete_playlist,
+    content: Text(
+      l10n.ask_delete_playlist.replaceFirst("%s", name),
+      style: TextStyle(fontSize: 16, color: colorScheme.onSurface),
     ),
+    cancelText: l10n.cancel,
+    confirmText: l10n.confirm,
+    onConfirm: () async => ondelete(id),
   );
 }
 

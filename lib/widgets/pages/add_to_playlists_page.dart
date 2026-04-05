@@ -107,6 +107,7 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                   IconButton(
                     onPressed: () async {
                       showCreatePlaylistDialog(
+                        context,
                         ref,
                         nameController,
                         colorScheme,
