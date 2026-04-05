@@ -22,6 +22,10 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
       return Column(
         children: [
           AppBar(
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
+            centerTitle: false,
             automaticallyImplyLeading: false,
             leading: IconButton(
               onPressed: () {
