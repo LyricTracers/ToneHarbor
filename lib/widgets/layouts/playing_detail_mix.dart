@@ -53,6 +53,7 @@ mixin PlayingDetailMix {
 
     final isLocal = activeTrack.isLocal;
     final size24 = 24 * size.multiplier2;
+    final size32 = 32 * size.multiplier2;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -87,11 +88,11 @@ mixin PlayingDetailMix {
                 ),
                 if (defaultTargetPlatform == TargetPlatform.iOS)
                   SizedBox(
-                    width: size24 + 16,
-                    height: size24 + 16,
+                    width: size32,
+                    height: size32,
                     child: AirPlayRoutePickerView(
-                      width: size24 + 16,
-                      height: size24 + 16,
+                      width: size32,
+                      height: size32,
                       tintColor: colorScheme.onSurface,
                       activeTintColor: colorScheme.primary,
                       backgroundColor: Colors.transparent,

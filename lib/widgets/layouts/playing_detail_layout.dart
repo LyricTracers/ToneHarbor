@@ -31,7 +31,7 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
               onPressed: () {
                 ref.context.popWrap();
               },
-              icon: Icon(Icons.keyboard_arrow_down_rounded),
+              icon: Icon(Icons.arrow_back_ios_sharp),
             ),
           ),
           buildErrorView(ref.context, ref, colorScheme, () {}),
@@ -55,7 +55,8 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
             top: 0,
             child: IconButton(
               onPressed: () {
-                context.popWrap();
+                // context.popWrap();
+                Navigator.pop(context);
               },
               icon: Icon(Icons.keyboard_arrow_down_rounded, size: 24),
             ),

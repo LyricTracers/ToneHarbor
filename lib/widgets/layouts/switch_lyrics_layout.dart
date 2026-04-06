@@ -169,7 +169,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
             onPressed: () {
               context.popWrap();
             },
-            icon: Icon(Icons.keyboard_arrow_down_rounded, size: 24),
+            icon: Icon(Icons.arrow_back_ios_sharp, size: 18),
           ),
         ),
         Positioned(

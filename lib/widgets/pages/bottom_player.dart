@@ -232,6 +232,7 @@ class BottomPlayer extends HookConsumerWidget {
     return _buildDefaultLayout(
       context,
       ref,
+      colorScheme,
       playerState: playerState,
       progressInfo: progressInfo,
       trackInfo: trackInfo,
@@ -475,7 +476,8 @@ class BottomPlayer extends HookConsumerWidget {
 
   Widget _buildDefaultLayout(
     BuildContext context,
-    WidgetRef ref, {
+    WidgetRef ref,
+    ColorScheme colorScheme, {
     required _PlayerState playerState,
     required _ProgressData progressInfo,
     required _TrackInfo trackInfo,
@@ -535,7 +537,14 @@ class BottomPlayer extends HookConsumerWidget {
                 uiConfig.isXs &&
                     (showArrowType == ShowArrowType.up ||
                         showArrowType == ShowArrowType.none)
-                ? () => context.pushWrapper("/playing_detail")
+                ? () {
+                    showModalBottomSheetWidget(
+                      ref.context,
+                      colorScheme,
+                      isScrollControlled: true,
+                      (context) => const PlayingDetailLayout(),
+                    );
+                  }
                 : null,
             child: Container(
               color: uiConfig.isXs ? null : uiConfig.backgroundColor,

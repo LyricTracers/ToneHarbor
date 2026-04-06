@@ -723,13 +723,30 @@ PopupMenuItem getActionMenuItem(
 void showModalBottomSheetWidget(
   BuildContext context,
   ColorScheme colorScheme,
-  Widget Function(BuildContext context) builder,
-) {
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: colorScheme.brightness == Brightness.dark
-        ? const Color(0xFF2D2D2D)
-        : Colors.white,
-    builder: (context) => builder(context),
-  );
+  Widget Function(BuildContext context) builder, {
+  bool isScrollControlled = false,
+}) {
+  if (isScrollControlled) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: colorScheme.brightness == Brightness.dark
+          ? const Color(0xFF2D2D2D)
+          : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      clipBehavior: Clip.antiAlias,
+      builder: (context) => builder(context),
+    );
+  } else {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: colorScheme.brightness == Brightness.dark
+          ? const Color(0xFF2D2D2D)
+          : Colors.white,
+      builder: (context) => builder(context),
+    );
+  }
 }

@@ -17,6 +17,7 @@ import 'package:toneharbor/widgets/components/song_context_menu.dart';
 import 'package:toneharbor/widgets/components/song_item.dart';
 import 'package:toneharbor/widgets/components/sub_song_selection_bottom.dart';
 import 'package:toneharbor/widgets/components/sub_song_selection_top.dart';
+import 'package:toneharbor/widgets/layouts/playing_detail_layout.dart';
 
 class _FolderItemWidget extends HookConsumerWidget {
   final List<ToneHarborTrackObject> folderItems;
@@ -541,7 +542,16 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
                                   autoPlay: true,
                                 );
                             if (context.mounted) {
-                              context.pushWrapper("/playing_detail");
+                              if (size.isXs) {
+                                showModalBottomSheetWidget(
+                                  ref.context,
+                                  colorScheme,
+                                  isScrollControlled: true,
+                                  (context) => const PlayingDetailLayout(),
+                                );
+                              } else {
+                                context.pushWrapper("/playing_detail");
+                              }
                             }
                           },
                         ),
