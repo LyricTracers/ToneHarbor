@@ -210,9 +210,19 @@ class SearchResulutPage extends HookConsumerWidget {
                                                 autoPlay: true,
                                               );
                                           if (context.mounted) {
-                                            context.pushWrapper(
-                                              "/playing_detail",
-                                            );
+                                            if (size.isXs) {
+                                              showModalBottomSheetWidget(
+                                                ref.context,
+                                                colorScheme,
+                                                isScrollControlled: true,
+                                                (context) =>
+                                                    const PlayingDetailLayout(),
+                                              );
+                                            } else {
+                                              context.pushWrapper(
+                                                "/playing_detail",
+                                              );
+                                            }
                                           }
                                         },
                                       ),
