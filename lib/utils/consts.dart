@@ -27,6 +27,11 @@ const String aiEndpointKey = 'ai_endpoint';
 const String aiTemperatureKey = 'ai_temperature';
 const String aiTargetLanguageKey = 'ai_target_language';
 
+// Cloud Music API settings
+const String cloudMusicApiUrlsKey = 'cloud_music_api_urls';
+const String cloudMusicApiDefaultUrlKey = 'cloud_music_api_default_url';
+const String useCloudMusicApiAsHomeKey = 'use_cloud_music_api_as_home';
+
 // pic path
 const String appIcon = 'assets/icons/app_icon.png';
 const String iconPlaceholder = 'assets/icons/icon_placeholder.png';

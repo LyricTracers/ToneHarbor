@@ -1622,6 +1622,66 @@ abstract class AppLocalizations {
   /// **'AirPlay is only available on iOS and macOS'**
   String get airplay_not_supported;
 
+  /// No description provided for @cloud_music_api.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud Music API'**
+  String get cloud_music_api;
+
+  /// No description provided for @api_url.
+  ///
+  /// In en, this message translates to:
+  /// **'API URL'**
+  String get api_url;
+
+  /// No description provided for @api_url_list.
+  ///
+  /// In en, this message translates to:
+  /// **'API URL List'**
+  String get api_url_list;
+
+  /// No description provided for @home_page_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Home Page Settings'**
+  String get home_page_settings;
+
+  /// No description provided for @no_api_url_configured.
+  ///
+  /// In en, this message translates to:
+  /// **'No API URL configured'**
+  String get no_api_url_configured;
+
+  /// No description provided for @add_api_url.
+  ///
+  /// In en, this message translates to:
+  /// **'Add API URL'**
+  String get add_api_url;
+
+  /// No description provided for @default_url.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get default_url;
+
+  /// No description provided for @use_cloud_music_as_home.
+  ///
+  /// In en, this message translates to:
+  /// **'Use as Home Page'**
+  String get use_cloud_music_as_home;
+
+  /// No description provided for @use_cloud_music_as_home_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace the default home page with cloud music recommendations'**
+  String get use_cloud_music_as_home_desc;
+
+  /// No description provided for @cloud_music_api_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the Cloud Music API server URL. Example: https://api.example.com'**
+  String get cloud_music_api_hint;
+
   /// No description provided for @lyrics_provider.
   ///
   /// In en, this message translates to:

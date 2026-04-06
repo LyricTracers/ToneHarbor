@@ -33,7 +33,7 @@ final class ServerControllerProvider
   ServerController create() => ServerController();
 }
 
-String _$serverControllerHash() => r'7145649f66f72a260f2f8d4c783db0ae943a1ea9';
+String _$serverControllerHash() => r'a1aaf2ea802db0e5544dd53849c3964023627bb2';
 
 abstract class _$ServerController extends $AsyncNotifier<HttpServer> {
   FutureOr<HttpServer> build();

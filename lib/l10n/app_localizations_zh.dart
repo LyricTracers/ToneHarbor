@@ -309,7 +309,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cancel => '取消';
 
   @override
-  String get confirm => '确定';
+  String get confirm => '确认';
 
   @override
   String get playing => '播放中';
@@ -769,6 +769,37 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get airplay_not_supported => 'AirPlay 仅支持 iOS 和 macOS 平台';
+
+  @override
+  String get cloud_music_api => '云音乐Api';
+
+  @override
+  String get api_url => 'API 地址';
+
+  @override
+  String get api_url_list => 'API 地址列表';
+
+  @override
+  String get home_page_settings => '首页设置';
+
+  @override
+  String get no_api_url_configured => '未配置 API 地址';
+
+  @override
+  String get add_api_url => '添加 API 地址';
+
+  @override
+  String get default_url => '默认';
+
+  @override
+  String get use_cloud_music_as_home => '作为首页推荐';
+
+  @override
+  String get use_cloud_music_as_home_desc => '使用云音乐推荐内容替换默认首页';
+
+  @override
+  String get cloud_music_api_hint =>
+      '输入云音乐 API 服务器地址。例如：https://api.example.com';
 
   @override
   String get lyrics_provider => '歌词源';

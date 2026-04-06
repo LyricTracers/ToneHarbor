@@ -791,6 +791,38 @@ class AppLocalizationsEn extends AppLocalizations {
       'AirPlay is only available on iOS and macOS';
 
   @override
+  String get cloud_music_api => 'Cloud Music API';
+
+  @override
+  String get api_url => 'API URL';
+
+  @override
+  String get api_url_list => 'API URL List';
+
+  @override
+  String get home_page_settings => 'Home Page Settings';
+
+  @override
+  String get no_api_url_configured => 'No API URL configured';
+
+  @override
+  String get add_api_url => 'Add API URL';
+
+  @override
+  String get default_url => 'Default';
+
+  @override
+  String get use_cloud_music_as_home => 'Use as Home Page';
+
+  @override
+  String get use_cloud_music_as_home_desc =>
+      'Replace the default home page with cloud music recommendations';
+
+  @override
+  String get cloud_music_api_hint =>
+      'Enter the Cloud Music API server URL. Example: https://api.example.com';
+
+  @override
   String get lyrics_provider => 'Lyrics Provider';
 
   @override

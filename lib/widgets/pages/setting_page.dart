@@ -83,7 +83,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
         ),
         ListTile(
           title: Text(
-            l10n.about,
+            l10n.cloud_music_api,
             style: TextStyle(
               fontSize: 15 * multiplier,
               fontWeight: FontWeight.bold,
@@ -91,7 +91,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
             ),
           ),
           trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
-          onTap: () {},
+          onTap: () => context.pushWrapper('/cloud-api'),
         ),
       ],
     );

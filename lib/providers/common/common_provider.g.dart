@@ -524,3 +524,55 @@ abstract class _$TrayFontSize extends $Notifier<double> {
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(CloudMusicApiUrls)
+final cloudMusicApiUrlsProvider = CloudMusicApiUrlsProvider._();
+
+final class CloudMusicApiUrlsProvider
+    extends $NotifierProvider<CloudMusicApiUrls, CloudMusicApiState> {
+  CloudMusicApiUrlsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'cloudMusicApiUrlsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudMusicApiUrlsHash();
+
+  @$internal
+  @override
+  CloudMusicApiUrls create() => CloudMusicApiUrls();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CloudMusicApiState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CloudMusicApiState>(value),
+    );
+  }
+}
+
+String _$cloudMusicApiUrlsHash() => r'd3062c24919b2a159b77e0e1fa3d8717f2052284';
+
+abstract class _$CloudMusicApiUrls extends $Notifier<CloudMusicApiState> {
+  CloudMusicApiState build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<CloudMusicApiState, CloudMusicApiState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<CloudMusicApiState, CloudMusicApiState>,
+              CloudMusicApiState,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

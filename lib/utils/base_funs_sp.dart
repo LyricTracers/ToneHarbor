@@ -170,8 +170,7 @@ abstract class SharedPreferencesUtils {
     await sharedPreferences.setString(aiCustomModelKey, model);
   }
 
-  static String? getAIEndpoint() =>
-      sharedPreferences.getString(aiEndpointKey);
+  static String? getAIEndpoint() => sharedPreferences.getString(aiEndpointKey);
 
   static Future<void> setAIEndpoint(String endpoint) async {
     await sharedPreferences.setString(aiEndpointKey, endpoint);
@@ -189,5 +188,26 @@ abstract class SharedPreferencesUtils {
 
   static Future<void> setAITargetLanguage(int index) async {
     await sharedPreferences.setInt(aiTargetLanguageKey, index);
+  }
+
+  static List<String> getCloudMusicApiUrls() =>
+      sharedPreferences.getStringList(cloudMusicApiUrlsKey) ?? [];
+
+  static Future<void> setCloudMusicApiUrls(List<String> urls) async {
+    await sharedPreferences.setStringList(cloudMusicApiUrlsKey, urls);
+  }
+
+  static String getCloudMusicApiDefaultUrl() =>
+      sharedPreferences.getString(cloudMusicApiDefaultUrlKey) ?? '';
+
+  static Future<void> setCloudMusicApiDefaultUrl(String url) async {
+    await sharedPreferences.setString(cloudMusicApiDefaultUrlKey, url);
+  }
+
+  static bool getUseCloudMusicApiAsHome() =>
+      sharedPreferences.getBool(useCloudMusicApiAsHomeKey) ?? false;
+
+  static Future<void> setUseCloudMusicApiAsHome(bool value) async {
+    await sharedPreferences.setBool(useCloudMusicApiAsHomeKey, value);
   }
 }

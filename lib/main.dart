@@ -17,6 +17,7 @@ import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/layouts/local_songs_layout.dart';
 import 'package:toneharbor/widgets/mobile/layouts/mobile_full_layout.dart';
 import 'package:toneharbor/widgets/mobile/layouts/mobile_home_layout.dart';
+import 'package:toneharbor/widgets/pages/cloud_api_setting_page.dart';
 import 'package:toneharbor/widgets/pages/gesture_only_cupertino_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -427,6 +428,15 @@ class MyApp extends HookConsumerWidget {
                 },
               ),
               GoRoute(
+                path: '/cloud-api',
+                pageBuilder: (context, state) {
+                  return buildPage(
+                    key: state.pageKey,
+                    child: CloudApiSettingPage(),
+                  );
+                },
+              ),
+              GoRoute(
                 path: '/ai-translate',
                 pageBuilder: (context, state) => buildPage(
                   key: state.pageKey,
@@ -660,6 +670,15 @@ class MyApp extends HookConsumerWidget {
               key: state.pageKey,
               child: MobileFullLayout(child: SettingPage()),
             ),
+          ),
+          GoRoute(
+            path: '/mobile/cloud-api',
+            pageBuilder: (context, state) {
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(child: CloudApiSettingPage()),
+              );
+            },
           ),
           GoRoute(
             path: '/mobile/storage',

@@ -216,3 +216,73 @@ class TrayFontSize extends _$TrayFontSize {
     await SharedPreferencesUtils.setTrayFontSize(value);
   }
 }
+
+class CloudMusicApiState {
+  final List<String> urls;
+  final String defaultUrl;
+  final bool useAsHome;
+
+  const CloudMusicApiState({
+    this.urls = const [],
+    this.defaultUrl = '',
+    this.useAsHome = false,
+  });
+
+  CloudMusicApiState copyWith({
+    List<String>? urls,
+    String? defaultUrl,
+    bool? useAsHome,
+  }) {
+    return CloudMusicApiState(
+      urls: urls ?? this.urls,
+      defaultUrl: defaultUrl ?? this.defaultUrl,
+      useAsHome: useAsHome ?? this.useAsHome,
+    );
+  }
+}
+
+@riverpod
+class CloudMusicApiUrls extends _$CloudMusicApiUrls {
+  @override
+  CloudMusicApiState build() {
+    return CloudMusicApiState(
+      urls: SharedPreferencesUtils.getCloudMusicApiUrls(),
+      defaultUrl: SharedPreferencesUtils.getCloudMusicApiDefaultUrl(),
+      useAsHome: SharedPreferencesUtils.getUseCloudMusicApiAsHome(),
+    );
+  }
+
+  Future<void> addUrl(String url) async {
+    if (url.trim().isEmpty) return;
+    final currentUrls = List<String>.from(state.urls);
+    if (!currentUrls.contains(url)) {
+      currentUrls.insert(0, url);
+      final newDefaultUrl = state.defaultUrl.isEmpty ? url : state.defaultUrl;
+      state = state.copyWith(urls: currentUrls, defaultUrl: newDefaultUrl);
+      await SharedPreferencesUtils.setCloudMusicApiUrls(currentUrls);
+      await SharedPreferencesUtils.setCloudMusicApiDefaultUrl(newDefaultUrl);
+    }
+  }
+
+  Future<void> removeUrl(String url) async {
+    final currentUrls = List<String>.from(state.urls);
+    currentUrls.remove(url);
+    String newDefaultUrl = state.defaultUrl;
+    if (state.defaultUrl == url) {
+      newDefaultUrl = currentUrls.isNotEmpty ? currentUrls.first : '';
+    }
+    state = state.copyWith(urls: currentUrls, defaultUrl: newDefaultUrl);
+    await SharedPreferencesUtils.setCloudMusicApiUrls(currentUrls);
+    await SharedPreferencesUtils.setCloudMusicApiDefaultUrl(newDefaultUrl);
+  }
+
+  Future<void> setDefaultUrl(String url) async {
+    state = state.copyWith(defaultUrl: url);
+    await SharedPreferencesUtils.setCloudMusicApiDefaultUrl(url);
+  }
+
+  Future<void> setUseAsHome(bool value) async {
+    state = state.copyWith(useAsHome: value);
+    await SharedPreferencesUtils.setUseCloudMusicApiAsHome(value);
+  }
+}
