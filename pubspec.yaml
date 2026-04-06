@@ -94,6 +94,10 @@ dependencies:
       url: https://git.nxcloud.club:12750/LyricTracers/flutter_lyric.git
       ref: v1.0.0-macos
   connectivity_plus: 7.0.0
+  flutter_to_airplay:
+    git:
+      url: https://git.nxcloud.club:12750/agile/flutter_to_airplay.git
+      ref: master
 
 dev_dependencies:
   flutter_test:

@@ -45,6 +45,8 @@ PODS:
     - Flutter
   - flutter_native_splash (2.4.3):
     - Flutter
+  - flutter_to_airplay (2.1.0):
+    - Flutter
   - fluttertoast (0.0.2):
     - Flutter
   - media_kit_libs_ios_audio (1.0.4):
@@ -104,6 +106,7 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_broadcasts (from `.symlinks/plugins/flutter_broadcasts/ios`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
+  - flutter_to_airplay (from `.symlinks/plugins/flutter_to_airplay/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - media_kit_libs_ios_audio (from `.symlinks/plugins/media_kit_libs_ios_audio/ios`)
   - metadata_god (from `.symlinks/plugins/metadata_god/ios`)
@@ -138,6 +141,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_broadcasts/ios"
   flutter_native_splash:
     :path: ".symlinks/plugins/flutter_native_splash/ios"
+  flutter_to_airplay:
+    :path: ".symlinks/plugins/flutter_to_airplay/ios"
   fluttertoast:
     :path: ".symlinks/plugins/fluttertoast/ios"
   media_kit_libs_ios_audio:
@@ -169,6 +174,7 @@ SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_broadcasts: 7bb7cc1024900a7f85e98b6faab795290b7c2339
   flutter_native_splash: 57a0da564d1a03a31c20c5d85768b58cf767fec9
+  flutter_to_airplay: aa876bf3d0cf811db84a3a5356dda334b9bcbd0f
   fluttertoast: 2c67e14dce98bbdb200df9e1acf610d7a6264ea1
   media_kit_libs_ios_audio: 905e6323b72e65c63ab9262b2e473f52c024a3a8
   metadata_god: 018b59c2f3617569928550dcbd17481591557c1d

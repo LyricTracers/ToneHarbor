@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:media_kit/media_kit.dart' as mk;
+import 'package:flutter_to_airplay/flutter_to_airplay.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -25,10 +27,15 @@ class AudioDevicePage extends HookConsumerWidget with BuildItem {
     final selectedDevice =
         selectedDeviceStream.data ?? selectedDeviceFuture.data;
     final size = MediaQuery.of(context).size;
+
     return Column(
       children: [
         buildAppBar(context, ref, l10n, colorScheme, l10n.audio_device, size),
         buildContent(context, ref, l10n, colorScheme, [
+          if (defaultTargetPlatform == TargetPlatform.iOS) ...[
+            _buildAirPlaySection(context, ref, l10n, colorScheme),
+            const SizedBox(height: 16),
+          ],
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Card(
@@ -58,36 +65,248 @@ class AudioDevicePage extends HookConsumerWidget with BuildItem {
             ),
           ),
           const SizedBox(height: 8),
-          if (devices == null)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.all(32),
-                child: CircularProgressIndicator(),
-              ),
-            )
-          else if (devices.isEmpty)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Text(
-                  l10n.no_audio_devices_found,
-                  style: TextStyle(
-                    color: colorScheme.onSurface.withValues(alpha: 0.7),
+          if (defaultTargetPlatform != TargetPlatform.iOS)
+            if (devices == null)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32),
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            else if (devices.isEmpty)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Text(
+                    l10n.no_audio_devices_found,
+                    style: TextStyle(
+                      color: colorScheme.onSurface.withValues(alpha: 0.7),
+                    ),
                   ),
                 ),
+              )
+            else
+              _buildDeviceList(
+                context,
+                ref,
+                l10n,
+                colorScheme,
+                devices,
+                selectedDevice,
               ),
-            )
-          else
-            _buildDeviceList(
-              context,
-              ref,
-              l10n,
-              colorScheme,
-              devices,
-              selectedDevice,
-            ),
         ]),
       ],
+    );
+  }
+
+  Widget _buildAirPlaySection(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+  ) {
+    final isSupported = defaultTargetPlatform == TargetPlatform.iOS;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: colorScheme.primaryContainer.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: colorScheme.primary.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    Icons.airplay,
+                    color: colorScheme.primary,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.airplay_devices,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        isSupported
+                            ? (l10n.airplay_tap_to_connect)
+                            : (l10n.airplay_not_supported),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colorScheme.onSurface.withValues(alpha: 0.7),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (isSupported)
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(22),
+                    ),
+                    child: Center(
+                      child: AirPlayRoutePickerView(
+                        width: 36,
+                        height: 36,
+                        tintColor: colorScheme.primary,
+                        activeTintColor: colorScheme.primary,
+                        backgroundColor: Colors.transparent,
+                        prioritizesVideoDevices: false,
+                      ),
+                    ),
+                  )
+                else
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(22),
+                    ),
+                    child: Icon(
+                      Icons.block,
+                      color: colorScheme.onSurface.withValues(alpha: 0.4),
+                      size: 20,
+                    ),
+                  ),
+              ],
+            ),
+            if (isSupported) ...[
+              const SizedBox(height: 12),
+              _buildAirPlayTroubleshootingTips(context, ref, l10n, colorScheme),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAirPlayTroubleshootingTips(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.help_outline, size: 16, color: colorScheme.primary),
+              const SizedBox(width: 6),
+              Text(
+                "Can't see devices?",
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          _buildTipItem(
+            context,
+            "1",
+            "Ensure all devices are on the same Wi-Fi network",
+            colorScheme,
+          ),
+          _buildTipItem(
+            context,
+            "2",
+            "Check if AirPlay receiver is enabled on target device",
+            colorScheme,
+          ),
+          _buildTipItem(
+            context,
+            "3",
+            "Restart Wi-Fi on both devices if needed",
+            colorScheme,
+          ),
+          _buildTipItem(
+            context,
+            "4",
+            "Check macOS System Settings → General → AirDrop & Handoff",
+            colorScheme,
+          ),
+          _buildTipItem(
+            context,
+            "5",
+            "Temporarily disable VPN or firewall",
+            colorScheme,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTipItem(
+    BuildContext context,
+    String number,
+    String text,
+    ColorScheme colorScheme,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 20,
+            child: Text(
+              number,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.primary,
+              ),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 11,
+                color: colorScheme.onSurface.withValues(alpha: 0.7),
+                height: 1.3,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

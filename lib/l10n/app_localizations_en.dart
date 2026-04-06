@@ -781,6 +781,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Select an audio output device. AirPlay and Bluetooth devices will appear here when connected.';
 
   @override
+  String get airplay_devices => 'AirPlay Devices';
+
+  @override
+  String get airplay_tap_to_connect => 'Tap to connect to AirPlay devices';
+
+  @override
+  String get airplay_not_supported =>
+      'AirPlay is only available on iOS and macOS';
+
+  @override
   String get lyrics_provider => 'Lyrics Provider';
 
   @override

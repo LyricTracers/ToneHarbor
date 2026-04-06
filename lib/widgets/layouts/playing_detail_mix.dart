@@ -1,7 +1,9 @@
 import "package:flutter/material.dart";
+import "package:flutter/foundation.dart";
 import "package:go_router/go_router.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
 import "package:lyricskit/lyricskit.dart";
+import "package:flutter_to_airplay/flutter_to_airplay.dart";
 import "package:toneharbor/init/initialized.dart";
 import "package:toneharbor/l10n/app_localizations.dart";
 import "package:toneharbor/models/audio_player/tone_harbor_track.dart";
@@ -83,11 +85,25 @@ mixin PlayingDetailMix {
                         },
                   icon: Icon(Icons.playlist_add_rounded, size: size24),
                 ),
-                IconButton(
-                  onPressed: () => _showAudioDeviceMenu(ref, colorScheme),
-                  icon: Icon(Icons.speaker, size: size24),
-                  tooltip: l10n.audio_device,
-                ),
+                if (defaultTargetPlatform == TargetPlatform.iOS)
+                  SizedBox(
+                    width: size24 + 16,
+                    height: size24 + 16,
+                    child: AirPlayRoutePickerView(
+                      width: size24 + 16,
+                      height: size24 + 16,
+                      tintColor: colorScheme.onSurface,
+                      activeTintColor: colorScheme.primary,
+                      backgroundColor: Colors.transparent,
+                      prioritizesVideoDevices: false,
+                    ),
+                  )
+                else
+                  IconButton(
+                    onPressed: () => _showAudioDeviceMenu(ref, colorScheme),
+                    icon: Icon(Icons.speaker, size: size24),
+                    tooltip: l10n.audio_device,
+                  ),
                 IconButton(
                   onPressed: () {
                     ref.context.pushWrapper(
@@ -431,6 +447,7 @@ mixin PlayingDetailMix {
     final l10n = ref.read(l10nProvider);
     final devices = audioPlayer.audioDevices;
     final selectedDevice = audioPlayer.currentAudioDevice;
+    final isAirPlaySupported = defaultTargetPlatform == TargetPlatform.iOS;
 
     showModalBottomSheetWidget(
       ref.context,
@@ -451,59 +468,121 @@ mixin PlayingDetailMix {
               ),
             ),
             const Divider(height: 1),
-            if (devices.isEmpty)
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(
-                  l10n.no_audio_devices_found,
-                  style: TextStyle(
-                    color: colorScheme.onSurface.withValues(alpha: 0.7),
+            if (isAirPlaySupported)
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: colorScheme.primary.withValues(alpha: 0.3),
+                    width: 1,
                   ),
                 ),
-              )
-            else
-              ...devices.map((device) {
-                final isSelected = selectedDevice.name == device.name;
-                return ListTile(
-                  leading: Icon(
-                    _getDeviceIcon(device.name),
-                    size: 20,
-                    color: isSelected
-                        ? colorScheme.primary
-                        : colorScheme.onSurface,
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.airplay,
+                      color: colorScheme.primary,
+                      size: 22,
+                    ),
                   ),
                   title: Text(
-                    device.description.isNotEmpty
-                        ? device.description
-                        : device.name,
+                    l10n.airplay_devices,
                     style: TextStyle(
                       fontSize: 14,
-                      fontWeight: isSelected
-                          ? FontWeight.bold
-                          : FontWeight.normal,
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  subtitle: Text(
+                    l10n.airplay_tap_to_connect,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                  ),
+                  trailing: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Center(
+                      child: AirPlayRoutePickerView(
+                        width: 32,
+                        height: 32,
+                        tintColor: colorScheme.primary,
+                        activeTintColor: colorScheme.primary,
+                        backgroundColor: Colors.transparent,
+                        prioritizesVideoDevices: false,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            if (!isAirPlaySupported)
+              if (devices.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    l10n.no_audio_devices_found,
+                    style: TextStyle(
+                      color: colorScheme.onSurface.withValues(alpha: 0.7),
+                    ),
+                  ),
+                )
+              else
+                ...devices.map((device) {
+                  final isSelected = selectedDevice.name == device.name;
+                  return ListTile(
+                    leading: Icon(
+                      _getDeviceIcon(device.name),
+                      size: 20,
                       color: isSelected
                           ? colorScheme.primary
                           : colorScheme.onSurface,
                     ),
-                  ),
-                  subtitle: device.description.isNotEmpty
-                      ? Text(
-                          device.name,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: colorScheme.onSurface.withValues(alpha: 0.6),
-                          ),
-                        )
-                      : null,
-                  trailing: isSelected
-                      ? Icon(Icons.check_circle, color: colorScheme.primary)
-                      : null,
-                  onTap: () async {
-                    Navigator.pop(context);
-                    await audioPlayer.setAudioDevice(device);
-                  },
-                );
-              }),
+                    title: Text(
+                      device.description.isNotEmpty
+                          ? device.description
+                          : device.name,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        color: isSelected
+                            ? colorScheme.primary
+                            : colorScheme.onSurface,
+                      ),
+                    ),
+                    subtitle: device.description.isNotEmpty
+                        ? Text(
+                            device.name,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.6,
+                              ),
+                            ),
+                          )
+                        : null,
+                    trailing: isSelected
+                        ? Icon(Icons.check_circle, color: colorScheme.primary)
+                        : null,
+                    onTap: () async {
+                      Navigator.pop(context);
+                      await audioPlayer.setAudioDevice(device);
+                    },
+                  );
+                }),
             const SizedBox(height: 8),
           ],
         ),

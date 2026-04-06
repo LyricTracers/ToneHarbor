@@ -514,6 +514,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_to_airplay:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: master
+      resolved-ref: "717f11cf025611fb6d1e8b45b8f16272c48645fc"
+      url: "https://git.nxcloud.club:12750/agile/flutter_to_airplay.git"
+    source: git
+    version: "2.1.0"
   flutter_web_plugins:
     dependency: transitive
     description: flutter

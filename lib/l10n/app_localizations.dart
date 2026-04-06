@@ -1604,6 +1604,24 @@ abstract class AppLocalizations {
   /// **'Select an audio output device. AirPlay and Bluetooth devices will appear here when connected.'**
   String get audio_device_hint;
 
+  /// No description provided for @airplay_devices.
+  ///
+  /// In en, this message translates to:
+  /// **'AirPlay Devices'**
+  String get airplay_devices;
+
+  /// No description provided for @airplay_tap_to_connect.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to connect to AirPlay devices'**
+  String get airplay_tap_to_connect;
+
+  /// No description provided for @airplay_not_supported.
+  ///
+  /// In en, this message translates to:
+  /// **'AirPlay is only available on iOS and macOS'**
+  String get airplay_not_supported;
+
   /// No description provided for @lyrics_provider.
   ///
   /// In en, this message translates to:
