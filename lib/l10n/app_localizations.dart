@@ -1751,13 +1751,13 @@ abstract class AppLocalizations {
   /// No description provided for @cloud_recommend_playlist.
   ///
   /// In en, this message translates to:
-  /// **'Cloud Recommended Playlist'**
+  /// **'Recommended Playlist'**
   String get cloud_recommend_playlist;
 
   /// No description provided for @cloud_recommend_artists.
   ///
   /// In en, this message translates to:
-  /// **'Cloud Recommended Singer'**
+  /// **'Recommended Singer'**
   String get cloud_recommend_artists;
 
   /// No description provided for @cloud_recommend_new_songs.

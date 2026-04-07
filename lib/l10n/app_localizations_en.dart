@@ -856,10 +856,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recommend_artists => 'Recommended Artists';
 
   @override
-  String get cloud_recommend_playlist => 'Cloud Recommended Playlist';
+  String get cloud_recommend_playlist => 'Recommended Playlist';
 
   @override
-  String get cloud_recommend_artists => 'Cloud Recommended Singer';
+  String get cloud_recommend_artists => 'Recommended Singer';
 
   @override
   String get cloud_recommend_new_songs => 'New Album Express';
