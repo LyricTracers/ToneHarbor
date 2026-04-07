@@ -857,4 +857,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cloud_recommend_playlist => 'Cloud Recommended Playlist';
+
+  @override
+  String get cloud_recommend_artists => 'Cloud Recommended Singer';
+
+  @override
+  String get cloud_recommend_new_songs => 'New Album Express';
 }

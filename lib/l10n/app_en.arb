@@ -282,5 +282,7 @@
   "top_lists": "Top Lists",
   "recommend_artists": "Recommended Artists",
   "cloud_recommend_playlist": "Cloud Recommended Playlist",
+  "cloud_recommend_artists": "Cloud Recommended Singer",
+  "cloud_recommend_new_songs": "New Album Express",
   "retry": "Retry"
 }

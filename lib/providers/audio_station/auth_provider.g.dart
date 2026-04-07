@@ -196,7 +196,7 @@ final class AudioStationCookiesInfoProvider
 }
 
 String _$audioStationCookiesInfoHash() =>
-    r'6aee7a65e75306dbef6e6ee194c05581ec72b210';
+    r'f4b757bd20d6387d116006050a34766ce7daf2c1';
 
 abstract class _$AudioStationCookiesInfo
     extends $Notifier<AudioStationCookies?> {

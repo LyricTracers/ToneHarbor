@@ -232,7 +232,7 @@ class FavoriteSongs extends _$FavoriteSongs
     String sortBy = 'name',
     String sortDirection = 'desc',
     String additional = 'song_tag,song_audio,song_rating',
-    Duration? cacheDuration = const Duration(minutes: 30),
+    Duration? cacheDuration = const Duration(minutes: 60),
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
     final authHeaders = await ref.watch(authHeadersProvider.future);

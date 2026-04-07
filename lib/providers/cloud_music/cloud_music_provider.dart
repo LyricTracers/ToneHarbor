@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/services/cloud_music/artists.dart';
 import 'package:toneharbor/services/cloud_music/playlists.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 
@@ -17,7 +18,7 @@ bool shouldUseCloudMusicHome(Ref ref) {
 Future<List<CloudMusicPlaylist>> recommendPlaylists(
   Ref ref, {
   int limit = 10,
-  Duration? cacheDuration = const Duration(minutes: 30),
+  Duration? cacheDuration = const Duration(minutes: 60),
   Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
@@ -27,6 +28,31 @@ Future<List<CloudMusicPlaylist>> recommendPlaylists(
       return await recommendPlaylist(
         ref,
         limit: limit,
+        cacheDuration: cacheDuration,
+      );
+    } finally {
+      if (keepAliveDuration != null) {
+        link.close();
+      }
+    }
+  }
+  return const [];
+}
+
+@riverpod
+Future<List<CloudMusicArtist>> recommendTopArtist(
+  Ref ref, {
+  Duration? cacheDuration = const Duration(minutes: 60),
+  Duration? keepAliveDuration = const Duration(minutes: 5),
+}) async {
+  final link = ref.keepAliveFor(keepAliveDuration);
+  final apiState = ref.watch(cloudMusicApiUrlsProvider);
+  final type = ref.read(cloudMusicLanguageProvider);
+  if (apiState.defaultUrl.isNotEmpty) {
+    try {
+      return await toplistOfArtists(
+        ref,
+        type: type.value,
         cacheDuration: cacheDuration,
       );
     } finally {

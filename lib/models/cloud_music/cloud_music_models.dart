@@ -62,26 +62,32 @@ sealed class CloudMusicArtist with _$CloudMusicArtist {
   const factory CloudMusicArtist({
     required int id,
     required String name,
-    String? picUrl,
-    String? img1v1Url,
-    int? musicSize,
-    int? albumSize,
-    String? briefDesc,
-    int? trans,
-    String? alias,
+    required int picId,
+    required int img1v1Id,
+    required String picUrl,
+    required String img1v1Url,
+    required int musicSize,
+    required int albumSize,
+    required String briefDesc,
+    required String trans,
+    @JsonKey(name: 'picId_str') required String picIdStr,
+    @JsonKey(name: 'img1v1Id_str') required String img1v1IdStr,
+    List<String>? alias,
+    List<String>? transNames,
   }) = _CloudMusicArtist;
 
   factory CloudMusicArtist.fromJson(Map<String, dynamic> json) =>
       _$CloudMusicArtistFromJson(json);
 
   String get cover {
-    if (img1v1Url != null) {
-      final img1v1ID = img1v1Url!.split('/').last;
+    if (img1v1Url.isNotEmpty) {
+      final img1v1ID = img1v1Url.split('/').last;
       if (img1v1ID == '5639395138885805.jpg') {
-        return 'https://p2.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg?param=512y512';
+        // return 'https://p2.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg?param=512y512';
+        return '';
       }
     }
-    return picUrl ?? img1v1Url ?? '';
+    return picUrl.isNotEmpty ? picUrl : img1v1Url;
   }
 }
 

@@ -121,7 +121,7 @@ final class RecommendPlaylistsProvider
 }
 
 String _$recommendPlaylistsHash() =>
-    r'e5c15d067d3a0779e4f3d4803b905fa12458f016';
+    r'17e0a432869a73ef807c284975bd1fb2487a54f3';
 
 final class RecommendPlaylistsFamily extends $Family
     with
@@ -140,7 +140,7 @@ final class RecommendPlaylistsFamily extends $Family
 
   RecommendPlaylistsProvider call({
     int limit = 10,
-    Duration? cacheDuration = const Duration(minutes: 30),
+    Duration? cacheDuration = const Duration(minutes: 60),
     Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => RecommendPlaylistsProvider._(
     argument: (
@@ -153,4 +153,101 @@ final class RecommendPlaylistsFamily extends $Family
 
   @override
   String toString() => r'recommendPlaylistsProvider';
+}
+
+@ProviderFor(recommendTopArtist)
+final recommendTopArtistProvider = RecommendTopArtistFamily._();
+
+final class RecommendTopArtistProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<CloudMusicArtist>>,
+          List<CloudMusicArtist>,
+          FutureOr<List<CloudMusicArtist>>
+        >
+    with
+        $FutureModifier<List<CloudMusicArtist>>,
+        $FutureProvider<List<CloudMusicArtist>> {
+  RecommendTopArtistProvider._({
+    required RecommendTopArtistFamily super.from,
+    required ({Duration? cacheDuration, Duration? keepAliveDuration})
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'recommendTopArtistProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$recommendTopArtistHash();
+
+  @override
+  String toString() {
+    return r'recommendTopArtistProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<CloudMusicArtist>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<CloudMusicArtist>> create(Ref ref) {
+    final argument =
+        this.argument
+            as ({Duration? cacheDuration, Duration? keepAliveDuration});
+    return recommendTopArtist(
+      ref,
+      cacheDuration: argument.cacheDuration,
+      keepAliveDuration: argument.keepAliveDuration,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is RecommendTopArtistProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$recommendTopArtistHash() =>
+    r'db3adc3b5c79a14190d0a747ce253a5c3f5df0d0';
+
+final class RecommendTopArtistFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<List<CloudMusicArtist>>,
+          ({Duration? cacheDuration, Duration? keepAliveDuration})
+        > {
+  RecommendTopArtistFamily._()
+    : super(
+        retry: null,
+        name: r'recommendTopArtistProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  RecommendTopArtistProvider call({
+    Duration? cacheDuration = const Duration(minutes: 60),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
+  }) => RecommendTopArtistProvider._(
+    argument: (
+      cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'recommendTopArtistProvider';
 }

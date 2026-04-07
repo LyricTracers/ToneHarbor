@@ -210,4 +210,11 @@ abstract class SharedPreferencesUtils {
   static Future<void> setUseCloudMusicApiAsHome(bool value) async {
     await sharedPreferences.setBool(useCloudMusicApiAsHomeKey, value);
   }
+
+  static int getCloudMusicLanguage() =>
+      sharedPreferences.getInt(cloudMusicLanguageKey) ?? 0;
+
+  static Future<void> setCloudMusicLanguage(int value) async {
+    await sharedPreferences.setInt(cloudMusicLanguageKey, value);
+  }
 }

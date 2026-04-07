@@ -280,6 +280,8 @@
   "new_albums": "新专辑",
   "top_lists": "排行榜",
   "cloud_recommend_playlist": "云推荐歌单",
+  "cloud_recommend_artists": "云推荐歌手",
+  "cloud_recommend_new_songs": "新专速递",
   "recommend_artists": "推荐歌手",
   "retry": "重试"
 }

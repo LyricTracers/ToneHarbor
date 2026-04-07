@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -20,6 +21,13 @@ class MobileFullLayout extends BaseBgLayout {
         );
       }),
     );
+    useEffect(() {
+      return () {
+        Future.microtask(() {
+          ref.invalidate(songSelectionProvider);
+        });
+      };
+    }, []);
     return Column(
       children: [
         Expanded(child: child),

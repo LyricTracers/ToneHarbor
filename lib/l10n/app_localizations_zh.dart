@@ -836,4 +836,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get cloud_recommend_playlist => '云推荐歌单';
+
+  @override
+  String get cloud_recommend_artists => '云推荐歌手';
+
+  @override
+  String get cloud_recommend_new_songs => '新专速递';
 }

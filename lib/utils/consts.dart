@@ -31,6 +31,7 @@ const String aiTargetLanguageKey = 'ai_target_language';
 const String cloudMusicApiUrlsKey = 'cloud_music_api_urls';
 const String cloudMusicApiDefaultUrlKey = 'cloud_music_api_default_url';
 const String useCloudMusicApiAsHomeKey = 'use_cloud_music_api_as_home';
+const String cloudMusicLanguageKey = 'cloud_music_language';
 
 // pic path
 const String appIcon = 'assets/icons/app_icon.png';

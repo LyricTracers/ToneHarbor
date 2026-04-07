@@ -58,6 +58,18 @@ enum Language {
   }
 }
 
+enum CloudMusicLanguageType {
+  unKnow(0, '无偏好'),
+  zh(1, '华语'),
+  en(2, '欧美'),
+  kr(3, '韩语'),
+  jp(4, '日语');
+
+  final int value;
+  final String displayName;
+  const CloudMusicLanguageType(this.value, this.displayName);
+}
+
 @riverpod
 class LyricDoubleClick extends _$LyricDoubleClick {
   @override
@@ -287,5 +299,21 @@ class CloudMusicApiUrls extends _$CloudMusicApiUrls {
   Future<void> setUseAsHome(bool value) async {
     state = state.copyWith(useAsHome: value);
     await SharedPreferencesUtils.setUseCloudMusicApiAsHome(value);
+  }
+}
+
+@riverpod
+class CloudMusicLanguage extends _$CloudMusicLanguage {
+  @override
+  CloudMusicLanguageType build() {
+    return CloudMusicLanguageType.values.firstWhere(
+      (lang) => lang.value == SharedPreferencesUtils.getCloudMusicLanguage(),
+      orElse: () => CloudMusicLanguageType.unKnow,
+    );
+  }
+
+  Future<void> set(CloudMusicLanguageType value) async {
+    state = value;
+    await SharedPreferencesUtils.setCloudMusicLanguage(value.value);
   }
 }

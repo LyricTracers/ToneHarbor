@@ -4,29 +4,29 @@ import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
-Future<List<CloudMusicPlaylist>> recommendPlaylist(
+Future<List<CloudMusicArtist>> toplistOfArtists(
   Ref ref, {
-  int limit = 10,
+  required int type,
   Duration? cacheDuration = const Duration(minutes: 60),
 }) async {
   final l10n = ref.read(l10nProvider);
-  final cacheKey = 'cloud_recommendPlaylist:$limit';
-  final groupKey = 'cloud_recommendPlaylist';
+  final cacheKey = 'cloud_toplistOfArtists:$type';
+  final groupKey = 'cloud_toplistOfArtists';
   final apiState = ref.read(cloudMusicApiUrlsProvider);
   if (cacheDuration != null) {
-    final cached = await getFromCache<List<CloudMusicPlaylist>>(
+    final cached = await getFromCache<List<CloudMusicArtist>>(
       cacheKey: cacheKey,
       group: groupKey,
       fromJson: (json) {
         if (json['code'] != 200) {
           return [];
         }
-        final resultList = json['result'] as List? ?? [];
+        final resultList = json['list']?['artists'] as List? ?? [];
         if (resultList.isEmpty) {
           return [];
         }
         return resultList
-            .map((item) => CloudMusicPlaylist.fromJson(item))
+            .map((item) => CloudMusicArtist.fromJson(item))
             .toList();
       },
     );
@@ -35,16 +35,18 @@ Future<List<CloudMusicPlaylist>> recommendPlaylist(
     }
   }
   try {
+    final query = {'randomCNIP': 'true'};
+    if (type != 0) query['type'] = type.toString();
     final response = await httpClientWrapper.get(
-      '${apiState.defaultUrl}/personalized',
-      query: {'limit': limit.toString(), 'randomCNIP': 'true'},
+      '${apiState.defaultUrl}/toplist/artist',
+      query: query,
       cancelToken: ref.cancelToken(),
     );
 
     if (response.statusCode != 200) {
       logger.e('请求失败，状态码：${response.statusCode}');
       throw CloudMusicException(
-        message: l10n.error_getPlaylists_failed,
+        message: l10n.error_network_error,
         statusCode: response.statusCode,
       );
     }
@@ -57,18 +59,18 @@ Future<List<CloudMusicPlaylist>> recommendPlaylist(
     }
     if (jsonBody['code'] != 200) {
       throw CloudMusicException(
-        message: l10n.error_getPlaylists_failed,
+        message: l10n.error_network_error,
         statusCode: jsonBody['code'],
       );
     }
-    final resultList = jsonBody['result'] as List? ?? [];
+    final resultList = jsonBody['list']?['artists'] as List? ?? [];
     if (resultList.isEmpty) {
       return [];
     }
-    var playlists = resultList
-        .map((item) => CloudMusicPlaylist.fromJson(item))
+    var artists = resultList
+        .map((item) => CloudMusicArtist.fromJson(item))
         .toList();
-    if (cacheDuration != null && playlists.isNotEmpty) {
+    if (cacheDuration != null && artists.isNotEmpty) {
       await saveToCache(
         cacheKey: cacheKey,
         jsonBody: jsonBody,
@@ -76,7 +78,7 @@ Future<List<CloudMusicPlaylist>> recommendPlaylist(
         group: groupKey,
       );
     }
-    return playlists;
+    return artists;
   } catch (e) {
     logger.e('发送请求失败: $e');
     throw CloudMusicException(message: l10n.error_network_error);

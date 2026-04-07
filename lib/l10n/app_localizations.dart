@@ -1753,6 +1753,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cloud Recommended Playlist'**
   String get cloud_recommend_playlist;
+
+  /// No description provided for @cloud_recommend_artists.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud Recommended Singer'**
+  String get cloud_recommend_artists;
+
+  /// No description provided for @cloud_recommend_new_songs.
+  ///
+  /// In en, this message translates to:
+  /// **'New Album Express'**
+  String get cloud_recommend_new_songs;
 }
 
 class _AppLocalizationsDelegate

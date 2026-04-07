@@ -28,8 +28,13 @@ class CloudRecommendPlaylists extends ConsumerWidget {
     final maxCrossAxisExtent = 180 * size.multiplier;
 
     return playlists.when(
-      data: (data) =>
-          _buildGrid(context, data, colorScheme, maxCrossAxisExtent),
+      data: (data) => _buildGrid(
+        context,
+        data,
+        colorScheme,
+        maxCrossAxisExtent,
+        size.multiplier2,
+      ),
       loading: () =>
           _buildShimmerLoading(context, colorScheme, maxCrossAxisExtent),
       error: (error, stackTrace) => const SizedBox.shrink(),
@@ -41,6 +46,7 @@ class CloudRecommendPlaylists extends ConsumerWidget {
     List<CloudMusicPlaylist> playlists,
     ColorScheme colorScheme,
     double maxCrossAxisExtent,
+    double multiplier,
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -60,7 +66,7 @@ class CloudRecommendPlaylists extends ConsumerWidget {
             shrinkWrap: true,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
-              mainAxisSpacing: 20,
+              mainAxisSpacing: 10,
               crossAxisSpacing: 20,
               childAspectRatio: 0.75,
             ),
@@ -71,6 +77,7 @@ class CloudRecommendPlaylists extends ConsumerWidget {
                 playlist: playlist,
                 colorScheme: colorScheme,
                 onTap: () => onPlaylistTap?.call(playlist),
+                multiplier: multiplier,
               );
             },
           );
@@ -99,7 +106,7 @@ class CloudRecommendPlaylists extends ConsumerWidget {
             shrinkWrap: true,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
-              mainAxisSpacing: 20,
+              mainAxisSpacing: 10,
               crossAxisSpacing: 20,
               childAspectRatio: 0.75,
             ),
@@ -119,10 +126,12 @@ class _PlaylistItem extends StatelessWidget {
     required this.playlist,
     required this.colorScheme,
     required this.onTap,
+    required this.multiplier,
   });
 
   final CloudMusicPlaylist playlist;
   final ColorScheme colorScheme;
+  final double multiplier;
   final VoidCallback onTap;
 
   @override
@@ -155,11 +164,12 @@ class _PlaylistItem extends StatelessWidget {
                 child: SmartMarquee(
                   text: playlist.name,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 12 * multiplier,
                     fontWeight: FontWeight.w500,
                     color: colorScheme.onSurface,
                   ),
                   pauseOnHover: true,
+                  pauseAfterRound: Duration(seconds: 5),
                   alignment: Alignment.center,
                 ),
               ),

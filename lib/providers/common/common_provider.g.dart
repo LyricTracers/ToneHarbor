@@ -576,3 +576,57 @@ abstract class _$CloudMusicApiUrls extends $Notifier<CloudMusicApiState> {
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(CloudMusicLanguage)
+final cloudMusicLanguageProvider = CloudMusicLanguageProvider._();
+
+final class CloudMusicLanguageProvider
+    extends $NotifierProvider<CloudMusicLanguage, CloudMusicLanguageType> {
+  CloudMusicLanguageProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'cloudMusicLanguageProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudMusicLanguageHash();
+
+  @$internal
+  @override
+  CloudMusicLanguage create() => CloudMusicLanguage();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CloudMusicLanguageType value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CloudMusicLanguageType>(value),
+    );
+  }
+}
+
+String _$cloudMusicLanguageHash() =>
+    r'59a542896076cd25f1153ce17c172ae113fb5d51';
+
+abstract class _$CloudMusicLanguage extends $Notifier<CloudMusicLanguageType> {
+  CloudMusicLanguageType build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<CloudMusicLanguageType, CloudMusicLanguageType>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<CloudMusicLanguageType, CloudMusicLanguageType>,
+              CloudMusicLanguageType,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

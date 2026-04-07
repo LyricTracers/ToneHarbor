@@ -313,7 +313,7 @@ final class FavoriteSongsProvider
   }
 }
 
-String _$favoriteSongsHash() => r'73b8bb69a5f19606ff16f3aa6a61ec22ffbd6716';
+String _$favoriteSongsHash() => r'44bb1858c29ebb4e7a3e3e284cc8bfe7a66ae582';
 
 final class FavoriteSongsFamily extends $Family
     with
@@ -348,7 +348,7 @@ final class FavoriteSongsFamily extends $Family
     String sortBy = 'name',
     String sortDirection = 'desc',
     String additional = 'song_tag,song_audio,song_rating',
-    Duration? cacheDuration = const Duration(minutes: 30),
+    Duration? cacheDuration = const Duration(minutes: 60),
   }) => FavoriteSongsProvider._(
     argument: (
       limit: limit,
@@ -394,7 +394,7 @@ abstract class _$FavoriteSongs
     String sortBy = 'name',
     String sortDirection = 'desc',
     String additional = 'song_tag,song_audio,song_rating',
-    Duration? cacheDuration = const Duration(minutes: 30),
+    Duration? cacheDuration = const Duration(minutes: 60),
   });
   @$mustCallSuper
   @override
