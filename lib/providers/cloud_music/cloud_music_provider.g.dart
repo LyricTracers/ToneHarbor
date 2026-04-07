@@ -121,7 +121,7 @@ final class RecommendPlaylistsProvider
 }
 
 String _$recommendPlaylistsHash() =>
-    r'17e0a432869a73ef807c284975bd1fb2487a54f3';
+    r'0eba2b856173893942f64974c054dfc0c063ffff';
 
 final class RecommendPlaylistsFamily extends $Family
     with
@@ -225,7 +225,7 @@ final class RecommendTopArtistProvider
 }
 
 String _$recommendTopArtistHash() =>
-    r'4f7d3938e7d0be96c775c5bc7184c6abf75986bc';
+    r'cbca66a1732694ff08d77f05feb7e26c10b86b52';
 
 final class RecommendTopArtistFamily extends $Family
     with

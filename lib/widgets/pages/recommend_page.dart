@@ -275,7 +275,7 @@ class RecommendPage extends HookConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              i10n.cloud_recommend_playlist,
+                              i10n.cloud_recommend_artists,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
