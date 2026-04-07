@@ -38,6 +38,8 @@ mixin BuildItem {
       padding: const EdgeInsets.all(4),
       child: Text(
         title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontSize: 12 * multiplier,
           fontWeight: FontWeight.bold,
@@ -59,6 +61,8 @@ mixin BuildItem {
     return ListTile(
       title: Text(
         title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontSize: 15 * multiplier,
           fontWeight: FontWeight.bold,
@@ -95,6 +99,8 @@ mixin BuildItem {
     return ListTile(
       title: Text(
         '$title: ${value.toStringAsFixed(1)}',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontSize: 15 * multiplier,
           fontWeight: FontWeight.bold,
@@ -136,6 +142,8 @@ mixin BuildItem {
     return ListTile(
       title: Text(
         value ? title : title2,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontSize: 15 * multiplier,
           fontWeight: FontWeight.bold,
@@ -144,6 +152,8 @@ mixin BuildItem {
       ),
       subtitle: Text(
         value ? subtitle : subtitle2,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontSize: 12 * multiplier,
           color: colorScheme.onSurface.withValues(alpha: 0.7),
