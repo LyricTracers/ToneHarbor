@@ -594,7 +594,9 @@ Future<void> loadMore<T>({
   try {
     await ref.read(baseProvider.notifier).loadMore();
   } finally {
-    isLoadingMore.value = false;
+    try {
+      isLoadingMore.value = false;
+    } catch (_) {}
   }
 }
 
