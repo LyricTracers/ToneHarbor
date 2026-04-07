@@ -313,7 +313,7 @@ final class FavoriteSongsProvider
   }
 }
 
-String _$favoriteSongsHash() => r'1ba1c921dcaa802534bb897a8243b00d6979de75';
+String _$favoriteSongsHash() => r'73b8bb69a5f19606ff16f3aa6a61ec22ffbd6716';
 
 final class FavoriteSongsFamily extends $Family
     with

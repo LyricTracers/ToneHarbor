@@ -196,7 +196,7 @@ final class AudioStationCookiesInfoProvider
 }
 
 String _$audioStationCookiesInfoHash() =>
-    r'f38ed523f87416f9627983d387dcd51ea165ad4c';
+    r'6aee7a65e75306dbef6e6ee194c05581ec72b210';
 
 abstract class _$AudioStationCookiesInfo
     extends $Notifier<AudioStationCookies?> {
@@ -257,63 +257,11 @@ final class BaseUrlProvider extends $FunctionalProvider<String, String, String>
 
 String _$baseUrlHash() => r'7cfd93ec1d917e0fb10b3a36079b60ecb3492a91';
 
-@ProviderFor(SynoToken)
-final synoTokenProvider = SynoTokenProvider._();
-
-final class SynoTokenProvider extends $NotifierProvider<SynoToken, String?> {
-  SynoTokenProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'synoTokenProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$synoTokenHash();
-
-  @$internal
-  @override
-  SynoToken create() => SynoToken();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(String? value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<String?>(value),
-    );
-  }
-}
-
-String _$synoTokenHash() => r'abcdbe877815306732e1fb5238b4b629ed013822';
-
-abstract class _$SynoToken extends $Notifier<String?> {
-  String? build();
-  @$mustCallSuper
-  @override
-  void runBuild() {
-    final ref = this.ref as $Ref<String?, String?>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<String?, String?>,
-              String?,
-              Object?,
-              Object?
-            >;
-    element.handleCreate(ref, build);
-  }
-}
-
-@ProviderFor(authToken)
+@ProviderFor(AuthToken)
 final authTokenProvider = AuthTokenProvider._();
 
 final class AuthTokenProvider
-    extends $FunctionalProvider<AsyncValue<String?>, String?, FutureOr<String?>>
-    with $FutureModifier<String?>, $FutureProvider<String?> {
+    extends $AsyncNotifierProvider<AuthToken, String?> {
   AuthTokenProvider._()
     : super(
         from: null,
@@ -330,16 +278,28 @@ final class AuthTokenProvider
 
   @$internal
   @override
-  $FutureProviderElement<String?> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<String?> create(Ref ref) {
-    return authToken(ref);
-  }
+  AuthToken create() => AuthToken();
 }
 
-String _$authTokenHash() => r'97f0a20e4a7e2564427cb79efb838eb0d1285460';
+String _$authTokenHash() => r'ed7c00b78ced13eb5329641816cc9f809c5f4407';
+
+abstract class _$AuthToken extends $AsyncNotifier<String?> {
+  FutureOr<String?> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<String?>, String?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<String?>, String?>,
+              AsyncValue<String?>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
 
 @ProviderFor(authHeaders)
 final authHeadersProvider = AuthHeadersProvider._();

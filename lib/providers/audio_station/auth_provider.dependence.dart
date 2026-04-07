@@ -77,7 +77,6 @@ Future<AuthResponse> _fullLogin(
           .setCookies(
             AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
           );
-      ref.read(synoTokenProvider.notifier).clear();
     });
     throw AudioStationException(
       message: _getLoginErrorMessage(l10n, null),
@@ -95,7 +94,6 @@ Future<AuthResponse> _fullLogin(
           .setCookies(
             AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
           );
-      ref.read(synoTokenProvider.notifier).clear();
     });
     final errorCode = result.error?['code'];
     throw AudioStationException(
@@ -145,7 +143,7 @@ Future<AuthResponse> _fullLogin(
         );
 
     if (result.data?.synotoken != null) {
-      ref.read(synoTokenProvider.notifier).setSynotoken(result.data!.synotoken);
+      ref.read(authTokenProvider.notifier).setAuthToken(result.data!.synotoken);
     }
   });
 
@@ -188,7 +186,6 @@ Future<AuthResponse> _refreshToken(
           .setCookies(
             AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
           );
-      ref.read(synoTokenProvider.notifier).clear();
     });
     throw AudioStationException(
       message: _getLoginErrorMessage(l10n, null),
@@ -207,7 +204,6 @@ Future<AuthResponse> _refreshToken(
           .setCookies(
             AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
           );
-      ref.read(synoTokenProvider.notifier).clear();
     });
     final errorCode = result.error?['code'];
     throw AudioStationException(
@@ -215,13 +211,6 @@ Future<AuthResponse> _refreshToken(
       statusCode: errorCode is int ? errorCode : null,
     );
   }
-
-  // 延迟修改状态，避免在构建过程中修改
-  Future.microtask(() {
-    if (result.data?.synotoken != null) {
-      ref.read(synoTokenProvider.notifier).setSynotoken(result.data!.synotoken);
-    }
-  });
 
   return result;
 }
@@ -260,7 +249,6 @@ Future<AuthResponse> _refreshTokenWithWidgetRef(
           .setCookies(
             AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
           );
-      ref.read(synoTokenProvider.notifier).clear();
     });
     throw AudioStationException(
       message: _getLoginErrorMessage(l10n, null),
@@ -278,7 +266,6 @@ Future<AuthResponse> _refreshTokenWithWidgetRef(
           .setCookies(
             AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
           );
-      ref.read(synoTokenProvider.notifier).clear();
     });
     final errorCode = result.error?['code'];
     throw AudioStationException(
@@ -289,7 +276,7 @@ Future<AuthResponse> _refreshTokenWithWidgetRef(
 
   Future.microtask(() {
     if (result.data?.synotoken != null) {
-      ref.read(synoTokenProvider.notifier).setSynotoken(result.data!.synotoken);
+      ref.read(authTokenProvider.notifier).setAuthToken(result.data!.synotoken);
     }
   });
 

@@ -81,7 +81,6 @@ class AccountPage extends HookConsumerWidget with BuildItem {
       onTap: () async {
         audioPlayer.pause();
         await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-        ref.invalidate(authTokenProvider);
       },
       title: Text(
         l10n.logout,

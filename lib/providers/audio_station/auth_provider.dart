@@ -76,7 +76,6 @@ class AudioStationCookiesInfo extends _$AudioStationCookiesInfo {
   Future<void> setCookies(AudioStationCookies cookies) async {
     if (!cookies.isValid) {
       await SharedPreferencesUtils.setCookie('');
-      ref.read(synoTokenProvider.notifier).clear();
       state = null;
       return;
     } else {
@@ -87,7 +86,6 @@ class AudioStationCookiesInfo extends _$AudioStationCookiesInfo {
 
   Future<void> clearCookie() async {
     await SharedPreferencesUtils.setCookie('');
-    ref.read(synoTokenProvider.notifier).clear();
     state = null;
   }
 }
@@ -104,69 +102,36 @@ String baseUrl(Ref ref) {
 }
 
 @keepAlive
-class SynoToken extends _$SynoToken {
+class AuthToken extends _$AuthToken {
+  void setAuthToken(String authToken) {
+    state = AsyncData(authToken);
+  }
+
   @override
-  String? build() {
-    return null;
-  }
+  Future<String?> build() async {
+    final cookiesInfo = ref.watch(audioStationCookiesInfoProvider);
 
-  void setSynotoken(String synotoken) {
-    state = synotoken;
-  }
-
-  void clear() {
-    state = null;
-  }
-}
-
-@keepAlive
-Future<String?> authToken(Ref ref) async {
-  logger.d('获取 authToken');
-  final synotoken = ref.watch(synoTokenProvider);
-
-  if (synotoken != null) {
-    return synotoken;
-  }
-
-  final cookiesInfo = ref.watch(audioStationCookiesInfoProvider);
-
-  if (cookiesInfo != null && cookiesInfo.isValid) {
-    logger.d('Cookie 有效，尝试获取 synotoken');
-    try {
-      final l10n = ref.read(l10nProvider);
-      logger.d('开始刷新 token');
-      final response = await _refreshToken(ref, cookiesInfo, l10n);
-      logger.d('刷新 token 完成: ${response.data?.synotoken}');
-      if (response.data?.synotoken != null) {
-        Future.microtask(() {
-          if (!ref.mounted) return;
-          ref
-              .read(synoTokenProvider.notifier)
-              .setSynotoken(response.data!.synotoken);
-        });
+    if (cookiesInfo != null && cookiesInfo.isValid) {
+      logger.d('Cookie 有效，尝试获取 synotoken');
+      try {
+        final l10n = ref.read(l10nProvider);
+        logger.d('开始刷新 token');
+        final response = await _refreshToken(ref, cookiesInfo, l10n);
+        logger.d('刷新 token 完成: ${response.data?.synotoken}');
         return response.data!.synotoken;
-      }
-    } catch (e) {
-      logger.w('获取 synotoken 失败: $e');
-      Future.microtask(() async {
-        if (!ref.mounted) return;
+      } catch (e) {
+        logger.w('获取 synotoken 失败: $e');
         await ref
             .read(audioStationCookiesInfoProvider.notifier)
             .setCookies(
               AudioStationCookies(id: '', idExpires: 0, did: '', didExpires: 0),
             );
-        ref.read(synoTokenProvider.notifier).clear();
-      });
+        return null;
+      }
+    } else {
+      return null;
     }
-  } else {
-    logger.d('Cookie 无效，返回 null');
-    Future.microtask(() {
-      if (!ref.mounted) return;
-      ref.read(synoTokenProvider.notifier).clear();
-    });
   }
-
-  return null;
 }
 
 @keepAlive
@@ -244,7 +209,6 @@ Future<LogoutResponse> logout(WidgetRef ref) async {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.read(synoTokenProvider.notifier).clear();
     });
     return LogoutResponse(success: false);
   }

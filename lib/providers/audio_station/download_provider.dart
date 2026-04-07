@@ -33,7 +33,7 @@ Future<String> streamUrl(
   }
 
   final baseUrl = ref.read(baseUrlProvider);
-  final synotoken = ref.read(synoTokenProvider);
+  final authToken = await ref.read(authTokenProvider.future);
   quality ??= ref.read(audioQualityProvider);
 
   final queryParams = <String, String>{
@@ -42,7 +42,7 @@ Future<String> streamUrl(
     'id': id,
     'method': quality!.method,
     '_sid': cookiesInfo.id,
-    'SynoToken': synotoken ?? '',
+    'SynoToken': authToken ?? '',
   };
 
   String fileExtension;
@@ -117,7 +117,7 @@ Future<String> _getCoverUrlByArtist({
   required String artistName,
 }) async {
   final baseUrl = ref.read(baseUrlProvider);
-  final synotoken = ref.read(synoTokenProvider);
+  final authToken = await ref.read(authTokenProvider.future);
 
   final queryParams = {
     'api': 'SYNO.AudioStation.Cover',
@@ -125,7 +125,7 @@ Future<String> _getCoverUrlByArtist({
     'library': "all",
     'method': 'getcover',
     'artist_name': artistName,
-    'SynoToken': synotoken ?? '',
+    'SynoToken': authToken ?? '',
   };
 
   final queryString = queryParams.entries
@@ -146,7 +146,7 @@ Future<String> _getCoverUrlByAlbum({
   String library = 'shared',
 }) async {
   final baseUrl = ref.read(baseUrlProvider);
-  final synotoken = ref.read(synoTokenProvider);
+  final authToken = await ref.read(authTokenProvider.future);
   // final timestamp = DateTime.now().millisecondsSinceEpoch;
 
   final queryParams = {
@@ -160,7 +160,7 @@ Future<String> _getCoverUrlByAlbum({
     'view': view,
     'album_name': albumName,
     'album_artist_name': albumArtistName,
-    'SynoToken': synotoken ?? '',
+    'SynoToken': authToken ?? '',
   };
 
   final queryString = queryParams.entries
@@ -179,7 +179,7 @@ Future<String> _getCoverUrlBySongId({
   String library = 'all',
 }) async {
   final baseUrl = ref.read(baseUrlProvider);
-  final synotoken = ref.read(synoTokenProvider);
+  final authToken = await ref.read(authTokenProvider.future);
 
   final queryParams = {
     'api': 'SYNO.AudioStation.Cover',
@@ -187,7 +187,7 @@ Future<String> _getCoverUrlBySongId({
     'library': library,
     'method': 'getsongcover',
     'id': songId,
-    'SynoToken': synotoken ?? '',
+    'SynoToken': authToken ?? '',
   };
 
   final queryString = queryParams.entries
