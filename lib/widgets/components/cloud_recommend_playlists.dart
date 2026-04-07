@@ -43,7 +43,7 @@ class CloudRecommendPlaylists extends ConsumerWidget {
     double maxCrossAxisExtent,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final availableWidth = constraints.maxWidth;
@@ -60,8 +60,8 @@ class CloudRecommendPlaylists extends ConsumerWidget {
             shrinkWrap: true,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
+              mainAxisSpacing: 20,
+              crossAxisSpacing: 20,
               childAspectRatio: 0.75,
             ),
             itemCount: displayItems.length,
@@ -85,7 +85,7 @@ class CloudRecommendPlaylists extends ConsumerWidget {
     double maxCrossAxisExtent,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final availableWidth = constraints.maxWidth;
@@ -99,8 +99,8 @@ class CloudRecommendPlaylists extends ConsumerWidget {
             shrinkWrap: true,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
+              mainAxisSpacing: 20,
+              crossAxisSpacing: 20,
               childAspectRatio: 0.75,
             ),
             itemCount: maxItems,
