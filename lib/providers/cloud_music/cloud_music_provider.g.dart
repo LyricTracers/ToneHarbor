@@ -170,7 +170,7 @@ final class RecommendTopArtistProvider
         $FutureProvider<List<CloudMusicArtist>> {
   RecommendTopArtistProvider._({
     required RecommendTopArtistFamily super.from,
-    required ({Duration? cacheDuration, Duration? keepAliveDuration})
+    required ({int limit, Duration? cacheDuration, Duration? keepAliveDuration})
     super.argument,
   }) : super(
          retry: null,
@@ -200,9 +200,14 @@ final class RecommendTopArtistProvider
   FutureOr<List<CloudMusicArtist>> create(Ref ref) {
     final argument =
         this.argument
-            as ({Duration? cacheDuration, Duration? keepAliveDuration});
+            as ({
+              int limit,
+              Duration? cacheDuration,
+              Duration? keepAliveDuration,
+            });
     return recommendTopArtist(
       ref,
+      limit: argument.limit,
       cacheDuration: argument.cacheDuration,
       keepAliveDuration: argument.keepAliveDuration,
     );
@@ -220,13 +225,13 @@ final class RecommendTopArtistProvider
 }
 
 String _$recommendTopArtistHash() =>
-    r'db3adc3b5c79a14190d0a747ce253a5c3f5df0d0';
+    r'4f7d3938e7d0be96c775c5bc7184c6abf75986bc';
 
 final class RecommendTopArtistFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<List<CloudMusicArtist>>,
-          ({Duration? cacheDuration, Duration? keepAliveDuration})
+          ({int limit, Duration? cacheDuration, Duration? keepAliveDuration})
         > {
   RecommendTopArtistFamily._()
     : super(
@@ -238,10 +243,12 @@ final class RecommendTopArtistFamily extends $Family
       );
 
   RecommendTopArtistProvider call({
+    int limit = 6,
     Duration? cacheDuration = const Duration(minutes: 60),
     Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => RecommendTopArtistProvider._(
     argument: (
+      limit: limit,
       cacheDuration: cacheDuration,
       keepAliveDuration: keepAliveDuration,
     ),

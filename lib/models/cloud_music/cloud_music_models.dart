@@ -22,7 +22,17 @@ sealed class CloudMusicPlaylist with _$CloudMusicPlaylist {
   factory CloudMusicPlaylist.fromJson(Map<String, dynamic> json) =>
       _$CloudMusicPlaylistFromJson(json);
 
-  String get cover => picUrl ?? coverImgUrl ?? '';
+  String get cover {
+    if (picUrl != null && picUrl!.isNotEmpty) return picUrl!;
+    return coverImgUrl ?? '';
+  }
+
+  String get coverUrl {
+    if (cover.isNotEmpty) {
+      return '${cover.replaceAll('http://', 'https://')}?param=512y512';
+    }
+    return '';
+  }
 }
 
 @freezed
@@ -47,7 +57,17 @@ sealed class CloudMusicAlbum with _$CloudMusicAlbum {
   factory CloudMusicAlbum.fromJson(Map<String, dynamic> json) =>
       _$CloudMusicAlbumFromJson(json);
 
-  String get cover => picUrl ?? blurPicUrl ?? '';
+  String get cover {
+    if (picUrl != null && picUrl!.isNotEmpty) return picUrl!;
+    return blurPicUrl ?? '';
+  }
+
+  String get coverUrl {
+    if (cover.isNotEmpty) {
+      return '${cover.replaceAll('http://', 'https://')}?param=512y512';
+    }
+    return '';
+  }
 
   String get artistName {
     if (artist != null) return artist!.name;
@@ -70,8 +90,6 @@ sealed class CloudMusicArtist with _$CloudMusicArtist {
     required int albumSize,
     required String briefDesc,
     required String trans,
-    @JsonKey(name: 'picId_str') required String picIdStr,
-    @JsonKey(name: 'img1v1Id_str') required String img1v1IdStr,
     List<String>? alias,
     List<String>? transNames,
   }) = _CloudMusicArtist;
@@ -87,7 +105,8 @@ sealed class CloudMusicArtist with _$CloudMusicArtist {
         return '';
       }
     }
-    return picUrl.isNotEmpty ? picUrl : img1v1Url;
+    final img = img1v1Url.isNotEmpty ? img1v1Url : picUrl;
+    return '${img.replaceAll('http://', 'https://')}?param=512y512';
   }
 }
 

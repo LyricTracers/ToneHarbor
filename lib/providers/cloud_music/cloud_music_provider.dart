@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
@@ -31,7 +32,7 @@ Future<List<CloudMusicPlaylist>> recommendPlaylists(
         cacheDuration: cacheDuration,
       );
     } finally {
-      if (keepAliveDuration != null) {
+      if (keepAliveDuration == null) {
         link.close();
       }
     }
@@ -42,6 +43,7 @@ Future<List<CloudMusicPlaylist>> recommendPlaylists(
 @riverpod
 Future<List<CloudMusicArtist>> recommendTopArtist(
   Ref ref, {
+  int limit = 6,
   Duration? cacheDuration = const Duration(minutes: 60),
   Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
@@ -50,13 +52,22 @@ Future<List<CloudMusicArtist>> recommendTopArtist(
   final type = ref.read(cloudMusicLanguageProvider);
   if (apiState.defaultUrl.isNotEmpty) {
     try {
-      return await toplistOfArtists(
+      final artists = await toplistOfArtists(
         ref,
         type: type.value,
         cacheDuration: cacheDuration,
       );
+      if (artists.length <= limit) {
+        return artists;
+      }
+      final indices = <int>{};
+      final random = Random();
+      while (indices.length < limit) {
+        indices.add(random.nextInt(artists.length));
+      }
+      return indices.map((i) => artists[i]).toList();
     } finally {
-      if (keepAliveDuration != null) {
+      if (keepAliveDuration == null) {
         link.close();
       }
     }

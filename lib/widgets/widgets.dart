@@ -35,7 +35,7 @@ export 'pages/playlist_page.dart';
 export 'pages/playlists_page.dart';
 export 'pages/recommend_page.dart';
 export 'pages/recommend_page_daily_songs.dart';
-export 'pages/search_resulut_page.dart';
+export 'pages/search_result_page.dart';
 export 'pages/setting_page.dart';
 export 'pages/songs_page.dart';
 export 'pages/storage_manage_page.dart';

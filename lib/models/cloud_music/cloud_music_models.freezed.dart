@@ -624,7 +624,7 @@ $CloudMusicArtistCopyWith<$Res>? get artist {
 /// @nodoc
 mixin _$CloudMusicArtist {
 
- int get id; String get name; int get picId; int get img1v1Id; String get picUrl; String get img1v1Url; int get musicSize; int get albumSize; String get briefDesc; String get trans;@JsonKey(name: 'picId_str') String get picIdStr;@JsonKey(name: 'img1v1Id_str') String get img1v1IdStr; List<String>? get alias; List<String>? get transNames;
+ int get id; String get name; int get picId; int get img1v1Id; String get picUrl; String get img1v1Url; int get musicSize; int get albumSize; String get briefDesc; String get trans; List<String>? get alias; List<String>? get transNames;
 /// Create a copy of CloudMusicArtist
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -637,16 +637,16 @@ $CloudMusicArtistCopyWith<CloudMusicArtist> get copyWith => _$CloudMusicArtistCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CloudMusicArtist&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.picId, picId) || other.picId == picId)&&(identical(other.img1v1Id, img1v1Id) || other.img1v1Id == img1v1Id)&&(identical(other.picUrl, picUrl) || other.picUrl == picUrl)&&(identical(other.img1v1Url, img1v1Url) || other.img1v1Url == img1v1Url)&&(identical(other.musicSize, musicSize) || other.musicSize == musicSize)&&(identical(other.albumSize, albumSize) || other.albumSize == albumSize)&&(identical(other.briefDesc, briefDesc) || other.briefDesc == briefDesc)&&(identical(other.trans, trans) || other.trans == trans)&&(identical(other.picIdStr, picIdStr) || other.picIdStr == picIdStr)&&(identical(other.img1v1IdStr, img1v1IdStr) || other.img1v1IdStr == img1v1IdStr)&&const DeepCollectionEquality().equals(other.alias, alias)&&const DeepCollectionEquality().equals(other.transNames, transNames));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CloudMusicArtist&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.picId, picId) || other.picId == picId)&&(identical(other.img1v1Id, img1v1Id) || other.img1v1Id == img1v1Id)&&(identical(other.picUrl, picUrl) || other.picUrl == picUrl)&&(identical(other.img1v1Url, img1v1Url) || other.img1v1Url == img1v1Url)&&(identical(other.musicSize, musicSize) || other.musicSize == musicSize)&&(identical(other.albumSize, albumSize) || other.albumSize == albumSize)&&(identical(other.briefDesc, briefDesc) || other.briefDesc == briefDesc)&&(identical(other.trans, trans) || other.trans == trans)&&const DeepCollectionEquality().equals(other.alias, alias)&&const DeepCollectionEquality().equals(other.transNames, transNames));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,picId,img1v1Id,picUrl,img1v1Url,musicSize,albumSize,briefDesc,trans,picIdStr,img1v1IdStr,const DeepCollectionEquality().hash(alias),const DeepCollectionEquality().hash(transNames));
+int get hashCode => Object.hash(runtimeType,id,name,picId,img1v1Id,picUrl,img1v1Url,musicSize,albumSize,briefDesc,trans,const DeepCollectionEquality().hash(alias),const DeepCollectionEquality().hash(transNames));
 
 @override
 String toString() {
-  return 'CloudMusicArtist(id: $id, name: $name, picId: $picId, img1v1Id: $img1v1Id, picUrl: $picUrl, img1v1Url: $img1v1Url, musicSize: $musicSize, albumSize: $albumSize, briefDesc: $briefDesc, trans: $trans, picIdStr: $picIdStr, img1v1IdStr: $img1v1IdStr, alias: $alias, transNames: $transNames)';
+  return 'CloudMusicArtist(id: $id, name: $name, picId: $picId, img1v1Id: $img1v1Id, picUrl: $picUrl, img1v1Url: $img1v1Url, musicSize: $musicSize, albumSize: $albumSize, briefDesc: $briefDesc, trans: $trans, alias: $alias, transNames: $transNames)';
 }
 
 
@@ -657,7 +657,7 @@ abstract mixin class $CloudMusicArtistCopyWith<$Res>  {
   factory $CloudMusicArtistCopyWith(CloudMusicArtist value, $Res Function(CloudMusicArtist) _then) = _$CloudMusicArtistCopyWithImpl;
 @useResult
 $Res call({
- int id, String name, int picId, int img1v1Id, String picUrl, String img1v1Url, int musicSize, int albumSize, String briefDesc, String trans,@JsonKey(name: 'picId_str') String picIdStr,@JsonKey(name: 'img1v1Id_str') String img1v1IdStr, List<String>? alias, List<String>? transNames
+ int id, String name, int picId, int img1v1Id, String picUrl, String img1v1Url, int musicSize, int albumSize, String briefDesc, String trans, List<String>? alias, List<String>? transNames
 });
 
 
@@ -674,7 +674,7 @@ class _$CloudMusicArtistCopyWithImpl<$Res>
 
 /// Create a copy of CloudMusicArtist
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? picId = null,Object? img1v1Id = null,Object? picUrl = null,Object? img1v1Url = null,Object? musicSize = null,Object? albumSize = null,Object? briefDesc = null,Object? trans = null,Object? picIdStr = null,Object? img1v1IdStr = null,Object? alias = freezed,Object? transNames = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? picId = null,Object? img1v1Id = null,Object? picUrl = null,Object? img1v1Url = null,Object? musicSize = null,Object? albumSize = null,Object? briefDesc = null,Object? trans = null,Object? alias = freezed,Object? transNames = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -686,8 +686,6 @@ as String,musicSize: null == musicSize ? _self.musicSize : musicSize // ignore: 
 as int,albumSize: null == albumSize ? _self.albumSize : albumSize // ignore: cast_nullable_to_non_nullable
 as int,briefDesc: null == briefDesc ? _self.briefDesc : briefDesc // ignore: cast_nullable_to_non_nullable
 as String,trans: null == trans ? _self.trans : trans // ignore: cast_nullable_to_non_nullable
-as String,picIdStr: null == picIdStr ? _self.picIdStr : picIdStr // ignore: cast_nullable_to_non_nullable
-as String,img1v1IdStr: null == img1v1IdStr ? _self.img1v1IdStr : img1v1IdStr // ignore: cast_nullable_to_non_nullable
 as String,alias: freezed == alias ? _self.alias : alias // ignore: cast_nullable_to_non_nullable
 as List<String>?,transNames: freezed == transNames ? _self.transNames : transNames // ignore: cast_nullable_to_non_nullable
 as List<String>?,
@@ -772,10 +770,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  int picId,  int img1v1Id,  String picUrl,  String img1v1Url,  int musicSize,  int albumSize,  String briefDesc,  String trans, @JsonKey(name: 'picId_str')  String picIdStr, @JsonKey(name: 'img1v1Id_str')  String img1v1IdStr,  List<String>? alias,  List<String>? transNames)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  int picId,  int img1v1Id,  String picUrl,  String img1v1Url,  int musicSize,  int albumSize,  String briefDesc,  String trans,  List<String>? alias,  List<String>? transNames)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CloudMusicArtist() when $default != null:
-return $default(_that.id,_that.name,_that.picId,_that.img1v1Id,_that.picUrl,_that.img1v1Url,_that.musicSize,_that.albumSize,_that.briefDesc,_that.trans,_that.picIdStr,_that.img1v1IdStr,_that.alias,_that.transNames);case _:
+return $default(_that.id,_that.name,_that.picId,_that.img1v1Id,_that.picUrl,_that.img1v1Url,_that.musicSize,_that.albumSize,_that.briefDesc,_that.trans,_that.alias,_that.transNames);case _:
   return orElse();
 
 }
@@ -793,10 +791,10 @@ return $default(_that.id,_that.name,_that.picId,_that.img1v1Id,_that.picUrl,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  int picId,  int img1v1Id,  String picUrl,  String img1v1Url,  int musicSize,  int albumSize,  String briefDesc,  String trans, @JsonKey(name: 'picId_str')  String picIdStr, @JsonKey(name: 'img1v1Id_str')  String img1v1IdStr,  List<String>? alias,  List<String>? transNames)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  int picId,  int img1v1Id,  String picUrl,  String img1v1Url,  int musicSize,  int albumSize,  String briefDesc,  String trans,  List<String>? alias,  List<String>? transNames)  $default,) {final _that = this;
 switch (_that) {
 case _CloudMusicArtist():
-return $default(_that.id,_that.name,_that.picId,_that.img1v1Id,_that.picUrl,_that.img1v1Url,_that.musicSize,_that.albumSize,_that.briefDesc,_that.trans,_that.picIdStr,_that.img1v1IdStr,_that.alias,_that.transNames);}
+return $default(_that.id,_that.name,_that.picId,_that.img1v1Id,_that.picUrl,_that.img1v1Url,_that.musicSize,_that.albumSize,_that.briefDesc,_that.trans,_that.alias,_that.transNames);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -810,10 +808,10 @@ return $default(_that.id,_that.name,_that.picId,_that.img1v1Id,_that.picUrl,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  int picId,  int img1v1Id,  String picUrl,  String img1v1Url,  int musicSize,  int albumSize,  String briefDesc,  String trans, @JsonKey(name: 'picId_str')  String picIdStr, @JsonKey(name: 'img1v1Id_str')  String img1v1IdStr,  List<String>? alias,  List<String>? transNames)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  int picId,  int img1v1Id,  String picUrl,  String img1v1Url,  int musicSize,  int albumSize,  String briefDesc,  String trans,  List<String>? alias,  List<String>? transNames)?  $default,) {final _that = this;
 switch (_that) {
 case _CloudMusicArtist() when $default != null:
-return $default(_that.id,_that.name,_that.picId,_that.img1v1Id,_that.picUrl,_that.img1v1Url,_that.musicSize,_that.albumSize,_that.briefDesc,_that.trans,_that.picIdStr,_that.img1v1IdStr,_that.alias,_that.transNames);case _:
+return $default(_that.id,_that.name,_that.picId,_that.img1v1Id,_that.picUrl,_that.img1v1Url,_that.musicSize,_that.albumSize,_that.briefDesc,_that.trans,_that.alias,_that.transNames);case _:
   return null;
 
 }
@@ -825,7 +823,7 @@ return $default(_that.id,_that.name,_that.picId,_that.img1v1Id,_that.picUrl,_tha
 @JsonSerializable()
 
 class _CloudMusicArtist extends CloudMusicArtist {
-  const _CloudMusicArtist({required this.id, required this.name, required this.picId, required this.img1v1Id, required this.picUrl, required this.img1v1Url, required this.musicSize, required this.albumSize, required this.briefDesc, required this.trans, @JsonKey(name: 'picId_str') required this.picIdStr, @JsonKey(name: 'img1v1Id_str') required this.img1v1IdStr, final  List<String>? alias, final  List<String>? transNames}): _alias = alias,_transNames = transNames,super._();
+  const _CloudMusicArtist({required this.id, required this.name, required this.picId, required this.img1v1Id, required this.picUrl, required this.img1v1Url, required this.musicSize, required this.albumSize, required this.briefDesc, required this.trans, final  List<String>? alias, final  List<String>? transNames}): _alias = alias,_transNames = transNames,super._();
   factory _CloudMusicArtist.fromJson(Map<String, dynamic> json) => _$CloudMusicArtistFromJson(json);
 
 @override final  int id;
@@ -838,8 +836,6 @@ class _CloudMusicArtist extends CloudMusicArtist {
 @override final  int albumSize;
 @override final  String briefDesc;
 @override final  String trans;
-@override@JsonKey(name: 'picId_str') final  String picIdStr;
-@override@JsonKey(name: 'img1v1Id_str') final  String img1v1IdStr;
  final  List<String>? _alias;
 @override List<String>? get alias {
   final value = _alias;
@@ -872,16 +868,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CloudMusicArtist&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.picId, picId) || other.picId == picId)&&(identical(other.img1v1Id, img1v1Id) || other.img1v1Id == img1v1Id)&&(identical(other.picUrl, picUrl) || other.picUrl == picUrl)&&(identical(other.img1v1Url, img1v1Url) || other.img1v1Url == img1v1Url)&&(identical(other.musicSize, musicSize) || other.musicSize == musicSize)&&(identical(other.albumSize, albumSize) || other.albumSize == albumSize)&&(identical(other.briefDesc, briefDesc) || other.briefDesc == briefDesc)&&(identical(other.trans, trans) || other.trans == trans)&&(identical(other.picIdStr, picIdStr) || other.picIdStr == picIdStr)&&(identical(other.img1v1IdStr, img1v1IdStr) || other.img1v1IdStr == img1v1IdStr)&&const DeepCollectionEquality().equals(other._alias, _alias)&&const DeepCollectionEquality().equals(other._transNames, _transNames));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CloudMusicArtist&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.picId, picId) || other.picId == picId)&&(identical(other.img1v1Id, img1v1Id) || other.img1v1Id == img1v1Id)&&(identical(other.picUrl, picUrl) || other.picUrl == picUrl)&&(identical(other.img1v1Url, img1v1Url) || other.img1v1Url == img1v1Url)&&(identical(other.musicSize, musicSize) || other.musicSize == musicSize)&&(identical(other.albumSize, albumSize) || other.albumSize == albumSize)&&(identical(other.briefDesc, briefDesc) || other.briefDesc == briefDesc)&&(identical(other.trans, trans) || other.trans == trans)&&const DeepCollectionEquality().equals(other._alias, _alias)&&const DeepCollectionEquality().equals(other._transNames, _transNames));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,picId,img1v1Id,picUrl,img1v1Url,musicSize,albumSize,briefDesc,trans,picIdStr,img1v1IdStr,const DeepCollectionEquality().hash(_alias),const DeepCollectionEquality().hash(_transNames));
+int get hashCode => Object.hash(runtimeType,id,name,picId,img1v1Id,picUrl,img1v1Url,musicSize,albumSize,briefDesc,trans,const DeepCollectionEquality().hash(_alias),const DeepCollectionEquality().hash(_transNames));
 
 @override
 String toString() {
-  return 'CloudMusicArtist(id: $id, name: $name, picId: $picId, img1v1Id: $img1v1Id, picUrl: $picUrl, img1v1Url: $img1v1Url, musicSize: $musicSize, albumSize: $albumSize, briefDesc: $briefDesc, trans: $trans, picIdStr: $picIdStr, img1v1IdStr: $img1v1IdStr, alias: $alias, transNames: $transNames)';
+  return 'CloudMusicArtist(id: $id, name: $name, picId: $picId, img1v1Id: $img1v1Id, picUrl: $picUrl, img1v1Url: $img1v1Url, musicSize: $musicSize, albumSize: $albumSize, briefDesc: $briefDesc, trans: $trans, alias: $alias, transNames: $transNames)';
 }
 
 
@@ -892,7 +888,7 @@ abstract mixin class _$CloudMusicArtistCopyWith<$Res> implements $CloudMusicArti
   factory _$CloudMusicArtistCopyWith(_CloudMusicArtist value, $Res Function(_CloudMusicArtist) _then) = __$CloudMusicArtistCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String name, int picId, int img1v1Id, String picUrl, String img1v1Url, int musicSize, int albumSize, String briefDesc, String trans,@JsonKey(name: 'picId_str') String picIdStr,@JsonKey(name: 'img1v1Id_str') String img1v1IdStr, List<String>? alias, List<String>? transNames
+ int id, String name, int picId, int img1v1Id, String picUrl, String img1v1Url, int musicSize, int albumSize, String briefDesc, String trans, List<String>? alias, List<String>? transNames
 });
 
 
@@ -909,7 +905,7 @@ class __$CloudMusicArtistCopyWithImpl<$Res>
 
 /// Create a copy of CloudMusicArtist
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? picId = null,Object? img1v1Id = null,Object? picUrl = null,Object? img1v1Url = null,Object? musicSize = null,Object? albumSize = null,Object? briefDesc = null,Object? trans = null,Object? picIdStr = null,Object? img1v1IdStr = null,Object? alias = freezed,Object? transNames = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? picId = null,Object? img1v1Id = null,Object? picUrl = null,Object? img1v1Url = null,Object? musicSize = null,Object? albumSize = null,Object? briefDesc = null,Object? trans = null,Object? alias = freezed,Object? transNames = freezed,}) {
   return _then(_CloudMusicArtist(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -921,8 +917,6 @@ as String,musicSize: null == musicSize ? _self.musicSize : musicSize // ignore: 
 as int,albumSize: null == albumSize ? _self.albumSize : albumSize // ignore: cast_nullable_to_non_nullable
 as int,briefDesc: null == briefDesc ? _self.briefDesc : briefDesc // ignore: cast_nullable_to_non_nullable
 as String,trans: null == trans ? _self.trans : trans // ignore: cast_nullable_to_non_nullable
-as String,picIdStr: null == picIdStr ? _self.picIdStr : picIdStr // ignore: cast_nullable_to_non_nullable
-as String,img1v1IdStr: null == img1v1IdStr ? _self.img1v1IdStr : img1v1IdStr // ignore: cast_nullable_to_non_nullable
 as String,alias: freezed == alias ? _self._alias : alias // ignore: cast_nullable_to_non_nullable
 as List<String>?,transNames: freezed == transNames ? _self._transNames : transNames // ignore: cast_nullable_to_non_nullable
 as List<String>?,

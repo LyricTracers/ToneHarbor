@@ -31,7 +31,7 @@ Future<AlbumResponse> randomAlbums(
       groupKey: "randomAlbums",
     );
   } finally {
-    if (keepAliveDuration != null) {
+    if (keepAliveDuration == null) {
       link.close();
     }
   }
@@ -59,7 +59,7 @@ Future<AlbumResponse> recentAlbums(
       groupKey: "recentAlbums",
     );
   } finally {
-    if (keepAliveDuration != null) {
+    if (keepAliveDuration == null) {
       link.close();
     }
   }
@@ -87,7 +87,7 @@ Future<AlbumResponse> artistAlbums(
       groupKey: "artistAlbums",
     );
   } finally {
-    if (keepAliveDuration != null) {
+    if (keepAliveDuration == null) {
       link.close();
     }
   }
@@ -121,7 +121,7 @@ Future<AlbumResponse> searchAlbums(
       groupKey: "search",
     );
   } finally {
-    if (keepAliveDuration != null) {
+    if (keepAliveDuration == null) {
       link.close();
     }
   }

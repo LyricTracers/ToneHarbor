@@ -4,6 +4,7 @@ import 'package:toneharbor/providers/cloud_music/cloud_music_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
+import 'package:toneharbor/widgets/components/cloud_common_artists.dart';
 import 'package:toneharbor/widgets/components/cloud_recommend_playlists.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
@@ -261,11 +262,47 @@ class RecommendPage extends HookConsumerWidget {
                         endIndent: 16,
                         color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
-                      SizedBox(height: 8),
+                      SizedBox(height: 15),
+                      const CloudRecommendPlaylists(),
                       Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: const CloudRecommendPlaylists(),
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          top: 16,
+                          bottom: 8,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              i10n.cloud_recommend_playlist,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                i10n.more,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: colorScheme.tertiary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+                      Divider(
+                        height: 2,
+                        indent: 16,
+                        endIndent: 16,
+                        color: colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
+                      SizedBox(height: 15),
+                      const CloudMusicArtistHorizontalList(limit: 15),
+                      SizedBox(height: 15),
                     ],
                   ],
                 ),

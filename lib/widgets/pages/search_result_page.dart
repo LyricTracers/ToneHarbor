@@ -8,9 +8,9 @@ import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
-class SearchResulutPage extends HookConsumerWidget {
+class SearchResultPage extends HookConsumerWidget {
   final String query;
-  const SearchResulutPage({super.key, required this.query});
+  const SearchResultPage({super.key, required this.query});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

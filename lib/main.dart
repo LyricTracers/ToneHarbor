@@ -330,7 +330,7 @@ class MyApp extends HookConsumerWidget {
                 pageBuilder: (context, state) {
                   return buildPage(
                     key: state.pageKey,
-                    child: SearchResulutPage(
+                    child: SearchResultPage(
                       query: state.pathParameters['query'] ?? '',
                     ),
                   );
@@ -567,7 +567,7 @@ class MyApp extends HookConsumerWidget {
               return buildPage(
                 key: state.pageKey,
                 child: MobileFullLayout(
-                  child: SearchResulutPage(
+                  child: SearchResultPage(
                     query: state.pathParameters['query'] ?? '',
                   ),
                 ),

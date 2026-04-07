@@ -21,13 +21,6 @@ class MobileFullLayout extends BaseBgLayout {
         );
       }),
     );
-    useEffect(() {
-      return () {
-        Future.microtask(() {
-          ref.invalidate(songSelectionProvider);
-        });
-      };
-    }, []);
     return Column(
       children: [
         Expanded(child: child),

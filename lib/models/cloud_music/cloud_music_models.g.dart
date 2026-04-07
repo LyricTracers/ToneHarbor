@@ -84,8 +84,6 @@ _CloudMusicArtist _$CloudMusicArtistFromJson(Map<String, dynamic> json) =>
       albumSize: (json['albumSize'] as num).toInt(),
       briefDesc: json['briefDesc'] as String,
       trans: json['trans'] as String,
-      picIdStr: json['picId_str'] as String,
-      img1v1IdStr: json['img1v1Id_str'] as String,
       alias: (json['alias'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
@@ -106,8 +104,6 @@ Map<String, dynamic> _$CloudMusicArtistToJson(_CloudMusicArtist instance) =>
       'albumSize': instance.albumSize,
       'briefDesc': instance.briefDesc,
       'trans': instance.trans,
-      'picId_str': instance.picIdStr,
-      'img1v1Id_str': instance.img1v1IdStr,
       'alias': instance.alias,
       'transNames': instance.transNames,
     };
