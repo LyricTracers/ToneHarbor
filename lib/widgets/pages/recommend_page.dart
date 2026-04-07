@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/providers/cloud_music/cloud_music_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
+import 'package:toneharbor/widgets/components/cloud_recommend_playlists.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class RecommendPage extends HookConsumerWidget {
@@ -42,6 +43,8 @@ class RecommendPage extends HookConsumerWidget {
     var colorScheme = getColorSchemeWhenReady(ref);
     final i10n = ref.watch(l10nProvider);
     final size = MediaQuery.of(context).size;
+    final useCloudMusic = ref.watch(shouldUseCloudMusicHomeProvider);
+
     return Column(
       children: [
         if (size.lgAndUp) buildAppBar(context, ref, colorScheme),
@@ -107,118 +110,163 @@ class RecommendPage extends HookConsumerWidget {
                       },
                       limit: 20,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 16,
-                        right: 16,
-                        top: 16,
-                        bottom: 8,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            i10n.daily_recommend,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              context.pushWrapper(
-                                "/random_songs/${Uri.encodeComponent(i10n.daily_recommend)}",
-                              );
-                            },
-                            child: Text(
-                              i10n.more,
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: colorScheme.tertiary,
+                    if (!useCloudMusic) ...[
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          top: 16,
+                          bottom: 8,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              i10n.daily_recommend,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
+                            TextButton(
+                              onPressed: () {
+                                context.pushWrapper(
+                                  "/random_songs/${Uri.encodeComponent(i10n.daily_recommend)}",
+                                );
+                              },
+                              child: Text(
+                                i10n.more,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: colorScheme.tertiary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(
+                        height: 2,
+                        indent: 16,
+                        endIndent: 16,
+                        color: colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
+                      SizedBox(height: 8),
+                      const RecommendPageDailySongs(),
+                      SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          top: 8,
+                          bottom: 8,
+                        ),
+                        child: Text(
+                          i10n.recommend_albums,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
-                      ),
-                    ),
-                    Divider(
-                      height: 2,
-                      indent: 16,
-                      endIndent: 16,
-                      color: colorScheme.onSurface.withValues(alpha: 0.5),
-                    ),
-                    SizedBox(height: 8),
-                    const RecommendPageDailySongs(),
-                    SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 16,
-                        right: 16,
-                        top: 8,
-                        bottom: 8,
-                      ),
-                      child: Text(
-                        i10n.recommend_albums,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                    Divider(
-                      height: 2,
-                      indent: 16,
-                      endIndent: 16,
-                      color: colorScheme.onSurface.withValues(alpha: 0.5),
-                    ),
-                    SizedBox(height: 8),
-                    CommonAlbums(
-                      albums: ref.watch(
-                        albumsProvider(
-                          limit: 20,
-                          sortBy: 'year',
-                          sortDirection: 'desc',
-                        ),
+                      Divider(
+                        height: 2,
+                        indent: 16,
+                        endIndent: 16,
+                        color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
-                      onErrorTap: () {
-                        ref.invalidate(
+                      SizedBox(height: 8),
+                      CommonAlbums(
+                        albums: ref.watch(
                           albumsProvider(
                             limit: 20,
                             sortBy: 'year',
                             sortDirection: 'desc',
                           ),
-                        );
-                      },
-                    ),
-                    SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 16,
-                        right: 16,
-                        top: 8,
-                        bottom: 8,
+                        ),
+                        onErrorTap: () {
+                          ref.invalidate(
+                            albumsProvider(
+                              limit: 20,
+                              sortBy: 'year',
+                              sortDirection: 'desc',
+                            ),
+                          );
+                        },
                       ),
-                      child: Text(
-                        i10n.recent_albums,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                      SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          top: 8,
+                          bottom: 8,
+                        ),
+                        child: Text(
+                          i10n.recent_albums,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                    Divider(
-                      height: 2,
-                      indent: 16,
-                      endIndent: 16,
-                      color: colorScheme.onSurface.withValues(alpha: 0.5),
-                    ),
-                    SizedBox(height: 8),
-                    CommonAlbums(
-                      albums: ref.watch(recentAlbumsProvider()),
-                      onErrorTap: () {
-                        ref.invalidate(recentAlbumsProvider());
-                      },
-                    ),
+                      Divider(
+                        height: 2,
+                        indent: 16,
+                        endIndent: 16,
+                        color: colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
+                      SizedBox(height: 8),
+                      CommonAlbums(
+                        albums: ref.watch(recentAlbumsProvider()),
+                        onErrorTap: () {
+                          ref.invalidate(recentAlbumsProvider());
+                        },
+                      ),
+                    ],
+                    if (useCloudMusic) ...[
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          top: 16,
+                          bottom: 8,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              i10n.cloud_recommend_playlist,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                i10n.more,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: colorScheme.tertiary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(
+                        height: 2,
+                        indent: 16,
+                        endIndent: 16,
+                        color: colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
+                      SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: const CloudRecommendPlaylists(),
+                      ),
+                    ],
                   ],
                 ),
               ),

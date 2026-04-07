@@ -557,7 +557,7 @@ final class CloudMusicApiUrlsProvider
   }
 }
 
-String _$cloudMusicApiUrlsHash() => r'd3062c24919b2a159b77e0e1fa3d8717f2052284';
+String _$cloudMusicApiUrlsHash() => r'7d5cdf2d14524545d8a4ecf8ebf6cb3372445e4c';
 
 abstract class _$CloudMusicApiUrls extends $Notifier<CloudMusicApiState> {
   CloudMusicApiState build();

@@ -63,8 +63,9 @@ Future<void> writeTrackMetadata({
 Future<Uint8List?> getCoverBytes(
   Ref ref,
   String coverUrl,
-  String fileName,
-) async {
+  String fileName, {
+  bool isCloudMusic = false,
+}) async {
   try {
     final coverCacheDir = await getCoverCacheDir();
     final coverDir = Directory(coverCacheDir);
@@ -76,16 +77,18 @@ Future<Uint8List?> getCoverBytes(
     if (await cacheFile.exists()) {
       return await cacheFile.readAsBytes();
     }
-
-    final authHeaders = await ref.read(authHeadersProvider.future);
-    if (authHeaders == null) {
-      logger.w('[Metadata] No auth headers, skipping cover download');
-      return null;
+    rhttp.HttpHeaders? headers;
+    if (!isCloudMusic) {
+      final authHeaders = await ref.read(authHeadersProvider.future);
+      if (authHeaders == null) {
+        logger.w('[Metadata] No auth headers, skipping cover download');
+        return null;
+      }
+      headers = rhttp.HttpHeaders.rawMap({...authHeaders, 'accept': 'image/*'});
     }
-
     final response = await coverDownloadHttpClientWrapper.getBytes(
       coverUrl,
-      headers: rhttp.HttpHeaders.rawMap({...authHeaders, 'accept': 'image/*'}),
+      headers: headers,
     );
 
     final bytes = response.body;

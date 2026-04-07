@@ -842,4 +842,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clear_all => 'Clear All';
+
+  @override
+  String get recommend_playlist => 'Recommended Playlists';
+
+  @override
+  String get new_albums => 'New Albums';
+
+  @override
+  String get top_lists => 'Top Lists';
+
+  @override
+  String get recommend_artists => 'Recommended Artists';
+
+  @override
+  String get cloud_recommend_playlist => 'Cloud Recommended Playlist';
 }

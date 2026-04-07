@@ -750,3 +750,27 @@ void showModalBottomSheetWidget(
     );
   }
 }
+
+void showSetBackgroundDialog(
+  BuildContext context,
+  ColorScheme colorScheme,
+  WidgetRef ref,
+  Function() onSetBackground,
+) {
+  final l10n = ref.read(l10nProvider);
+  if (context.mounted == false) {
+    return;
+  }
+  showCommonDialog(
+    context: context,
+    colorScheme: colorScheme,
+    title: l10n.setThemeBackground,
+    content: Text(
+      l10n.setThemeBackgroundConfirm,
+      style: TextStyle(fontSize: 16, color: colorScheme.onSurface),
+    ),
+    cancelText: l10n.cancel,
+    confirmText: l10n.confirm,
+    onConfirm: () => onSetBackground(),
+  );
+}

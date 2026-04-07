@@ -15,7 +15,7 @@ part 'tone_harbor_track.freezed.dart';
 
 part 'tone_harbor_track.g.dart';
 
-enum ToneHarborTrackPlatform { synology, local }
+enum ToneHarborTrackPlatform { synology, local, cloud_music }
 
 abstract mixin class AsTrack {
   String get id;

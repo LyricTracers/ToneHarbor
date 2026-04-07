@@ -65,6 +65,7 @@ Map<String, dynamic> _$ToneHarborTrackObjectFullToJson(
 const _$ToneHarborTrackPlatformEnumMap = {
   ToneHarborTrackPlatform.synology: 'synology',
   ToneHarborTrackPlatform.local: 'local',
+  ToneHarborTrackPlatform.cloud_music: 'cloud_music',
 };
 
 ToneHarborTrackObjectMultLocal _$ToneHarborTrackObjectMultLocalFromJson(

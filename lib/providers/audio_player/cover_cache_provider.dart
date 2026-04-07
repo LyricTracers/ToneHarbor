@@ -50,3 +50,26 @@ Future<Uint8List?> fetchCoverBytes(
     }
   }
 }
+
+@riverpod
+Future<Uint8List?> fetchCloudMusicCoverBytes(
+  Ref ref, {
+  required String imageUrl,
+  required String key,
+  Duration? liveKeepDuration,
+}) async {
+  final link = ref.keepAliveFor(liveKeepDuration);
+  try {
+    final coverUrl = imageUrl;
+    if (coverUrl.isEmpty) {
+      return null;
+    }
+    return await getCoverBytes(ref, coverUrl, key, isCloudMusic: true);
+  } catch (e) {
+    return null;
+  } finally {
+    if (liveKeepDuration == null) {
+      link.close();
+    }
+  }
+}

@@ -1723,6 +1723,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Clear All'**
   String get clear_all;
+
+  /// No description provided for @recommend_playlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended Playlists'**
+  String get recommend_playlist;
+
+  /// No description provided for @new_albums.
+  ///
+  /// In en, this message translates to:
+  /// **'New Albums'**
+  String get new_albums;
+
+  /// No description provided for @top_lists.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Lists'**
+  String get top_lists;
+
+  /// No description provided for @recommend_artists.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended Artists'**
+  String get recommend_artists;
+
+  /// No description provided for @cloud_recommend_playlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud Recommended Playlist'**
+  String get cloud_recommend_playlist;
 }
 
 class _AppLocalizationsDelegate

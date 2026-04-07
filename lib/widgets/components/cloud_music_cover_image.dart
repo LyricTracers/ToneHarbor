@@ -1,37 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/widgets/components/cached_network_image.dart';
 
-class SongCoverImage extends HookConsumerWidget {
-  const SongCoverImage({
+class CloudMusicCoverImage extends HookConsumerWidget {
+  const CloudMusicCoverImage({
     super.key,
-    required this.songId,
-    required this.albumName,
-    required this.artistName,
+    required this.imageUrl,
     required this.colorScheme,
     required this.config,
     this.onLongPress,
   });
 
-  final String songId;
-  final String albumName;
-  final String artistName;
+  final String imageUrl;
   final ColorScheme colorScheme;
-  final SongCoverImageConfig config;
+  final CloudMusicCoverImageConfig config;
   final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    String cacheKey = songId;
-    if (cacheKey.isEmpty) {
-      cacheKey = sanitizeCacheKey("$artistName-$albumName");
-    }
-
     final borderRadius = config.isCircular
         ? config.size / 2
         : config.borderRadius;
@@ -51,17 +41,15 @@ class SongCoverImage extends HookConsumerWidget {
 
     Widget imageChild = ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
-      child: CachedNetworkImage(
+      child: CachedNetworkImage.fromUrl(
         keepLiveDuration: const Duration(minutes: 1),
-        songId: songId,
-        albumName: albumName,
-        artistName: artistName,
-        cacheKey: cacheKey,
+        imageUrl: imageUrl,
+        cacheKey: 'cloud_cover_${imageUrl.hashCode}',
         width: config.size,
         height: config.size,
         fit: BoxFit.cover,
         placeholder: (context) {
-          return CoverPlaceholder(
+          return CloudCoverPlaceholder(
             colorScheme: colorScheme,
             size: config.size,
             borderRadius: borderRadius,
@@ -69,7 +57,7 @@ class SongCoverImage extends HookConsumerWidget {
           );
         },
         errorWidget: (context, error) {
-          return CoverPlaceholder(
+          return CloudCoverPlaceholder(
             colorScheme: colorScheme,
             size: config.size,
             borderRadius: borderRadius,
@@ -85,11 +73,9 @@ class SongCoverImage extends HookConsumerWidget {
                 showSetBackgroundDialog(context, colorScheme, ref, () async {
                   try {
                     final bytes = await ref.watch(
-                      fetchCoverBytesProvider(
-                        songId: songId,
-                        albumName: albumName,
-                        artistName: artistName,
-                        key: cacheKey,
+                      fetchCloudMusicCoverBytesProvider(
+                        imageUrl: imageUrl,
+                        key: 'cloud_cover_${imageUrl.hashCode}',
                         liveKeepDuration: const Duration(minutes: 10),
                       ).future,
                     );
@@ -135,18 +121,14 @@ class SongCoverImage extends HookConsumerWidget {
       );
     }
 
-    return Builder(
-      builder: (context) {
-        return imageChild;
-      },
-    );
+    return imageChild;
   }
 }
 
-class SongCoverImageConfig {
-  const SongCoverImageConfig({
+class CloudMusicCoverImageConfig {
+  const CloudMusicCoverImageConfig({
     required this.size,
-    this.borderRadius = 8,
+    this.borderRadius = 12,
     this.isCircular = false,
     this.borderWidth,
     this.borderColor,
@@ -162,18 +144,16 @@ class SongCoverImageConfig {
   final bool rotating;
   final Duration rotationDuration;
 
-  static const SongCoverImageConfig defaultConfig = SongCoverImageConfig(
-    size: 48,
-    borderRadius: 8,
-  );
+  static const CloudMusicCoverImageConfig defaultConfig =
+      CloudMusicCoverImageConfig(size: 130, borderRadius: 12);
 }
 
-class CoverPlaceholder extends StatelessWidget {
-  const CoverPlaceholder({
+class CloudCoverPlaceholder extends StatelessWidget {
+  const CloudCoverPlaceholder({
     super.key,
     required this.colorScheme,
     required this.size,
-    this.borderRadius = 8,
+    this.borderRadius = 12,
     this.isLoading = false,
   });
 
@@ -202,15 +182,10 @@ class CoverPlaceholder extends StatelessWidget {
               ),
             )
           : RepaintBoundary(
-              child: SvgPicture.string(
-                placeholderErrorIconString,
-                width: size * 0.4,
-                height: size * 0.4,
-                fit: BoxFit.fitWidth,
-                colorFilter: const ColorFilter.mode(
-                  Colors.white54,
-                  BlendMode.srcIn,
-                ),
+              child: Icon(
+                Icons.music_note,
+                size: size * 0.4,
+                color: colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
     );

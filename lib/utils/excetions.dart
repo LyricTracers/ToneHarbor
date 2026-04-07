@@ -19,3 +19,18 @@ class AudioStationException implements Exception {
     return 'AudioStationException: $message';
   }
 }
+
+class CloudMusicException implements Exception {
+  final String message;
+  final int? statusCode;
+
+  CloudMusicException({required this.message, this.statusCode});
+
+  @override
+  String toString() {
+    if (statusCode != null) {
+      return 'CloudMusicException: $message (状态码: $statusCode)';
+    }
+    return 'CloudMusicException: $message';
+  }
+}

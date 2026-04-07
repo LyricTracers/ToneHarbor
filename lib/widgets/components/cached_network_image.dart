@@ -64,19 +64,57 @@ class CachedNetworkImage extends ConsumerWidget {
     this.errorListener,
     this.keepLiveDuration,
     this.packageChild,
-  });
+  }) : imageUrl = '';
+
+  const CachedNetworkImage.fromUrl({
+    super.key,
+    required this.imageUrl,
+    this.cacheKey,
+    this.imageBuilder,
+    this.placeholder,
+    this.errorWidget,
+    this.fadeInDuration = const Duration(milliseconds: 300),
+    this.fadeInCurve = Curves.easeIn,
+    this.width,
+    this.height,
+    this.fit,
+    this.alignment = Alignment.center,
+    this.repeat = ImageRepeat.noRepeat,
+    this.matchTextDirection = false,
+    this.gaplessPlayback = true,
+    this.color,
+    this.filterQuality = FilterQuality.low,
+    this.colorBlendMode,
+    this.memCacheWidth,
+    this.memCacheHeight,
+    this.errorListener,
+    this.keepLiveDuration,
+    this.packageChild,
+  }) : songId = '',
+       albumName = '',
+       artistName = '';
+
+  final String imageUrl;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final asyncValue = ref.watch(
-      fetchCoverBytesProvider(
-        songId: songId,
-        albumName: albumName,
-        artistName: artistName,
-        key: cacheKey ?? songId,
-        liveKeepDuration: keepLiveDuration,
-      ),
-    );
+    final asyncValue = imageUrl.isEmpty
+        ? ref.watch(
+            fetchCoverBytesProvider(
+              songId: songId,
+              albumName: albumName,
+              artistName: artistName,
+              key: cacheKey ?? songId,
+              liveKeepDuration: keepLiveDuration,
+            ),
+          )
+        : ref.watch(
+            fetchCloudMusicCoverBytesProvider(
+              imageUrl: imageUrl,
+              key: cacheKey ?? imageUrl,
+              liveKeepDuration: keepLiveDuration,
+            ),
+          );
 
     return asyncValue.when(
       data: (bytes) {

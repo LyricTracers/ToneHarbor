@@ -253,11 +253,14 @@ class CloudMusicApiUrls extends _$CloudMusicApiUrls {
   }
 
   Future<void> addUrl(String url) async {
-    if (url.trim().isEmpty) return;
+    final normalizedUrl = url.trim().replaceAll(RegExp(r'/+$'), '');
+    if (normalizedUrl.isEmpty) return;
     final currentUrls = List<String>.from(state.urls);
-    if (!currentUrls.contains(url)) {
-      currentUrls.insert(0, url);
-      final newDefaultUrl = state.defaultUrl.isEmpty ? url : state.defaultUrl;
+    if (!currentUrls.contains(normalizedUrl)) {
+      currentUrls.insert(0, normalizedUrl);
+      final newDefaultUrl = state.defaultUrl.isEmpty
+          ? normalizedUrl
+          : state.defaultUrl;
       state = state.copyWith(urls: currentUrls, defaultUrl: newDefaultUrl);
       await SharedPreferencesUtils.setCloudMusicApiUrls(currentUrls);
       await SharedPreferencesUtils.setCloudMusicApiDefaultUrl(newDefaultUrl);

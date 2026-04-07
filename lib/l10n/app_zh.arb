@@ -275,5 +275,11 @@
   "refresh": "刷新",
   "select_all": "全选",
   "login": "登录",
-  "clear_all": "清空"
+  "clear_all": "清空",
+  "recommend_playlist": "推荐歌单",
+  "new_albums": "新专辑",
+  "top_lists": "排行榜",
+  "cloud_recommend_playlist": "云推荐歌单",
+  "recommend_artists": "推荐歌手",
+  "retry": "重试"
 }
