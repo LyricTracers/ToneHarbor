@@ -15,7 +15,9 @@ mixin BuildItem {
     final toolbarHeight = kToolbarHeight * size.multiplier3;
     return AppBar(
       toolbarHeight: toolbarHeight,
-      backgroundColor: Colors.transparent,
+      backgroundColor: size.lgAndUp
+          ? colorScheme.tertiary.withValues(alpha: 0.1)
+          : Colors.transparent,
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,
       title: Text(

@@ -19,6 +19,7 @@ class HomeLayout extends BaseBgLayout {
     super.offsetLeft = 200,
     required this.child,
     required this.currentPath,
+    super.appbar = false,
   });
 
   @override

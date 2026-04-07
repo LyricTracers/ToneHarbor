@@ -41,7 +41,9 @@ class AlbumPage extends HookConsumerWidget {
               icon: Icon(Icons.arrow_back_ios_sharp),
             ),
             toolbarHeight: toolbarHeight,
-            backgroundColor: Colors.transparent,
+            backgroundColor: size.lgAndUp
+                ? colorScheme.tertiary.withValues(alpha: 0.1)
+                : Colors.transparent,
             surfaceTintColor: Colors.transparent,
             scrolledUnderElevation: 0,
             actions: [
@@ -54,7 +56,9 @@ class AlbumPage extends HookConsumerWidget {
           )
         : AppBar(
             toolbarHeight: toolbarHeight,
-            backgroundColor: Colors.transparent,
+            backgroundColor: size.lgAndUp
+                ? colorScheme.tertiary.withValues(alpha: 0.1)
+                : Colors.transparent,
             surfaceTintColor: Colors.transparent,
             scrolledUnderElevation: 0,
             title: Row(

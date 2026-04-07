@@ -162,7 +162,9 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
               icon: Icon(Icons.arrow_back_ios_sharp),
             ),
             toolbarHeight: toolbarHeight,
-            backgroundColor: Colors.transparent,
+            backgroundColor: size.lgAndUp
+                ? colorScheme.tertiary.withValues(alpha: 0.1)
+                : Colors.transparent,
             surfaceTintColor: Colors.transparent,
             scrolledUnderElevation: 0,
             actions: [
@@ -174,7 +176,9 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
             ],
           )
         : AppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: size.lgAndUp
+                ? colorScheme.tertiary.withValues(alpha: 0.1)
+                : Colors.transparent,
             surfaceTintColor: Colors.transparent,
             scrolledUnderElevation: 0,
             toolbarHeight: toolbarHeight,

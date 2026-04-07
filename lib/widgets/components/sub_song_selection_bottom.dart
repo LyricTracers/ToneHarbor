@@ -67,7 +67,9 @@ class SubSongSelectionBottom extends HookConsumerWidget {
     final colorScheme = getColorSchemeWhenReady(ref);
     final size = MediaQuery.of(context).size;
     return AppBar(
-      backgroundColor: Colors.transparent,
+      backgroundColor: size.lgAndUp
+          ? colorScheme.tertiary.withValues(alpha: 0.1)
+          : Colors.transparent,
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,
       toolbarHeight: kToolbarHeight * size.multiplier3,

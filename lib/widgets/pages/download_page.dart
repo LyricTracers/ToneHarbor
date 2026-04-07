@@ -53,7 +53,9 @@ class DownloadPage extends HookConsumerWidget {
       children: [
         if (songSelectionState.selectionType)
           AppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: size.lgAndUp
+                ? colorScheme.tertiary.withValues(alpha: 0.1)
+                : Colors.transparent,
             surfaceTintColor: Colors.transparent,
             scrolledUnderElevation: 0,
             toolbarHeight: toolbarHeight,
@@ -125,7 +127,9 @@ class DownloadPage extends HookConsumerWidget {
           ),
         if (!songSelectionState.selectionType)
           AppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: size.lgAndUp
+                ? colorScheme.tertiary.withValues(alpha: 0.1)
+                : Colors.transparent,
             surfaceTintColor: Colors.transparent,
             scrolledUnderElevation: 0,
             toolbarHeight: toolbarHeight,
@@ -188,7 +192,9 @@ class DownloadPage extends HookConsumerWidget {
         ),
         if (songSelectionState.selectionType && selectedTab.value == 0)
           AppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: size.lgAndUp
+                ? colorScheme.tertiary.withValues(alpha: 0.1)
+                : Colors.transparent,
             surfaceTintColor: Colors.transparent,
             scrolledUnderElevation: 0,
             toolbarHeight: kToolbarHeight * multiplier,
@@ -231,7 +237,9 @@ class DownloadPage extends HookConsumerWidget {
 
         if (songSelectionState.selectionType && selectedTab.value == 1)
           AppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: size.lgAndUp
+                ? colorScheme.tertiary.withValues(alpha: 0.1)
+                : Colors.transparent,
             surfaceTintColor: Colors.transparent,
             scrolledUnderElevation: 0,
             toolbarHeight: kToolbarHeight * multiplier,

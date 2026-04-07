@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
 
 class SubSongSelectionTop extends HookConsumerWidget {
@@ -13,9 +14,12 @@ class SubSongSelectionTop extends HookConsumerWidget {
     final l10n = ref.watch(l10nProvider);
     final size = MediaQuery.of(context).size;
     final toolbarHeight = kToolbarHeight * size.multiplier3;
+    final colorScheme = getColorSchemeWhenReady(ref);
     return AppBar(
       toolbarHeight: toolbarHeight,
-      backgroundColor: Colors.transparent,
+      backgroundColor: size.lgAndUp
+          ? colorScheme.tertiary.withValues(alpha: 0.1)
+          : Colors.transparent,
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,
       automaticallyImplyLeading: false,

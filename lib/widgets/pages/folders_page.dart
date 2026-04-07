@@ -185,7 +185,9 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
               icon: Icon(Icons.arrow_back_ios_sharp),
             ),
             toolbarHeight: toolbarHeight,
-            backgroundColor: Colors.transparent,
+            backgroundColor: size.lgAndUp
+                ? colorScheme.tertiary.withValues(alpha: 0.1)
+                : Colors.transparent,
             surfaceTintColor: Colors.transparent,
             scrolledUnderElevation: 0,
             actions: [
@@ -197,7 +199,9 @@ class FoldersPage<T extends ExtraProvider<FolderResponse>>
             ],
           )
         : AppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: size.lgAndUp
+                ? colorScheme.tertiary.withValues(alpha: 0.1)
+                : Colors.transparent,
             surfaceTintColor: Colors.transparent,
             scrolledUnderElevation: 0,
             toolbarHeight: toolbarHeight,

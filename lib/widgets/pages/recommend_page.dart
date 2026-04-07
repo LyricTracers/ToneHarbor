@@ -18,7 +18,7 @@ class RecommendPage extends HookConsumerWidget {
     final i10n = ref.watch(l10nProvider);
 
     return AppBar(
-      backgroundColor: Colors.transparent,
+      backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,
       title: Text(

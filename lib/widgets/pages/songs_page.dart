@@ -68,7 +68,9 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
               icon: Icon(Icons.arrow_back_ios_sharp),
             ),
             toolbarHeight: toolbarHeight,
-            backgroundColor: Colors.transparent,
+            backgroundColor: size.lgAndUp
+                ? colorScheme.tertiary.withValues(alpha: 0.1)
+                : Colors.transparent,
             surfaceTintColor: Colors.transparent,
             scrolledUnderElevation: 0,
             actions: [
@@ -81,7 +83,9 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
           )
         : AppBar(
             toolbarHeight: toolbarHeight,
-            backgroundColor: Colors.transparent,
+            backgroundColor: size.lgAndUp
+                ? colorScheme.tertiary.withValues(alpha: 0.1)
+                : Colors.transparent,
             surfaceTintColor: Colors.transparent,
             scrolledUnderElevation: 0,
             title: Column(
