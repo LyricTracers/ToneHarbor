@@ -245,9 +245,6 @@ class FavoriteSongs extends _$FavoriteSongs
       extraSortBy = sortBy;
       extraSortDirection = sortDirection;
     }
-    logger.i(
-      'FavoriteSongs,update authHeaders:${authHeaders.entries.map((entry) => '${entry.key}=${entry.value}').join(', ')},extraSortBy: $extraSortBy, extraSortDirection: $extraSortDirection',
-    );
     var result = await _getSongs(
       ref: ref,
       limit: limit,
