@@ -8,6 +8,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
+import 'dart:io';
 
 class HomeLayout extends BaseBgLayout {
   final Widget child;
@@ -45,7 +46,8 @@ class HomeLayout extends BaseBgLayout {
       children: [
         Row(
           children: [
-            SizedBox(
+            Container(
+              color: Colors.transparent,
               width: 200,
               height: double.infinity,
               child: AnimatedContainer(
@@ -56,7 +58,10 @@ class HomeLayout extends BaseBgLayout {
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(top: 20, bottom: 8),
+                        padding: EdgeInsets.only(
+                          top: Platform.isMacOS ? 20 : 0,
+                          bottom: 8,
+                        ),
                         child: SearchHistoryTextField(
                           showHistoryIcon: false,
                           listTextStyle: const TextStyle(fontSize: 14),

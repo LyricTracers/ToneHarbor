@@ -61,18 +61,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
 
     final colorScheme = getColorSchemeWhenReady(ref);
     final gradientDecoration = BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment(-0.8, -0.8),
-        end: Alignment(0.8, 0.8),
-        stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
-        colors: [
-          colorScheme.surface,
-          colorScheme.surfaceContainerHighest,
-          colorScheme.surface,
-          colorScheme.surfaceContainerHighest,
-          colorScheme.surface,
-        ],
-      ),
+      color: colorScheme.tertiary.withValues(alpha: 0.1),
     );
 
     useEffect(() {
