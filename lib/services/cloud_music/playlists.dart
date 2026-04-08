@@ -97,16 +97,33 @@ Future<List<CloudMusicPlaylist>> dailyRecommendPlaylist(
 Future<CloudMusicPlaylistDetailData> getPlaylistDetail(
   Ref ref, {
   required int id,
-  bool noCache = false,
+  Duration? cacheDuration = const Duration(minutes: 60),
 }) async {
   final l10n = ref.read(l10nProvider);
   final apiState = ref.read(cloudMusicApiUrlsProvider);
+  final cacheKey = 'cloud_playlistDetail:$id';
+  final groupKey = 'cloud_playlistDetail';
+  if (cacheDuration != null) {
+    final cached = await getFromCache<CloudMusicPlaylistDetailData?>(
+      cacheKey: cacheKey,
+      group: groupKey,
+      fromJson: (json) {
+        final playlist = json['playlist'] as Map<String, dynamic>?;
+        if (playlist == null) {
+          return null;
+        }
+        return CloudMusicPlaylistDetailData.fromJson(playlist);
+      },
+    );
+    if (cached != null) {
+      return cached;
+    }
+  }
 
   try {
     final query = <String, String>{
       'id': id.toString(),
-      if (noCache)
-        'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+      'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
     };
 
     final cookieParams = CloudMusicAuth.getApiCookieParams();
@@ -121,6 +138,9 @@ Future<CloudMusicPlaylistDetailData> getPlaylistDetail(
     );
     logger.i("======response:${response.body}======");
     if (response.statusCode != 200) {
+      if (response.statusCode == 301) {
+        ref.read(cloudMusicAuthStateProvider.notifier).logout();
+      }
       logger.e('请求失败，状态码：${response.statusCode}');
       throw CloudMusicException(
         message: l10n.error_getPlaylists_failed,
@@ -148,6 +168,14 @@ Future<CloudMusicPlaylistDetailData> getPlaylistDetail(
       throw CloudMusicException(message: l10n.error_getPlaylists_failed);
     }
 
+    if (cacheDuration != null) {
+      await saveToCache(
+        cacheKey: cacheKey,
+        jsonBody: jsonBody,
+        cacheDuration: cacheDuration,
+        group: groupKey,
+      );
+    }
     return CloudMusicPlaylistDetailData.fromJson(playlist);
   } catch (e) {
     logger.e('获取歌单详情失败: $e');
@@ -181,6 +209,9 @@ Future<CloudMusicSongDetailResponse> getTrackDetail(
     );
 
     if (response.statusCode != 200) {
+      if (response.statusCode == 301) {
+        ref.read(cloudMusicAuthStateProvider.notifier).logout();
+      }
       logger.e('请求失败，状态码：${response.statusCode}');
       throw CloudMusicException(
         message: l10n.error_getPlaylists_failed,

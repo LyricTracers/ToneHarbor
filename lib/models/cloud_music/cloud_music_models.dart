@@ -123,7 +123,6 @@ sealed class CloudMusicSong with _$CloudMusicSong {
     int? dt,
     int? pop,
     int? no,
-    List<String>? reason,
     int? fee,
     int? copyright,
     int? mark,
@@ -160,15 +159,11 @@ sealed class CloudMusicPlaylistDetailData with _$CloudMusicPlaylistDetailData {
     required String name,
     String? coverImgUrl,
     String? description,
-    int? playCount,
     int? trackCount,
     List<CloudMusicSong>? tracks,
     List<CloudMusicTrackId>? trackIds,
     CloudMusicUser? creator,
     int? createTime,
-    int? updateTime,
-    int? subscribedCount,
-    int? commentCount,
     List<String>? tags,
     int? privacy,
     bool? subscribed,
@@ -184,7 +179,7 @@ sealed class CloudMusicTrackId with _$CloudMusicTrackId {
   const factory CloudMusicTrackId({
     required int id,
     int? v,
-    int? alg,
+    String? alg,
     int? uid,
   }) = _CloudMusicTrackId;
 

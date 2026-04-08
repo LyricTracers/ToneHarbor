@@ -91,15 +91,8 @@ Future<List<CloudMusicArtist>> recommendTopArtist(
 class CloudMusicPlaylistDetail extends _$CloudMusicPlaylistDetail {
   @override
   Future<CloudMusicPlaylistDetailData?> build(int playlistId) async {
-    return _loadPlaylistDetail(playlistId);
-  }
-
-  Future<CloudMusicPlaylistDetailData?> _loadPlaylistDetail(int id) async {
-    try {
-      return await getPlaylistDetail(ref, id: id, noCache: true);
-    } catch (e) {
-      return null;
-    }
+    ref.keepAliveFor(Duration(minutes: 1));
+    return await getPlaylistDetail(ref, id: playlistId);
   }
 
   Future<void> loadMore({int loadNum = 100}) async {

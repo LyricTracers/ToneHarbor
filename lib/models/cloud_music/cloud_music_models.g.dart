@@ -121,9 +121,6 @@ _CloudMusicSong _$CloudMusicSongFromJson(Map<String, dynamic> json) =>
       dt: (json['dt'] as num?)?.toInt(),
       pop: (json['pop'] as num?)?.toInt(),
       no: (json['no'] as num?)?.toInt(),
-      reason: (json['reason'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
       fee: (json['fee'] as num?)?.toInt(),
       copyright: (json['copyright'] as num?)?.toInt(),
       mark: (json['mark'] as num?)?.toInt(),
@@ -139,7 +136,6 @@ Map<String, dynamic> _$CloudMusicSongToJson(_CloudMusicSong instance) =>
       'dt': instance.dt,
       'pop': instance.pop,
       'no': instance.no,
-      'reason': instance.reason,
       'fee': instance.fee,
       'copyright': instance.copyright,
       'mark': instance.mark,
@@ -169,7 +165,6 @@ _CloudMusicPlaylistDetailData _$CloudMusicPlaylistDetailDataFromJson(
   name: json['name'] as String,
   coverImgUrl: json['coverImgUrl'] as String?,
   description: json['description'] as String?,
-  playCount: (json['playCount'] as num?)?.toInt(),
   trackCount: (json['trackCount'] as num?)?.toInt(),
   tracks: (json['tracks'] as List<dynamic>?)
       ?.map((e) => CloudMusicSong.fromJson(e as Map<String, dynamic>))
@@ -181,9 +176,6 @@ _CloudMusicPlaylistDetailData _$CloudMusicPlaylistDetailDataFromJson(
       ? null
       : CloudMusicUser.fromJson(json['creator'] as Map<String, dynamic>),
   createTime: (json['createTime'] as num?)?.toInt(),
-  updateTime: (json['updateTime'] as num?)?.toInt(),
-  subscribedCount: (json['subscribedCount'] as num?)?.toInt(),
-  commentCount: (json['commentCount'] as num?)?.toInt(),
   tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
   privacy: (json['privacy'] as num?)?.toInt(),
   subscribed: json['subscribed'] as bool?,
@@ -196,15 +188,11 @@ Map<String, dynamic> _$CloudMusicPlaylistDetailDataToJson(
   'name': instance.name,
   'coverImgUrl': instance.coverImgUrl,
   'description': instance.description,
-  'playCount': instance.playCount,
   'trackCount': instance.trackCount,
   'tracks': instance.tracks,
   'trackIds': instance.trackIds,
   'creator': instance.creator,
   'createTime': instance.createTime,
-  'updateTime': instance.updateTime,
-  'subscribedCount': instance.subscribedCount,
-  'commentCount': instance.commentCount,
   'tags': instance.tags,
   'privacy': instance.privacy,
   'subscribed': instance.subscribed,
@@ -214,7 +202,7 @@ _CloudMusicTrackId _$CloudMusicTrackIdFromJson(Map<String, dynamic> json) =>
     _CloudMusicTrackId(
       id: (json['id'] as num).toInt(),
       v: (json['v'] as num?)?.toInt(),
-      alg: (json['alg'] as num?)?.toInt(),
+      alg: json['alg'] as String?,
       uid: (json['uid'] as num?)?.toInt(),
     );
 
