@@ -736,6 +736,7 @@ class MyApp extends HookConsumerWidget {
               return buildPage(
                 key: state.pageKey,
                 child: MobileFullLayout(
+                  appbar: false,
                   child: CloudDetailPlaylistPage(
                     playlist: state.extra as CloudMusicPlaylistData,
                   ),
