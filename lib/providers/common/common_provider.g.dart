@@ -630,3 +630,56 @@ abstract class _$CloudMusicLanguage extends $Notifier<CloudMusicLanguageType> {
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(CloudMusicAuthState)
+final cloudMusicAuthStateProvider = CloudMusicAuthStateProvider._();
+
+final class CloudMusicAuthStateProvider
+    extends $NotifierProvider<CloudMusicAuthState, bool> {
+  CloudMusicAuthStateProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'cloudMusicAuthStateProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudMusicAuthStateHash();
+
+  @$internal
+  @override
+  CloudMusicAuthState create() => CloudMusicAuthState();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$cloudMusicAuthStateHash() =>
+    r'566cc9f359a1ff86a9a86d7b40eeffc84cf7cca0';
+
+abstract class _$CloudMusicAuthState extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

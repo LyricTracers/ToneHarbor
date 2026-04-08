@@ -98,6 +98,7 @@ dependencies:
     git:
       url: https://git.nxcloud.club:12750/agile/flutter_to_airplay.git
       ref: master
+  flutter_inappwebview: ^6.1.5
 
 dev_dependencies:
   flutter_test:

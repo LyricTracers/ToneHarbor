@@ -863,4 +863,84 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cloud_recommend_new_songs => 'New Album Express';
+
+  @override
+  String get cloud_music_login => 'Cloud Music Login';
+
+  @override
+  String get open_in_browser => 'Open in Browser';
+
+  @override
+  String get login_success => 'Login Successful';
+
+  @override
+  String get login_success_desc =>
+      'You have successfully logged into Cloud Music. You can now access personalized content.';
+
+  @override
+  String get confirm_exit_login => 'Exit Login?';
+
+  @override
+  String get confirm_exit_login_desc =>
+      'Are you sure you want to exit? The login process will be cancelled.';
+
+  @override
+  String get confirm_exit => 'Exit';
+
+  @override
+  String get browser_login_hint =>
+      'Please complete the login process in your browser. After successful login, return to this page and click the confirm button.';
+
+  @override
+  String get open_login_page => 'Open Login Page';
+
+  @override
+  String get cloud_music_logout => 'Logout';
+
+  @override
+  String get cloud_music_logged_in => 'Logged In';
+
+  @override
+  String get cloud_music_not_logged_in => 'Not Logged In';
+
+  @override
+  String get loading_text => 'Loading...';
+
+  @override
+  String get failed_to_load_page => 'Failed to load login page';
+
+  @override
+  String get browser_login_return_hint =>
+      'After logging in, please return to this page and tap the button below to confirm';
+
+  @override
+  String get confirm_login_completed => 'I have completed login';
+
+  @override
+  String get login_not_detected => 'Login Not Detected';
+
+  @override
+  String get login_not_detected_desc =>
+      'We could not detect a successful login. Please make sure you have completed the login process in the browser.';
+
+  @override
+  String get try_again => 'Try Again';
+
+  @override
+  String get manual_cookie_input_hint =>
+      'If auto-detection fails, manually paste the Cookie:';
+
+  @override
+  String get cookie_input_placeholder =>
+      'Paste the Cookie string copied from browser';
+
+  @override
+  String get cookie_input_empty => 'Please enter Cookie';
+
+  @override
+  String get invalid_url_format =>
+      'Invalid URL format, please enter a valid HTTP/HTTPS address';
+
+  @override
+  String get url_already_exists => 'This URL already exists';
 }

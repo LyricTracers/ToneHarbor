@@ -1,9 +1,9 @@
 import 'dart:math';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/artists.dart';
+import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
 import 'package:toneharbor/services/cloud_music/playlists.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 
@@ -24,13 +24,24 @@ Future<List<CloudMusicPlaylist>> recommendPlaylists(
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
   final apiState = ref.watch(cloudMusicApiUrlsProvider);
+  final loginState = ref.watch(cloudMusicAuthStateProvider);
   if (apiState.defaultUrl.isNotEmpty) {
     try {
-      return await recommendPlaylist(
-        ref,
-        limit: limit,
-        cacheDuration: cacheDuration,
-      );
+      if (loginState) {
+        final playlists = await Future.wait([
+          dailyRecommendPlaylist(ref, cacheDuration: cacheDuration),
+          recommendPlaylist(ref, limit: limit, cacheDuration: cacheDuration),
+        ]);
+        final dailyRecommend = playlists[0];
+        final recommend = playlists[1];
+        return [...dailyRecommend, ...recommend].take(limit).toList();
+      } else {
+        return await recommendPlaylist(
+          ref,
+          limit: limit,
+          cacheDuration: cacheDuration,
+        );
+      }
     } finally {
       if (keepAliveDuration == null) {
         link.close();

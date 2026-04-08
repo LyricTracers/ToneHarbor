@@ -217,4 +217,15 @@ abstract class SharedPreferencesUtils {
   static Future<void> setCloudMusicLanguage(int value) async {
     await sharedPreferences.setInt(cloudMusicLanguageKey, value);
   }
+
+  static String? getCloudMusicCookies() =>
+      sharedPreferences.getString(cloudMusicCookiesKey);
+
+  static Future<void> setCloudMusicCookies(String cookies) async {
+    await sharedPreferences.setString(cloudMusicCookiesKey, cookies);
+  }
+
+  static Future<void> clearCloudMusicCookies() async {
+    await sharedPreferences.remove(cloudMusicCookiesKey);
+  }
 }

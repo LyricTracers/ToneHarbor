@@ -1765,6 +1765,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New Album Express'**
   String get cloud_recommend_new_songs;
+
+  /// No description provided for @cloud_music_login.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud Music Login'**
+  String get cloud_music_login;
+
+  /// No description provided for @open_in_browser.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Browser'**
+  String get open_in_browser;
+
+  /// No description provided for @login_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Login Successful'**
+  String get login_success;
+
+  /// No description provided for @login_success_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'You have successfully logged into Cloud Music. You can now access personalized content.'**
+  String get login_success_desc;
+
+  /// No description provided for @confirm_exit_login.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit Login?'**
+  String get confirm_exit_login;
+
+  /// No description provided for @confirm_exit_login_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to exit? The login process will be cancelled.'**
+  String get confirm_exit_login_desc;
+
+  /// No description provided for @confirm_exit.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit'**
+  String get confirm_exit;
+
+  /// No description provided for @browser_login_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please complete the login process in your browser. After successful login, return to this page and click the confirm button.'**
+  String get browser_login_hint;
+
+  /// No description provided for @open_login_page.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Login Page'**
+  String get open_login_page;
+
+  /// No description provided for @cloud_music_logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get cloud_music_logout;
+
+  /// No description provided for @cloud_music_logged_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged In'**
+  String get cloud_music_logged_in;
+
+  /// No description provided for @cloud_music_not_logged_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Logged In'**
+  String get cloud_music_not_logged_in;
+
+  /// No description provided for @loading_text.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading_text;
+
+  /// No description provided for @failed_to_load_page.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load login page'**
+  String get failed_to_load_page;
+
+  /// No description provided for @browser_login_return_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'After logging in, please return to this page and tap the button below to confirm'**
+  String get browser_login_return_hint;
+
+  /// No description provided for @confirm_login_completed.
+  ///
+  /// In en, this message translates to:
+  /// **'I have completed login'**
+  String get confirm_login_completed;
+
+  /// No description provided for @login_not_detected.
+  ///
+  /// In en, this message translates to:
+  /// **'Login Not Detected'**
+  String get login_not_detected;
+
+  /// No description provided for @login_not_detected_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not detect a successful login. Please make sure you have completed the login process in the browser.'**
+  String get login_not_detected_desc;
+
+  /// No description provided for @try_again.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get try_again;
+
+  /// No description provided for @manual_cookie_input_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'If auto-detection fails, manually paste the Cookie:'**
+  String get manual_cookie_input_hint;
+
+  /// No description provided for @cookie_input_placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the Cookie string copied from browser'**
+  String get cookie_input_placeholder;
+
+  /// No description provided for @cookie_input_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter Cookie'**
+  String get cookie_input_empty;
+
+  /// No description provided for @invalid_url_format.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid URL format, please enter a valid HTTP/HTTPS address'**
+  String get invalid_url_format;
+
+  /// No description provided for @url_already_exists.
+  ///
+  /// In en, this message translates to:
+  /// **'This URL already exists'**
+  String get url_already_exists;
 }
 
 class _AppLocalizationsDelegate

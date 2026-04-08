@@ -842,4 +842,76 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get cloud_recommend_new_songs => '新专速递';
+
+  @override
+  String get cloud_music_login => '云音乐登录';
+
+  @override
+  String get open_in_browser => '在浏览器中打开';
+
+  @override
+  String get login_success => '登录成功';
+
+  @override
+  String get login_success_desc => '您已成功登录云音乐，现在可以访问个性化内容。';
+
+  @override
+  String get confirm_exit_login => '退出登录？';
+
+  @override
+  String get confirm_exit_login_desc => '您确定要退出吗？登录过程将被取消。';
+
+  @override
+  String get confirm_exit => '退出';
+
+  @override
+  String get browser_login_hint => '请在浏览器中完成登录过程。登录成功后，返回此页面并点击确认按钮。';
+
+  @override
+  String get open_login_page => '打开登录页面';
+
+  @override
+  String get cloud_music_logout => '退出登录';
+
+  @override
+  String get cloud_music_logged_in => '已登录';
+
+  @override
+  String get cloud_music_not_logged_in => '未登录';
+
+  @override
+  String get loading_text => '加载中...';
+
+  @override
+  String get failed_to_load_page => '加载登录页面失败';
+
+  @override
+  String get browser_login_return_hint => '登录完成后，请返回此页面并点击下方按钮确认';
+
+  @override
+  String get confirm_login_completed => '我已完成登录';
+
+  @override
+  String get login_not_detected => '未检测到登录';
+
+  @override
+  String get login_not_detected_desc => '无法检测到成功的登录。请确保您已在浏览器中完成登录过程。';
+
+  @override
+  String get try_again => '重试';
+
+  @override
+  String get manual_cookie_input_hint => '如果无法自动检测，请手动粘贴 Cookie：';
+
+  @override
+  String get cookie_input_placeholder => '请粘贴从浏览器复制的 Cookie 字符串';
+
+  @override
+  String get cookie_input_empty => '请输入 Cookie';
+
+  @override
+  String get invalid_url_format => 'URL 格式无效，请输入有效的 HTTP/HTTPS 地址';
+
+  @override
+  String get url_already_exists => '该 URL 已存在';
 }

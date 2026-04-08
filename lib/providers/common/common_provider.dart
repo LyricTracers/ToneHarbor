@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
@@ -315,5 +316,23 @@ class CloudMusicLanguage extends _$CloudMusicLanguage {
   Future<void> set(CloudMusicLanguageType value) async {
     state = value;
     await SharedPreferencesUtils.setCloudMusicLanguage(value.value);
+  }
+}
+
+@riverpod
+class CloudMusicAuthState extends _$CloudMusicAuthState {
+  @override
+  bool build() {
+    return CloudMusicAuth.isLoggedIn();
+  }
+
+  Future<void> loginSuccess(String cookies) async {
+    await CloudMusicAuth.saveCookies(cookies);
+    state = true;
+  }
+
+  Future<void> logout() async {
+    await CloudMusicAuth.clearCookies();
+    state = false;
   }
 }

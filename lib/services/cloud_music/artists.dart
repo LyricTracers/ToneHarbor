@@ -2,6 +2,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
 Future<List<CloudMusicArtist>> toplistOfArtists(
@@ -35,8 +36,16 @@ Future<List<CloudMusicArtist>> toplistOfArtists(
     }
   }
   try {
-    final query = {'randomCNIP': 'true'};
+    final query = <String, String>{
+      'randomCNIP': 'true',
+    };
     if (type != 0) query['type'] = type.toString();
+
+    final cookieParams = CloudMusicAuth.getApiCookieParams();
+    if (cookieParams.isNotEmpty) {
+      query.addAll(cookieParams);
+    }
+
     final response = await httpClientWrapper.get(
       '${apiState.defaultUrl}/toplist/artist',
       query: query,

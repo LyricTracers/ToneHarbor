@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -6,6 +7,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/pages/build_item.dart';
+import 'package:toneharbor/widgets/pages/cloud_music_login_page.dart';
 
 class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
   const CloudApiSettingPage({super.key});
@@ -44,6 +46,15 @@ class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
               colorScheme,
               l10n.home_page_settings,
               _buildUseAsHomeSwitch(ref, l10n, colorScheme, multiplier),
+              multiplier,
+            ),
+            const SizedBox(height: 16),
+            ...buildItem(
+              ref,
+              l10n,
+              colorScheme,
+              l10n.cloud_music_login,
+              _buildLoginSection(ref, l10n, colorScheme, multiplier),
               multiplier,
             ),
           ],
@@ -231,9 +242,114 @@ class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
       confirmText: l10n.confirm,
       onConfirm: () async {
         final url = controller.text.trim();
-        if (url.isNotEmpty) {
-          ref.read(cloudMusicApiUrlsProvider.notifier).addUrl(url);
+        if (url.isEmpty) return;
+
+        if (!_isValidUrl(url)) {
+          if (ref.context.mounted) {
+            ScaffoldMessenger.of(ref.context).showSnackBar(
+              SnackBar(
+                content: Text(l10n.invalid_url_format),
+                backgroundColor: colorScheme.error,
+              ),
+            );
+          }
+          return;
         }
+
+        final apiState = ref.read(cloudMusicApiUrlsProvider);
+        if (apiState.urls.contains(url)) {
+          if (ref.context.mounted) {
+            ScaffoldMessenger.of(ref.context).showSnackBar(
+              SnackBar(
+                content: Text(l10n.url_already_exists),
+                backgroundColor: colorScheme.errorContainer,
+              ),
+            );
+          }
+          return;
+        }
+
+        ref.read(cloudMusicApiUrlsProvider.notifier).addUrl(url);
+      },
+    );
+  }
+
+  bool _isValidUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+    if (!uri.hasScheme || uri.host.isEmpty) return false;
+    if (uri.scheme != 'http' && uri.scheme != 'https') return false;
+    return true;
+  }
+
+  Widget _buildLoginSection(
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+    double multiplier,
+  ) {
+    final isLoggedIn = ref.watch(cloudMusicAuthStateProvider);
+
+    return Column(
+      children: [
+        ListTile(
+          leading: Icon(
+            Icons.login,
+            color: isLoggedIn ? Colors.green : colorScheme.primary,
+          ),
+          title: Text(
+            isLoggedIn
+                ? l10n.cloud_music_logged_in
+                : l10n.cloud_music_not_logged_in,
+            style: TextStyle(
+              fontSize: 15 * multiplier,
+              fontWeight: FontWeight.w500,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          subtitle: Text(
+            isLoggedIn ? l10n.cloud_music_logged_in : l10n.cloud_music_login,
+            style: TextStyle(
+              fontSize: 12 * multiplier,
+              color: colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+          ),
+          trailing: isLoggedIn
+              ? IconButton(
+                  icon: Icon(Icons.logout, color: colorScheme.error),
+                  onPressed: () => _showLogoutDialog(ref, colorScheme, l10n),
+                  tooltip: l10n.cloud_music_logout,
+                )
+              : Icon(
+                  Icons.chevron_right,
+                  color: colorScheme.onSurface.withValues(alpha: 0.5),
+                ),
+          onTap: () {
+            Navigator.of(ref.context).push(
+              MaterialPageRoute(
+                builder: (context) => const CloudMusicLoginPage(),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  void _showLogoutDialog(
+    WidgetRef ref,
+    ColorScheme colorScheme,
+    AppLocalizations l10n,
+  ) {
+    showCommonDialog(
+      context: ref.context,
+      colorScheme: colorScheme,
+      title: l10n.cloud_music_logout,
+      content: Text(l10n.confirm_exit_login_desc),
+      cancelText: l10n.cancel,
+      confirmText: l10n.confirm_exit,
+      onConfirm: () async {
+        await ref.read(cloudMusicAuthStateProvider.notifier).logout();
       },
     );
   }
