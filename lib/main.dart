@@ -10,6 +10,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/album.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
+import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/connection_checker_service.dart';
 import 'package:toneharbor/services/server/server_health_check.dart';
@@ -416,12 +417,12 @@ class MyApp extends HookConsumerWidget {
                 },
               ),
               GoRoute(
-                path: '/cloud-detail/:id',
+                path: '/cloud-detail',
                 pageBuilder: (context, state) {
                   return buildPage(
                     key: state.pageKey,
                     child: CloudDetailPlaylistPage(
-                      playlistId: int.parse(state.pathParameters['id'] ?? ''),
+                      playlist: state.extra as CloudMusicPlaylistData,
                     ),
                   );
                 },
@@ -729,14 +730,14 @@ class MyApp extends HookConsumerWidget {
             ),
           ),
           GoRoute(
-            path: '/mobile/cloud-detail/:id',
+            path: '/mobile/cloud-detail',
             parentNavigatorKey: rootNavigatorKey,
             pageBuilder: (context, state) {
               return buildPage(
                 key: state.pageKey,
                 child: MobileFullLayout(
                   child: CloudDetailPlaylistPage(
-                    playlistId: int.parse(state.pathParameters['id'] ?? ''),
+                    playlist: state.extra as CloudMusicPlaylistData,
                   ),
                 ),
               );

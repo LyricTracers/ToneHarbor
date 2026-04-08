@@ -6,45 +6,55 @@ part of 'cloud_music_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_CloudMusicPlaylist _$CloudMusicPlaylistFromJson(Map<String, dynamic> json) =>
-    _CloudMusicPlaylist(
-      id: (json['id'] as num).toInt(),
-      name: json['name'] as String,
-      picUrl: json['picUrl'] as String?,
-      coverImgUrl: json['coverImgUrl'] as String?,
-      description: json['description'] as String?,
-      playCount: (json['playCount'] as num?)?.toInt(),
-      trackCount: (json['trackCount'] as num?)?.toInt(),
-      updateFrequency: json['updateFrequency'] as String?,
-      copywriter: json['copywriter'] as String?,
-      privacy: (json['privacy'] as num?)?.toInt(),
-    );
+_CloudMusicPlaylistData _$CloudMusicPlaylistDataFromJson(
+  Map<String, dynamic> json,
+) => _CloudMusicPlaylistData(
+  id: (json['id'] as num).toInt(),
+  name: json['name'] as String,
+  picUrl: json['picUrl'] as String?,
+  creator: json['creator'] == null
+      ? null
+      : CloudMusicUserData.fromJson(json['creator'] as Map<String, dynamic>),
+  coverImgUrl: json['coverImgUrl'] as String?,
+  description: json['description'] as String?,
+  playCount: (json['playCount'] as num?)?.toInt(),
+  trackCount: (json['trackCount'] as num?)?.toInt(),
+  createTime: (json['createTime'] as num?)?.toInt(),
+  updateFrequency: json['updateFrequency'] as String?,
+  copywriter: json['copywriter'] as String?,
+  privacy: (json['privacy'] as num?)?.toInt(),
+);
 
-Map<String, dynamic> _$CloudMusicPlaylistToJson(_CloudMusicPlaylist instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'picUrl': instance.picUrl,
-      'coverImgUrl': instance.coverImgUrl,
-      'description': instance.description,
-      'playCount': instance.playCount,
-      'trackCount': instance.trackCount,
-      'updateFrequency': instance.updateFrequency,
-      'copywriter': instance.copywriter,
-      'privacy': instance.privacy,
-    };
+Map<String, dynamic> _$CloudMusicPlaylistDataToJson(
+  _CloudMusicPlaylistData instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'name': instance.name,
+  'picUrl': instance.picUrl,
+  'creator': instance.creator,
+  'coverImgUrl': instance.coverImgUrl,
+  'description': instance.description,
+  'playCount': instance.playCount,
+  'trackCount': instance.trackCount,
+  'createTime': instance.createTime,
+  'updateFrequency': instance.updateFrequency,
+  'copywriter': instance.copywriter,
+  'privacy': instance.privacy,
+};
 
-_CloudMusicAlbum _$CloudMusicAlbumFromJson(Map<String, dynamic> json) =>
-    _CloudMusicAlbum(
+_CloudMusicAlbumData _$CloudMusicAlbumDataFromJson(Map<String, dynamic> json) =>
+    _CloudMusicAlbumData(
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
       picUrl: json['picUrl'] as String?,
       blurPicUrl: json['blurPicUrl'] as String?,
       artist: json['artist'] == null
           ? null
-          : CloudMusicArtist.fromJson(json['artist'] as Map<String, dynamic>),
+          : CloudMusicArtistData.fromJson(
+              json['artist'] as Map<String, dynamic>,
+            ),
       artists: (json['artists'] as List<dynamic>?)
-          ?.map((e) => CloudMusicArtist.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => CloudMusicArtistData.fromJson(e as Map<String, dynamic>))
           .toList(),
       publishTime: (json['publishTime'] as num?)?.toInt(),
       size: (json['size'] as num?)?.toInt(),
@@ -55,69 +65,72 @@ _CloudMusicAlbum _$CloudMusicAlbumFromJson(Map<String, dynamic> json) =>
       copyrightId: (json['copyrightId'] as num?)?.toInt(),
     );
 
-Map<String, dynamic> _$CloudMusicAlbumToJson(_CloudMusicAlbum instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'picUrl': instance.picUrl,
-      'blurPicUrl': instance.blurPicUrl,
-      'artist': instance.artist,
-      'artists': instance.artists,
-      'publishTime': instance.publishTime,
-      'size': instance.size,
-      'description': instance.description,
-      'company': instance.company,
-      'type': instance.type,
-      'mark': instance.mark,
-      'copyrightId': instance.copyrightId,
-    };
+Map<String, dynamic> _$CloudMusicAlbumDataToJson(
+  _CloudMusicAlbumData instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'name': instance.name,
+  'picUrl': instance.picUrl,
+  'blurPicUrl': instance.blurPicUrl,
+  'artist': instance.artist,
+  'artists': instance.artists,
+  'publishTime': instance.publishTime,
+  'size': instance.size,
+  'description': instance.description,
+  'company': instance.company,
+  'type': instance.type,
+  'mark': instance.mark,
+  'copyrightId': instance.copyrightId,
+};
 
-_CloudMusicArtist _$CloudMusicArtistFromJson(Map<String, dynamic> json) =>
-    _CloudMusicArtist(
-      id: (json['id'] as num).toInt(),
-      name: json['name'] as String,
-      picId: (json['picId'] as num?)?.toInt(),
-      img1v1Id: (json['img1v1Id'] as num?)?.toInt(),
-      picUrl: json['picUrl'] as String?,
-      img1v1Url: json['img1v1Url'] as String?,
-      musicSize: (json['musicSize'] as num?)?.toInt(),
-      albumSize: (json['albumSize'] as num?)?.toInt(),
-      briefDesc: json['briefDesc'] as String?,
-      trans: json['trans'] as String?,
-      alias: (json['alias'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      transNames: (json['transNames'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-    );
+_CloudMusicArtistData _$CloudMusicArtistDataFromJson(
+  Map<String, dynamic> json,
+) => _CloudMusicArtistData(
+  id: (json['id'] as num).toInt(),
+  name: json['name'] as String,
+  picId: (json['picId'] as num?)?.toInt(),
+  img1v1Id: (json['img1v1Id'] as num?)?.toInt(),
+  picUrl: json['picUrl'] as String?,
+  img1v1Url: json['img1v1Url'] as String?,
+  musicSize: (json['musicSize'] as num?)?.toInt(),
+  albumSize: (json['albumSize'] as num?)?.toInt(),
+  briefDesc: json['briefDesc'] as String?,
+  trans: json['trans'] as String?,
+  alias: (json['alias'] as List<dynamic>?)?.map((e) => e as String).toList(),
+  transNames: (json['transNames'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+);
 
-Map<String, dynamic> _$CloudMusicArtistToJson(_CloudMusicArtist instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'picId': instance.picId,
-      'img1v1Id': instance.img1v1Id,
-      'picUrl': instance.picUrl,
-      'img1v1Url': instance.img1v1Url,
-      'musicSize': instance.musicSize,
-      'albumSize': instance.albumSize,
-      'briefDesc': instance.briefDesc,
-      'trans': instance.trans,
-      'alias': instance.alias,
-      'transNames': instance.transNames,
-    };
+Map<String, dynamic> _$CloudMusicArtistDataToJson(
+  _CloudMusicArtistData instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'name': instance.name,
+  'picId': instance.picId,
+  'img1v1Id': instance.img1v1Id,
+  'picUrl': instance.picUrl,
+  'img1v1Url': instance.img1v1Url,
+  'musicSize': instance.musicSize,
+  'albumSize': instance.albumSize,
+  'briefDesc': instance.briefDesc,
+  'trans': instance.trans,
+  'alias': instance.alias,
+  'transNames': instance.transNames,
+};
 
-_CloudMusicSong _$CloudMusicSongFromJson(Map<String, dynamic> json) =>
-    _CloudMusicSong(
+_CloudMusicSongData _$CloudMusicSongDataFromJson(Map<String, dynamic> json) =>
+    _CloudMusicSongData(
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
       ar: (json['ar'] as List<dynamic>?)
-          ?.map((e) => CloudMusicArtist.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => CloudMusicArtistData.fromJson(e as Map<String, dynamic>))
           .toList(),
       al: json['al'] == null
           ? null
-          : CloudMusicAlbumSimple.fromJson(json['al'] as Map<String, dynamic>),
+          : CloudMusicAlbumSimpleData.fromJson(
+              json['al'] as Map<String, dynamic>,
+            ),
       dt: (json['dt'] as num?)?.toInt(),
       pop: (json['pop'] as num?)?.toInt(),
       no: (json['no'] as num?)?.toInt(),
@@ -127,7 +140,7 @@ _CloudMusicSong _$CloudMusicSongFromJson(Map<String, dynamic> json) =>
       mv: (json['mv'] as num?)?.toInt(),
     );
 
-Map<String, dynamic> _$CloudMusicSongToJson(_CloudMusicSong instance) =>
+Map<String, dynamic> _$CloudMusicSongDataToJson(_CloudMusicSongData instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
@@ -142,16 +155,16 @@ Map<String, dynamic> _$CloudMusicSongToJson(_CloudMusicSong instance) =>
       'mv': instance.mv,
     };
 
-_CloudMusicAlbumSimple _$CloudMusicAlbumSimpleFromJson(
+_CloudMusicAlbumSimpleData _$CloudMusicAlbumSimpleDataFromJson(
   Map<String, dynamic> json,
-) => _CloudMusicAlbumSimple(
+) => _CloudMusicAlbumSimpleData(
   id: (json['id'] as num).toInt(),
   name: json['name'] as String,
   picUrl: json['picUrl'] as String?,
 );
 
-Map<String, dynamic> _$CloudMusicAlbumSimpleToJson(
-  _CloudMusicAlbumSimple instance,
+Map<String, dynamic> _$CloudMusicAlbumSimpleDataToJson(
+  _CloudMusicAlbumSimpleData instance,
 ) => <String, dynamic>{
   'id': instance.id,
   'name': instance.name,
@@ -167,14 +180,14 @@ _CloudMusicPlaylistDetailData _$CloudMusicPlaylistDetailDataFromJson(
   description: json['description'] as String?,
   trackCount: (json['trackCount'] as num?)?.toInt(),
   tracks: (json['tracks'] as List<dynamic>?)
-      ?.map((e) => CloudMusicSong.fromJson(e as Map<String, dynamic>))
+      ?.map((e) => CloudMusicSongData.fromJson(e as Map<String, dynamic>))
       .toList(),
   trackIds: (json['trackIds'] as List<dynamic>?)
-      ?.map((e) => CloudMusicTrackId.fromJson(e as Map<String, dynamic>))
+      ?.map((e) => CloudMusicTrackIdData.fromJson(e as Map<String, dynamic>))
       .toList(),
   creator: json['creator'] == null
       ? null
-      : CloudMusicUser.fromJson(json['creator'] as Map<String, dynamic>),
+      : CloudMusicUserData.fromJson(json['creator'] as Map<String, dynamic>),
   createTime: (json['createTime'] as num?)?.toInt(),
   tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
   privacy: (json['privacy'] as num?)?.toInt(),
@@ -198,30 +211,32 @@ Map<String, dynamic> _$CloudMusicPlaylistDetailDataToJson(
   'subscribed': instance.subscribed,
 };
 
-_CloudMusicTrackId _$CloudMusicTrackIdFromJson(Map<String, dynamic> json) =>
-    _CloudMusicTrackId(
-      id: (json['id'] as num).toInt(),
-      v: (json['v'] as num?)?.toInt(),
-      alg: json['alg'] as String?,
-      uid: (json['uid'] as num?)?.toInt(),
-    );
+_CloudMusicTrackIdData _$CloudMusicTrackIdDataFromJson(
+  Map<String, dynamic> json,
+) => _CloudMusicTrackIdData(
+  id: (json['id'] as num).toInt(),
+  v: (json['v'] as num?)?.toInt(),
+  alg: json['alg'] as String?,
+  uid: (json['uid'] as num?)?.toInt(),
+);
 
-Map<String, dynamic> _$CloudMusicTrackIdToJson(_CloudMusicTrackId instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'v': instance.v,
-      'alg': instance.alg,
-      'uid': instance.uid,
-    };
+Map<String, dynamic> _$CloudMusicTrackIdDataToJson(
+  _CloudMusicTrackIdData instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'v': instance.v,
+  'alg': instance.alg,
+  'uid': instance.uid,
+};
 
 _CloudMusicSongDetailResponse _$CloudMusicSongDetailResponseFromJson(
   Map<String, dynamic> json,
 ) => _CloudMusicSongDetailResponse(
   songs: (json['songs'] as List<dynamic>)
-      .map((e) => CloudMusicSong.fromJson(e as Map<String, dynamic>))
+      .map((e) => CloudMusicSongData.fromJson(e as Map<String, dynamic>))
       .toList(),
   privileges: (json['privileges'] as List<dynamic>?)
-      ?.map((e) => CloudMusicPrivilege.fromJson(e as Map<String, dynamic>))
+      ?.map((e) => CloudMusicPrivilegeData.fromJson(e as Map<String, dynamic>))
       .toList(),
 );
 
@@ -232,26 +247,27 @@ Map<String, dynamic> _$CloudMusicSongDetailResponseToJson(
   'privileges': instance.privileges,
 };
 
-_CloudMusicPrivilege _$CloudMusicPrivilegeFromJson(Map<String, dynamic> json) =>
-    _CloudMusicPrivilege(
-      id: (json['id'] as num).toInt(),
-      fee: (json['fee'] as num?)?.toInt(),
-      payed: (json['payed'] as num?)?.toInt(),
-      st: (json['st'] as num?)?.toInt(),
-      pl: (json['pl'] as num?)?.toInt(),
-      dl: (json['dl'] as num?)?.toInt(),
-      sp: (json['sp'] as num?)?.toInt(),
-      cp: (json['cp'] as num?)?.toInt(),
-      subp: (json['subp'] as num?)?.toInt(),
-      cs: json['cs'] as bool?,
-      maxbr: (json['maxbr'] as num?)?.toInt(),
-      fl: (json['fl'] as num?)?.toInt(),
-      toast: json['toast'] as bool?,
-      flag: (json['flag'] as num?)?.toInt(),
-    );
+_CloudMusicPrivilegeData _$CloudMusicPrivilegeDataFromJson(
+  Map<String, dynamic> json,
+) => _CloudMusicPrivilegeData(
+  id: (json['id'] as num).toInt(),
+  fee: (json['fee'] as num?)?.toInt(),
+  payed: (json['payed'] as num?)?.toInt(),
+  st: (json['st'] as num?)?.toInt(),
+  pl: (json['pl'] as num?)?.toInt(),
+  dl: (json['dl'] as num?)?.toInt(),
+  sp: (json['sp'] as num?)?.toInt(),
+  cp: (json['cp'] as num?)?.toInt(),
+  subp: (json['subp'] as num?)?.toInt(),
+  cs: json['cs'] as bool?,
+  maxbr: (json['maxbr'] as num?)?.toInt(),
+  fl: (json['fl'] as num?)?.toInt(),
+  toast: json['toast'] as bool?,
+  flag: (json['flag'] as num?)?.toInt(),
+);
 
-Map<String, dynamic> _$CloudMusicPrivilegeToJson(
-  _CloudMusicPrivilege instance,
+Map<String, dynamic> _$CloudMusicPrivilegeDataToJson(
+  _CloudMusicPrivilegeData instance,
 ) => <String, dynamic>{
   'id': instance.id,
   'fee': instance.fee,
@@ -269,8 +285,8 @@ Map<String, dynamic> _$CloudMusicPrivilegeToJson(
   'flag': instance.flag,
 };
 
-_CloudMusicUser _$CloudMusicUserFromJson(Map<String, dynamic> json) =>
-    _CloudMusicUser(
+_CloudMusicUserData _$CloudMusicUserDataFromJson(Map<String, dynamic> json) =>
+    _CloudMusicUserData(
       userId: (json['userId'] as num).toInt(),
       nickname: json['nickname'] as String,
       avatarUrl: json['avatarUrl'] as String?,
@@ -280,7 +296,7 @@ _CloudMusicUser _$CloudMusicUserFromJson(Map<String, dynamic> json) =>
       userName: json['userName'] as String?,
     );
 
-Map<String, dynamic> _$CloudMusicUserToJson(_CloudMusicUser instance) =>
+Map<String, dynamic> _$CloudMusicUserDataToJson(_CloudMusicUserData instance) =>
     <String, dynamic>{
       'userId': instance.userId,
       'nickname': instance.nickname,

@@ -265,9 +265,7 @@ class RecommendPage extends HookConsumerWidget {
                       SizedBox(height: 15),
                       CloudRecommendPlaylists(
                         onPlaylistTap: (playlist) {
-                          context.pushWrapper(
-                            "/cloud-detail/${Uri.encodeComponent(playlist.id.toString())}",
-                          );
+                          context.pushWrapper("/cloud-detail", extra: playlist);
                         },
                       ),
                       Padding(

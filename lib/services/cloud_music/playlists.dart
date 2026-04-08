@@ -5,7 +5,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
-Future<List<CloudMusicPlaylist>> dailyRecommendPlaylist(
+Future<List<CloudMusicPlaylistData>> dailyRecommendPlaylist(
   Ref ref, {
   Duration? cacheDuration = const Duration(minutes: 60),
 }) async {
@@ -14,7 +14,7 @@ Future<List<CloudMusicPlaylist>> dailyRecommendPlaylist(
   final groupKey = 'cloud_recommendPlaylist';
   final apiState = ref.read(cloudMusicApiUrlsProvider);
   if (cacheDuration != null) {
-    final cached = await getFromCache<List<CloudMusicPlaylist>>(
+    final cached = await getFromCache<List<CloudMusicPlaylistData>>(
       cacheKey: cacheKey,
       group: groupKey,
       fromJson: (json) {
@@ -26,7 +26,7 @@ Future<List<CloudMusicPlaylist>> dailyRecommendPlaylist(
           return [];
         }
         return resultList
-            .map((item) => CloudMusicPlaylist.fromJson(item))
+            .map((item) => CloudMusicPlaylistData.fromJson(item))
             .toList();
       },
     );
@@ -77,7 +77,7 @@ Future<List<CloudMusicPlaylist>> dailyRecommendPlaylist(
       return [];
     }
     var playlists = recommendList
-        .map((item) => CloudMusicPlaylist.fromJson(item))
+        .map((item) => CloudMusicPlaylistData.fromJson(item))
         .toList();
     if (cacheDuration != null && playlists.isNotEmpty) {
       await saveToCache(
@@ -236,11 +236,11 @@ Future<CloudMusicSongDetailResponse> getTrackDetail(
 
     final songs =
         (jsonBody['songs'] as List?)
-            ?.map((e) => CloudMusicSong.fromJson(e))
+            ?.map((e) => CloudMusicSongData.fromJson(e))
             .toList() ??
         [];
     final privileges = (jsonBody['privileges'] as List?)
-        ?.map((e) => CloudMusicPrivilege.fromJson(e))
+        ?.map((e) => CloudMusicPrivilegeData.fromJson(e))
         .toList();
 
     return CloudMusicSongDetailResponse(songs: songs, privileges: privileges);
@@ -250,7 +250,7 @@ Future<CloudMusicSongDetailResponse> getTrackDetail(
   }
 }
 
-Future<List<CloudMusicPlaylist>> recommendPlaylist(
+Future<List<CloudMusicPlaylistData>> recommendPlaylist(
   Ref ref, {
   int limit = 10,
   Duration? cacheDuration = const Duration(minutes: 60),
@@ -260,7 +260,7 @@ Future<List<CloudMusicPlaylist>> recommendPlaylist(
   final groupKey = 'cloud_recommendPlaylist';
   final apiState = ref.read(cloudMusicApiUrlsProvider);
   if (cacheDuration != null) {
-    final cached = await getFromCache<List<CloudMusicPlaylist>>(
+    final cached = await getFromCache<List<CloudMusicPlaylistData>>(
       cacheKey: cacheKey,
       group: groupKey,
       fromJson: (json) {
@@ -272,7 +272,7 @@ Future<List<CloudMusicPlaylist>> recommendPlaylist(
           return [];
         }
         return resultList
-            .map((item) => CloudMusicPlaylist.fromJson(item))
+            .map((item) => CloudMusicPlaylistData.fromJson(item))
             .toList();
       },
     );
@@ -312,7 +312,7 @@ Future<List<CloudMusicPlaylist>> recommendPlaylist(
       return [];
     }
     var playlists = resultList
-        .map((item) => CloudMusicPlaylist.fromJson(item))
+        .map((item) => CloudMusicPlaylistData.fromJson(item))
         .toList();
     if (cacheDuration != null && playlists.isNotEmpty) {
       await saveToCache(

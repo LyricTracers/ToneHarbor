@@ -17,7 +17,7 @@ bool shouldUseCloudMusicHome(Ref ref) {
 }
 
 @riverpod
-Future<List<CloudMusicPlaylist>> recommendPlaylists(
+Future<List<CloudMusicPlaylistData>> recommendPlaylists(
   Ref ref, {
   int limit = 10,
   Duration? cacheDuration = const Duration(minutes: 60),
@@ -53,7 +53,7 @@ Future<List<CloudMusicPlaylist>> recommendPlaylists(
 }
 
 @riverpod
-Future<List<CloudMusicArtist>> recommendTopArtist(
+Future<List<CloudMusicArtistData>> recommendTopArtist(
   Ref ref, {
   int limit = 6,
   Duration? cacheDuration = const Duration(minutes: 60),
@@ -153,7 +153,7 @@ class CloudMusicPlaylistDetail extends _$CloudMusicPlaylistDetail {
 @keepAlive
 class CloudUserInfo extends _$CloudUserInfo {
   @override
-  Future<CloudMusicUser?> build() async {
+  Future<CloudMusicUserData?> build() async {
     final loginState = ref.watch(cloudMusicAuthStateProvider);
     if (loginState) {
       return getUserInfo(ref);

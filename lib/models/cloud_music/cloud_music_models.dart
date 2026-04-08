@@ -4,23 +4,25 @@ part 'cloud_music_models.freezed.dart';
 part 'cloud_music_models.g.dart';
 
 @freezed
-sealed class CloudMusicPlaylist with _$CloudMusicPlaylist {
-  const CloudMusicPlaylist._();
-  const factory CloudMusicPlaylist({
+sealed class CloudMusicPlaylistData with _$CloudMusicPlaylistData {
+  const CloudMusicPlaylistData._();
+  const factory CloudMusicPlaylistData({
     required int id,
     required String name,
     String? picUrl,
+    CloudMusicUserData? creator,
     String? coverImgUrl,
     String? description,
     int? playCount,
     int? trackCount,
+    int? createTime,
     String? updateFrequency,
     String? copywriter,
     int? privacy,
-  }) = _CloudMusicPlaylist;
+  }) = _CloudMusicPlaylistData;
 
-  factory CloudMusicPlaylist.fromJson(Map<String, dynamic> json) =>
-      _$CloudMusicPlaylistFromJson(json);
+  factory CloudMusicPlaylistData.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicPlaylistDataFromJson(json);
 
   String get cover {
     if (picUrl != null && picUrl!.isNotEmpty) return picUrl!;
@@ -36,15 +38,15 @@ sealed class CloudMusicPlaylist with _$CloudMusicPlaylist {
 }
 
 @freezed
-sealed class CloudMusicAlbum with _$CloudMusicAlbum {
-  const CloudMusicAlbum._();
-  const factory CloudMusicAlbum({
+sealed class CloudMusicAlbumData with _$CloudMusicAlbumData {
+  const CloudMusicAlbumData._();
+  const factory CloudMusicAlbumData({
     required int id,
     required String name,
     String? picUrl,
     String? blurPicUrl,
-    CloudMusicArtist? artist,
-    List<CloudMusicArtist>? artists,
+    CloudMusicArtistData? artist,
+    List<CloudMusicArtistData>? artists,
     int? publishTime,
     int? size,
     String? description,
@@ -52,10 +54,10 @@ sealed class CloudMusicAlbum with _$CloudMusicAlbum {
     String? type,
     int? mark,
     int? copyrightId,
-  }) = _CloudMusicAlbum;
+  }) = _CloudMusicAlbumData;
 
-  factory CloudMusicAlbum.fromJson(Map<String, dynamic> json) =>
-      _$CloudMusicAlbumFromJson(json);
+  factory CloudMusicAlbumData.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicAlbumDataFromJson(json);
 
   String get cover {
     if (picUrl != null && picUrl!.isNotEmpty) return picUrl!;
@@ -77,9 +79,9 @@ sealed class CloudMusicAlbum with _$CloudMusicAlbum {
 }
 
 @freezed
-sealed class CloudMusicArtist with _$CloudMusicArtist {
-  const CloudMusicArtist._();
-  const factory CloudMusicArtist({
+sealed class CloudMusicArtistData with _$CloudMusicArtistData {
+  const CloudMusicArtistData._();
+  const factory CloudMusicArtistData({
     required int id,
     required String name,
     int? picId,
@@ -92,10 +94,10 @@ sealed class CloudMusicArtist with _$CloudMusicArtist {
     String? trans,
     List<String>? alias,
     List<String>? transNames,
-  }) = _CloudMusicArtist;
+  }) = _CloudMusicArtistData;
 
-  factory CloudMusicArtist.fromJson(Map<String, dynamic> json) =>
-      _$CloudMusicArtistFromJson(json);
+  factory CloudMusicArtistData.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicArtistDataFromJson(json);
 
   String get cover {
     if (img1v1Url != null && img1v1Url!.isNotEmpty) {
@@ -113,13 +115,13 @@ sealed class CloudMusicArtist with _$CloudMusicArtist {
 }
 
 @freezed
-sealed class CloudMusicSong with _$CloudMusicSong {
-  const CloudMusicSong._();
-  const factory CloudMusicSong({
+sealed class CloudMusicSongData with _$CloudMusicSongData {
+  const CloudMusicSongData._();
+  const factory CloudMusicSongData({
     required int id,
     required String name,
-    List<CloudMusicArtist>? ar,
-    CloudMusicAlbumSimple? al,
+    List<CloudMusicArtistData>? ar,
+    CloudMusicAlbumSimpleData? al,
     int? dt,
     int? pop,
     int? no,
@@ -127,26 +129,26 @@ sealed class CloudMusicSong with _$CloudMusicSong {
     int? copyright,
     int? mark,
     int? mv,
-  }) = _CloudMusicSong;
+  }) = _CloudMusicSongData;
 
-  factory CloudMusicSong.fromJson(Map<String, dynamic> json) =>
-      _$CloudMusicSongFromJson(json);
+  factory CloudMusicSongData.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicSongDataFromJson(json);
 
   String get artistName => ar?.map((e) => e.name).join('/') ?? '';
   String get cover => al?.cover ?? '';
 }
 
 @freezed
-sealed class CloudMusicAlbumSimple with _$CloudMusicAlbumSimple {
-  const CloudMusicAlbumSimple._();
-  const factory CloudMusicAlbumSimple({
+sealed class CloudMusicAlbumSimpleData with _$CloudMusicAlbumSimpleData {
+  const CloudMusicAlbumSimpleData._();
+  const factory CloudMusicAlbumSimpleData({
     required int id,
     required String name,
     String? picUrl,
-  }) = _CloudMusicAlbumSimple;
+  }) = _CloudMusicAlbumSimpleData;
 
-  factory CloudMusicAlbumSimple.fromJson(Map<String, dynamic> json) =>
-      _$CloudMusicAlbumSimpleFromJson(json);
+  factory CloudMusicAlbumSimpleData.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicAlbumSimpleDataFromJson(json);
 
   String get cover => picUrl ?? '';
 }
@@ -160,9 +162,9 @@ sealed class CloudMusicPlaylistDetailData with _$CloudMusicPlaylistDetailData {
     String? coverImgUrl,
     String? description,
     int? trackCount,
-    List<CloudMusicSong>? tracks,
-    List<CloudMusicTrackId>? trackIds,
-    CloudMusicUser? creator,
+    List<CloudMusicSongData>? tracks,
+    List<CloudMusicTrackIdData>? trackIds,
+    CloudMusicUserData? creator,
     int? createTime,
     List<String>? tags,
     int? privacy,
@@ -174,25 +176,25 @@ sealed class CloudMusicPlaylistDetailData with _$CloudMusicPlaylistDetailData {
 }
 
 @freezed
-sealed class CloudMusicTrackId with _$CloudMusicTrackId {
-  const CloudMusicTrackId._();
-  const factory CloudMusicTrackId({
+sealed class CloudMusicTrackIdData with _$CloudMusicTrackIdData {
+  const CloudMusicTrackIdData._();
+  const factory CloudMusicTrackIdData({
     required int id,
     int? v,
     String? alg,
     int? uid,
-  }) = _CloudMusicTrackId;
+  }) = _CloudMusicTrackIdData;
 
-  factory CloudMusicTrackId.fromJson(Map<String, dynamic> json) =>
-      _$CloudMusicTrackIdFromJson(json);
+  factory CloudMusicTrackIdData.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicTrackIdDataFromJson(json);
 }
 
 @freezed
 sealed class CloudMusicSongDetailResponse with _$CloudMusicSongDetailResponse {
   const CloudMusicSongDetailResponse._();
   const factory CloudMusicSongDetailResponse({
-    required List<CloudMusicSong> songs,
-    List<CloudMusicPrivilege>? privileges,
+    required List<CloudMusicSongData> songs,
+    List<CloudMusicPrivilegeData>? privileges,
   }) = _CloudMusicSongDetailResponse;
 
   factory CloudMusicSongDetailResponse.fromJson(Map<String, dynamic> json) =>
@@ -214,8 +216,9 @@ sealed class CloudMusicSongDetailResponse with _$CloudMusicSongDetailResponse {
 //toast 是否提示 是否有提示信息
 //flag 综合标志 其他状态标志
 @freezed
-sealed class CloudMusicPrivilege with _$CloudMusicPrivilege {
-  const factory CloudMusicPrivilege({
+sealed class CloudMusicPrivilegeData with _$CloudMusicPrivilegeData {
+  const CloudMusicPrivilegeData._();
+  const factory CloudMusicPrivilegeData({
     required int id,
     int? fee,
     int? payed,
@@ -230,15 +233,15 @@ sealed class CloudMusicPrivilege with _$CloudMusicPrivilege {
     int? fl,
     bool? toast,
     int? flag,
-  }) = _CloudMusicPrivilege;
+  }) = _CloudMusicPrivilegeData;
 
-  factory CloudMusicPrivilege.fromJson(Map<String, dynamic> json) =>
-      _$CloudMusicPrivilegeFromJson(json);
+  factory CloudMusicPrivilegeData.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicPrivilegeDataFromJson(json);
 }
 
 @freezed
-sealed class CloudMusicUser with _$CloudMusicUser {
-  const factory CloudMusicUser({
+sealed class CloudMusicUserData with _$CloudMusicUserData {
+  const factory CloudMusicUserData({
     required int userId,
     required String nickname,
     String? avatarUrl,
@@ -246,8 +249,8 @@ sealed class CloudMusicUser with _$CloudMusicUser {
     int? createTime,
     String? signature,
     String? userName,
-  }) = _CloudMusicUser;
+  }) = _CloudMusicUserData;
 
-  factory CloudMusicUser.fromJson(Map<String, dynamic> json) =>
-      _$CloudMusicUserFromJson(json);
+  factory CloudMusicUserData.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicUserDataFromJson(json);
 }

@@ -17,7 +17,7 @@ class CloudRecommendPlaylists extends ConsumerWidget {
   });
 
   final int limit;
-  final void Function(CloudMusicPlaylist playlist)? onPlaylistTap;
+  final void Function(CloudMusicPlaylistData playlist)? onPlaylistTap;
   final int visibleRows;
 
   @override
@@ -43,7 +43,7 @@ class CloudRecommendPlaylists extends ConsumerWidget {
 
   Widget _buildGrid(
     BuildContext context,
-    List<CloudMusicPlaylist> playlists,
+    List<CloudMusicPlaylistData> playlists,
     ColorScheme colorScheme,
     double maxCrossAxisExtent,
     double multiplier,
@@ -129,7 +129,7 @@ class _PlaylistItem extends StatelessWidget {
     required this.multiplier,
   });
 
-  final CloudMusicPlaylist playlist;
+  final CloudMusicPlaylistData playlist;
   final ColorScheme colorScheme;
   final double multiplier;
   final VoidCallback onTap;

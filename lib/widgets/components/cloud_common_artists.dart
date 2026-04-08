@@ -42,7 +42,7 @@ class CloudMusicArtistItem extends StatelessWidget {
     required this.colorScheme,
   });
 
-  final CloudMusicArtist artist;
+  final CloudMusicArtistData artist;
   final ColorScheme colorScheme;
 
   @override
@@ -101,7 +101,7 @@ class CloudMusicArtistHorizontalList extends ConsumerWidget {
   });
 
   final int limit;
-  final void Function(CloudMusicArtist artist)? onArtistTap;
+  final void Function(CloudMusicArtistData artist)? onArtistTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

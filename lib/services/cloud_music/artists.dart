@@ -5,7 +5,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
-Future<List<CloudMusicArtist>> toplistOfArtists(
+Future<List<CloudMusicArtistData>> toplistOfArtists(
   Ref ref, {
   required int type,
   Duration? cacheDuration = const Duration(minutes: 60),
@@ -15,7 +15,7 @@ Future<List<CloudMusicArtist>> toplistOfArtists(
   final groupKey = 'cloud_toplistOfArtists';
   final apiState = ref.read(cloudMusicApiUrlsProvider);
   if (cacheDuration != null) {
-    final cached = await getFromCache<List<CloudMusicArtist>>(
+    final cached = await getFromCache<List<CloudMusicArtistData>>(
       cacheKey: cacheKey,
       group: groupKey,
       fromJson: (json) {
@@ -27,7 +27,7 @@ Future<List<CloudMusicArtist>> toplistOfArtists(
           return [];
         }
         return resultList
-            .map((item) => CloudMusicArtist.fromJson(item))
+            .map((item) => CloudMusicArtistData.fromJson(item))
             .toList();
       },
     );
@@ -36,9 +36,7 @@ Future<List<CloudMusicArtist>> toplistOfArtists(
     }
   }
   try {
-    final query = <String, String>{
-      'randomCNIP': 'true',
-    };
+    final query = <String, String>{'randomCNIP': 'true'};
     if (type != 0) query['type'] = type.toString();
 
     final cookieParams = CloudMusicAuth.getApiCookieParams();
@@ -77,7 +75,7 @@ Future<List<CloudMusicArtist>> toplistOfArtists(
       return [];
     }
     var artists = resultList
-        .map((item) => CloudMusicArtist.fromJson(item))
+        .map((item) => CloudMusicArtistData.fromJson(item))
         .toList();
     if (cacheDuration != null && artists.isNotEmpty) {
       await saveToCache(

@@ -5,7 +5,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
-Future<CloudMusicUser?> getUserInfo(
+Future<CloudMusicUserData?> getUserInfo(
   Ref ref, {
   Duration? cacheDuration = const Duration(minutes: 60),
 }) async {
@@ -18,7 +18,7 @@ Future<CloudMusicUser?> getUserInfo(
   final cacheKey = 'cloud_userInfo';
   final groupKey = 'cloud_user';
   if (cacheDuration != null) {
-    final cached = await getFromCache<CloudMusicUser?>(
+    final cached = await getFromCache<CloudMusicUserData?>(
       cacheKey: cacheKey,
       group: groupKey,
       fromJson: (json) {
@@ -30,7 +30,7 @@ Future<CloudMusicUser?> getUserInfo(
           return null;
         }
 
-        return CloudMusicUser.fromJson(recommendList);
+        return CloudMusicUserData.fromJson(recommendList);
       },
     );
     if (cached != null) {
@@ -70,7 +70,7 @@ Future<CloudMusicUser?> getUserInfo(
     if (recommendList == null) {
       throw CloudMusicException(message: l10n.error_network_error);
     }
-    final userInfo = CloudMusicUser.fromJson(recommendList);
+    final userInfo = CloudMusicUserData.fromJson(recommendList);
     if (cacheDuration != null && recommendList.isNotEmpty) {
       await saveToCache(
         cacheKey: cacheKey,
