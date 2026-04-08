@@ -43,8 +43,10 @@ Future<CloudMusicUser?> getUserInfo(
       query: cookieParams,
       cancelToken: ref.cancelToken(),
     );
-    logger.i("======response:${response.body}======");
     if (response.statusCode != 200) {
+      if (response.statusCode == 301) {
+        ref.read(cloudMusicAuthStateProvider.notifier).logout();
+      }
       logger.e('请求失败，状态码：${response.statusCode}');
       throw CloudMusicException(
         message: l10n.error_network_error,
