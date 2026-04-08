@@ -281,16 +281,6 @@ class RecommendPage extends HookConsumerWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                i10n.more,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: colorScheme.tertiary,
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                       ),
