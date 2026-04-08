@@ -263,17 +263,19 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
       context: ref.context,
       colorScheme: colorScheme,
       title: l10n.api_key,
-      content: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          hintText: l10n.enter_api_key,
-          border: const OutlineInputBorder(),
-        ),
-        obscureText: true,
-      ),
+      contentBuilder: (innerContext) {
+        return TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: l10n.enter_api_key,
+            border: const OutlineInputBorder(),
+          ),
+          obscureText: true,
+        );
+      },
       cancelText: l10n.cancel,
       confirmText: l10n.save,
-      onConfirm: () async {
+      onConfirm: (innerContext) async {
         await ref.read(aIApiKeyProvider.notifier).setApiKey(controller.text);
       },
     );
@@ -292,29 +294,31 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
       context: ref.context,
       colorScheme: colorScheme,
       title: l10n.custom_model,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: 'Qwen/Qwen2.5-7B-Instruct, deepseek-chat, etc.',
-              border: const OutlineInputBorder(),
+      contentBuilder: (innerContext) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: 'Qwen/Qwen2.5-7B-Instruct, deepseek-chat, etc.',
+                border: const OutlineInputBorder(),
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.custom_model_hint,
-            style: TextStyle(
-              fontSize: 12,
-              color: colorScheme.onSurface.withValues(alpha: 0.6),
+            const SizedBox(height: 8),
+            Text(
+              l10n.custom_model_hint,
+              style: TextStyle(
+                fontSize: 12,
+                color: colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      },
       cancelText: l10n.cancel,
       confirmText: l10n.save,
-      onConfirm: () async {
+      onConfirm: (innerContext) async {
         ref
             .read(aICustomModelProvider.notifier)
             .setCustomModel(controller.text);
@@ -335,23 +339,25 @@ class AITranslateSettingPage extends HookConsumerWidget with BuildItem {
       context: ref.context,
       colorScheme: colorScheme,
       title: l10n.api_endpoint,
-      content: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          hintText: 'https://api.example.com/v1/chat/completions',
-          border: const OutlineInputBorder(),
-        ),
-      ),
+      contentBuilder: (innerContext) {
+        return TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: 'https://api.example.com/v1/chat/completions',
+            border: const OutlineInputBorder(),
+          ),
+        );
+      },
       cancelText: l10n.cancel,
       confirmText: l10n.save,
       thirdButtonText: l10n.reset_default,
-      onConfirm: () async {
-        ref
+      onConfirm: (innerContext) async {
+        await ref
             .read(aIEndpointSettingProvider.notifier)
             .setEndpoint(controller.text);
       },
-      onThirdButton: () async {
-        ref.read(aIEndpointSettingProvider.notifier).resetToDefault();
+      onThirdButton: (innerContext) async {
+        await ref.read(aIEndpointSettingProvider.notifier).resetToDefault();
       },
     );
   }

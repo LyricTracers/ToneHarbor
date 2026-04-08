@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/artists.dart';
-import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
 import 'package:toneharbor/services/cloud_music/playlists.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 

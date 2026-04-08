@@ -169,13 +169,15 @@ class StorageManagePage extends HookConsumerWidget with BuildItem {
       context: ref.context,
       colorScheme: colorScheme,
       title: l10n.confirm_clear,
-      content: Text(
-        '${l10n.confirm_clear_message.replaceFirst('%s', info.category.localizedLabel(l10n))}\n${l10n.size}: ${info.formattedSize}',
-      ),
+      contentBuilder: (innerContext) {
+        return Text(
+          '${l10n.confirm_clear_message.replaceFirst("%s", info.category.localizedLabel(l10n))}\n${l10n.size}: ${info.formattedSize}',
+        );
+      },
       cancelText: l10n.cancel,
       confirmText: l10n.delete,
       confirmTextColor: colorScheme.error,
-      onConfirm: () async {
+      onConfirm: (innerContext) async {
         await ref.read(clearStorageProvider)(info);
       },
     );

@@ -901,7 +901,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get try_again => '重试';
 
   @override
-  String get manual_cookie_input_hint => '如果无法自动检测，请手动粘贴 Cookie：';
+  String get manual_cookie_input_hint =>
+      '粘贴从浏览器开发者工具获取的完整 Cookie 字符串（需包含 MUSIC_U 字段）';
 
   @override
   String get cookie_input_placeholder => '请粘贴从浏览器复制的 Cookie 字符串';
@@ -914,4 +915,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get url_already_exists => '该 URL 已存在';
+
+  @override
+  String get select_login_method => '选择登录方式';
+
+  @override
+  String get web_login => '网页登录';
+
+  @override
+  String get cookie_login => 'Cookie 登录';
+
+  @override
+  String get invalid_cookie_format => 'Cookie 格式无效，必须包含 MUSIC_U';
 }

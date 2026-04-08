@@ -238,62 +238,66 @@ class SettingPage extends HookConsumerWidget with BuildItem {
       context: context,
       colorScheme: colorScheme,
       title: l10n.lyrics_provider,
-      content: Consumer(
-        builder: (context, ref, child) {
-          final selectedProviders = ref.watch(lyricsProviderSelectionProvider);
-          return selectedProviders.when(
-            data: (providers) => SizedBox(
-              width: 300,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () {
+      contentBuilder: (innerContext) {
+        return Consumer(
+          builder: (context, ref, child) {
+            final selectedProviders = ref.watch(
+              lyricsProviderSelectionProvider,
+            );
+            return selectedProviders.when(
+              data: (providers) => SizedBox(
+                width: 300,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            ref
+                                .read(lyricsProviderSelectionProvider.notifier)
+                                .selectAll();
+                          },
+                          child: Text(l10n.select_all),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            ref
+                                .read(lyricsProviderSelectionProvider.notifier)
+                                .clearAll();
+                          },
+                          child: Text(l10n.clear_all),
+                        ),
+                      ],
+                    ),
+                    const Divider(height: 1),
+                    ...LyricsProviderType.values.map((provider) {
+                      final isSelected = providers.contains(provider);
+                      return CheckboxListTile(
+                        title: Text(provider.displayName),
+                        value: isSelected,
+                        onChanged: (value) {
                           ref
                               .read(lyricsProviderSelectionProvider.notifier)
-                              .selectAll();
+                              .toggleProvider(provider);
                         },
-                        child: Text(l10n.select_all),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          ref
-                              .read(lyricsProviderSelectionProvider.notifier)
-                              .clearAll();
-                        },
-                        child: Text(l10n.clear_all),
-                      ),
-                    ],
-                  ),
-                  const Divider(height: 1),
-                  ...LyricsProviderType.values.map((provider) {
-                    final isSelected = providers.contains(provider);
-                    return CheckboxListTile(
-                      title: Text(provider.displayName),
-                      value: isSelected,
-                      onChanged: (value) {
-                        ref
-                            .read(lyricsProviderSelectionProvider.notifier)
-                            .toggleProvider(provider);
-                      },
-                      controlAffinity: ListTileControlAffinity.leading,
-                      contentPadding: EdgeInsets.zero,
-                    );
-                  }),
-                ],
+                        controlAffinity: ListTileControlAffinity.leading,
+                        contentPadding: EdgeInsets.zero,
+                      );
+                    }),
+                  ],
+                ),
               ),
-            ),
-            loading: () => const SizedBox(
-              height: 100,
-              child: Center(child: CircularProgressIndicator()),
-            ),
-            error: (_, __) => Text('Error loading providers'),
-          );
-        },
-      ),
+              loading: () => const SizedBox(
+                height: 100,
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (_, __) => Text('Error loading providers'),
+            );
+          },
+        );
+      },
       confirmText: l10n.confirm,
     );
   }

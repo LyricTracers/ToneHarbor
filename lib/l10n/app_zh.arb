@@ -303,9 +303,13 @@
   "login_not_detected": "未检测到登录",
   "login_not_detected_desc": "无法检测到成功的登录。请确保您已在浏览器中完成登录过程。",
   "try_again": "重试",
-  "manual_cookie_input_hint": "如果无法自动检测，请手动粘贴 Cookie：",
+  "manual_cookie_input_hint": "粘贴从浏览器开发者工具获取的完整 Cookie 字符串（需包含 MUSIC_U 字段）",
   "cookie_input_placeholder": "请粘贴从浏览器复制的 Cookie 字符串",
   "cookie_input_empty": "请输入 Cookie",
   "invalid_url_format": "URL 格式无效，请输入有效的 HTTP/HTTPS 地址",
-  "url_already_exists": "该 URL 已存在"
+  "url_already_exists": "该 URL 已存在",
+  "select_login_method": "选择登录方式",
+  "web_login": "网页登录",
+  "cookie_login": "Cookie 登录",
+  "invalid_cookie_format": "Cookie 格式无效，必须包含 MUSIC_U"
 }

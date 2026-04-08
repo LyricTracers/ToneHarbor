@@ -433,16 +433,18 @@ String buildTrackPath(String filename, String container, AudioQuality quality) {
   }
 }
 
+typedef DialogContentBuilder = Widget Function(BuildContext innerContext);
+
 void showCommonDialog({
   required BuildContext context,
   required ColorScheme colorScheme,
   required String title,
-  required Widget content,
+  required DialogContentBuilder contentBuilder,
   String? cancelText,
   String? confirmText,
   String? thirdButtonText,
-  Future<void> Function()? onConfirm,
-  Future<void> Function()? onThirdButton,
+  Future<void> Function(BuildContext innerContext)? onConfirm,
+  Future<void> Function(BuildContext innerContext)? onThirdButton,
   Color? confirmTextColor,
 }) {
   showGeneralDialog(
@@ -482,7 +484,7 @@ void showCommonDialog({
                   ],
                 ),
                 const SizedBox(height: 16),
-                content,
+                contentBuilder(context),
                 const SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -495,16 +497,20 @@ void showCommonDialog({
                     if (thirdButtonText != null)
                       TextButton(
                         onPressed: () async {
-                          await onThirdButton?.call();
-                          if (context.mounted) Navigator.pop(context);
+                          await onThirdButton?.call(context);
+                          if (context.mounted && Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          }
                         },
                         child: Text(thirdButtonText),
                       ),
                     if (confirmText != null)
                       TextButton(
                         onPressed: () async {
-                          await onConfirm?.call();
-                          if (context.mounted) Navigator.pop(context);
+                          await onConfirm?.call(context);
+                          if (context.mounted && Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          }
                         },
                         child: Text(
                           confirmText,
@@ -542,18 +548,20 @@ void showCreatePlaylistDialog(
     context: context,
     colorScheme: colorScheme,
     title: l10n.create_playlist,
-    content: TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        hintText: l10n.input_playlist_name,
-        labelText: l10n.playlist_name,
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.playlist_add),
-      ),
-    ),
+    contentBuilder: (context) {
+      return TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          hintText: l10n.input_playlist_name,
+          labelText: l10n.playlist_name,
+          border: OutlineInputBorder(),
+          prefixIcon: Icon(Icons.playlist_add),
+        ),
+      );
+    },
     cancelText: l10n.cancel,
     confirmText: l10n.create_playlist,
-    onConfirm: () async {
+    onConfirm: (innerContext) async {
       if (controller.text.isNotEmpty) {
         onCreated(controller.text);
       }
@@ -575,13 +583,13 @@ void showDeletePlaylistDialog(
     context: context,
     colorScheme: colorScheme,
     title: l10n.delete_playlist,
-    content: Text(
+    contentBuilder: (innerContext) => Text(
       l10n.ask_delete_playlist.replaceFirst("%s", name),
       style: TextStyle(fontSize: 16, color: colorScheme.onSurface),
     ),
     cancelText: l10n.cancel,
     confirmText: l10n.confirm,
-    onConfirm: () async => ondelete(id),
+    onConfirm: (innerContext) async => ondelete(id),
   );
 }
 
@@ -767,12 +775,12 @@ void showSetBackgroundDialog(
     context: context,
     colorScheme: colorScheme,
     title: l10n.setThemeBackground,
-    content: Text(
+    contentBuilder: (innerContext) => Text(
       l10n.setThemeBackgroundConfirm,
       style: TextStyle(fontSize: 16, color: colorScheme.onSurface),
     ),
     cancelText: l10n.cancel,
     confirmText: l10n.confirm,
-    onConfirm: () => onSetBackground(),
+    onConfirm: (innerContext) async => onSetBackground(),
   );
 }

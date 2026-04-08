@@ -1883,7 +1883,7 @@ abstract class AppLocalizations {
   /// No description provided for @manual_cookie_input_hint.
   ///
   /// In en, this message translates to:
-  /// **'If auto-detection fails, manually paste the Cookie:'**
+  /// **'Paste the complete Cookie string from browser DevTools (must contain MUSIC_U field)'**
   String get manual_cookie_input_hint;
 
   /// No description provided for @cookie_input_placeholder.
@@ -1909,6 +1909,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This URL already exists'**
   String get url_already_exists;
+
+  /// No description provided for @select_login_method.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Login Method'**
+  String get select_login_method;
+
+  /// No description provided for @web_login.
+  ///
+  /// In en, this message translates to:
+  /// **'Web Login'**
+  String get web_login;
+
+  /// No description provided for @cookie_login.
+  ///
+  /// In en, this message translates to:
+  /// **'Cookie Login'**
+  String get cookie_login;
+
+  /// No description provided for @invalid_cookie_format.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Cookie format, must contain MUSIC_U'**
+  String get invalid_cookie_format;
 }
 
 class _AppLocalizationsDelegate

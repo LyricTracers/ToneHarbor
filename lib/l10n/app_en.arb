@@ -304,9 +304,13 @@
   "login_not_detected": "Login Not Detected",
   "login_not_detected_desc": "We could not detect a successful login. Please make sure you have completed the login process in the browser.",
   "try_again": "Try Again",
-  "manual_cookie_input_hint": "If auto-detection fails, manually paste the Cookie:",
+  "manual_cookie_input_hint": "Paste the complete Cookie string from browser DevTools (must contain MUSIC_U field)",
   "cookie_input_placeholder": "Paste the Cookie string copied from browser",
   "cookie_input_empty": "Please enter Cookie",
   "invalid_url_format": "Invalid URL format, please enter a valid HTTP/HTTPS address",
-  "url_already_exists": "This URL already exists"
+  "url_already_exists": "This URL already exists",
+  "select_login_method": "Select Login Method",
+  "web_login": "Web Login",
+  "cookie_login": "Cookie Login",
+  "invalid_cookie_format": "Invalid Cookie format, must contain MUSIC_U"
 }

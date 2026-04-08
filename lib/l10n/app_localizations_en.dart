@@ -928,7 +928,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get manual_cookie_input_hint =>
-      'If auto-detection fails, manually paste the Cookie:';
+      'Paste the complete Cookie string from browser DevTools (must contain MUSIC_U field)';
 
   @override
   String get cookie_input_placeholder =>
@@ -943,4 +943,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get url_already_exists => 'This URL already exists';
+
+  @override
+  String get select_login_method => 'Select Login Method';
+
+  @override
+  String get web_login => 'Web Login';
+
+  @override
+  String get cookie_login => 'Cookie Login';
+
+  @override
+  String get invalid_cookie_format =>
+      'Invalid Cookie format, must contain MUSIC_U';
 }

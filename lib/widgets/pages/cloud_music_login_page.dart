@@ -4,7 +4,6 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
-import 'package:toneharbor/providers/cloud_music/cloud_music_provider.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -132,11 +131,11 @@ class CloudMusicLoginPage extends HookConsumerWidget {
             context: context,
             colorScheme: colorScheme,
             title: l10n.login_success,
-            content: Text(l10n.login_success_desc),
+            contentBuilder: (innerContext) => Text(l10n.login_success_desc),
             confirmText: l10n.confirm,
-            onConfirm: () async {
-              if (context.mounted) {
-                Navigator.of(context).pop();
+            onConfirm: (innerContext) async {
+              if (innerContext.mounted) {
+                Navigator.of(innerContext).pop();
               }
             },
           );
@@ -395,11 +394,11 @@ class CloudMusicLoginPage extends HookConsumerWidget {
             context: context,
             colorScheme: colorScheme,
             title: l10n.login_success,
-            content: Text(l10n.login_success_desc),
+            contentBuilder: (innerContext) => Text(l10n.login_success_desc),
             confirmText: l10n.confirm,
-            onConfirm: () async {
+            onConfirm: (innerContext) async {
               if (context.mounted) {
-                Navigator.of(context).pop();
+                context.popWrap();
               }
             },
           );
@@ -420,10 +419,10 @@ class CloudMusicLoginPage extends HookConsumerWidget {
       context: context,
       colorScheme: colorScheme,
       title: l10n.confirm_exit_login,
-      content: Text(l10n.confirm_exit_login_desc),
+      contentBuilder: (innerContext) => Text(l10n.confirm_exit_login_desc),
       cancelText: l10n.cancel,
       confirmText: l10n.confirm_exit,
-      onConfirm: () async => Navigator.of(context).pop(),
+      onConfirm: (innerContext) async => context.popWrap(),
     );
   }
 }

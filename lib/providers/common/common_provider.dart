@@ -328,6 +328,7 @@ class CloudMusicAuthState extends _$CloudMusicAuthState {
 
   Future<void> loginSuccess(String cookies) async {
     await CloudMusicAuth.saveCookies(cookies);
+    clearCacheByGroupKey(groupKey: 'cloud_recommendPlaylist');
     state = true;
   }
 
