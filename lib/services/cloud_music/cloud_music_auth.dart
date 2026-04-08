@@ -51,7 +51,7 @@ class CloudMusicAuth {
     }
   }
 
-  static Future<String?> getCookies() async {
+  static String? getCookies() {
     try {
       return SharedPreferencesUtils.getCloudMusicCookies();
     } catch (e) {

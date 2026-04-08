@@ -294,88 +294,92 @@ class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
   ) {
     final isLoggedIn = ref.watch(cloudMusicAuthStateProvider);
 
-    return Column(
-      children: [
-        Slidable(
-          key: ValueKey('login'),
-          endActionPane: ActionPane(
-            motion: const ScrollMotion(),
-            children: [
-              if (isLoggedIn) ...[
-                SlidableAction(
-                  onPressed: (context) {
-                    ref.read(cloudMusicAuthStateProvider.notifier).logout();
-                  },
-                  backgroundColor: colorScheme.errorContainer,
-                  foregroundColor: colorScheme.onErrorContainer,
-                  icon: Icons.logout,
-                  label: l10n.cloud_music_logout,
-                ),
-                SlidableAction(
-                  onPressed: (context) async {
-                    final cookies = await CloudMusicAuth.getCookies();
-                    if (cookies == null || cookies.isEmpty) return;
-                    if (context.mounted) {
-                      copyToClipboard(cookies, context, colorScheme.secondary);
-                    }
-                  },
-                  backgroundColor: colorScheme.tertiaryContainer,
-                  foregroundColor: colorScheme.onTertiaryContainer,
-                  icon: Icons.copy,
-                  label: l10n.copy,
-                ),
-              ],
-              if (!isLoggedIn) ...[
-                SlidableAction(
-                  onPressed: (context) {
-                    ref.context.pushWrapper("/cloud-login");
-                  },
-                  backgroundColor: colorScheme.primaryContainer,
-                  foregroundColor: colorScheme.onPrimaryContainer,
-                  icon: Icons.login,
-                  label: l10n.web_login,
-                ),
-                SlidableAction(
-                  onPressed: (context) {
-                    _showCookieInputDialog(ref, colorScheme, l10n);
-                  },
-                  backgroundColor: colorScheme.tertiaryContainer,
-                  foregroundColor: colorScheme.onTertiaryContainer,
-                  icon: Icons.login,
-                  label: l10n.cookie_login,
-                ),
-              ],
-            ],
-          ),
-          child: ListTile(
-            leading: Icon(
-              Icons.login,
-              color: isLoggedIn ? Colors.green : colorScheme.primary,
+    return Slidable(
+      key: ValueKey('login'),
+      endActionPane: ActionPane(
+        motion: const ScrollMotion(),
+        children: [
+          if (isLoggedIn) ...[
+            SlidableAction(
+              onPressed: (context) {
+                ref.read(cloudMusicAuthStateProvider.notifier).logout();
+              },
+              backgroundColor: colorScheme.errorContainer,
+              foregroundColor: colorScheme.onErrorContainer,
+              icon: Icons.logout,
+              label: l10n.cloud_music_logout,
             ),
-            title: Text(
-              isLoggedIn
-                  ? l10n.cloud_music_logged_in
-                  : l10n.cloud_music_not_logged_in,
-              style: TextStyle(
-                fontSize: 15 * multiplier,
-                fontWeight: FontWeight.w500,
-                color: colorScheme.onSurface,
-              ),
+            SlidableAction(
+              onPressed: (context) {
+                final cookies = CloudMusicAuth.getCookies();
+                if (cookies == null || cookies.isEmpty) return;
+                if (context.mounted) {
+                  copyToClipboard(cookies, context, colorScheme.secondary);
+                }
+              },
+              backgroundColor: colorScheme.tertiaryContainer,
+              foregroundColor: colorScheme.onTertiaryContainer,
+              icon: Icons.copy,
+              label: l10n.copy,
             ),
-            subtitle: Text(
-              isLoggedIn ? l10n.cloud_music_logged_in : l10n.cloud_music_login,
-              style: TextStyle(
-                fontSize: 12 * multiplier,
-                color: colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
+          ],
+          if (!isLoggedIn) ...[
+            SlidableAction(
+              onPressed: (context) {
+                ref.context.pushWrapper("/cloud-login");
+              },
+              backgroundColor: colorScheme.primaryContainer,
+              foregroundColor: colorScheme.onPrimaryContainer,
+              icon: Icons.login,
+              label: l10n.web_login,
             ),
-            onTap: () {
-              if (isLoggedIn) return;
-              _showLoginMethodDialog(ref, colorScheme, l10n);
-            },
+            SlidableAction(
+              onPressed: (context) {
+                _showCookieInputDialog(ref, colorScheme, l10n);
+              },
+              backgroundColor: colorScheme.tertiaryContainer,
+              foregroundColor: colorScheme.onTertiaryContainer,
+              icon: Icons.login,
+              label: l10n.cookie_login,
+            ),
+          ],
+        ],
+      ),
+      child: ListTile(
+        trailing: Icon(isLoggedIn ? null : Icons.arrow_forward_ios),
+        title: Text(
+          isLoggedIn
+              ? l10n.cloud_music_logged_in
+              : l10n.cloud_music_not_logged_in,
+          style: TextStyle(
+            fontSize: 15 * multiplier,
+            fontWeight: FontWeight.w500,
+            color: colorScheme.onSurface,
           ),
         ),
-      ],
+        subtitle: Text(
+          isLoggedIn
+              ? CloudMusicAuth.getCookies() ?? ''
+              : l10n.cloud_music_login,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 12 * multiplier,
+            color: colorScheme.onSurface.withValues(alpha: 0.6),
+          ),
+        ),
+        onTap: () {
+          if (isLoggedIn) {
+            copyToClipboard(
+              CloudMusicAuth.getCookies() ?? '',
+              ref.context,
+              colorScheme.secondary,
+            );
+            return;
+          }
+          _showLoginMethodDialog(ref, colorScheme, l10n);
+        },
+      ),
     );
   }
 
