@@ -35,6 +35,8 @@ class CloudMusicLoginPage extends HookConsumerWidget {
       child: Column(
         children: [
           AppBar(
+            toolbarHeight: kToolbarHeight * size.multiplier3,
+            centerTitle: false,
             elevation: 0,
             backgroundColor: size.lgAndUp
                 ? colorScheme.tertiary.withValues(alpha: 0.1)
@@ -42,7 +44,7 @@ class CloudMusicLoginPage extends HookConsumerWidget {
             surfaceTintColor: Colors.transparent,
             scrolledUnderElevation: 0,
             leading: IconButton(
-              icon: Icon(Icons.close, color: colorScheme.onSurface),
+              icon: Icon(Icons.arrow_back_ios_sharp),
               onPressed: () {
                 if (loginSuccess.value) {
                   context.popWrap();
@@ -59,7 +61,6 @@ class CloudMusicLoginPage extends HookConsumerWidget {
                 fontSize: 17,
               ),
             ),
-            centerTitle: true,
           ),
           Expanded(
             child: Stack(
