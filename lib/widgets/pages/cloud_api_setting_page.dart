@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -9,7 +7,6 @@ import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/pages/build_item.dart';
-import 'package:toneharbor/widgets/pages/cloud_music_login_page.dart';
 
 class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
   const CloudApiSettingPage({super.key});
@@ -293,6 +290,7 @@ class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
     double multiplier,
   ) {
     final isLoggedIn = ref.watch(cloudMusicAuthStateProvider);
+    final userInfo = ref.watch(cloudUserInfoProvider);
 
     return Slidable(
       key: ValueKey('login'),
@@ -346,10 +344,26 @@ class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
         ],
       ),
       child: ListTile(
+        leading: isLoggedIn && userInfo.value != null
+            ? CircleAvatar(
+                radius: 18,
+                backgroundImage: userInfo.value!.avatarUrl != null
+                    ? NetworkImage(userInfo.value!.avatarUrl!)
+                    : null,
+                backgroundColor: colorScheme.primaryContainer,
+                child: userInfo.value!.avatarUrl == null
+                    ? Icon(
+                        Icons.person,
+                        color: colorScheme.onPrimaryContainer,
+                        size: 20,
+                      )
+                    : null,
+              )
+            : null,
         trailing: Icon(isLoggedIn ? null : Icons.arrow_forward_ios),
         title: Text(
           isLoggedIn
-              ? l10n.cloud_music_logged_in
+              ? userInfo.value?.nickname ?? l10n.cloud_music_logged_in
               : l10n.cloud_music_not_logged_in,
           style: TextStyle(
             fontSize: 15 * multiplier,
@@ -359,7 +373,7 @@ class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
         ),
         subtitle: Text(
           isLoggedIn
-              ? CloudMusicAuth.getCookies() ?? ''
+              ? userInfo.value?.signature ?? userInfo.value?.userName ?? ''
               : l10n.cloud_music_login,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -370,8 +384,8 @@ class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
         ),
         onTap: () {
           if (isLoggedIn) {
-            copyToClipboard(
-              CloudMusicAuth.getCookies() ?? '',
+            showSnackBar(
+              l10n.cloud_music_logged_in,
               ref.context,
               colorScheme.secondary,
             );

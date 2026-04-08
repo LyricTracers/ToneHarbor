@@ -664,7 +664,7 @@ final class CloudMusicAuthStateProvider
 }
 
 String _$cloudMusicAuthStateHash() =>
-    r'566cc9f359a1ff86a9a86d7b40eeffc84cf7cca0';
+    r'90853d53f0e97c7540bd5a06063b489d098bcaee';
 
 abstract class _$CloudMusicAuthState extends $Notifier<bool> {
   bool build();

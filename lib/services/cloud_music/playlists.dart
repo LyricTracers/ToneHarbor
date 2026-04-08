@@ -92,6 +92,131 @@ Future<List<CloudMusicPlaylist>> dailyRecommendPlaylist(
   }
 }
 
+Future<CloudMusicPlaylistDetailData> getPlaylistDetail(
+  Ref ref, {
+  required int id,
+  bool noCache = false,
+}) async {
+  final l10n = ref.read(l10nProvider);
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+
+  try {
+    final query = <String, String>{
+      'id': id.toString(),
+      if (noCache)
+        'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final cookieParams = CloudMusicAuth.getApiCookieParams();
+    if (cookieParams.isNotEmpty) {
+      query.addAll(cookieParams);
+    }
+
+    final response = await httpClientWrapper.get(
+      '${apiState.defaultUrl}/playlist/detail',
+      query: query,
+      cancelToken: ref.cancelToken(),
+    );
+    logger.i("======response:${response.body}======");
+    if (response.statusCode != 200) {
+      logger.e('请求失败，状态码：${response.statusCode}');
+      throw CloudMusicException(
+        message: l10n.error_getPlaylists_failed,
+        statusCode: response.statusCode,
+      );
+    }
+
+    late final Map<String, dynamic> jsonBody;
+    try {
+      jsonBody = parseJsonResponse(response.body);
+    } catch (e) {
+      logger.e('解析响应失败: $e');
+      throw CloudMusicException(message: l10n.error_response_parse_failed);
+    }
+
+    if (jsonBody['code'] != 200) {
+      throw CloudMusicException(
+        message: l10n.error_getPlaylists_failed,
+        statusCode: jsonBody['code'],
+      );
+    }
+
+    final playlist = jsonBody['playlist'] as Map<String, dynamic>?;
+    if (playlist == null) {
+      throw CloudMusicException(message: l10n.error_getPlaylists_failed);
+    }
+
+    return CloudMusicPlaylistDetailData.fromJson(playlist);
+  } catch (e) {
+    logger.e('获取歌单详情失败: $e');
+    throw CloudMusicException(message: l10n.error_network_error);
+  }
+}
+
+Future<CloudMusicSongDetailResponse> getTrackDetail(
+  Ref ref, {
+  required List<int> ids,
+}) async {
+  final l10n = ref.read(l10nProvider);
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+
+  if (ids.isEmpty) {
+    return const CloudMusicSongDetailResponse(songs: []);
+  }
+
+  try {
+    final query = <String, String>{'ids': ids.join(',')};
+
+    final cookieParams = CloudMusicAuth.getApiCookieParams();
+    if (cookieParams.isNotEmpty) {
+      query.addAll(cookieParams);
+    }
+
+    final response = await httpClientWrapper.get(
+      '${apiState.defaultUrl}/song/detail',
+      query: query,
+      cancelToken: ref.cancelToken(),
+    );
+
+    if (response.statusCode != 200) {
+      logger.e('请求失败，状态码：${response.statusCode}');
+      throw CloudMusicException(
+        message: l10n.error_getPlaylists_failed,
+        statusCode: response.statusCode,
+      );
+    }
+
+    late final Map<String, dynamic> jsonBody;
+    try {
+      jsonBody = parseJsonResponse(response.body);
+    } catch (e) {
+      logger.e('解析响应失败: $e');
+      throw CloudMusicException(message: l10n.error_response_parse_failed);
+    }
+
+    if (jsonBody['code'] != 200) {
+      throw CloudMusicException(
+        message: l10n.error_getPlaylists_failed,
+        statusCode: jsonBody['code'],
+      );
+    }
+
+    final songs =
+        (jsonBody['songs'] as List?)
+            ?.map((e) => CloudMusicSong.fromJson(e))
+            .toList() ??
+        [];
+    final privileges = (jsonBody['privileges'] as List?)
+        ?.map((e) => CloudMusicPrivilege.fromJson(e))
+        .toList();
+
+    return CloudMusicSongDetailResponse(songs: songs, privileges: privileges);
+  } catch (e) {
+    logger.e('获取歌曲详情失败: $e');
+    throw CloudMusicException(message: l10n.error_network_error);
+  }
+}
+
 Future<List<CloudMusicPlaylist>> recommendPlaylist(
   Ref ref, {
   int limit = 10,

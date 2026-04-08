@@ -63,7 +63,7 @@ class CloudMusicArtistItem extends StatelessWidget {
             AspectRatio(
               aspectRatio: 1.0,
               child: CloudMusicCoverImage(
-                imageUrl: artist.picUrl,
+                imageUrl: artist.picUrl ?? '',
                 colorScheme: colorScheme,
                 config: CloudMusicCoverImageConfig(
                   size: 100,

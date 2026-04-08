@@ -1,9 +1,11 @@
 import 'dart:math';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/artists.dart';
 import 'package:toneharbor/services/cloud_music/playlists.dart';
+import 'package:toneharbor/services/cloud_music/user.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 
 part 'cloud_music_provider.g.dart';
@@ -83,4 +85,86 @@ Future<List<CloudMusicArtist>> recommendTopArtist(
     }
   }
   return const [];
+}
+
+@riverpod
+class CloudMusicPlaylistDetail extends _$CloudMusicPlaylistDetail {
+  @override
+  Future<CloudMusicPlaylistDetailData?> build(int playlistId) async {
+    return _loadPlaylistDetail(playlistId);
+  }
+
+  Future<CloudMusicPlaylistDetailData?> _loadPlaylistDetail(int id) async {
+    try {
+      return await getPlaylistDetail(ref, id: id, noCache: true);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<void> loadMore({int loadNum = 100}) async {
+    final current = state.value;
+    if (current == null) return;
+
+    final trackIds = current.trackIds;
+    final tracks = current.tracks ?? [];
+
+    if (trackIds == null || tracks.length >= trackIds.length) return;
+
+    final startIndex = tracks.length;
+    final endIndex = (startIndex + loadNum).clamp(0, trackIds.length);
+
+    if (startIndex >= endIndex) return;
+
+    final idsToLoad = trackIds
+        .sublist(startIndex, endIndex)
+        .map((t) => t.id)
+        .toList();
+
+    if (idsToLoad.isEmpty) return;
+
+    state = const AsyncValue.loading();
+
+    try {
+      final response = await getTrackDetail(ref, ids: idsToLoad);
+      final newTracks = response.songs;
+
+      state = AsyncValue.data(
+        current.copyWith(tracks: [...tracks, ...newTracks]),
+      );
+    } catch (e) {
+      state = AsyncValue.data(current);
+    }
+  }
+
+  bool get hasMore {
+    final current = state.value;
+    if (current == null || current.trackIds == null) return false;
+    final tracks = current.tracks ?? [];
+    return tracks.length < current.trackIds!.length;
+  }
+
+  int get totalTracks {
+    final current = state.value;
+    if (current == null || current.trackIds == null) return 0;
+    return current.trackIds!.length;
+  }
+
+  int get loadedTracks {
+    final current = state.value;
+    if (current == null) return 0;
+    return current.tracks?.length ?? 0;
+  }
+}
+
+@keepAlive
+class CloudUserInfo extends _$CloudUserInfo {
+  @override
+  Future<CloudMusicUser?> build() async {
+    final loginState = ref.watch(cloudMusicAuthStateProvider);
+    if (loginState) {
+      return getUserInfo(ref);
+    }
+    return null;
+  }
 }

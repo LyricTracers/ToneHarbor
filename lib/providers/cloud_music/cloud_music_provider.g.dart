@@ -121,7 +121,7 @@ final class RecommendPlaylistsProvider
 }
 
 String _$recommendPlaylistsHash() =>
-    r'0eba2b856173893942f64974c054dfc0c063ffff';
+    r'f4e4112839864dc3f8aa2d3fc9b9de4607d4238b';
 
 final class RecommendPlaylistsFamily extends $Family
     with
@@ -257,4 +257,152 @@ final class RecommendTopArtistFamily extends $Family
 
   @override
   String toString() => r'recommendTopArtistProvider';
+}
+
+@ProviderFor(CloudMusicPlaylistDetail)
+final cloudMusicPlaylistDetailProvider = CloudMusicPlaylistDetailFamily._();
+
+final class CloudMusicPlaylistDetailProvider
+    extends
+        $AsyncNotifierProvider<
+          CloudMusicPlaylistDetail,
+          CloudMusicPlaylistDetailData?
+        > {
+  CloudMusicPlaylistDetailProvider._({
+    required CloudMusicPlaylistDetailFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'cloudMusicPlaylistDetailProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudMusicPlaylistDetailHash();
+
+  @override
+  String toString() {
+    return r'cloudMusicPlaylistDetailProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  CloudMusicPlaylistDetail create() => CloudMusicPlaylistDetail();
+
+  @override
+  bool operator ==(Object other) {
+    return other is CloudMusicPlaylistDetailProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$cloudMusicPlaylistDetailHash() =>
+    r'cf12797bd9bb5ff23b289338ae6d7b03ba5a7df6';
+
+final class CloudMusicPlaylistDetailFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          CloudMusicPlaylistDetail,
+          AsyncValue<CloudMusicPlaylistDetailData?>,
+          CloudMusicPlaylistDetailData?,
+          FutureOr<CloudMusicPlaylistDetailData?>,
+          int
+        > {
+  CloudMusicPlaylistDetailFamily._()
+    : super(
+        retry: null,
+        name: r'cloudMusicPlaylistDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CloudMusicPlaylistDetailProvider call(int playlistId) =>
+      CloudMusicPlaylistDetailProvider._(argument: playlistId, from: this);
+
+  @override
+  String toString() => r'cloudMusicPlaylistDetailProvider';
+}
+
+abstract class _$CloudMusicPlaylistDetail
+    extends $AsyncNotifier<CloudMusicPlaylistDetailData?> {
+  late final _$args = ref.$arg as int;
+  int get playlistId => _$args;
+
+  FutureOr<CloudMusicPlaylistDetailData?> build(int playlistId);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<CloudMusicPlaylistDetailData?>,
+              CloudMusicPlaylistDetailData?
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<CloudMusicPlaylistDetailData?>,
+                CloudMusicPlaylistDetailData?
+              >,
+              AsyncValue<CloudMusicPlaylistDetailData?>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, () => build(_$args));
+  }
+}
+
+@ProviderFor(CloudUserInfo)
+final cloudUserInfoProvider = CloudUserInfoProvider._();
+
+final class CloudUserInfoProvider
+    extends $AsyncNotifierProvider<CloudUserInfo, CloudMusicUser?> {
+  CloudUserInfoProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'cloudUserInfoProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudUserInfoHash();
+
+  @$internal
+  @override
+  CloudUserInfo create() => CloudUserInfo();
+}
+
+String _$cloudUserInfoHash() => r'a41a9a372686e6b1e770743e6b24ac3d5540db81';
+
+abstract class _$CloudUserInfo extends $AsyncNotifier<CloudMusicUser?> {
+  FutureOr<CloudMusicUser?> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<CloudMusicUser?>, CloudMusicUser?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<CloudMusicUser?>, CloudMusicUser?>,
+              AsyncValue<CloudMusicUser?>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
 }

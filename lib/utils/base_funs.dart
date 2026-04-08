@@ -498,7 +498,7 @@ void showCommonDialog({
                       TextButton(
                         onPressed: () async {
                           await onThirdButton?.call(context);
-                          if (context.mounted && Navigator.canPop(context)) {
+                          if (context.mounted) {
                             Navigator.pop(context);
                           }
                         },
@@ -508,7 +508,7 @@ void showCommonDialog({
                       TextButton(
                         onPressed: () async {
                           await onConfirm?.call(context);
-                          if (context.mounted && Navigator.canPop(context)) {
+                          if (context.mounted) {
                             Navigator.pop(context);
                           }
                         },

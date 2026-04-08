@@ -18,6 +18,7 @@ import 'package:toneharbor/widgets/layouts/local_songs_layout.dart';
 import 'package:toneharbor/widgets/mobile/layouts/mobile_full_layout.dart';
 import 'package:toneharbor/widgets/mobile/layouts/mobile_home_layout.dart';
 import 'package:toneharbor/widgets/pages/cloud_api_setting_page.dart';
+import 'package:toneharbor/widgets/pages/cloud_detail_playlist_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_music_login_page.dart';
 import 'package:toneharbor/widgets/pages/gesture_only_cupertino_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
@@ -415,6 +416,17 @@ class MyApp extends HookConsumerWidget {
                 },
               ),
               GoRoute(
+                path: '/cloud-detail/:id',
+                pageBuilder: (context, state) {
+                  return buildPage(
+                    key: state.pageKey,
+                    child: CloudDetailPlaylistPage(
+                      playlistId: int.parse(state.pathParameters['id'] ?? ''),
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
                 path: '/setting',
                 pageBuilder: (context, state) =>
                     buildPage(key: state.pageKey, child: SettingPage()),
@@ -715,6 +727,20 @@ class MyApp extends HookConsumerWidget {
               key: state.pageKey,
               child: MobileFullLayout(child: AccountPage()),
             ),
+          ),
+          GoRoute(
+            path: '/mobile/cloud-detail/:id',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) {
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(
+                  child: CloudDetailPlaylistPage(
+                    playlistId: int.parse(state.pathParameters['id'] ?? ''),
+                  ),
+                ),
+              );
+            },
           ),
           GoRoute(
             path: '/mobile/cloud-login',

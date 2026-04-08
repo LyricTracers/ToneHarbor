@@ -263,7 +263,13 @@ class RecommendPage extends HookConsumerWidget {
                         color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                       SizedBox(height: 15),
-                      const CloudRecommendPlaylists(),
+                      CloudRecommendPlaylists(
+                        onPlaylistTap: (playlist) {
+                          context.pushWrapper(
+                            "/cloud-detail/${Uri.encodeComponent(playlist.id.toString())}",
+                          );
+                        },
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(
                           left: 16,

@@ -43,6 +43,13 @@ PODS:
   - Flutter (1.0.0)
   - flutter_broadcasts (0.0.1):
     - Flutter
+  - flutter_inappwebview_ios (0.0.1):
+    - Flutter
+    - flutter_inappwebview_ios/Core (= 0.0.1)
+    - OrderedSet (~> 6.0.3)
+  - flutter_inappwebview_ios/Core (0.0.1):
+    - Flutter
+    - OrderedSet (~> 6.0.3)
   - flutter_native_splash (2.4.3):
     - Flutter
   - flutter_to_airplay (2.1.0):
@@ -55,6 +62,7 @@ PODS:
     - Flutter
   - open_file_ios (1.0.3):
     - Flutter
+  - OrderedSet (6.0.3)
   - package_info_plus (0.4.5):
     - Flutter
   - path_provider_foundation (0.0.1):
@@ -105,6 +113,7 @@ DEPENDENCIES:
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
   - flutter_broadcasts (from `.symlinks/plugins/flutter_broadcasts/ios`)
+  - flutter_inappwebview_ios (from `.symlinks/plugins/flutter_inappwebview_ios/ios`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - flutter_to_airplay (from `.symlinks/plugins/flutter_to_airplay/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
@@ -122,6 +131,7 @@ SPEC REPOS:
   https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git:
     - DKImagePickerController
     - DKPhotoGallery
+    - OrderedSet
     - SDWebImage
     - sqlite3
     - SwiftyGif
@@ -139,6 +149,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_broadcasts:
     :path: ".symlinks/plugins/flutter_broadcasts/ios"
+  flutter_inappwebview_ios:
+    :path: ".symlinks/plugins/flutter_inappwebview_ios/ios"
   flutter_native_splash:
     :path: ".symlinks/plugins/flutter_native_splash/ios"
   flutter_to_airplay:
@@ -173,12 +185,14 @@ SPEC CHECKSUMS:
   file_picker: a0560bc09d61de87f12d246fc47d2119e6ef37be
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_broadcasts: 7bb7cc1024900a7f85e98b6faab795290b7c2339
+  flutter_inappwebview_ios: b89ba3482b96fb25e00c967aae065701b66e9b99
   flutter_native_splash: 57a0da564d1a03a31c20c5d85768b58cf767fec9
   flutter_to_airplay: aa876bf3d0cf811db84a3a5356dda334b9bcbd0f
   fluttertoast: 2c67e14dce98bbdb200df9e1acf610d7a6264ea1
   media_kit_libs_ios_audio: 905e6323b72e65c63ab9262b2e473f52c024a3a8
   metadata_god: 018b59c2f3617569928550dcbd17481591557c1d
   open_file_ios: 46184d802ee7959203f6392abcfa0dd49fdb5be0
+  OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
   package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
   path_provider_foundation: bb55f6dbba17d0dccd6737fe6f7f34fbd0376880
   rhttp: 359daed992674fc912552df3106bfbc746bcc929

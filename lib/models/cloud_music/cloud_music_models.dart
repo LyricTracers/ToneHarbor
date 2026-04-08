@@ -82,14 +82,14 @@ sealed class CloudMusicArtist with _$CloudMusicArtist {
   const factory CloudMusicArtist({
     required int id,
     required String name,
-    required int picId,
-    required int img1v1Id,
-    required String picUrl,
-    required String img1v1Url,
-    required int musicSize,
-    required int albumSize,
-    required String briefDesc,
-    required String trans,
+    int? picId,
+    int? img1v1Id,
+    String? picUrl,
+    String? img1v1Url,
+    int? musicSize,
+    int? albumSize,
+    String? briefDesc,
+    String? trans,
     List<String>? alias,
     List<String>? transNames,
   }) = _CloudMusicArtist;
@@ -98,14 +98,16 @@ sealed class CloudMusicArtist with _$CloudMusicArtist {
       _$CloudMusicArtistFromJson(json);
 
   String get cover {
-    if (img1v1Url.isNotEmpty) {
-      final img1v1ID = img1v1Url.split('/').last;
+    if (img1v1Url != null && img1v1Url!.isNotEmpty) {
+      final img1v1ID = img1v1Url!.split('/').last;
       if (img1v1ID == '5639395138885805.jpg') {
         // return 'https://p2.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg?param=512y512';
         return '';
       }
     }
-    final img = img1v1Url.isNotEmpty ? img1v1Url : picUrl;
+    final img = img1v1Url != null && img1v1Url!.isNotEmpty
+        ? img1v1Url!
+        : picUrl ?? '';
     return '${img.replaceAll('http://', 'https://')}?param=512y512';
   }
 }
@@ -151,9 +153,9 @@ sealed class CloudMusicAlbumSimple with _$CloudMusicAlbumSimple {
 }
 
 @freezed
-sealed class CloudMusicPlaylistDetail with _$CloudMusicPlaylistDetail {
-  const CloudMusicPlaylistDetail._();
-  const factory CloudMusicPlaylistDetail({
+sealed class CloudMusicPlaylistDetailData with _$CloudMusicPlaylistDetailData {
+  const CloudMusicPlaylistDetailData._();
+  const factory CloudMusicPlaylistDetailData({
     required int id,
     required String name,
     String? coverImgUrl,
@@ -161,6 +163,7 @@ sealed class CloudMusicPlaylistDetail with _$CloudMusicPlaylistDetail {
     int? playCount,
     int? trackCount,
     List<CloudMusicSong>? tracks,
+    List<CloudMusicTrackId>? trackIds,
     CloudMusicUser? creator,
     int? createTime,
     int? updateTime,
@@ -168,65 +171,88 @@ sealed class CloudMusicPlaylistDetail with _$CloudMusicPlaylistDetail {
     int? commentCount,
     List<String>? tags,
     int? privacy,
-  }) = _CloudMusicPlaylistDetail;
+    bool? subscribed,
+  }) = _CloudMusicPlaylistDetailData;
 
-  factory CloudMusicPlaylistDetail.fromJson(Map<String, dynamic> json) =>
-      _$CloudMusicPlaylistDetailFromJson(json);
+  factory CloudMusicPlaylistDetailData.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicPlaylistDetailDataFromJson(json);
+}
+
+@freezed
+sealed class CloudMusicTrackId with _$CloudMusicTrackId {
+  const CloudMusicTrackId._();
+  const factory CloudMusicTrackId({
+    required int id,
+    int? v,
+    int? alg,
+    int? uid,
+  }) = _CloudMusicTrackId;
+
+  factory CloudMusicTrackId.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicTrackIdFromJson(json);
+}
+
+@freezed
+sealed class CloudMusicSongDetailResponse with _$CloudMusicSongDetailResponse {
+  const CloudMusicSongDetailResponse._();
+  const factory CloudMusicSongDetailResponse({
+    required List<CloudMusicSong> songs,
+    List<CloudMusicPrivilege>? privileges,
+  }) = _CloudMusicSongDetailResponse;
+
+  factory CloudMusicSongDetailResponse.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicSongDetailResponseFromJson(json);
+}
+
+// id 歌曲 ID 用于匹配歌曲和权限
+// fee 费用标志 1 =VIP专享, 4 =付费专辑, 0 =免费
+//payed 是否已付费 0 =未付费, 1 =已付费
+//st 状态 < 0 表示已下架（需登录）
+//pl 播放等级 > 0 表示可播放（320kbps等）
+//dl 下载等级 表示可下载的音质
+//sp 最高音质等级 最高可播放音质
+// cp 版权标志 1 =有版权
+//subp 订阅标志 订阅用户专属
+//cs 云盘歌曲 true =云盘存储的音乐
+//maxbr 最大比特率 最大可播放比特率(如 320000=320kbps)
+//fl 当前音质 当前可用音质
+//toast 是否提示 是否有提示信息
+//flag 综合标志 其他状态标志
+@freezed
+sealed class CloudMusicPrivilege with _$CloudMusicPrivilege {
+  const factory CloudMusicPrivilege({
+    required int id,
+    int? fee,
+    int? payed,
+    int? st,
+    int? pl,
+    int? dl,
+    int? sp,
+    int? cp,
+    int? subp,
+    bool? cs,
+    int? maxbr,
+    int? fl,
+    bool? toast,
+    int? flag,
+  }) = _CloudMusicPrivilege;
+
+  factory CloudMusicPrivilege.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicPrivilegeFromJson(json);
 }
 
 @freezed
 sealed class CloudMusicUser with _$CloudMusicUser {
   const factory CloudMusicUser({
-    int? userId,
-    String? nickname,
+    required int userId,
+    required String nickname,
     String? avatarUrl,
+    int? vipType,
+    int? createTime,
     String? signature,
-    String? backgroundUrl,
+    String? userName,
   }) = _CloudMusicUser;
 
   factory CloudMusicUser.fromJson(Map<String, dynamic> json) =>
       _$CloudMusicUserFromJson(json);
-}
-
-@freezed
-sealed class CloudMusicTopArtistsResponse with _$CloudMusicTopArtistsResponse {
-  const factory CloudMusicTopArtistsResponse({
-    required CloudMusicArtistList list,
-  }) = _CloudMusicTopArtistsResponse;
-
-  factory CloudMusicTopArtistsResponse.fromJson(Map<String, dynamic> json) =>
-      _$CloudMusicTopArtistsResponseFromJson(json);
-}
-
-@freezed
-sealed class CloudMusicArtistList with _$CloudMusicArtistList {
-  const factory CloudMusicArtistList({
-    required List<CloudMusicArtist> artists,
-  }) = _CloudMusicArtistList;
-
-  factory CloudMusicArtistList.fromJson(Map<String, dynamic> json) =>
-      _$CloudMusicArtistListFromJson(json);
-}
-
-@freezed
-sealed class CloudMusicNewAlbumsResponse with _$CloudMusicNewAlbumsResponse {
-  const factory CloudMusicNewAlbumsResponse({
-    required List<CloudMusicAlbum> albums,
-  }) = _CloudMusicNewAlbumsResponse;
-
-  factory CloudMusicNewAlbumsResponse.fromJson(Map<String, dynamic> json) =>
-      _$CloudMusicNewAlbumsResponseFromJson(json);
-}
-
-@freezed
-sealed class CloudMusicHomeData with _$CloudMusicHomeData {
-  const factory CloudMusicHomeData({
-    @Default([]) List<CloudMusicPlaylist> recommendPlaylists,
-    @Default([]) List<CloudMusicAlbum> newAlbums,
-    @Default([]) List<CloudMusicPlaylist> topLists,
-    @Default([]) List<CloudMusicArtist> topArtists,
-  }) = _CloudMusicHomeData;
-
-  factory CloudMusicHomeData.fromJson(Map<String, dynamic> json) =>
-      _$CloudMusicHomeDataFromJson(json);
 }

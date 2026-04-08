@@ -20,135 +20,76 @@ class CloudMusicLoginPage extends HookConsumerWidget {
     final loginSuccess = useState<bool>(false);
     final hasError = useState<bool>(false);
     final errorMessage = useState<String>('');
-    final loginChecked = useState<bool>(false);
     final size = MediaQuery.of(context).size;
-
-    useEffect(() {
-      _checkExistingCookies(
-        ref,
-        context,
-        isLoading,
-        loginSuccess,
-        loginChecked,
-        colorScheme,
-        l10n,
-      );
-      return null;
-    }, []);
 
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
         if (loginSuccess.value) {
-          Navigator.of(context).pop();
+          context.popWrap();
         } else {
           _showExitConfirmDialog(context, colorScheme, l10n);
         }
       },
-      child: Scaffold(
-        backgroundColor: colorScheme.surface,
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: size.lgAndUp
-              ? colorScheme.tertiary.withValues(alpha: 0.1)
-              : Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          scrolledUnderElevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.close, color: colorScheme.onSurface),
-            onPressed: () {
-              if (loginSuccess.value) {
-                Navigator.of(context).pop();
-              } else {
-                _showExitConfirmDialog(context, colorScheme, l10n);
-              }
-            },
+      child: Column(
+        children: [
+          AppBar(
+            elevation: 0,
+            backgroundColor: size.lgAndUp
+                ? colorScheme.tertiary.withValues(alpha: 0.1)
+                : Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.close, color: colorScheme.onSurface),
+              onPressed: () {
+                if (loginSuccess.value) {
+                  context.popWrap();
+                } else {
+                  _showExitConfirmDialog(context, colorScheme, l10n);
+                }
+              },
+            ),
+            title: Text(
+              l10n.cloud_music_login,
+              style: TextStyle(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.w600,
+                fontSize: 17,
+              ),
+            ),
+            centerTitle: true,
           ),
-          title: Text(
-            l10n.cloud_music_login,
-            style: TextStyle(
-              color: colorScheme.onSurface,
-              fontWeight: FontWeight.w600,
-              fontSize: 17,
+          Expanded(
+            child: Stack(
+              children: [
+                if (!loginSuccess.value && !hasError.value)
+                  _buildWebView(
+                    ref,
+                    context,
+                    isLoading,
+                    loginSuccess,
+                    hasError,
+                    errorMessage,
+                    colorScheme,
+                    l10n,
+                  )
+                else if (hasError.value)
+                  _buildErrorView(colorScheme, l10n, errorMessage.value, () {
+                    hasError.value = false;
+                    isLoading.value = true;
+                  })
+                else
+                  _buildSuccessView(colorScheme, l10n),
+                if (isLoading.value && !hasError.value && !loginSuccess.value)
+                  _buildLoadingOverlay(colorScheme, l10n),
+              ],
             ),
           ),
-          centerTitle: true,
-        ),
-        body: Stack(
-          children: [
-            if (!loginSuccess.value && !hasError.value)
-              _buildWebView(
-                ref,
-                context,
-                isLoading,
-                loginSuccess,
-                hasError,
-                errorMessage,
-                loginChecked,
-                colorScheme,
-                l10n,
-              )
-            else if (hasError.value)
-              _buildErrorView(colorScheme, l10n, errorMessage.value, () {
-                hasError.value = false;
-                isLoading.value = true;
-              })
-            else
-              _buildSuccessView(colorScheme, l10n),
-            if (isLoading.value && !hasError.value && !loginSuccess.value)
-              _buildLoadingOverlay(colorScheme, l10n),
-          ],
-        ),
+        ],
       ),
     );
-  }
-
-  Future<void> _checkExistingCookies(
-    WidgetRef ref,
-    BuildContext context,
-    ValueNotifier<bool> isLoading,
-    ValueNotifier<bool> loginSuccess,
-    ValueNotifier<bool> loginChecked,
-    ColorScheme colorScheme,
-    AppLocalizations l10n,
-  ) async {
-    try {
-      final existingCookies = await CloudMusicAuth.getCookiesFromWebView();
-
-      if (existingCookies != null &&
-          CloudMusicAuth.isLoggedIn(existingCookies)) {
-        logger.i('检测到 WebView 中已存在登录 cookies，直接使用');
-        await ref
-            .read(cloudMusicAuthStateProvider.notifier)
-            .loginSuccess(existingCookies);
-        loginSuccess.value = true;
-        loginChecked.value = true;
-        isLoading.value = false;
-
-        if (context.mounted) {
-          showCommonDialog(
-            context: context,
-            colorScheme: colorScheme,
-            title: l10n.login_success,
-            contentBuilder: (innerContext) => Text(l10n.login_success_desc),
-            confirmText: l10n.confirm,
-            onConfirm: (innerContext) async {
-              if (innerContext.mounted) {
-                Navigator.of(innerContext).pop();
-              }
-            },
-          );
-        }
-        return;
-      }
-
-      logger.d('WebView 中无现有 cookies，需要用户登录');
-      isLoading.value = false;
-    } catch (e) {
-      logger.e('检查现有 cookies 失败: $e');
-      isLoading.value = false;
-    }
   }
 
   Widget _buildWebView(
@@ -158,11 +99,9 @@ class CloudMusicLoginPage extends HookConsumerWidget {
     ValueNotifier<bool> loginSuccess,
     ValueNotifier<bool> hasError,
     ValueNotifier<String> errorMessage,
-    ValueNotifier<bool> loginChecked,
     ColorScheme colorScheme,
     AppLocalizations l10n,
   ) {
-    final webViewController = useState<InAppWebViewController?>(null);
     final lastCheckTime = useState<DateTime?>(null);
 
     return InAppWebView(
@@ -179,16 +118,13 @@ class CloudMusicLoginPage extends HookConsumerWidget {
         userAgent:
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       ),
-      onWebViewCreated: (controller) {
-        webViewController.value = controller;
-      },
       onLoadStart: (controller, url) {
         if (!loginSuccess.value) {
           isLoading.value = true;
         }
       },
       onLoadStop: (controller, url) async {
-        if (loginChecked.value || loginSuccess.value) return;
+        if (loginSuccess.value) return;
 
         final now = DateTime.now();
         final lastCheck = lastCheckTime.value;
@@ -197,15 +133,7 @@ class CloudMusicLoginPage extends HookConsumerWidget {
         }
         lastCheckTime.value = now;
 
-        await _checkLoginStatus(
-          ref,
-          context,
-          url,
-          loginSuccess,
-          loginChecked,
-          colorScheme,
-          l10n,
-        );
+        await _checkLoginStatus(ref, context, loginSuccess, colorScheme, l10n);
 
         if (!loginSuccess.value) {
           isLoading.value = false;
@@ -222,9 +150,7 @@ class CloudMusicLoginPage extends HookConsumerWidget {
         }
       },
       onProgressChanged: (controller, progress) {
-        if (progress >= 90 && progress < 100 && !loginSuccess.value) {
-          isLoading.value = false;
-        } else if (progress == 100 && !loginSuccess.value) {
+        if (progress == 100 && !loginSuccess.value) {
           isLoading.value = false;
         }
       },
@@ -360,19 +286,10 @@ class CloudMusicLoginPage extends HookConsumerWidget {
   Future<void> _checkLoginStatus(
     WidgetRef ref,
     BuildContext context,
-    WebUri? url,
     ValueNotifier<bool> loginSuccess,
-    ValueNotifier<bool> loginChecked,
     ColorScheme colorScheme,
     AppLocalizations l10n,
   ) async {
-    if (url == null) return;
-
-    final urlString = url.toString();
-    if (!CloudMusicAuth.isLoginSuccessUrl(urlString)) {
-      return;
-    }
-
     try {
       final cookieString = await CloudMusicAuth.getCookiesFromWebView();
 
@@ -387,7 +304,6 @@ class CloudMusicLoginPage extends HookConsumerWidget {
             .read(cloudMusicAuthStateProvider.notifier)
             .loginSuccess(cookieString);
         loginSuccess.value = true;
-        loginChecked.value = true;
 
         if (context.mounted) {
           showCommonDialog(
@@ -397,9 +313,9 @@ class CloudMusicLoginPage extends HookConsumerWidget {
             contentBuilder: (innerContext) => Text(l10n.login_success_desc),
             confirmText: l10n.confirm,
             onConfirm: (innerContext) async {
-              if (context.mounted) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
                 context.popWrap();
-              }
+              });
             },
           );
         }
@@ -407,7 +323,6 @@ class CloudMusicLoginPage extends HookConsumerWidget {
     } catch (e) {
       logger.e('获取 cookies 失败: $e');
     }
-    return;
   }
 
   void _showExitConfirmDialog(
@@ -422,7 +337,11 @@ class CloudMusicLoginPage extends HookConsumerWidget {
       contentBuilder: (innerContext) => Text(l10n.confirm_exit_login_desc),
       cancelText: l10n.cancel,
       confirmText: l10n.confirm_exit,
-      onConfirm: (innerContext) async => context.popWrap(),
+      onConfirm: (innerContext) async {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          context.popWrap();
+        });
+      },
     );
   }
 }
