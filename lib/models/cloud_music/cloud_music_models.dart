@@ -135,7 +135,12 @@ sealed class CloudMusicSongData with _$CloudMusicSongData {
       _$CloudMusicSongDataFromJson(json);
 
   String get artistName => ar?.map((e) => e.name).join('/') ?? '';
-  String get cover => al?.cover ?? '';
+  String get cover {
+    if (al != null && al!.cover.isNotEmpty) {
+      return '${al!.cover.replaceAll('http://', 'https://')}?param=512y512';
+    }
+    return '';
+  }
 }
 
 @freezed

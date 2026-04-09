@@ -403,7 +403,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
   }
 }
 
-class _TrackListItem extends StatelessWidget {
+class _TrackListItem extends HookConsumerWidget {
   final CloudMusicSongData track;
   final int index;
   final ColorScheme colorScheme;
@@ -417,50 +417,164 @@ class _TrackListItem extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final artists = track.ar?.map((a) => a.name).join(', ') ?? '';
     final duration = track.dt != null ? _formatDuration(track.dt!) : null;
-
-    return ListTile(
-      leading: SizedBox(
-        width: 32 * multiplier,
-        child: Text(
-          '$index',
-          style: TextStyle(
-            fontSize: 14 * multiplier,
-            color: colorScheme.onSurface.withValues(alpha: 0.6),
+    double itemHeight = 66.0 * multiplier;
+    var isHovered = useState(false);
+    var isPressed = useState(false);
+    return MouseRegion(
+      onEnter: (event) => isHovered.value = true,
+      onExit: (event) => isHovered.value = false,
+      child: Container(
+        height: itemHeight,
+        color: isHovered.value || isPressed.value
+            ? colorScheme.outline.withValues(alpha: .1)
+            : Colors.transparent,
+        child: InkWell(
+          onDoubleTap: () {
+            isPressed.value = false;
+          },
+          onTapDown: (details) => isPressed.value = true,
+          onTapUp: (details) => isPressed.value = false,
+          onTapCancel: () => isPressed.value = false,
+          onTap: () {
+            isPressed.value = false;
+          },
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 15 * multiplier,
+              right: 20 * multiplier,
+              top: 4 * multiplier,
+              bottom: 4 * multiplier,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  '$index',
+                  style: TextStyle(
+                    fontSize: 14 * multiplier,
+                    color: colorScheme.primary,
+                  ),
+                ),
+                SizedBox(width: 15 * multiplier),
+                CloudMusicCoverImage(
+                  imageUrl: track.cover,
+                  colorScheme: colorScheme,
+                  config: CloudMusicCoverImageConfig(
+                    size: itemHeight * 0.8,
+                    borderRadius: 8,
+                  ),
+                ),
+                SizedBox(width: 15 * multiplier),
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        track.name,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontSize: 16 * multiplier,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 4 * multiplier),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              artists,
+                              style: TextStyle(
+                                fontSize: 12 * multiplier,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                if (track.al != null && track.al!.name.isNotEmpty) ...[
+                  SizedBox(width: 15 * multiplier),
+                  Expanded(
+                    child: Text(
+                      track.al!.name,
+                      style: TextStyle(
+                        fontSize: 14 * multiplier,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (duration != null) ...[
+                    SizedBox(width: 15 * multiplier),
+                    Text(
+                      duration,
+                      style: TextStyle(
+                        fontSize: 12 * multiplier,
+                        color: colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(width: 10 * multiplier),
+                  ],
+                ],
+              ],
+            ),
           ),
-          textAlign: TextAlign.center,
         ),
       ),
-      title: Text(
-        track.name,
-        style: TextStyle(
-          fontSize: 15 * multiplier,
-          color: colorScheme.onSurface,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      subtitle: Text(
-        artists,
-        style: TextStyle(
-          fontSize: 13 * multiplier,
-          color: colorScheme.onSurface.withValues(alpha: 0.6),
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      trailing: duration != null
-          ? Text(
-              duration,
-              style: TextStyle(
-                fontSize: 12 * multiplier,
-                color: colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
-            )
-          : null,
     );
+    // return ListTile(
+    //   leading: SizedBox(
+    //     width: 32 * multiplier,
+    //     child: Text(
+    //       '$index',
+    //       style: TextStyle(
+    //         fontSize: 14 * multiplier,
+    //         color: colorScheme.onSurface.withValues(alpha: 0.6),
+    //       ),
+    //       textAlign: TextAlign.center,
+    //     ),
+    //   ),
+    //   title: Text(
+    //     track.name,
+    //     style: TextStyle(
+    //       fontSize: 15 * multiplier,
+    //       color: colorScheme.onSurface,
+    //     ),
+    //     maxLines: 1,
+    //     overflow: TextOverflow.ellipsis,
+    //   ),
+    //   subtitle: Text(
+    //     artists,
+    //     style: TextStyle(
+    //       fontSize: 13 * multiplier,
+    //       color: colorScheme.onSurface.withValues(alpha: 0.6),
+    //     ),
+    //     maxLines: 1,
+    //     overflow: TextOverflow.ellipsis,
+    //   ),
+    //   trailing: duration != null
+    //       ? Text(
+    //           duration,
+    //           style: TextStyle(
+    //             fontSize: 12 * multiplier,
+    //             color: colorScheme.onSurface.withValues(alpha: 0.5),
+    //           ),
+    //         )
+    //       : null,
+    // );
   }
 
   String _formatDuration(int milliseconds) {
