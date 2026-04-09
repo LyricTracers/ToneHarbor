@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
-import 'package:toneharbor/widgets/widgets.dart';
 
 class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
   final String title;
@@ -379,13 +379,9 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
                     l10n,
                     isLoadingMore.value,
                   ),
-                  loading: () => SliverToBoxAdapter(
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(32),
-                        child: AudioEqualizerLoader(),
-                      ),
-                    ),
+                  loading: () => _TrackListShimmerLoading(
+                    colorScheme: colorScheme,
+                    size: size,
                   ),
                   error: (error, stack) => SliverToBoxAdapter(
                     child: Center(
@@ -412,9 +408,6 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
     bool isLoadingMore,
   ) {
     final tracks = data?.tracks ?? [];
-    final hasMore =
-        data?.trackIds != null &&
-        (data?.tracks?.length ?? 0) < (data?.trackIds?.length ?? 0);
 
     return SliverList(
       delegate: SliverChildBuilderDelegate((context, index) {
@@ -447,6 +440,89 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
 
   String _formatDate(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+}
+
+class _TrackListShimmerLoading extends StatelessWidget {
+  const _TrackListShimmerLoading({
+    required this.colorScheme,
+    required this.size,
+  });
+
+  final ColorScheme colorScheme;
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    final multiplier = size.multiplier;
+    final itemHeight = 66.0 * multiplier;
+
+    return SliverList(
+      delegate: SliverChildBuilderDelegate((context, index) {
+        return Shimmer.fromColors(
+          baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          highlightColor: colorScheme.surface.withValues(alpha: 1.0),
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 15 * multiplier,
+              right: 20 * multiplier,
+              top: 4 * multiplier,
+              bottom: 4 * multiplier,
+            ),
+            child: SizedBox(
+              height: itemHeight,
+              child: Row(
+                children: [
+                  Container(
+                    width: 20,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  SizedBox(width: 20 * multiplier),
+                  Container(
+                    width: itemHeight * 0.8,
+                    height: itemHeight * 0.8,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  SizedBox(width: 15 * multiplier),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          height: 16 * multiplier,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        SizedBox(height: 6 * multiplier),
+                        Container(
+                          width: 100 * multiplier,
+                          height: 12 * multiplier,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }, childCount: 20),
+    );
   }
 }
 
