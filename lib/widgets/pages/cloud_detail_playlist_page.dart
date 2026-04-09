@@ -341,7 +341,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
                 ),
                 detail.when(
                   data: (data) =>
-                      _buildTrackList(data, colorScheme, multiplier, l10n),
+                      _buildTrackList(data, colorScheme, size, l10n),
                   loading: () => SliverToBoxAdapter(
                     child: Center(
                       child: Padding(
@@ -370,7 +370,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
   Widget _buildTrackList(
     CloudMusicPlaylistDetailData? data,
     ColorScheme colorScheme,
-    double multiplier,
+    Size size,
     AppLocalizations l10n,
   ) {
     final tracks = data?.tracks ?? [];
@@ -392,7 +392,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
           track: track,
           index: index + 1,
           colorScheme: colorScheme,
-          multiplier: multiplier,
+          size: size,
         );
       }, childCount: tracks.length),
     );
@@ -407,19 +407,20 @@ class _TrackListItem extends HookConsumerWidget {
   final CloudMusicSongData track;
   final int index;
   final ColorScheme colorScheme;
-  final double multiplier;
+  final Size size;
 
   const _TrackListItem({
     required this.track,
     required this.index,
     required this.colorScheme,
-    required this.multiplier,
+    required this.size,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final artists = track.ar?.map((a) => a.name).join(', ') ?? '';
     final duration = track.dt != null ? _formatDuration(track.dt!) : null;
+    final multiplier = size.multiplier;
     double itemHeight = 66.0 * multiplier;
     var isHovered = useState(false);
     var isPressed = useState(false);
@@ -468,6 +469,7 @@ class _TrackListItem extends HookConsumerWidget {
                   ),
                 ),
                 SizedBox(width: 15 * multiplier),
+
                 Expanded(
                   flex: 2,
                   child: Column(
@@ -486,7 +488,8 @@ class _TrackListItem extends HookConsumerWidget {
                       SizedBox(height: 4 * multiplier),
                       Row(
                         children: [
-                          Expanded(
+                          Flexible(
+                            flex: 1,
                             child: Text(
                               artists,
                               style: TextStyle(
@@ -497,12 +500,32 @@ class _TrackListItem extends HookConsumerWidget {
                               maxLines: 1,
                             ),
                           ),
+
+                          if (track.al != null &&
+                              track.al!.name.isNotEmpty &&
+                              size.mdAndDown) ...[
+                            SizedBox(width: 10 * multiplier),
+                            Flexible(
+                              flex: 1,
+                              child: Text(
+                                '- ${track.al!.name}',
+                                style: TextStyle(
+                                  fontSize: 12 * multiplier,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ],
                   ),
                 ),
-                if (track.al != null && track.al!.name.isNotEmpty) ...[
+                if (track.al != null &&
+                    track.al!.name.isNotEmpty &&
+                    size.lgAndUp) ...[
                   SizedBox(width: 15 * multiplier),
                   Expanded(
                     child: Text(
@@ -515,19 +538,19 @@ class _TrackListItem extends HookConsumerWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  if (duration != null) ...[
-                    SizedBox(width: 15 * multiplier),
-                    Text(
-                      duration,
-                      style: TextStyle(
-                        fontSize: 12 * multiplier,
-                        color: colorScheme.onSurface.withValues(alpha: 0.5),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                ],
+                if (duration != null) ...[
+                  SizedBox(width: 15 * multiplier),
+                  Text(
+                    duration,
+                    style: TextStyle(
+                      fontSize: 12 * multiplier,
+                      color: colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
-                    SizedBox(width: 10 * multiplier),
-                  ],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(width: 10 * multiplier),
                 ],
               ],
             ),
@@ -535,46 +558,6 @@ class _TrackListItem extends HookConsumerWidget {
         ),
       ),
     );
-    // return ListTile(
-    //   leading: SizedBox(
-    //     width: 32 * multiplier,
-    //     child: Text(
-    //       '$index',
-    //       style: TextStyle(
-    //         fontSize: 14 * multiplier,
-    //         color: colorScheme.onSurface.withValues(alpha: 0.6),
-    //       ),
-    //       textAlign: TextAlign.center,
-    //     ),
-    //   ),
-    //   title: Text(
-    //     track.name,
-    //     style: TextStyle(
-    //       fontSize: 15 * multiplier,
-    //       color: colorScheme.onSurface,
-    //     ),
-    //     maxLines: 1,
-    //     overflow: TextOverflow.ellipsis,
-    //   ),
-    //   subtitle: Text(
-    //     artists,
-    //     style: TextStyle(
-    //       fontSize: 13 * multiplier,
-    //       color: colorScheme.onSurface.withValues(alpha: 0.6),
-    //     ),
-    //     maxLines: 1,
-    //     overflow: TextOverflow.ellipsis,
-    //   ),
-    //   trailing: duration != null
-    //       ? Text(
-    //           duration,
-    //           style: TextStyle(
-    //             fontSize: 12 * multiplier,
-    //             color: colorScheme.onSurface.withValues(alpha: 0.5),
-    //           ),
-    //         )
-    //       : null,
-    // );
   }
 
   String _formatDuration(int milliseconds) {
