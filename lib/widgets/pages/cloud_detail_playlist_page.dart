@@ -33,7 +33,7 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
   double get minExtent => kToolbarHeight * size.multiplier3;
 
   @override
-  double get maxExtent => kToolbarHeight * 4 * size.multiplier3;
+  double get maxExtent => kToolbarHeight * 5 * size.multiplier3;
   double get multiplier3 => size.multiplier3;
   double get multiplier => size.multiplier2;
 
@@ -83,9 +83,9 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
   }
 
   Widget _buildContent(double progress) {
-    final showExtra = progress < 0.7;
     final coverOpacity = 1.0 - progress;
     final titleFontSize = _lerpDouble(24, 16, progress) * multiplier;
+    final extraOpacity = (1.0 - progress / 0.7).clamp(0.0, 1.0);
 
     return Positioned.fill(
       child: SafeArea(
@@ -107,7 +107,7 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
                 coverSize,
                 coverOpacity,
                 titleFontSize,
-                showExtra,
+                extraOpacity,
                 progress,
               );
             },
@@ -128,7 +128,7 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
     double coverSize,
     double coverOpacity,
     double titleFontSize,
-    bool showExtra,
+    double extraOpacity,
     double progress,
   ) {
     final availableHeight = constraints.maxHeight;
@@ -183,33 +183,40 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
                   fontWeight: FontWeight.bold,
                   color: colorScheme.onSurface,
                 ),
-                maxLines: showExtra ? 2 : 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              if (showExtra && updateTime != null) ...[
-                SizedBox(height: 8 * multiplier),
-                Text(
-                  updateTime!,
-                  style: TextStyle(
-                    fontSize: 12 * multiplier,
-                    color: colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
+              Opacity(
+                opacity: extraOpacity.clamp(0.0, 1.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (updateTime != null) ...[
+                      SizedBox(height: 8 * multiplier),
+                      Text(
+                        updateTime!,
+                        style: TextStyle(
+                          fontSize: 12 * multiplier,
+                          color: colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ],
+                    if (description != null && description!.isNotEmpty) ...[
+                      SizedBox(height: 8 * multiplier),
+                      Text(
+                        description!,
+                        style: TextStyle(
+                          fontSize: 13 * multiplier,
+                          color: colorScheme.onSurface.withValues(alpha: 0.7),
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ],
                 ),
-              ],
-              if (showExtra &&
-                  description != null &&
-                  description!.isNotEmpty) ...[
-                SizedBox(height: 8 * multiplier),
-                Text(
-                  description!,
-                  style: TextStyle(
-                    fontSize: 13 * multiplier,
-                    color: colorScheme.onSurface.withValues(alpha: 0.7),
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+              ),
             ],
           ),
         ),
@@ -258,7 +265,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
       [playlist.coverUrl, colorScheme, maxCoverSize, multiplier],
     );
 
-    final headerMaxExtent = kToolbarHeight * 4 * multiplier;
+    final headerMaxExtent = kToolbarHeight * 5 * multiplier;
     final headerMinExtent = kToolbarHeight * multiplier;
     final maxScroll = headerMaxExtent - headerMinExtent;
 
@@ -296,9 +303,9 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
                   delegate: CloudDetailPlaylistHeaderDelegate(
                     title: playlist.name,
                     updateTime: createTime != null
-                        ? '创建于 ${_formatDate(createTime)}'
+                        ? "Created ${_formatDate(createTime)}"
                         : null,
-                    description: playlist.description,
+                    description: playlist.creator?.signature,
                     size: size,
                     colorScheme: colorScheme,
                     context: context,
