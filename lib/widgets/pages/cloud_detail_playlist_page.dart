@@ -291,16 +291,11 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
     final maxScroll = headerMaxExtent - headerMinExtent;
 
     final fromColor = Colors.transparent;
-    final toColor = colorScheme.tertiary.withValues(alpha: 0.1);
+    final toColor = colorScheme.surfaceContainerHighest;
     final statusBarProgress = maxScroll > 0
         ? (scrollPixels.value / maxScroll).clamp(0.0, 1.0)
         : 0.0;
     final statusBarColor = Color.lerp(fromColor, toColor, statusBarProgress)!;
-    if (detail.value != null) {
-      logger.i(
-        "description:${detail.value!.description},trackCount:${detail.value!.trackCount},create:${detail.value!.creator}",
-      );
-    }
     return Stack(
       children: [
         Positioned(
