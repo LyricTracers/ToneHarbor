@@ -1,5 +1,6 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
@@ -103,86 +104,100 @@ Future<CloudMusicPlaylistDetailData> getPlaylistDetail(
   final apiState = ref.read(cloudMusicApiUrlsProvider);
   final cacheKey = 'cloud_playlistDetail:$id';
   final groupKey = 'cloud_playlistDetail';
+
+  Map<String, dynamic>? jsonBody;
+
   if (cacheDuration != null) {
-    final cached = await getFromCache<CloudMusicPlaylistDetailData?>(
+    final cached = await getFromCache<Map<String, dynamic>?>(
       cacheKey: cacheKey,
       group: groupKey,
-      fromJson: (json) {
-        final playlist = json['playlist'] as Map<String, dynamic>?;
-        if (playlist == null) {
-          return null;
-        }
-        return CloudMusicPlaylistDetailData.fromJson(playlist);
-      },
+      fromJson: (json) => json,
     );
     if (cached != null) {
-      return cached;
+      return _parsePlaylistWithPrivileges(cached);
     }
+  }
+
+  jsonBody = await _fetchPlaylistDetailJson(ref, apiState, id, l10n);
+
+  if (cacheDuration != null) {
+    await saveToCache(
+      cacheKey: cacheKey,
+      jsonBody: jsonBody,
+      cacheDuration: cacheDuration,
+      group: groupKey,
+    );
+  }
+
+  return _parsePlaylistWithPrivileges(jsonBody);
+}
+
+Future<Map<String, dynamic>> _fetchPlaylistDetailJson(
+  Ref ref,
+  CloudMusicApiState apiState,
+  int id,
+  AppLocalizations l10n,
+) async {
+  final query = <String, String>{
+    'id': id.toString(),
+    'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+  };
+
+  final cookieParams = CloudMusicAuth.getApiCookieParams();
+  if (cookieParams.isNotEmpty) {
+    query.addAll(cookieParams);
+  }
+
+  final response = await httpClientWrapper.get(
+    '${apiState.defaultUrl}/playlist/detail',
+    query: query,
+    cancelToken: ref.cancelToken(),
+  );
+
+  if (response.statusCode == 301) {
+    ref.read(cloudMusicAuthStateProvider.notifier).logout();
+  }
+  if (response.statusCode != 200) {
+    throw CloudMusicException(
+      message: l10n.error_getPlaylists_failed,
+      statusCode: response.statusCode,
+    );
   }
 
   try {
-    final query = <String, String>{
-      'id': id.toString(),
-      'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
-    };
-
-    final cookieParams = CloudMusicAuth.getApiCookieParams();
-    if (cookieParams.isNotEmpty) {
-      query.addAll(cookieParams);
-    }
-
-    final response = await httpClientWrapper.get(
-      '${apiState.defaultUrl}/playlist/detail',
-      query: query,
-      cancelToken: ref.cancelToken(),
-    );
-    if (response.statusCode != 200) {
-      if (response.statusCode == 301) {
-        ref.read(cloudMusicAuthStateProvider.notifier).logout();
-      }
-      logger.e('请求失败，状态码：${response.statusCode}');
-      throw CloudMusicException(
-        message: l10n.error_getPlaylists_failed,
-        statusCode: response.statusCode,
-      );
-    }
-
-    late final Map<String, dynamic> jsonBody;
-    try {
-      jsonBody = parseJsonResponse(response.body);
-    } catch (e) {
-      logger.e('解析响应失败: $e');
-      throw CloudMusicException(message: l10n.error_response_parse_failed);
-    }
-
-    if (jsonBody['code'] != 200) {
-      throw CloudMusicException(
-        message: l10n.error_getPlaylists_failed,
-        statusCode: jsonBody['code'],
-      );
-    }
-
-    final playlist = jsonBody['playlist'] as Map<String, dynamic>?;
-    if (playlist == null) {
-      throw CloudMusicException(message: l10n.error_getPlaylists_failed);
-    }
-
-    if (cacheDuration != null) {
-      await saveToCache(
-        cacheKey: cacheKey,
-        jsonBody: jsonBody,
-        cacheDuration: cacheDuration,
-        group: groupKey,
-      );
-    }
-    return CloudMusicPlaylistDetailData.fromJson(playlist);
+    return parseJsonResponse(response.body);
   } catch (e) {
-    logger.e('获取歌单详情失败: $e');
-    throw CloudMusicException(message: l10n.error_network_error);
+    throw CloudMusicException(message: l10n.error_response_parse_failed);
   }
 }
 
-Future<CloudMusicSongDetailResponse> getTrackDetail(
+CloudMusicPlaylistDetailData _parsePlaylistWithPrivileges(
+  Map<String, dynamic> jsonBody,
+) {
+  final playlistJson = jsonBody['playlist'] as Map<String, dynamic>?;
+  if (playlistJson == null) {
+    throw CloudMusicException(message: 'Invalid playlist data');
+  }
+
+  final privileges =
+      (jsonBody['privileges'] as List?)
+          ?.map(
+            (e) => CloudMusicPrivilegeData.fromJson(e as Map<String, dynamic>),
+          )
+          .toList() ??
+      [];
+  final privilegeMap = {for (final p in privileges) p.id: p};
+
+  final playlistData = CloudMusicPlaylistDetailData.fromJson(playlistJson);
+  final tracks = playlistData.tracks?.map((track) {
+    final privilege = privilegeMap[track.id];
+    return privilege != null ? track.copyWith(privilege: privilege) : track;
+  }).toList();
+
+  return playlistData.copyWith(tracks: tracks);
+}
+
+Future<List<CloudMusicSongData>> getTrackDetail(
   Ref ref, {
   required List<int> ids,
 }) async {
@@ -190,7 +205,7 @@ Future<CloudMusicSongDetailResponse> getTrackDetail(
   final apiState = ref.read(cloudMusicApiUrlsProvider);
 
   if (ids.isEmpty) {
-    return const CloudMusicSongDetailResponse(songs: []);
+    return [];
   }
 
   try {
@@ -238,11 +253,22 @@ Future<CloudMusicSongDetailResponse> getTrackDetail(
             ?.map((e) => CloudMusicSongData.fromJson(e))
             .toList() ??
         [];
-    final privileges = (jsonBody['privileges'] as List?)
-        ?.map((e) => CloudMusicPrivilegeData.fromJson(e))
-        .toList();
+    final privileges =
+        (jsonBody['privileges'] as List?)
+            ?.map((e) => CloudMusicPrivilegeData.fromJson(e))
+            .toList() ??
+        [];
 
-    return CloudMusicSongDetailResponse(songs: songs, privileges: privileges);
+    final privilegeMap = {for (var p in privileges) p.id: p};
+    final songsWithPrivilege = songs.map((song) {
+      final privilege = privilegeMap[song.id];
+      if (privilege != null) {
+        return song.copyWith(privilege: privilege);
+      }
+      return song;
+    }).toList();
+
+    return songsWithPrivilege;
   } catch (e) {
     logger.e('获取歌曲详情失败: $e');
     throw CloudMusicException(message: l10n.error_network_error);

@@ -131,6 +131,11 @@ _CloudMusicSongData _$CloudMusicSongDataFromJson(Map<String, dynamic> json) =>
           : CloudMusicAlbumSimpleData.fromJson(
               json['al'] as Map<String, dynamic>,
             ),
+      privilege: json['privilege'] == null
+          ? null
+          : CloudMusicPrivilegeData.fromJson(
+              json['privilege'] as Map<String, dynamic>,
+            ),
       dt: (json['dt'] as num?)?.toInt(),
       pop: (json['pop'] as num?)?.toInt(),
       no: (json['no'] as num?)?.toInt(),
@@ -138,6 +143,7 @@ _CloudMusicSongData _$CloudMusicSongDataFromJson(Map<String, dynamic> json) =>
       copyright: (json['copyright'] as num?)?.toInt(),
       mark: (json['mark'] as num?)?.toInt(),
       mv: (json['mv'] as num?)?.toInt(),
+      noCopyrightRcmd: json['noCopyrightRcmd'],
     );
 
 Map<String, dynamic> _$CloudMusicSongDataToJson(_CloudMusicSongData instance) =>
@@ -146,6 +152,7 @@ Map<String, dynamic> _$CloudMusicSongDataToJson(_CloudMusicSongData instance) =>
       'name': instance.name,
       'ar': instance.ar,
       'al': instance.al,
+      'privilege': instance.privilege,
       'dt': instance.dt,
       'pop': instance.pop,
       'no': instance.no,
@@ -153,6 +160,7 @@ Map<String, dynamic> _$CloudMusicSongDataToJson(_CloudMusicSongData instance) =>
       'copyright': instance.copyright,
       'mark': instance.mark,
       'mv': instance.mv,
+      'noCopyrightRcmd': instance.noCopyrightRcmd,
     };
 
 _CloudMusicAlbumSimpleData _$CloudMusicAlbumSimpleDataFromJson(
@@ -227,24 +235,6 @@ Map<String, dynamic> _$CloudMusicTrackIdDataToJson(
   'v': instance.v,
   'alg': instance.alg,
   'uid': instance.uid,
-};
-
-_CloudMusicSongDetailResponse _$CloudMusicSongDetailResponseFromJson(
-  Map<String, dynamic> json,
-) => _CloudMusicSongDetailResponse(
-  songs: (json['songs'] as List<dynamic>)
-      .map((e) => CloudMusicSongData.fromJson(e as Map<String, dynamic>))
-      .toList(),
-  privileges: (json['privileges'] as List<dynamic>?)
-      ?.map((e) => CloudMusicPrivilegeData.fromJson(e as Map<String, dynamic>))
-      .toList(),
-);
-
-Map<String, dynamic> _$CloudMusicSongDetailResponseToJson(
-  _CloudMusicSongDetailResponse instance,
-) => <String, dynamic>{
-  'songs': instance.songs,
-  'privileges': instance.privileges,
 };
 
 _CloudMusicPrivilegeData _$CloudMusicPrivilegeDataFromJson(

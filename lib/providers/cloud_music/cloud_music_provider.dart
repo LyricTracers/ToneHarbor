@@ -119,8 +119,7 @@ class CloudMusicPlaylistDetail extends _$CloudMusicPlaylistDetail {
     state = const AsyncValue.loading();
 
     try {
-      final response = await getTrackDetail(ref, ids: idsToLoad);
-      final newTracks = response.songs;
+      final newTracks = await getTrackDetail(ref, ids: idsToLoad);
 
       state = AsyncValue.data(
         current.copyWith(tracks: [...tracks, ...newTracks]),

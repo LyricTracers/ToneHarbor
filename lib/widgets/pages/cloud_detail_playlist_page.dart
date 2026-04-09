@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -10,6 +9,50 @@ import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
 import 'package:toneharbor/widgets/widgets.dart';
+
+({bool playable, String? reason}) isCloudTrackPlayable(
+  CloudMusicSongData track, {
+  bool isLoggedIn = false,
+  int? userVipType,
+}) {
+  final privilege = track.privilege;
+  if (privilege != null) {
+    if (privilege.pl != null && privilege.pl! > 0) {
+      return (playable: true, reason: null);
+    }
+    if (isLoggedIn && privilege.cs == true) {
+      return (playable: true, reason: null);
+    }
+    if (privilege.fee == 1 || track.fee == 1) {
+      if (isLoggedIn && userVipType == 11) {
+        return (playable: true, reason: null);
+      }
+      return (playable: false, reason: 'VIP Only');
+    }
+    if (privilege.fee == 4 || track.fee == 4) {
+      return (playable: false, reason: '付费专辑');
+    }
+    if (track.noCopyrightRcmd != null) {
+      return (playable: false, reason: '无版权');
+    }
+    if (privilege.st != null && privilege.st! < 0 && isLoggedIn) {
+      return (playable: false, reason: '已下架');
+    }
+  }
+  if (track.fee == 1) {
+    if (isLoggedIn && userVipType == 11) {
+      return (playable: true, reason: null);
+    }
+    return (playable: false, reason: 'VIP Only');
+  }
+  if (track.fee == 4) {
+    return (playable: false, reason: '付费专辑');
+  }
+  if (track.noCopyrightRcmd != null) {
+    return (playable: false, reason: '无版权');
+  }
+  return (playable: true, reason: null);
+}
 
 class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
   final String title;
@@ -291,11 +334,13 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
     final maxScroll = headerMaxExtent - headerMinExtent;
 
     final fromColor = Colors.transparent;
-    final toColor = colorScheme.surfaceContainerHighest;
+    final toColor = colorScheme.surfaceContainerHighest.withValues(alpha: 0.1);
     final statusBarProgress = maxScroll > 0
         ? (scrollPixels.value / maxScroll).clamp(0.0, 1.0)
         : 0.0;
-    final statusBarColor = Color.lerp(fromColor, toColor, statusBarProgress)!;
+    final statusBarColor = statusBarProgress >= 1.0
+        ? colorScheme.surfaceContainerHighest
+        : Color.lerp(fromColor, toColor, statusBarProgress)!;
     return Stack(
       children: [
         Positioned(
