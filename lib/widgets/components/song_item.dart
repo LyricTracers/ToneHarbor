@@ -103,6 +103,7 @@ class SongItem extends HookConsumerWidget {
                 ),
               ),
             ),
+
           Container(
             height: itemHeight,
             color: isHovered.value || isPressed.value
