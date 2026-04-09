@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
+import 'package:toneharbor/widgets/widgets.dart';
 
 class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
   final String title;
   final String? updateTime;
   final String? description;
+  final String? creator;
   final Size size;
   final ColorScheme colorScheme;
   final BuildContext context;
@@ -22,6 +25,7 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
     required this.title,
     this.updateTime,
     this.description,
+    this.creator,
     required this.size,
     required this.colorScheme,
     required this.context,
@@ -42,6 +46,7 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
       title != oldDelegate.title ||
       updateTime != oldDelegate.updateTime ||
       description != oldDelegate.description ||
+      creator != oldDelegate.creator ||
       headerBackgroundColor != oldDelegate.headerBackgroundColor;
 
   @override
@@ -183,7 +188,7 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
                   fontWeight: FontWeight.bold,
                   color: colorScheme.onSurface,
                 ),
-                maxLines: 2,
+                maxLines: coverOpacity > 0.2 ? 2 : 1,
                 overflow: TextOverflow.ellipsis,
               ),
               Opacity(
@@ -192,13 +197,27 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    if (creator != null) ...[
+                      SizedBox(height: 8 * multiplier),
+                      Text(
+                        'Playlist by $creator',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 15 * multiplier,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
                     if (updateTime != null) ...[
                       SizedBox(height: 8 * multiplier),
                       Text(
                         updateTime!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 12 * multiplier,
-                          color: colorScheme.onSurface.withValues(alpha: 0.6),
+                          fontSize: 13 * multiplier,
+                          color: colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                       ),
                     ],
@@ -275,7 +294,11 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
         ? (scrollPixels.value / maxScroll).clamp(0.0, 1.0)
         : 0.0;
     final statusBarColor = Color.lerp(fromColor, toColor, statusBarProgress)!;
-
+    if (detail.value != null) {
+      logger.i(
+        "description:${detail.value!.description},trackCount:${detail.value!.trackCount},create:${detail.value!.creator}",
+      );
+    }
     return Stack(
       children: [
         Positioned(
@@ -305,7 +328,8 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
                     updateTime: createTime != null
                         ? "Created ${_formatDate(createTime)}"
                         : null,
-                    description: playlist.creator?.signature,
+                    description: detail.value?.description,
+                    creator: playlist.creator?.nickname,
                     size: size,
                     colorScheme: colorScheme,
                     context: context,
@@ -320,7 +344,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
                     child: Center(
                       child: Padding(
                         padding: EdgeInsets.all(32),
-                        child: CircularProgressIndicator(),
+                        child: AudioEqualizerLoader(),
                       ),
                     ),
                   ),

@@ -136,7 +136,6 @@ Future<CloudMusicPlaylistDetailData> getPlaylistDetail(
       query: query,
       cancelToken: ref.cancelToken(),
     );
-    logger.i("======response:${response.body}======");
     if (response.statusCode != 200) {
       if (response.statusCode == 301) {
         ref.read(cloudMusicAuthStateProvider.notifier).logout();
