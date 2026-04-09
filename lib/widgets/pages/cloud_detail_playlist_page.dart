@@ -12,7 +12,7 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
   final String title;
   final String? updateTime;
   final String? description;
-  final double multiplier;
+  final Size size;
   final ColorScheme colorScheme;
   final BuildContext context;
   final Widget coverImage;
@@ -21,17 +21,19 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
     required this.title,
     this.updateTime,
     this.description,
-    required this.multiplier,
+    required this.size,
     required this.colorScheme,
     required this.context,
     required this.coverImage,
   });
 
   @override
-  double get minExtent => kToolbarHeight * multiplier;
+  double get minExtent => kToolbarHeight * size.multiplier3;
 
   @override
-  double get maxExtent => kToolbarHeight * 4 * multiplier;
+  double get maxExtent => kToolbarHeight * 4 * size.multiplier3;
+  double get multiplier3 => size.multiplier3;
+  double get multiplier => size.multiplier2;
 
   @override
   bool shouldRebuild(covariant CloudDetailPlaylistHeaderDelegate oldDelegate) =>
@@ -47,26 +49,22 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
   ) {
     final progress = (shrinkOffset / (maxExtent - minExtent)).clamp(0.0, 1.0);
 
-    // 1. 判断滚动状态（参考 SliverAppBar）
     final bool isScrolledUnder =
         overlapsContent || shrinkOffset > maxExtent - minExtent;
 
-    // 2. 定义两种不透明的背景色
-    final Color backgroundColor = colorScheme.tertiary.withValues(
-      alpha: 0.1,
-    ); // 正常状态
-    final Color scrolledUnderBackground = colorScheme.surface;
+    final Color fromColor = Colors.transparent;
+    final Color toColor = colorScheme.surfaceBright;
 
-    // 3. 根据状态选择颜色
-    final Color effectiveBackgroundColor = isScrolledUnder
-        ? scrolledUnderBackground
-        : backgroundColor;
+    final effectiveProgress = isScrolledUnder ? 1.0 : progress;
+    final Color effectiveBackgroundColor = Color.lerp(
+      fromColor,
+      toColor,
+      effectiveProgress,
+    )!;
 
-    // 4. elevation 也根据状态变化
-    final double effectiveElevation = isScrolledUnder ? 3.0 : 0.0;
     return Material(
-      color: effectiveBackgroundColor, // 始终是不透明颜色
-      elevation: effectiveElevation,
+      color: effectiveBackgroundColor,
+      elevation: 0,
       child: Stack(children: [_buildBackButton(), _buildContent(progress)]),
     );
   }
@@ -80,7 +78,7 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
         bottom: false,
         child: SizedBox(
           width: 56 * multiplier,
-          height: kToolbarHeight * multiplier,
+          height: kToolbarHeight * multiplier3,
           child: IconButton(
             icon: Icon(
               Icons.arrow_back,
@@ -104,7 +102,7 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
         bottom: false,
         child: Padding(
           padding: EdgeInsets.only(
-            left: 56 * multiplier,
+            left: 40 * multiplier,
             right: 16 * multiplier,
           ),
           child: LayoutBuilder(
@@ -248,7 +246,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
     final detail = ref.watch(cloudMusicPlaylistDetailProvider(playlist.id));
     final size = MediaQuery.of(context).size;
     final colorScheme = getColorSchemeWhenReady(ref);
-    final multiplier = size.multiplier3;
+    final multiplier = size.multiplier;
 
     final createTime = playlist.createTime != null
         ? DateTime.fromMillisecondsSinceEpoch(playlist.createTime!)
@@ -279,7 +277,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
                 ? '创建于 ${_formatDate(createTime)}'
                 : null,
             description: playlist.description,
-            multiplier: multiplier,
+            size: size,
             colorScheme: colorScheme,
             context: context,
             coverImage: coverImage,
