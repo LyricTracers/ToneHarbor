@@ -963,6 +963,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get out_of_stock => 'Out Of Stock';
 
   @override
+  String get reach_end => '__Reached The End__';
+
+  @override
   String get invalid_cookie_format =>
       'Invalid Cookie format, must contain MUSIC_U';
 }

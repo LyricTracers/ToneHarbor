@@ -1946,6 +1946,12 @@ abstract class AppLocalizations {
   /// **'Out Of Stock'**
   String get out_of_stock;
 
+  /// No description provided for @reach_end.
+  ///
+  /// In en, this message translates to:
+  /// **'__Reached The End__'**
+  String get reach_end;
+
   /// No description provided for @invalid_cookie_format.
   ///
   /// In en, this message translates to:

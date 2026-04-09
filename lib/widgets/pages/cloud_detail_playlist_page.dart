@@ -372,8 +372,13 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
                   ),
                 ),
                 detail.when(
-                  data: (data) =>
-                      _buildTrackList(data, colorScheme, size, l10n),
+                  data: (data) => _buildTrackList(
+                    data,
+                    colorScheme,
+                    size,
+                    l10n,
+                    isLoadingMore.value,
+                  ),
                   loading: () => SliverToBoxAdapter(
                     child: Center(
                       child: Padding(
@@ -404,21 +409,31 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
     ColorScheme colorScheme,
     Size size,
     AppLocalizations l10n,
+    bool isLoadingMore,
   ) {
     final tracks = data?.tracks ?? [];
-    if (tracks.isEmpty) {
-      return SliverToBoxAdapter(
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.all(32),
-            child: Text(l10n.no_playlists),
-          ),
-        ),
-      );
-    }
+    final hasMore =
+        data?.trackIds != null &&
+        (data?.tracks?.length ?? 0) < (data?.trackIds?.length ?? 0);
 
     return SliverList(
       delegate: SliverChildBuilderDelegate((context, index) {
+        if (index == tracks.length) {
+          return SizedBox(
+            height: 60,
+            child: Center(
+              child: isLoadingMore
+                  ? const CircularProgressIndicator(strokeWidth: 2)
+                  : Text(
+                      l10n.reach_end,
+                      style: TextStyle(
+                        fontSize: 12 * size.multiplier,
+                        color: colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
+                    ),
+            ),
+          );
+        }
         final track = tracks[index];
         return _TrackListItem(
           track: track,
@@ -426,7 +441,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
           colorScheme: colorScheme,
           size: size,
         );
-      }, childCount: tracks.length),
+      }, childCount: tracks.length + 1),
     );
   }
 
