@@ -1928,6 +1928,24 @@ abstract class AppLocalizations {
   /// **'Cookie Login'**
   String get cookie_login;
 
+  /// No description provided for @paid_album.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid Album'**
+  String get paid_album;
+
+  /// No description provided for @no_copyright.
+  ///
+  /// In en, this message translates to:
+  /// **'No Copyright'**
+  String get no_copyright;
+
+  /// No description provided for @out_of_stock.
+  ///
+  /// In en, this message translates to:
+  /// **'Out Of Stock'**
+  String get out_of_stock;
+
   /// No description provided for @invalid_cookie_format.
   ///
   /// In en, this message translates to:

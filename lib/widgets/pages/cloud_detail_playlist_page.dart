@@ -10,50 +10,6 @@ import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
-({bool playable, String? reason}) isCloudTrackPlayable(
-  CloudMusicSongData track, {
-  bool isLoggedIn = false,
-  int? userVipType,
-}) {
-  final privilege = track.privilege;
-  if (privilege != null) {
-    if (privilege.pl != null && privilege.pl! > 0) {
-      return (playable: true, reason: null);
-    }
-    if (isLoggedIn && privilege.cs == true) {
-      return (playable: true, reason: null);
-    }
-    if (privilege.fee == 1 || track.fee == 1) {
-      if (isLoggedIn && userVipType == 11) {
-        return (playable: true, reason: null);
-      }
-      return (playable: false, reason: 'VIP Only');
-    }
-    if (privilege.fee == 4 || track.fee == 4) {
-      return (playable: false, reason: '付费专辑');
-    }
-    if (track.noCopyrightRcmd != null) {
-      return (playable: false, reason: '无版权');
-    }
-    if (privilege.st != null && privilege.st! < 0 && isLoggedIn) {
-      return (playable: false, reason: '已下架');
-    }
-  }
-  if (track.fee == 1) {
-    if (isLoggedIn && userVipType == 11) {
-      return (playable: true, reason: null);
-    }
-    return (playable: false, reason: 'VIP Only');
-  }
-  if (track.fee == 4) {
-    return (playable: false, reason: '付费专辑');
-  }
-  if (track.noCopyrightRcmd != null) {
-    return (playable: false, reason: '无版权');
-  }
-  return (playable: true, reason: null);
-}
-
 class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
   final String title;
   final String? updateTime;
@@ -464,6 +420,18 @@ class _TrackListItem extends HookConsumerWidget {
     double itemHeight = 66.0 * multiplier;
     var isHovered = useState(false);
     var isPressed = useState(false);
+    final l10n = ref.watch(l10nProvider);
+    final isLoggedIn = ref.watch(cloudMusicAuthStateProvider);
+    final userVipType = ref.watch(
+      cloudUserInfoProvider.select((value) => value.value?.vipType ?? 0),
+    );
+    final isPlayable = isCloudTrackPlayable(
+      track,
+      l10n,
+      isLoggedIn: isLoggedIn,
+      userVipType: userVipType,
+    );
+
     return MouseRegion(
       onEnter: (event) => isHovered.value = true,
       onExit: (event) => isHovered.value = false,
@@ -534,7 +502,9 @@ class _TrackListItem extends HookConsumerWidget {
                               artists,
                               style: TextStyle(
                                 fontSize: 12 * multiplier,
-                                color: colorScheme.onSurfaceVariant,
+                                color: isPlayable.playable
+                                    ? colorScheme.onSurfaceVariant
+                                    : Colors.grey,
                               ),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
@@ -551,7 +521,9 @@ class _TrackListItem extends HookConsumerWidget {
                                 '- ${track.al!.name}',
                                 style: TextStyle(
                                   fontSize: 12 * multiplier,
-                                  color: colorScheme.onSurfaceVariant,
+                                  color: isPlayable.playable
+                                      ? colorScheme.onSurfaceVariant
+                                      : Colors.grey,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -572,7 +544,9 @@ class _TrackListItem extends HookConsumerWidget {
                       track.al!.name,
                       style: TextStyle(
                         fontSize: 14 * multiplier,
-                        color: colorScheme.onSurfaceVariant,
+                        color: isPlayable.playable
+                            ? colorScheme.onSurfaceVariant
+                            : Colors.grey,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -585,7 +559,9 @@ class _TrackListItem extends HookConsumerWidget {
                     duration,
                     style: TextStyle(
                       fontSize: 12 * multiplier,
-                      color: colorScheme.onSurface.withValues(alpha: 0.5),
+                      color: isPlayable.playable
+                          ? colorScheme.onSurface.withValues(alpha: 0.5)
+                          : Colors.grey,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

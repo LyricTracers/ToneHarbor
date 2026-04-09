@@ -312,5 +312,8 @@
   "select_login_method": "Select Login Method",
   "web_login": "Web Login",
   "cookie_login": "Cookie Login",
+  "paid_album": "Paid Album",
+  "no_copyright": "No Copyright",
+  "out_of_stock": "Out Of Stock",
   "invalid_cookie_format": "Invalid Cookie format, must contain MUSIC_U"
 }

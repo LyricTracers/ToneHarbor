@@ -311,5 +311,8 @@
   "select_login_method": "选择登录方式",
   "web_login": "网页登录",
   "cookie_login": "Cookie 登录",
+  "paid_album": "付费专辑",
+  "no_copyright": "无版权",
+  "out_of_stock": "已下架",
   "invalid_cookie_format": "Cookie 格式无效，必须包含 MUSIC_U"
 }

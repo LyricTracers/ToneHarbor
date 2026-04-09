@@ -954,6 +954,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cookie_login => 'Cookie Login';
 
   @override
+  String get paid_album => 'Paid Album';
+
+  @override
+  String get no_copyright => 'No Copyright';
+
+  @override
+  String get out_of_stock => 'Out Of Stock';
+
+  @override
   String get invalid_cookie_format =>
       'Invalid Cookie format, must contain MUSIC_U';
 }

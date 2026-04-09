@@ -926,5 +926,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cookie_login => 'Cookie 登录';
 
   @override
+  String get paid_album => '付费专辑';
+
+  @override
+  String get no_copyright => '无版权';
+
+  @override
+  String get out_of_stock => '已下架';
+
+  @override
   String get invalid_cookie_format => 'Cookie 格式无效，必须包含 MUSIC_U';
 }

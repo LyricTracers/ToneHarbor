@@ -17,6 +17,7 @@ import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
+import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_utils.dart';
@@ -782,4 +783,49 @@ void showSetBackgroundDialog(
     confirmText: l10n.confirm,
     onConfirm: (innerContext) async => onSetBackground(),
   );
+}
+
+({bool playable, String? reason}) isCloudTrackPlayable(
+  CloudMusicSongData track,
+  AppLocalizations localizations, {
+  bool isLoggedIn = false,
+  int? userVipType,
+}) {
+  final privilege = track.privilege;
+  if (privilege != null) {
+    if (privilege.pl != null && privilege.pl! > 0) {
+      return (playable: true, reason: null);
+    }
+    if (isLoggedIn && privilege.cs == true) {
+      return (playable: true, reason: null);
+    }
+    if (privilege.fee == 1 || track.fee == 1) {
+      if (isLoggedIn && userVipType == 11) {
+        return (playable: true, reason: null);
+      }
+      return (playable: false, reason: 'VIP Only');
+    }
+    if (privilege.fee == 4 || track.fee == 4) {
+      return (playable: false, reason: localizations.paid_album);
+    }
+    if (track.noCopyrightRcmd != null) {
+      return (playable: false, reason: localizations.no_copyright);
+    }
+    if (privilege.st != null && privilege.st! < 0 && isLoggedIn) {
+      return (playable: false, reason: localizations.out_of_stock);
+    }
+  }
+  if (track.fee == 1) {
+    if (isLoggedIn && userVipType == 11) {
+      return (playable: true, reason: null);
+    }
+    return (playable: false, reason: 'VIP Only');
+  }
+  if (track.fee == 4) {
+    return (playable: false, reason: localizations.paid_album);
+  }
+  if (track.noCopyrightRcmd != null) {
+    return (playable: false, reason: localizations.no_copyright);
+  }
+  return (playable: true, reason: null);
 }
