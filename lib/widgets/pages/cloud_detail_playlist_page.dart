@@ -16,6 +16,7 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
   final ColorScheme colorScheme;
   final BuildContext context;
   final Widget coverImage;
+  final Color headerBackgroundColor;
 
   CloudDetailPlaylistHeaderDelegate({
     required this.title,
@@ -25,6 +26,7 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
     required this.colorScheme,
     required this.context,
     required this.coverImage,
+    required this.headerBackgroundColor,
   });
 
   @override
@@ -39,7 +41,8 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
   bool shouldRebuild(covariant CloudDetailPlaylistHeaderDelegate oldDelegate) =>
       title != oldDelegate.title ||
       updateTime != oldDelegate.updateTime ||
-      description != oldDelegate.description;
+      description != oldDelegate.description ||
+      headerBackgroundColor != oldDelegate.headerBackgroundColor;
 
   @override
   Widget build(
@@ -49,21 +52,8 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
   ) {
     final progress = (shrinkOffset / (maxExtent - minExtent)).clamp(0.0, 1.0);
 
-    final bool isScrolledUnder =
-        overlapsContent || shrinkOffset > maxExtent - minExtent;
-
-    final Color fromColor = Colors.transparent;
-    final Color toColor = colorScheme.surfaceBright;
-
-    final effectiveProgress = isScrolledUnder ? 1.0 : progress;
-    final Color effectiveBackgroundColor = Color.lerp(
-      fromColor,
-      toColor,
-      effectiveProgress,
-    )!;
-
     return Material(
-      color: effectiveBackgroundColor,
+      color: headerBackgroundColor,
       elevation: 0,
       child: Stack(children: [_buildBackButton(), _buildContent(progress)]),
     );
@@ -248,6 +238,8 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
     final colorScheme = getColorSchemeWhenReady(ref);
     final multiplier = size.multiplier;
 
+    final scrollPixels = useState(0.0);
+
     final createTime = playlist.createTime != null
         ? DateTime.fromMillisecondsSinceEpoch(playlist.createTime!)
         : null;
@@ -266,39 +258,75 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
       [playlist.coverUrl, colorScheme, maxCoverSize, multiplier],
     );
 
-    return CustomScrollView(
-      slivers: [
-        SliverPersistentHeader(
-          pinned: true,
-          floating: false,
-          delegate: CloudDetailPlaylistHeaderDelegate(
-            title: playlist.name,
-            updateTime: createTime != null
-                ? '创建于 ${_formatDate(createTime)}'
-                : null,
-            description: playlist.description,
-            size: size,
-            colorScheme: colorScheme,
-            context: context,
-            coverImage: coverImage,
-          ),
+    final headerMaxExtent = kToolbarHeight * 4 * multiplier;
+    final headerMinExtent = kToolbarHeight * multiplier;
+    final maxScroll = headerMaxExtent - headerMinExtent;
+
+    final fromColor = Colors.transparent;
+    final toColor = colorScheme.surfaceBright;
+    final statusBarProgress = maxScroll > 0
+        ? (scrollPixels.value / maxScroll).clamp(0.0, 1.0)
+        : 0.0;
+    final statusBarColor = Color.lerp(fromColor, toColor, statusBarProgress)!;
+
+    return Stack(
+      children: [
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          height: MediaQuery.of(context).padding.top,
+          child: Container(color: statusBarColor),
         ),
-        detail.when(
-          data: (data) => _buildTrackList(data, colorScheme, multiplier),
-          loading: () => SliverToBoxAdapter(
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.all(32),
-                child: CircularProgressIndicator(),
-              ),
-            ),
-          ),
-          error: (error, stack) => SliverToBoxAdapter(
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.all(32),
-                child: Text('Error: $error'),
-              ),
+        NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            if (notification is ScrollUpdateNotification) {
+              scrollPixels.value = notification.metrics.pixels;
+            }
+            return false;
+          },
+          child: SafeArea(
+            top: true,
+            bottom: false,
+            child: CustomScrollView(
+              slivers: [
+                SliverPersistentHeader(
+                  pinned: true,
+                  floating: false,
+                  delegate: CloudDetailPlaylistHeaderDelegate(
+                    title: playlist.name,
+                    updateTime: createTime != null
+                        ? '创建于 ${_formatDate(createTime)}'
+                        : null,
+                    description: playlist.description,
+                    size: size,
+                    colorScheme: colorScheme,
+                    context: context,
+                    coverImage: coverImage,
+                    headerBackgroundColor: statusBarColor,
+                  ),
+                ),
+                detail.when(
+                  data: (data) =>
+                      _buildTrackList(data, colorScheme, multiplier),
+                  loading: () => SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(32),
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  ),
+                  error: (error, stack) => SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(32),
+                        child: Text('Error: $error'),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

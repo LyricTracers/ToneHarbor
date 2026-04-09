@@ -144,7 +144,7 @@ abstract class BaseBgLayout extends HookConsumerWidget {
               ),
             ),
           SafeArea(
-            top: true,
+            top: appbar,
             bottom: false,
             child: buildContent(context, ref, requestFlag),
           ),
