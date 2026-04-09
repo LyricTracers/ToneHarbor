@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
@@ -263,6 +264,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
     final size = MediaQuery.of(context).size;
     final colorScheme = getColorSchemeWhenReady(ref);
     final multiplier = size.multiplier;
+    final l10n = ref.watch(l10nProvider);
 
     final scrollPixels = useState(0.0);
 
@@ -284,12 +286,12 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
       [playlist.coverUrl, colorScheme, maxCoverSize, multiplier],
     );
 
-    final headerMaxExtent = kToolbarHeight * 5 * multiplier;
-    final headerMinExtent = kToolbarHeight * multiplier;
+    final headerMaxExtent = kToolbarHeight * 5 * size.multiplier3;
+    final headerMinExtent = kToolbarHeight * size.multiplier3;
     final maxScroll = headerMaxExtent - headerMinExtent;
 
     final fromColor = Colors.transparent;
-    final toColor = colorScheme.surfaceBright;
+    final toColor = colorScheme.tertiary.withValues(alpha: 0.1);
     final statusBarProgress = maxScroll > 0
         ? (scrollPixels.value / maxScroll).clamp(0.0, 1.0)
         : 0.0;
@@ -339,7 +341,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
                 ),
                 detail.when(
                   data: (data) =>
-                      _buildTrackList(data, colorScheme, multiplier),
+                      _buildTrackList(data, colorScheme, multiplier, l10n),
                   loading: () => SliverToBoxAdapter(
                     child: Center(
                       child: Padding(
@@ -369,20 +371,16 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
     CloudMusicPlaylistDetailData? data,
     ColorScheme colorScheme,
     double multiplier,
+    AppLocalizations l10n,
   ) {
-    if (data == null) {
-      return SliverToBoxAdapter(
-        child: Center(
-          child: Padding(padding: EdgeInsets.all(32), child: Text('暂无数据')),
-        ),
-      );
-    }
-
-    final tracks = data.tracks ?? [];
+    final tracks = data?.tracks ?? [];
     if (tracks.isEmpty) {
       return SliverToBoxAdapter(
         child: Center(
-          child: Padding(padding: EdgeInsets.all(32), child: Text('暂无歌曲')),
+          child: Padding(
+            padding: EdgeInsets.all(32),
+            child: Text(l10n.no_playlists),
+          ),
         ),
       );
     }
