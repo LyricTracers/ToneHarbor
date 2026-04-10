@@ -38,7 +38,6 @@ ToneHarborTrackObjectFull _$ToneHarborTrackObjectFullFromJson(
   container: json['container'] as String,
   frequency: (json['frequency'] as num).toInt(),
   rating: (json['rating'] as num).toInt(),
-  platform: $enumDecode(_$ToneHarborTrackPlatformEnumMap, json['platform']),
   $type: json['runtimeType'] as String?,
 );
 
@@ -58,14 +57,7 @@ Map<String, dynamic> _$ToneHarborTrackObjectFullToJson(
   'container': instance.container,
   'frequency': instance.frequency,
   'rating': instance.rating,
-  'platform': _$ToneHarborTrackPlatformEnumMap[instance.platform]!,
   'runtimeType': instance.$type,
-};
-
-const _$ToneHarborTrackPlatformEnumMap = {
-  ToneHarborTrackPlatform.synology: 'synology',
-  ToneHarborTrackPlatform.local: 'local',
-  ToneHarborTrackPlatform.cloud_music: 'cloud_music',
 };
 
 ToneHarborTrackObjectMultLocal _$ToneHarborTrackObjectMultLocalFromJson(
@@ -117,6 +109,32 @@ const _$AudioQualityEnumMap = {
   AudioQuality.medium: 'medium',
   AudioQuality.high: 'high',
   AudioQuality.original: 'original',
+};
+
+ToneHarborTrackObjectCloudMusic _$ToneHarborTrackObjectCloudMusicFromJson(
+  Map<String, dynamic> json,
+) => ToneHarborTrackObjectCloudMusic(
+  id: json['id'] as String,
+  title: json['title'] as String,
+  artist: json['artist'] as String,
+  album: json['album'] as String,
+  duration: Duration(microseconds: (json['duration'] as num).toInt()),
+  coverUrl: json['coverUrl'] as String?,
+  container: json['container'] as String?,
+  $type: json['runtimeType'] as String?,
+);
+
+Map<String, dynamic> _$ToneHarborTrackObjectCloudMusicToJson(
+  ToneHarborTrackObjectCloudMusic instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'title': instance.title,
+  'artist': instance.artist,
+  'album': instance.album,
+  'duration': instance.duration.inMicroseconds,
+  'coverUrl': instance.coverUrl,
+  'container': instance.container,
+  'runtimeType': instance.$type,
 };
 
 ToneHarborTrackObjectListEmpty _$ToneHarborTrackObjectListEmptyFromJson(

@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 
 part 'cloud_music_models.freezed.dart';
 part 'cloud_music_models.g.dart';
@@ -142,6 +143,17 @@ sealed class CloudMusicSongData with _$CloudMusicSongData {
       return '${al!.cover.replaceAll('http://', 'https://')}?param=512y512';
     }
     return '';
+  }
+
+  ToneHarborTrackObjectCloudMusic asTrack() {
+    return ToneHarborTrackObjectCloudMusic(
+      id: id.toString(),
+      title: name,
+      artist: artistName,
+      album: al?.name ?? '',
+      duration: Duration(milliseconds: dt ?? 0),
+      coverUrl: cover,
+    );
   }
 }
 

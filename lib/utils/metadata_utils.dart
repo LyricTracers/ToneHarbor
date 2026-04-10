@@ -22,7 +22,11 @@ Future<void> writeTrackMetadata({
     }
     String coverUrl;
     String fileName;
-    if (track.id.isEmpty) {
+    if (track.isCloudMusic) {
+      final cloudTrack = track as ToneHarborTrackObjectCloudMusic;
+      coverUrl = cloudTrack.coverUrl ?? '';
+      fileName = 'cloud_cover_${coverUrl.hashCode}';
+    } else if (track.id.isEmpty) {
       coverUrl = await ref.read(
         coverUrlByAlbumProvider(
           albumName: track.album,
@@ -39,7 +43,12 @@ Future<void> writeTrackMetadata({
 
     Uint8List? imageBytes;
     if (coverUrl.isNotEmpty) {
-      imageBytes = await getCoverBytes(ref, coverUrl, fileName);
+      imageBytes = await getCoverBytes(
+        ref,
+        coverUrl,
+        fileName,
+        isCloudMusic: track.isCloudMusic,
+      );
     }
 
     final metadata = track.toMetadata(
@@ -47,7 +56,14 @@ Future<void> writeTrackMetadata({
       imageBytes: imageBytes,
     );
 
-    await MetadataGod.writeMetadata(file: cachePath, metadata: metadata!);
+    if (metadata == null) {
+      logger.w(
+        '[Metadata] Track type does not support metadata: ${track.runtimeType}',
+      );
+      return;
+    }
+
+    await MetadataGod.writeMetadata(file: cachePath, metadata: metadata);
     logger.i(
       '[Metadata] Wrote metadata to $cachePath,title:${track.title},artist:${track.artist},album:${track.album}',
     );

@@ -57,6 +57,10 @@ class ToneHarborMedia extends mk.Media {
 
 extension MediaCoverExtension on Media {
   String getCoverUrl() {
+    final coverUrl = extras?["coverUrl"] as String?;
+    if (coverUrl != null && coverUrl.isNotEmpty) {
+      return coverUrl;
+    }
     return ToneHarborMedia.getLocalCoverUrl(id, album, artist);
   }
 

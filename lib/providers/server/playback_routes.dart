@@ -11,6 +11,7 @@ import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/audio_player/cache_lock_manager.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
+import 'package:toneharbor/services/cloud_music/song_url.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/metadata_utils.dart';
 
@@ -160,6 +161,67 @@ class PlaybackRoutes {
         );
       }
 
+      if (track.isCloudMusic) {
+        final cachedPath = await findCloudMusicCachePath(
+          track.id,
+          track.title,
+          track.artist,
+        );
+        if (cachedPath != null) {
+          final cacheFile = File(cachedPath);
+          if (await cacheFile.exists()) {
+            final fileLength = await cacheFile.length();
+            final extension = cacheFile.path.split('.').last.toLowerCase();
+            return Response(
+              200,
+              headers: {
+                'content-type': _getMimeType(extension),
+                'content-length': '$fileLength',
+                'accept-ranges': 'bytes',
+              },
+            );
+          }
+        }
+
+        final songId = int.tryParse(track.id);
+        if (songId == null) {
+          return Response.notFound("Invalid song ID");
+        }
+
+        final songUrlData = await getSongUrl(ref, songId: songId);
+        if (songUrlData == null || songUrlData.url.isEmpty) {
+          return Response.notFound("Failed to get song URL");
+        }
+
+        try {
+          final response = await downloadHttpClientWrapper.head(
+            songUrlData.url,
+            headers: rhttp.HttpHeaders.rawMap({'range': 'bytes=0-'}),
+          );
+
+          final headers = <String, String>{};
+          for (final header in response.headers) {
+            headers[header.$1.toLowerCase()] = header.$2;
+          }
+
+          return Response(
+            response.statusCode,
+            headers: {
+              'content-type':
+                  headers['content-type'] ??
+                  _getMimeType(songUrlData.fileExtension),
+              'content-length': headers['content-length'] ?? '',
+              'accept-ranges': 'bytes',
+              if (headers['content-range'] != null)
+                'content-range': headers['content-range']!,
+            },
+          );
+        } catch (e) {
+          logger.e('[PlaybackRoutes] HEAD cloud music error: $e');
+          return Response.notFound("Failed to get song info");
+        }
+      }
+
       final quality = ref.read(audioQualityProvider);
       final cachePath = getTrackCachePath(track, quality);
       final cacheFile = File(cachePath);
@@ -235,6 +297,10 @@ class PlaybackRoutes {
         return _serveLocalFile(request, track);
       }
 
+      if (track.isCloudMusic) {
+        return _serveCloudMusicStream(request, track);
+      }
+
       final quality = ref.read(audioQualityProvider);
       final cachePath = getTrackCachePath(track, quality);
       final cacheFile = File(cachePath);
@@ -256,6 +322,283 @@ class PlaybackRoutes {
     } catch (e, stack) {
       logger.e(
         '[PlaybackRoutes] GET: stream error',
+        error: e,
+        stackTrace: stack,
+      );
+      return Response.internalServerError(body: 'Internal server error: $e');
+    }
+  }
+
+  Future<Response> _serveCloudMusicStream(
+    Request request,
+    ToneHarborTrackObject track,
+  ) async {
+    if (track is! ToneHarborTrackObjectCloudMusic) {
+      return Response.notFound("Invalid track type");
+    }
+
+    final songId = int.tryParse(track.id);
+    if (songId == null) {
+      return Response.notFound("Invalid song ID");
+    }
+
+    final cachedPath = await findCloudMusicCachePath(
+      track.id,
+      track.title,
+      track.artist,
+    );
+    if (cachedPath != null) {
+      logger.i('[PlaybackRoutes] Serving cloud music from cache: $cachedPath');
+      final cacheFile = File(cachedPath);
+      if (await cacheFile.exists()) {
+        return _serveCachedFile(request, cacheFile, AudioQuality.high);
+      }
+    }
+
+    final songUrlData = await getSongUrl(
+      ref,
+      songId: songId,
+      skipFreeTrial: false,
+    );
+    if (songUrlData == null || songUrlData.url.isEmpty) {
+      logger.e('[PlaybackRoutes] Failed to get cloud music URL: ${track.id}');
+      return Response.notFound("Failed to get song URL");
+    }
+
+    final container = songUrlData.fileExtension;
+    final cachePath = getCloudMusicCachePath(
+      track.id,
+      track.title,
+      track.artist,
+      extension: container,
+    );
+
+    final rangeHeader = request.headers['range'] ?? 'bytes=0-';
+    logger.i(
+      '[PlaybackRoutes] Cloud music stream: songId=${track.id}, range=$rangeHeader',
+    );
+
+    try {
+      final response = await downloadHttpClientWrapper.getStream(
+        songUrlData.url,
+        headers: rhttp.HttpHeaders.rawMap({'range': rangeHeader}),
+      );
+
+      final headers = _extractHeaders(response);
+
+      if (response.statusCode != 200 && response.statusCode != 206) {
+        return Response(response.statusCode, body: 'Remote server error');
+      }
+
+      final resStream = response.body.asBroadcastStream();
+
+      final partialCacheFile = File('$cachePath.part');
+      final cacheKey = cachePath;
+
+      final rangeStart = _parseRangeStart(rangeHeader);
+      final isFromStart = rangeStart == 0;
+
+      final contentRangeHeader = headers['content-range'];
+      final contentLengthHeader = headers['content-length'];
+      int? totalSize;
+      if (contentRangeHeader != null) {
+        try {
+          final parsed = ContentRangeHeader.parse(contentRangeHeader);
+          totalSize = parsed.total;
+        } catch (_) {}
+      } else if (contentLengthHeader != null) {
+        totalSize = int.tryParse(contentLengthHeader);
+      }
+
+      if (!isFromStart) {
+        if (totalSize != null && await partialCacheFile.exists()) {
+          final partLength = await partialCacheFile.length();
+          if (partLength == totalSize) {
+            if (!await File(cachePath).exists()) {
+              await partialCacheFile.rename(cachePath);
+            } else {
+              await partialCacheFile.delete();
+            }
+          }
+        }
+        return _buildStreamResponse(
+          statusCode: response.statusCode,
+          body: resStream,
+          headers: headers,
+          actualContainer: container,
+        );
+      }
+
+      final shouldCache = !songUrlData.isFreeTrial;
+      if (!shouldCache) {
+        logger.w(
+          '[PlaybackRoutes] Free trial song, streaming without cache: ${track.id}',
+        );
+        return _buildStreamResponse(
+          statusCode: response.statusCode,
+          body: resStream,
+          headers: headers,
+          actualContainer: container,
+        );
+      }
+
+      final isAlreadyCaching = CacheLockManager.instance.isLocked(cacheKey);
+      if (isAlreadyCaching) {
+        return _buildStreamResponse(
+          statusCode: response.statusCode,
+          body: resStream,
+          headers: headers,
+          actualContainer: container,
+        );
+      }
+
+      if (!CacheLockManager.instance.tryLock(cacheKey)) {
+        logger.w('[PlaybackRoutes] Failed to acquire lock for: $cacheKey');
+        return _buildStreamResponse(
+          statusCode: response.statusCode,
+          body: resStream,
+          headers: headers,
+          actualContainer: container,
+        );
+      }
+
+      if (totalSize != null && await partialCacheFile.exists()) {
+        final partLength = await partialCacheFile.length();
+        if (partLength == totalSize) {
+          if (!await File(cachePath).exists()) {
+            await partialCacheFile.rename(cachePath);
+          } else {
+            await partialCacheFile.delete();
+          }
+          CacheLockManager.instance.unlock(cacheKey);
+          return _buildStreamResponse(
+            statusCode: response.statusCode,
+            body: resStream,
+            headers: headers,
+            actualContainer: container,
+          );
+        }
+        await partialCacheFile.delete();
+      }
+
+      await partialCacheFile.create(recursive: true);
+      final partialCacheFileSink = partialCacheFile.openWrite(
+        mode: FileMode.writeOnly,
+      );
+
+      var lockReleased = false;
+      void releaseLock() {
+        if (!lockReleased) {
+          lockReleased = true;
+          CacheLockManager.instance.unlock(cacheKey);
+        }
+      }
+
+      final responseStreamController = StreamController<List<int>>();
+
+      var cacheFileSinkClosed = false;
+      var responseStreamClosed = false;
+      Future<void> closeCacheFileSink() async {
+        if (!cacheFileSinkClosed) {
+          cacheFileSinkClosed = true;
+          await partialCacheFileSink.close();
+        }
+      }
+
+      Future<void> closeResponseStream() async {
+        if (!responseStreamClosed) {
+          responseStreamClosed = true;
+          await responseStreamController.close();
+        }
+      }
+
+      final subscription = resStream.listen(
+        (data) {
+          if (!cacheFileSinkClosed) {
+            partialCacheFileSink.add(data);
+          }
+          if (!responseStreamClosed) {
+            responseStreamController.add(data);
+          }
+        },
+        onError: (e, stack) {
+          logger.e(
+            '[CacheStream] Error caching cloud music stream',
+            error: e,
+            stackTrace: stack,
+          );
+          closeCacheFileSink();
+          if (partialCacheFile.existsSync()) {
+            partialCacheFile.deleteSync();
+          }
+          if (!responseStreamClosed) {
+            responseStreamController.addError(e, stack);
+          }
+          releaseLock();
+          closeResponseStream();
+        },
+        onDone: () async {
+          await closeCacheFileSink();
+
+          final fileLength = await partialCacheFile.length();
+          final isComplete = totalSize != null
+              ? fileLength == totalSize
+              : fileLength > 0;
+          if (!isComplete) {
+            logger.w(
+              '[CacheStream] Incomplete download: $fileLength (expected: $totalSize)',
+            );
+            if (await partialCacheFile.exists()) {
+              await partialCacheFile.delete();
+            }
+            releaseLock();
+            await closeResponseStream();
+            return;
+          }
+
+          if (await File(cachePath).exists()) {
+            await File(cachePath).delete();
+          }
+          await partialCacheFile.rename(cachePath);
+          await LocalMusicStateService.addToLocalMusicState(
+            ref.read(appDatabaseProvider),
+            track,
+            AudioQuality.high,
+            actualContainer: container,
+            actualFileSize: fileLength,
+            actualBitrate: songUrlData.bitrate,
+          );
+          await writeTrackMetadata(
+            ref: ref,
+            track: track,
+            cachePath: cachePath,
+            fileLength: fileLength,
+          );
+          releaseLock();
+          await closeResponseStream();
+        },
+        cancelOnError: true,
+      );
+
+      responseStreamController.onCancel = () async {
+        await closeCacheFileSink();
+        subscription.cancel();
+        if (await partialCacheFile.exists()) {
+          await partialCacheFile.delete();
+        }
+        releaseLock();
+        await closeResponseStream();
+      };
+
+      return _buildStreamResponse(
+        statusCode: response.statusCode,
+        body: responseStreamController.stream,
+        headers: headers,
+        actualContainer: container,
+      );
+    } catch (e, stack) {
+      logger.e(
+        '[PlaybackRoutes] Cloud music stream error',
         error: e,
         stackTrace: stack,
       );
@@ -412,16 +755,23 @@ class PlaybackRoutes {
       '[PlaybackRoutes] Range processing: rangeStart=$rangeStart, isFromStart=$isFromStart',
     );
 
-    final contentRange = headers['content-range'] != null
-        ? ContentRangeHeader.parse(headers['content-range']!)
-        : ContentRangeHeader(0, 0, 0);
+    final contentRangeHeader = headers['content-range'];
+    final contentLengthHeader = headers['content-length'];
+    int? totalSize;
+    if (contentRangeHeader != null) {
+      try {
+        final parsed = ContentRangeHeader.parse(contentRangeHeader);
+        totalSize = parsed.total;
+      } catch (_) {}
+    } else if (contentLengthHeader != null) {
+      totalSize = int.tryParse(contentLengthHeader);
+    }
 
     if (!isFromStart) {
-      if (await trackPartialCacheFile.exists()) {
+      if (totalSize != null && await trackPartialCacheFile.exists()) {
         final partLength = await trackPartialCacheFile.length();
-        if (partLength == contentRange.total) {
-          final finalCacheFile = File(cachePath);
-          if (!await finalCacheFile.exists()) {
+        if (partLength == totalSize) {
+          if (!await File(cachePath).exists()) {
             await trackPartialCacheFile.rename(cachePath);
           } else {
             await trackPartialCacheFile.delete();
@@ -456,14 +806,13 @@ class PlaybackRoutes {
       );
     }
 
-    if (await trackPartialCacheFile.exists()) {
+    if (totalSize != null && await trackPartialCacheFile.exists()) {
       final partLength = await trackPartialCacheFile.length();
       logger.i(
-        '[PlaybackRoutes] Partial cache exists: partLength=$partLength, contentRange.total=${contentRange.total}',
+        '[PlaybackRoutes] Partial cache exists: partLength=$partLength, totalSize=$totalSize',
       );
-      if (partLength == contentRange.total) {
-        final finalCacheFile = File(cachePath);
-        if (!await finalCacheFile.exists()) {
+      if (partLength == totalSize) {
+        if (!await File(cachePath).exists()) {
           await trackPartialCacheFile.rename(cachePath);
         } else {
           await trackPartialCacheFile.delete();
@@ -546,9 +895,12 @@ class PlaybackRoutes {
         await closeCacheFileSink();
 
         final fileLength = await trackPartialCacheFile.length();
-        if (fileLength != contentRange.total) {
+        final isComplete = totalSize != null
+            ? fileLength == totalSize
+            : fileLength > 0;
+        if (!isComplete) {
           logger.w(
-            '[CacheStream] Incomplete download: $fileLength != ${contentRange.total}',
+            '[CacheStream] Incomplete download: $fileLength (expected: $totalSize)',
           );
           if (await trackPartialCacheFile.exists()) {
             await trackPartialCacheFile.delete();
@@ -558,9 +910,8 @@ class PlaybackRoutes {
           return;
         }
 
-        final finalCacheFile = File(cachePath);
-        if (await finalCacheFile.exists()) {
-          await finalCacheFile.delete();
+        if (await File(cachePath).exists()) {
+          await File(cachePath).delete();
         }
         await trackPartialCacheFile.rename(cachePath);
         await LocalMusicStateService.addToLocalMusicState(

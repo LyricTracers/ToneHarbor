@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -428,11 +429,13 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
           );
         }
         final track = tracks[index];
-        return _TrackListItem(
-          track: track,
-          index: index + 1,
-          colorScheme: colorScheme,
-          size: size,
+        return RepaintBoundary(
+          child: _TrackListItem(
+            track: track,
+            index: index + 1,
+            colorScheme: colorScheme,
+            size: size,
+          ),
         );
       }, childCount: tracks.length + 1),
     );
@@ -562,178 +565,200 @@ class _TrackListItem extends HookConsumerWidget {
     return MouseRegion(
       onEnter: (event) => isHovered.value = true,
       onExit: (event) => isHovered.value = false,
-      child: Stack(
-        children: [
-          if (!isPlayable.playable)
-            Positioned(
-              top: 0,
-              left: 0,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 6 * multiplier,
-                  vertical: 2 * multiplier,
-                ),
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(8 * multiplier),
+      child: ContextMenuRegion(
+        enableDefaultGestures: isPlayable.playable,
+        contextMenu: ContextMenu(
+          entriesBuilder: () {
+            return <ContextMenuEntry>[
+              MenuHeader(text: track.name),
+              MenuDivider(),
+              MenuItem(
+                label: Text(l10n.play_queue),
+                onSelected: (value) async {
+                  ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+                  await ref
+                      .read(audioPlayerStateProvider.notifier)
+                      .addTrack(track.asTrack());
+                  ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+                },
+              ),
+            ];
+          },
+          padding: const EdgeInsets.all(8.0),
+        ),
+        child: Stack(
+          children: [
+            if (!isPlayable.playable)
+              Positioned(
+                top: 0,
+                left: 0,
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 6 * multiplier,
+                    vertical: 2 * multiplier,
                   ),
-                ),
-                child: Text(
-                  isPlayable.reason ?? l10n.paid_album,
-                  style: TextStyle(
-                    color: colorScheme.onPrimary,
-                    fontSize: 8 * multiplier,
-                    fontWeight: FontWeight.bold,
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary,
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(8 * multiplier),
+                    ),
+                  ),
+                  child: Text(
+                    isPlayable.reason ?? l10n.paid_album,
+                    style: TextStyle(
+                      color: colorScheme.onPrimary,
+                      fontSize: 8 * multiplier,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-            ),
 
-          Container(
-            height: itemHeight,
-            color: isHovered.value || isPressed.value
-                ? colorScheme.outline.withValues(alpha: .1)
-                : Colors.transparent,
-            child: InkWell(
-              onDoubleTap: () {
-                isPressed.value = false;
-              },
-              onTapDown: (details) => isPressed.value = true,
-              onTapUp: (details) => isPressed.value = false,
-              onTapCancel: () => isPressed.value = false,
-              onTap: () {
-                isPressed.value = false;
-              },
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: 15 * multiplier,
-                  right: 20 * multiplier,
-                  top: 4 * multiplier,
-                  bottom: 4 * multiplier,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      '$index',
-                      style: TextStyle(
-                        fontSize: 14 * multiplier,
-                        color: isPlayable.playable
-                            ? colorScheme.primary
-                            : Colors.grey,
+            Container(
+              height: itemHeight,
+              color: isHovered.value || isPressed.value
+                  ? colorScheme.outline.withValues(alpha: .1)
+                  : Colors.transparent,
+              child: InkWell(
+                onDoubleTap: () {
+                  isPressed.value = false;
+                },
+                onTapDown: (details) => isPressed.value = true,
+                onTapUp: (details) => isPressed.value = false,
+                onTapCancel: () => isPressed.value = false,
+                onTap: () {
+                  isPressed.value = false;
+                },
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: 15 * multiplier,
+                    right: 20 * multiplier,
+                    top: 4 * multiplier,
+                    bottom: 4 * multiplier,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        '$index',
+                        style: TextStyle(
+                          fontSize: 14 * multiplier,
+                          color: isPlayable.playable
+                              ? colorScheme.primary
+                              : Colors.grey,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 20 * multiplier),
-                    CloudMusicCoverImage(
-                      imageUrl: track.cover,
-                      colorScheme: colorScheme,
-                      config: CloudMusicCoverImageConfig(
-                        size: itemHeight * 0.8,
-                        borderRadius: 8,
+                      SizedBox(width: 20 * multiplier),
+                      CloudMusicCoverImage(
+                        imageUrl: track.cover,
+                        colorScheme: colorScheme,
+                        config: CloudMusicCoverImageConfig(
+                          size: itemHeight * 0.8,
+                          borderRadius: 8,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 15 * multiplier),
+                      SizedBox(width: 15 * multiplier),
 
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            track.name,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: TextStyle(
-                              fontSize: 16 * multiplier,
-                              fontWeight: FontWeight.bold,
-                              color: isPlayable.playable
-                                  ? colorScheme.onSurface
-                                  : Colors.grey,
-                            ),
-                          ),
-                          SizedBox(height: 4 * multiplier),
-                          Row(
-                            children: [
-                              Flexible(
-                                flex: 1,
-                                child: Text(
-                                  artists,
-                                  style: TextStyle(
-                                    fontSize: 12 * multiplier,
-                                    color: isPlayable.playable
-                                        ? colorScheme.onSurfaceVariant
-                                        : Colors.grey,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ),
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              track.name,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontSize: 16 * multiplier,
+                                fontWeight: FontWeight.bold,
+                                color: isPlayable.playable
+                                    ? colorScheme.onSurface
+                                    : Colors.grey,
                               ),
-
-                              if (track.al != null &&
-                                  track.al!.name.isNotEmpty &&
-                                  size.mdAndDown) ...[
-                                SizedBox(width: 10 * multiplier),
+                            ),
+                            SizedBox(height: 4 * multiplier),
+                            Row(
+                              children: [
                                 Flexible(
                                   flex: 1,
                                   child: Text(
-                                    '- ${track.al!.name}',
+                                    artists,
                                     style: TextStyle(
                                       fontSize: 12 * multiplier,
                                       color: isPlayable.playable
                                           ? colorScheme.onSurfaceVariant
                                           : Colors.grey,
                                     ),
-                                    maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
                                   ),
                                 ),
+
+                                if (track.al != null &&
+                                    track.al!.name.isNotEmpty &&
+                                    size.mdAndDown) ...[
+                                  SizedBox(width: 10 * multiplier),
+                                  Flexible(
+                                    flex: 1,
+                                    child: Text(
+                                      '- ${track.al!.name}',
+                                      style: TextStyle(
+                                        fontSize: 12 * multiplier,
+                                        color: isPlayable.playable
+                                            ? colorScheme.onSurfaceVariant
+                                            : Colors.grey,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
                               ],
-                            ],
-                          ),
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    if (track.al != null &&
-                        track.al!.name.isNotEmpty &&
-                        size.lgAndUp) ...[
-                      SizedBox(width: 15 * multiplier),
-                      Expanded(
-                        child: Text(
-                          track.al!.name,
+                      if (track.al != null &&
+                          track.al!.name.isNotEmpty &&
+                          size.lgAndUp) ...[
+                        SizedBox(width: 15 * multiplier),
+                        Expanded(
+                          child: Text(
+                            track.al!.name,
+                            style: TextStyle(
+                              fontSize: 14 * multiplier,
+                              color: isPlayable.playable
+                                  ? colorScheme.onSurfaceVariant
+                                  : Colors.grey,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                      if (duration != null) ...[
+                        SizedBox(width: 15 * multiplier),
+                        Text(
+                          duration,
                           style: TextStyle(
-                            fontSize: 14 * multiplier,
+                            fontSize: 12 * multiplier,
                             color: isPlayable.playable
-                                ? colorScheme.onSurfaceVariant
+                                ? colorScheme.onSurface.withValues(alpha: 0.5)
                                 : Colors.grey,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                      ),
+                        SizedBox(width: 10 * multiplier),
+                      ],
                     ],
-                    if (duration != null) ...[
-                      SizedBox(width: 15 * multiplier),
-                      Text(
-                        duration,
-                        style: TextStyle(
-                          fontSize: 12 * multiplier,
-                          color: isPlayable.playable
-                              ? colorScheme.onSurface.withValues(alpha: 0.5)
-                              : Colors.grey,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(width: 10 * multiplier),
-                    ],
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

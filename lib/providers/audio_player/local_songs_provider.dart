@@ -35,15 +35,19 @@ class LocalMusicStateService {
     ToneHarborTrackObject track,
     AudioQuality quality, {
     String? actualContainer,
+    int? actualFileSize,
+    int? actualBitrate,
   }) async {
     try {
       final existing = await (db.select(
         db.localMusicState,
       )..where((t) => t.trackId.equals(track.id))).getSingleOrNull();
 
-      final container = quality.isTranscode
-          ? 'mp3'
-          : (actualContainer ?? track.container);
+      final container = track.isCloudMusic
+          ? (actualContainer ?? track.container)
+          : (quality.isTranscode
+                ? 'mp3'
+                : (actualContainer ?? track.container));
 
       if (existing != null) {
         final currentQualities = _bitmaskToQualities(existing.qualities);
@@ -68,8 +72,8 @@ class LocalMusicStateService {
                 album: Value(track.album),
                 container: container,
                 duration: Value(track.duration.inMilliseconds),
-                fileSize: Value(track.filesize),
-                bitrate: Value(track.bitrate),
+                fileSize: Value(actualFileSize ?? track.filesize),
+                bitrate: Value(actualBitrate ?? track.bitrate),
                 channel: Value(track.channel),
                 codec: Value(track.codec),
                 frequency: Value(track.frequency),

@@ -27,6 +27,10 @@ ToneHarborTrackObject _$ToneHarborTrackObjectFromJson(
           return ToneHarborTrackObjectMultLocal.fromJson(
             json
           );
+                case 'cloudMusic':
+          return ToneHarborTrackObjectCloudMusic.fromJson(
+            json
+          );
         
           default:
             throw CheckedFromJsonException(
@@ -117,13 +121,14 @@ extension ToneHarborTrackObjectPatterns on ToneHarborTrackObject {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ToneHarborTrackObjectFolder value)?  folder,TResult Function( ToneHarborTrackObjectFull value)?  full,TResult Function( ToneHarborTrackObjectMultLocal value)?  multLocal,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ToneHarborTrackObjectFolder value)?  folder,TResult Function( ToneHarborTrackObjectFull value)?  full,TResult Function( ToneHarborTrackObjectMultLocal value)?  multLocal,TResult Function( ToneHarborTrackObjectCloudMusic value)?  cloudMusic,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case ToneHarborTrackObjectFolder() when folder != null:
 return folder(_that);case ToneHarborTrackObjectFull() when full != null:
 return full(_that);case ToneHarborTrackObjectMultLocal() when multLocal != null:
-return multLocal(_that);case _:
+return multLocal(_that);case ToneHarborTrackObjectCloudMusic() when cloudMusic != null:
+return cloudMusic(_that);case _:
   return orElse();
 
 }
@@ -141,13 +146,14 @@ return multLocal(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ToneHarborTrackObjectFolder value)  folder,required TResult Function( ToneHarborTrackObjectFull value)  full,required TResult Function( ToneHarborTrackObjectMultLocal value)  multLocal,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ToneHarborTrackObjectFolder value)  folder,required TResult Function( ToneHarborTrackObjectFull value)  full,required TResult Function( ToneHarborTrackObjectMultLocal value)  multLocal,required TResult Function( ToneHarborTrackObjectCloudMusic value)  cloudMusic,}){
 final _that = this;
 switch (_that) {
 case ToneHarborTrackObjectFolder():
 return folder(_that);case ToneHarborTrackObjectFull():
 return full(_that);case ToneHarborTrackObjectMultLocal():
-return multLocal(_that);}
+return multLocal(_that);case ToneHarborTrackObjectCloudMusic():
+return cloudMusic(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -161,13 +167,14 @@ return multLocal(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ToneHarborTrackObjectFolder value)?  folder,TResult? Function( ToneHarborTrackObjectFull value)?  full,TResult? Function( ToneHarborTrackObjectMultLocal value)?  multLocal,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ToneHarborTrackObjectFolder value)?  folder,TResult? Function( ToneHarborTrackObjectFull value)?  full,TResult? Function( ToneHarborTrackObjectMultLocal value)?  multLocal,TResult? Function( ToneHarborTrackObjectCloudMusic value)?  cloudMusic,}){
 final _that = this;
 switch (_that) {
 case ToneHarborTrackObjectFolder() when folder != null:
 return folder(_that);case ToneHarborTrackObjectFull() when full != null:
 return full(_that);case ToneHarborTrackObjectMultLocal() when multLocal != null:
-return multLocal(_that);case _:
+return multLocal(_that);case ToneHarborTrackObjectCloudMusic() when cloudMusic != null:
+return cloudMusic(_that);case _:
   return null;
 
 }
@@ -184,12 +191,13 @@ return multLocal(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String id,  String title)?  folder,TResult Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating,  ToneHarborTrackPlatform platform)?  full,TResult Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating,  List<AudioQuality> availableQualities)?  multLocal,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String id,  String title)?  folder,TResult Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating)?  full,TResult Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating,  List<AudioQuality> availableQualities)?  multLocal,TResult Function( String id,  String title,  String artist,  String album,  Duration duration,  String? coverUrl,  String? container)?  cloudMusic,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ToneHarborTrackObjectFolder() when folder != null:
 return folder(_that.id,_that.title);case ToneHarborTrackObjectFull() when full != null:
-return full(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.duration,_that.filesize,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.rating,_that.platform);case ToneHarborTrackObjectMultLocal() when multLocal != null:
-return multLocal(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.duration,_that.filesize,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.rating,_that.availableQualities);case _:
+return full(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.duration,_that.filesize,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.rating);case ToneHarborTrackObjectMultLocal() when multLocal != null:
+return multLocal(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.duration,_that.filesize,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.rating,_that.availableQualities);case ToneHarborTrackObjectCloudMusic() when cloudMusic != null:
+return cloudMusic(_that.id,_that.title,_that.artist,_that.album,_that.duration,_that.coverUrl,_that.container);case _:
   return orElse();
 
 }
@@ -207,12 +215,13 @@ return multLocal(_that.id,_that.title,_that.artist,_that.album,_that.externalUri
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String id,  String title)  folder,required TResult Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating,  ToneHarborTrackPlatform platform)  full,required TResult Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating,  List<AudioQuality> availableQualities)  multLocal,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String id,  String title)  folder,required TResult Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating)  full,required TResult Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating,  List<AudioQuality> availableQualities)  multLocal,required TResult Function( String id,  String title,  String artist,  String album,  Duration duration,  String? coverUrl,  String? container)  cloudMusic,}) {final _that = this;
 switch (_that) {
 case ToneHarborTrackObjectFolder():
 return folder(_that.id,_that.title);case ToneHarborTrackObjectFull():
-return full(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.duration,_that.filesize,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.rating,_that.platform);case ToneHarborTrackObjectMultLocal():
-return multLocal(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.duration,_that.filesize,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.rating,_that.availableQualities);}
+return full(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.duration,_that.filesize,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.rating);case ToneHarborTrackObjectMultLocal():
+return multLocal(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.duration,_that.filesize,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.rating,_that.availableQualities);case ToneHarborTrackObjectCloudMusic():
+return cloudMusic(_that.id,_that.title,_that.artist,_that.album,_that.duration,_that.coverUrl,_that.container);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -226,12 +235,13 @@ return multLocal(_that.id,_that.title,_that.artist,_that.album,_that.externalUri
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String id,  String title)?  folder,TResult? Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating,  ToneHarborTrackPlatform platform)?  full,TResult? Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating,  List<AudioQuality> availableQualities)?  multLocal,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String id,  String title)?  folder,TResult? Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating)?  full,TResult? Function( String id,  String title,  String artist,  String album,  String externalUri,  Duration duration,  int filesize,  int bitrate,  int channel,  String codec,  String container,  int frequency,  int rating,  List<AudioQuality> availableQualities)?  multLocal,TResult? Function( String id,  String title,  String artist,  String album,  Duration duration,  String? coverUrl,  String? container)?  cloudMusic,}) {final _that = this;
 switch (_that) {
 case ToneHarborTrackObjectFolder() when folder != null:
 return folder(_that.id,_that.title);case ToneHarborTrackObjectFull() when full != null:
-return full(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.duration,_that.filesize,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.rating,_that.platform);case ToneHarborTrackObjectMultLocal() when multLocal != null:
-return multLocal(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.duration,_that.filesize,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.rating,_that.availableQualities);case _:
+return full(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.duration,_that.filesize,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.rating);case ToneHarborTrackObjectMultLocal() when multLocal != null:
+return multLocal(_that.id,_that.title,_that.artist,_that.album,_that.externalUri,_that.duration,_that.filesize,_that.bitrate,_that.channel,_that.codec,_that.container,_that.frequency,_that.rating,_that.availableQualities);case ToneHarborTrackObjectCloudMusic() when cloudMusic != null:
+return cloudMusic(_that.id,_that.title,_that.artist,_that.album,_that.duration,_that.coverUrl,_that.container);case _:
   return null;
 
 }
@@ -318,7 +328,7 @@ as String,
 @JsonSerializable()
 
 class ToneHarborTrackObjectFull extends ToneHarborTrackObject {
-   ToneHarborTrackObjectFull({required this.id, required this.title, required this.artist, required this.album, required this.externalUri, required this.duration, required this.filesize, required this.bitrate, required this.channel, required this.codec, required this.container, required this.frequency, required this.rating, required this.platform, final  String? $type}): $type = $type ?? 'full',super._();
+   ToneHarborTrackObjectFull({required this.id, required this.title, required this.artist, required this.album, required this.externalUri, required this.duration, required this.filesize, required this.bitrate, required this.channel, required this.codec, required this.container, required this.frequency, required this.rating, final  String? $type}): $type = $type ?? 'full',super._();
   factory ToneHarborTrackObjectFull.fromJson(Map<String, dynamic> json) => _$ToneHarborTrackObjectFullFromJson(json);
 
 @override final  String id;
@@ -334,7 +344,6 @@ class ToneHarborTrackObjectFull extends ToneHarborTrackObject {
  final  String container;
  final  int frequency;
  final  int rating;
- final  ToneHarborTrackPlatform platform;
 
 @JsonKey(name: 'runtimeType')
 final String $type;
@@ -353,16 +362,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ToneHarborTrackObjectFull&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.artist, artist) || other.artist == artist)&&(identical(other.album, album) || other.album == album)&&(identical(other.externalUri, externalUri) || other.externalUri == externalUri)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.filesize, filesize) || other.filesize == filesize)&&(identical(other.bitrate, bitrate) || other.bitrate == bitrate)&&(identical(other.channel, channel) || other.channel == channel)&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.container, container) || other.container == container)&&(identical(other.frequency, frequency) || other.frequency == frequency)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.platform, platform) || other.platform == platform));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ToneHarborTrackObjectFull&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.artist, artist) || other.artist == artist)&&(identical(other.album, album) || other.album == album)&&(identical(other.externalUri, externalUri) || other.externalUri == externalUri)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.filesize, filesize) || other.filesize == filesize)&&(identical(other.bitrate, bitrate) || other.bitrate == bitrate)&&(identical(other.channel, channel) || other.channel == channel)&&(identical(other.codec, codec) || other.codec == codec)&&(identical(other.container, container) || other.container == container)&&(identical(other.frequency, frequency) || other.frequency == frequency)&&(identical(other.rating, rating) || other.rating == rating));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,artist,album,externalUri,duration,filesize,bitrate,channel,codec,container,frequency,rating,platform);
+int get hashCode => Object.hash(runtimeType,id,title,artist,album,externalUri,duration,filesize,bitrate,channel,codec,container,frequency,rating);
 
 @override
 String toString() {
-  return 'ToneHarborTrackObject.full(id: $id, title: $title, artist: $artist, album: $album, externalUri: $externalUri, duration: $duration, filesize: $filesize, bitrate: $bitrate, channel: $channel, codec: $codec, container: $container, frequency: $frequency, rating: $rating, platform: $platform)';
+  return 'ToneHarborTrackObject.full(id: $id, title: $title, artist: $artist, album: $album, externalUri: $externalUri, duration: $duration, filesize: $filesize, bitrate: $bitrate, channel: $channel, codec: $codec, container: $container, frequency: $frequency, rating: $rating)';
 }
 
 
@@ -373,7 +382,7 @@ abstract mixin class $ToneHarborTrackObjectFullCopyWith<$Res> implements $ToneHa
   factory $ToneHarborTrackObjectFullCopyWith(ToneHarborTrackObjectFull value, $Res Function(ToneHarborTrackObjectFull) _then) = _$ToneHarborTrackObjectFullCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String artist, String album, String externalUri, Duration duration, int filesize, int bitrate, int channel, String codec, String container, int frequency, int rating, ToneHarborTrackPlatform platform
+ String id, String title, String artist, String album, String externalUri, Duration duration, int filesize, int bitrate, int channel, String codec, String container, int frequency, int rating
 });
 
 
@@ -390,7 +399,7 @@ class _$ToneHarborTrackObjectFullCopyWithImpl<$Res>
 
 /// Create a copy of ToneHarborTrackObject
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? artist = null,Object? album = null,Object? externalUri = null,Object? duration = null,Object? filesize = null,Object? bitrate = null,Object? channel = null,Object? codec = null,Object? container = null,Object? frequency = null,Object? rating = null,Object? platform = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? artist = null,Object? album = null,Object? externalUri = null,Object? duration = null,Object? filesize = null,Object? bitrate = null,Object? channel = null,Object? codec = null,Object? container = null,Object? frequency = null,Object? rating = null,}) {
   return _then(ToneHarborTrackObjectFull(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -405,8 +414,7 @@ as int,codec: null == codec ? _self.codec : codec // ignore: cast_nullable_to_no
 as String,container: null == container ? _self.container : container // ignore: cast_nullable_to_non_nullable
 as String,frequency: null == frequency ? _self.frequency : frequency // ignore: cast_nullable_to_non_nullable
 as int,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
-as int,platform: null == platform ? _self.platform : platform // ignore: cast_nullable_to_non_nullable
-as ToneHarborTrackPlatform,
+as int,
   ));
 }
 
@@ -512,6 +520,91 @@ as String,frequency: null == frequency ? _self.frequency : frequency // ignore: 
 as int,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
 as int,availableQualities: null == availableQualities ? _self._availableQualities : availableQualities // ignore: cast_nullable_to_non_nullable
 as List<AudioQuality>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class ToneHarborTrackObjectCloudMusic extends ToneHarborTrackObject {
+   ToneHarborTrackObjectCloudMusic({required this.id, required this.title, required this.artist, required this.album, required this.duration, this.coverUrl, this.container, final  String? $type}): $type = $type ?? 'cloudMusic',super._();
+  factory ToneHarborTrackObjectCloudMusic.fromJson(Map<String, dynamic> json) => _$ToneHarborTrackObjectCloudMusicFromJson(json);
+
+@override final  String id;
+@override final  String title;
+ final  String artist;
+ final  String album;
+ final  Duration duration;
+ final  String? coverUrl;
+ final  String? container;
+
+@JsonKey(name: 'runtimeType')
+final String $type;
+
+
+/// Create a copy of ToneHarborTrackObject
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ToneHarborTrackObjectCloudMusicCopyWith<ToneHarborTrackObjectCloudMusic> get copyWith => _$ToneHarborTrackObjectCloudMusicCopyWithImpl<ToneHarborTrackObjectCloudMusic>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ToneHarborTrackObjectCloudMusicToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ToneHarborTrackObjectCloudMusic&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.artist, artist) || other.artist == artist)&&(identical(other.album, album) || other.album == album)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.coverUrl, coverUrl) || other.coverUrl == coverUrl)&&(identical(other.container, container) || other.container == container));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,title,artist,album,duration,coverUrl,container);
+
+@override
+String toString() {
+  return 'ToneHarborTrackObject.cloudMusic(id: $id, title: $title, artist: $artist, album: $album, duration: $duration, coverUrl: $coverUrl, container: $container)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ToneHarborTrackObjectCloudMusicCopyWith<$Res> implements $ToneHarborTrackObjectCopyWith<$Res> {
+  factory $ToneHarborTrackObjectCloudMusicCopyWith(ToneHarborTrackObjectCloudMusic value, $Res Function(ToneHarborTrackObjectCloudMusic) _then) = _$ToneHarborTrackObjectCloudMusicCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String title, String artist, String album, Duration duration, String? coverUrl, String? container
+});
+
+
+
+
+}
+/// @nodoc
+class _$ToneHarborTrackObjectCloudMusicCopyWithImpl<$Res>
+    implements $ToneHarborTrackObjectCloudMusicCopyWith<$Res> {
+  _$ToneHarborTrackObjectCloudMusicCopyWithImpl(this._self, this._then);
+
+  final ToneHarborTrackObjectCloudMusic _self;
+  final $Res Function(ToneHarborTrackObjectCloudMusic) _then;
+
+/// Create a copy of ToneHarborTrackObject
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? artist = null,Object? album = null,Object? duration = null,Object? coverUrl = freezed,Object? container = freezed,}) {
+  return _then(ToneHarborTrackObjectCloudMusic(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,artist: null == artist ? _self.artist : artist // ignore: cast_nullable_to_non_nullable
+as String,album: null == album ? _self.album : album // ignore: cast_nullable_to_non_nullable
+as String,duration: null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
+as Duration,coverUrl: freezed == coverUrl ? _self.coverUrl : coverUrl // ignore: cast_nullable_to_non_nullable
+as String?,container: freezed == container ? _self.container : container // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

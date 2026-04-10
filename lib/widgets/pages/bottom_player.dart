@@ -15,6 +15,7 @@ import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/utils/use_progress.dart';
+import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 enum ShowArrowType { up, down, none }
@@ -651,6 +652,15 @@ class BottomPlayer extends HookConsumerWidget {
     required ColorScheme colorScheme,
     required bool isXs,
   }) {
+    if (activeTrack is ToneHarborTrackObjectCloudMusic) {
+      return CloudMusicCoverImage(
+        imageUrl: activeTrack.coverUrl ?? '',
+        colorScheme: colorScheme,
+        config: isXs
+            ? const CloudMusicCoverImageConfig(size: 50, isCircular: true)
+            : const CloudMusicCoverImageConfig(size: 50, borderRadius: 5),
+      );
+    }
     return SongCoverImage(
       songId: activeTrack.id,
       albumName: activeTrack.album,

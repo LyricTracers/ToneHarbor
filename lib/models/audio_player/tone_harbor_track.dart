@@ -15,8 +15,6 @@ part 'tone_harbor_track.freezed.dart';
 
 part 'tone_harbor_track.g.dart';
 
-enum ToneHarborTrackPlatform { synology, local, cloud_music }
-
 abstract mixin class AsTrack {
   String get id;
   ToneHarborTrackObject asTrack();
@@ -46,7 +44,6 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
     required String container,
     required int frequency,
     required int rating,
-    required ToneHarborTrackPlatform platform,
   }) = ToneHarborTrackObjectFull;
   factory ToneHarborTrackObject.fromJson(Map<String, dynamic> json) =>
       _$ToneHarborTrackObjectFromJson(json);
@@ -68,6 +65,16 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
     required List<AudioQuality> availableQualities,
   }) = ToneHarborTrackObjectMultLocal;
 
+  factory ToneHarborTrackObject.cloudMusic({
+    required String id,
+    required String title,
+    required String artist,
+    required String album,
+    required Duration duration,
+    String? coverUrl,
+    String? container,
+  }) = ToneHarborTrackObjectCloudMusic;
+
   static Future<ToneHarborTrackObject?> localTrackFromFile(
     File file, {
     Metadata? metadata,
@@ -88,10 +95,34 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
 
     final baseName = basenameWithoutExtension(file.path);
     final musicIndex = baseName.lastIndexOf('_music_');
+    final cloudIndex = baseName.lastIndexOf('_cloud_');
 
     var id = fileMetadata?.comment;
     if (id == null || id.isEmpty) {
-      id = musicIndex != -1 ? baseName.substring(musicIndex + 1) : baseName;
+      if (cloudIndex != -1) {
+        id = baseName.substring(cloudIndex + 1);
+      } else if (musicIndex != -1) {
+        id = baseName.substring(musicIndex + 1);
+      } else {
+        id = baseName;
+      }
+    }
+
+    if (id.startsWith('cloud_')) {
+      final cloudId = id.substring(6);
+      final titleFromFile = cloudIndex != -1
+          ? baseName.substring(0, cloudIndex)
+          : baseName;
+      return ToneHarborTrackObject.cloudMusic(
+        id: cloudId,
+        title: fileMetadata?.title ?? titleFromFile,
+        artist: fileMetadata?.artist ?? '',
+        album: fileMetadata?.album ?? '',
+        duration: Duration(
+          milliseconds: fileMetadata?.durationMs?.toInt() ?? 0,
+        ),
+        container: extension(file.path).replaceFirst('.', ''),
+      );
     }
 
     final titleFromFile = musicIndex != -1
@@ -127,8 +158,10 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   bool get isFolder => this is ToneHarborTrackObjectFolder;
   bool get isSong =>
       this is ToneHarborTrackObjectFull ||
-      this is ToneHarborTrackObjectMultLocal;
+      this is ToneHarborTrackObjectMultLocal ||
+      this is ToneHarborTrackObjectCloudMusic;
   bool get isLocal => this is ToneHarborTrackObjectMultLocal;
+  bool get isCloudMusic => this is ToneHarborTrackObjectCloudMusic;
 
   String get path {
     if (this is ToneHarborTrackObjectMultLocal) {
@@ -179,6 +212,8 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
       return (this as ToneHarborTrackObjectFull).artist;
     } else if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).artist;
+    } else if (this is ToneHarborTrackObjectCloudMusic) {
+      return (this as ToneHarborTrackObjectCloudMusic).artist;
     }
     return '';
   }
@@ -188,6 +223,8 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
       return (this as ToneHarborTrackObjectFull).album;
     } else if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).album;
+    } else if (this is ToneHarborTrackObjectCloudMusic) {
+      return (this as ToneHarborTrackObjectCloudMusic).album;
     }
     return '';
   }
@@ -197,6 +234,8 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
       return (this as ToneHarborTrackObjectFull).duration;
     } else if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).duration;
+    } else if (this is ToneHarborTrackObjectCloudMusic) {
+      return (this as ToneHarborTrackObjectCloudMusic).duration;
     }
     return Duration.zero;
   }
@@ -251,6 +290,8 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
       return (this as ToneHarborTrackObjectFull).container;
     } else if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).container;
+    } else if (this is ToneHarborTrackObjectCloudMusic) {
+      return (this as ToneHarborTrackObjectCloudMusic).container ?? 'mp3';
     }
     return '';
   }
@@ -281,7 +322,6 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
         container: multLocal.container,
         frequency: multLocal.frequency,
         rating: multLocal.rating,
-        platform: ToneHarborTrackPlatform.local,
       );
     }
     return this;
@@ -296,6 +336,16 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
         this is ToneHarborTrackObjectMultLocal) {
       return _createMetadata(
         id: id,
+        title: title,
+        artist: artist,
+        album: album,
+        duration: duration,
+        fileLength: fileLength,
+      );
+    }
+    if (this is ToneHarborTrackObjectCloudMusic) {
+      return _createMetadata(
+        id: 'cloud_$id',
         title: title,
         artist: artist,
         album: album,

@@ -82,7 +82,6 @@ sealed class FolderItem with _$FolderItem, AsTrack {
       codec: codec,
       container: container,
       frequency: additional?.songAudio?.frequency ?? 0,
-      platform: ToneHarborTrackPlatform.synology,
     );
   }
 }

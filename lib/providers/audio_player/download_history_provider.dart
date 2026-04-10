@@ -123,7 +123,6 @@ class DownloadHistoryNotifier extends _$DownloadHistoryNotifier {
       container: record.container,
       frequency: 0,
       rating: 0,
-      platform: ToneHarborTrackPlatform.synology,
     );
     return DownloadTaskRecord(
       track: track,

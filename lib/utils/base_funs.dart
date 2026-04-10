@@ -370,7 +370,12 @@ Future<void> openCacheFolder() async {
 
 String getTrackCachePath(ToneHarborTrackObject track, AudioQuality quality) {
   final cacheDir = getMusicCacheDirSync(quality);
-  final extension = quality.isTranscode ? 'mp3' : track.container;
+  String extension;
+  if (quality.isTranscode) {
+    extension = 'mp3';
+  } else {
+    extension = track.container;
+  }
   var fileName = "${track.title}_${track.id}";
   if (track.artist.isNotEmpty) {
     fileName = "${track.artist}_$fileName";
@@ -379,10 +384,54 @@ String getTrackCachePath(ToneHarborTrackObject track, AudioQuality quality) {
   return '$cacheDir/$fileName.$extension';
 }
 
+String getCloudMusicCachePath(
+  String songId,
+  String title,
+  String artist, {
+  String extension = 'mp3',
+}) {
+  final cacheDir = getMusicCacheDirSync(AudioQuality.high);
+  var fileName = "${title}_cloud_$songId";
+  if (artist.isNotEmpty) {
+    fileName = "${artist}_$fileName";
+  }
+  fileName = sanitizeFilename(fileName, songId);
+  return '$cacheDir/$fileName.$extension';
+}
+
+Future<String?> findCloudMusicCachePath(
+  String songId,
+  String title,
+  String artist,
+) async {
+  final cacheDir = getMusicCacheDirSync(AudioQuality.high);
+  var fileName = "${title}_cloud_$songId";
+  if (artist.isNotEmpty) {
+    fileName = "${artist}_$fileName";
+  }
+  fileName = sanitizeFilename(fileName, songId);
+
+  for (final ext in ['mp3', 'flac', 'm4a', 'ogg']) {
+    final path = '$cacheDir/$fileName.$ext';
+    if (await File(path).exists()) {
+      return path;
+    }
+  }
+  return null;
+}
+
 Future<bool> isTrackCached(
   ToneHarborTrackObject track,
   AudioQuality quality,
 ) async {
+  if (track.isCloudMusic) {
+    final cachedPath = await findCloudMusicCachePath(
+      track.id,
+      track.title,
+      track.artist,
+    );
+    return cachedPath != null;
+  }
   final cachePath = getTrackCachePath(track, quality);
   return File(cachePath).exists();
 }

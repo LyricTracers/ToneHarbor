@@ -126,7 +126,6 @@ sealed class Song with _$Song, AsTrack {
       codec: codec,
       container: container,
       frequency: additional?.songAudio?.frequency ?? 0,
-      platform: ToneHarborTrackPlatform.synology,
     );
   }
 }
