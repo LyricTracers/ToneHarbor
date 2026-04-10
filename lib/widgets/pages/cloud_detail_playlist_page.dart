@@ -624,6 +624,17 @@ class _TrackListItem extends HookConsumerWidget {
             return <ContextMenuEntry>[
               MenuHeader(text: track.name),
               MenuDivider(),
+              MenuItem(
+                label: Text(l10n.download),
+                icon: Icon(Icons.download_rounded),
+                onSelected: (value) async {
+                  ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+                  await ref
+                      .read(downloadManagerProvider.notifier)
+                      .addToQueue(track.asTrack());
+                  ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+                },
+              ),
               MenuItem.submenu(
                 label: Text(l10n.add_to),
                 icon: const Icon(Icons.add_box_rounded),

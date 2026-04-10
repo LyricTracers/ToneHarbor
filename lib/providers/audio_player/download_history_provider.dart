@@ -109,21 +109,34 @@ class DownloadHistoryNotifier extends _$DownloadHistoryNotifier {
   }
 
   DownloadTaskRecord _mapRecordToTask(DownloadTaskStateData record) {
-    final track = ToneHarborTrackObject.full(
-      id: record.trackId,
-      title: record.trackTitle,
-      artist: record.trackArtist,
-      album: '',
-      externalUri: '',
-      duration: Duration.zero,
-      filesize: 0,
-      bitrate: 0,
-      channel: 0,
-      codec: '',
-      container: record.container,
-      frequency: 0,
-      rating: 0,
-    );
+    ToneHarborTrackObject track;
+    if (record.trackId.startsWith("music_")) {
+      track = ToneHarborTrackObject.full(
+        id: record.trackId,
+        title: record.trackTitle,
+        artist: record.trackArtist,
+        album: '',
+        externalUri: '',
+        duration: Duration.zero,
+        filesize: record.fileSize,
+        bitrate: 0,
+        channel: 0,
+        codec: '',
+        container: record.container,
+        frequency: 0,
+        rating: 0,
+      );
+    } else {
+      track = ToneHarborTrackObject.cloudMusic(
+        id: record.trackId,
+        title: record.trackTitle,
+        artist: record.trackArtist,
+        album: '',
+        duration: Duration.zero,
+        filesize: record.fileSize,
+        container: record.container,
+      );
+    }
     return DownloadTaskRecord(
       track: track,
       type: record.type,
