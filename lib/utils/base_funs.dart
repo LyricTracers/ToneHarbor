@@ -368,6 +368,22 @@ Future<void> openCacheFolder() async {
   }
 }
 
+String getTrackCachePathPart(
+  ToneHarborTrackObject track,
+  AudioQuality quality,
+) {
+  var fileName = "${track.title}_${track.id}";
+  if (track.isCloudMusic) {
+    quality = AudioQuality.high;
+    fileName = "${track.title}_cloud_${track.id}";
+  }
+  if (track.artist.isNotEmpty) {
+    fileName = "${track.artist}_$fileName";
+  }
+  fileName = sanitizeFilename(fileName, track.id);
+  return '${getMusicCacheDirSync(quality)}/$fileName.part';
+}
+
 String getTrackCachePath(ToneHarborTrackObject track, AudioQuality quality) {
   final cacheDir = getMusicCacheDirSync(quality);
   String extension;
@@ -387,9 +403,9 @@ String getTrackCachePath(ToneHarborTrackObject track, AudioQuality quality) {
 String getCloudMusicCachePath(
   String songId,
   String title,
-  String artist, {
-  String extension = 'mp3',
-}) {
+  String artist,
+  String extension,
+) {
   final cacheDir = getMusicCacheDirSync(AudioQuality.high);
   var fileName = "${title}_cloud_$songId";
   if (artist.isNotEmpty) {

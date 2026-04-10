@@ -121,6 +121,7 @@ ToneHarborTrackObjectCloudMusic _$ToneHarborTrackObjectCloudMusicFromJson(
   duration: Duration(microseconds: (json['duration'] as num).toInt()),
   coverUrl: json['coverUrl'] as String?,
   container: json['container'] as String?,
+  filesize: (json['filesize'] as num?)?.toInt(),
   $type: json['runtimeType'] as String?,
 );
 
@@ -134,6 +135,7 @@ Map<String, dynamic> _$ToneHarborTrackObjectCloudMusicToJson(
   'duration': instance.duration.inMicroseconds,
   'coverUrl': instance.coverUrl,
   'container': instance.container,
+  'filesize': instance.filesize,
   'runtimeType': instance.$type,
 };
 

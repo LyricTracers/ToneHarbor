@@ -302,7 +302,7 @@ class PlaybackRoutes {
       }
 
       final quality = ref.read(audioQualityProvider);
-      final cachePath = getTrackCachePath(track, quality);
+      String cachePath = getTrackCachePath(track, quality);
       final cacheFile = File(cachePath);
 
       if (await cacheFile.exists()) {
@@ -370,7 +370,7 @@ class PlaybackRoutes {
       track.id,
       track.title,
       track.artist,
-      extension: container,
+      container,
     );
 
     final rangeHeader = request.headers['range'] ?? 'bytes=0-';
@@ -392,7 +392,9 @@ class PlaybackRoutes {
 
       final resStream = response.body.asBroadcastStream();
 
-      final partialCacheFile = File('$cachePath.part');
+      final partialCacheFile = File(
+        getTrackCachePathPart(track, AudioQuality.high),
+      );
       final cacheKey = cachePath;
 
       final rangeStart = _parseRangeStart(rangeHeader);
@@ -743,9 +745,8 @@ class PlaybackRoutes {
     }
 
     final resStream = response.body.asBroadcastStream();
-
-    final trackPartialCacheFile = File('$cachePath.part');
-    final cacheKey = cachePath;
+    final cacheKey = getTrackCachePathPart(track, quality);
+    final trackPartialCacheFile = File(cacheKey);
     final actualContainer = quality.isTranscode ? 'mp3' : track.container;
 
     final rangeStart = _parseRangeStart(rangeHeader);

@@ -150,31 +150,55 @@ class DownloadManager extends _$DownloadManager {
 
     final restoredTasks = <DownloadTask>[];
     for (final record in savedTasks) {
-      final track = ToneHarborTrackObject.full(
-        id: record.trackId,
-        title: record.trackTitle,
-        artist: record.trackArtist,
-        album: '',
-        externalUri: '',
-        duration: Duration.zero,
-        filesize: record.fileSize,
-        bitrate: 0,
-        channel: 0,
-        codec: '',
-        container: record.container,
-        frequency: 0,
-        rating: 0,
-      );
-      final savePath = getTrackCachePath(track, record.quality);
+      ToneHarborTrackObject track;
+      if (record.trackId.startsWith("music_")) {
+        track = ToneHarborTrackObject.full(
+          id: record.trackId,
+          title: record.trackTitle,
+          artist: record.trackArtist,
+          album: '',
+          externalUri: '',
+          duration: Duration.zero,
+          filesize: record.fileSize,
+          bitrate: 0,
+          channel: 0,
+          codec: '',
+          container: record.container,
+          frequency: 0,
+          rating: 0,
+        );
+      } else {
+        track = ToneHarborTrackObject.cloudMusic(
+          id: record.trackId,
+          title: record.trackTitle,
+          artist: record.trackArtist,
+          album: '',
+          duration: Duration.zero,
+          filesize: record.fileSize,
+          container: record.container,
+        );
+      }
 
-      final completeFile = File(savePath);
-      if (await completeFile.exists()) {
-        await _updateTaskStatusInDb(track.id, DownloadStatus.completed);
-        continue;
+      if (track.isCloudMusic) {
+        final partPath = await findCloudMusicCachePath(
+          track.id,
+          track.title,
+          track.artist,
+        );
+        if (partPath != null && await File(partPath).exists()) {
+          await _updateTaskStatusInDb(track.id, DownloadStatus.completed);
+          continue;
+        }
+      } else {
+        if (await File(getTrackCachePath(track, record.quality)).exists()) {
+          await _updateTaskStatusInDb(track.id, DownloadStatus.completed);
+          continue;
+        }
       }
 
       int actualDownloadedBytes = 0;
-      final partFile = File('$savePath.part');
+      final savePath = getTrackCachePathPart(track, record.quality);
+      final partFile = File(savePath);
       if (await partFile.exists()) {
         actualDownloadedBytes = await partFile.length();
       }
@@ -337,9 +361,7 @@ class DownloadManager extends _$DownloadManager {
       logger.i('[DownloadManager] Skip local track: ${track.id}');
       return;
     }
-
     final quality = ref.read(audioQualityProvider);
-    final cachePath = getTrackCachePath(track, quality);
 
     final existingTask = state.firstWhereOrNull((e) => e.track.id == track.id);
     if (existingTask != null) {
@@ -385,7 +407,8 @@ class DownloadManager extends _$DownloadManager {
       }
     }
 
-    final partFile = File('$cachePath.part');
+    final cachePath = getTrackCachePathPart(track, quality);
+    final partFile = File(cachePath);
     final downloadedBytes = await partFile.exists()
         ? await partFile.length()
         : 0;
@@ -408,7 +431,6 @@ class DownloadManager extends _$DownloadManager {
 
   Future<void> addToQueue(ToneHarborTrackObject track) async {
     final quality = ref.read(audioQualityProvider);
-    final cachePath = getTrackCachePath(track, quality);
 
     final existingTask = state.firstWhereOrNull((e) => e.track.id == track.id);
     if (existingTask != null) {
@@ -442,7 +464,8 @@ class DownloadManager extends _$DownloadManager {
       }
     }
 
-    final partFile = File('$cachePath.part');
+    final cachePath = getTrackCachePathPart(track, quality);
+    final partFile = File(cachePath);
     final downloadedBytes = await partFile.exists()
         ? await partFile.length()
         : 0;
@@ -522,8 +545,8 @@ class DownloadManager extends _$DownloadManager {
     if (tracksToAdd.isNotEmpty) {
       final newTasks = <DownloadTask>[];
       for (final track in tracksToAdd) {
-        final cachePath = getTrackCachePath(track, quality);
-        final partFile = File('$cachePath.part');
+        final cachePath = getTrackCachePathPart(track, quality);
+        final partFile = File(cachePath);
         final downloadedBytes = await partFile.exists()
             ? await partFile.length()
             : 0;
@@ -670,7 +693,7 @@ class DownloadManager extends _$DownloadManager {
     if (task?.status case DownloadStatus.canceled || DownloadStatus.failed) {
       final savePath =
           task!.savePath ??
-          getTrackCachePath(track, ref.read(audioQualityProvider));
+          getTrackCachePathPart(track, ref.read(audioQualityProvider));
 
       if (!CacheLockManager.instance.tryLock(savePath)) {
         logger.i(
@@ -858,6 +881,18 @@ class DownloadManager extends _$DownloadManager {
     await _updateTaskStatusInDb(track.id, status);
   }
 
+  Future<void> _updateTaskContainer(String trackId, String container) async {
+    final db = ref.read(appDatabaseProvider);
+    await (db.update(
+      db.downloadTaskState,
+    )..where((tb) => tb.trackId.equals(trackId))).write(
+      DownloadTaskStateCompanion(
+        container: Value(container),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
   Future<void> _updateTaskStatusInDb(
     String trackId,
     DownloadStatus status,
@@ -947,15 +982,11 @@ class DownloadManager extends _$DownloadManager {
       .length;
 
   Future<void> _downloadTrack(DownloadTask task) async {
-    if (task.track.isCloudMusic) {
-      await _downloadCloudMusicTrack(task);
-      return;
-    }
-
     final quality = ref.read(audioQualityProvider);
-    final savePath = getTrackCachePath(task.track, quality);
+    final savePartPath =
+        task.savePath ?? getTrackCachePathPart(task.track, quality);
 
-    if (!CacheLockManager.instance.tryLock(savePath)) {
+    if (!CacheLockManager.instance.tryLock(savePartPath)) {
       logger.w(
         '[DownloadManager] Cache locked by another process, skipping: ${task.track.id}',
       );
@@ -964,13 +995,30 @@ class DownloadManager extends _$DownloadManager {
 
     bool lockHeld = true;
     try {
-      final streamUrl = await ref.read(
-        streamUrlProvider(
-          id: task.track.id,
-          quality: quality,
-          container: task.track.container,
-        ).future,
-      );
+      String streamUrl;
+      String container;
+      if (task.track.isCloudMusic) {
+        final songId = int.tryParse(task.track.id);
+        if (songId == null) {
+          throw Exception("Invalid song ID: ${task.track.id}");
+        }
+        final songUrlData = await getSongUrl(ref, songId: songId);
+        streamUrl = songUrlData?.url ?? '';
+        container = songUrlData?.extension ?? '';
+      } else {
+        streamUrl = await ref.read(
+          streamUrlProvider(
+            id: task.track.id,
+            quality: quality,
+            container: task.track.container,
+          ).future,
+        );
+        container = task.track.container;
+      }
+      if (streamUrl.isEmpty || container.isEmpty) {
+        throw Exception("No download URL found for selected codec");
+      }
+      await _updateTaskContainer(task.track.id, container);
 
       if (task.cancelToken.isCancelled) {
         if (_pausedTracks.contains(task.track.id)) {
@@ -979,30 +1027,27 @@ class DownloadManager extends _$DownloadManager {
         } else {
           await _setStatus(task.track, DownloadStatus.canceled);
         }
-        CacheLockManager.instance.unlock(savePath);
+        CacheLockManager.instance.unlock(savePartPath);
         lockHeld = false;
         return;
       }
-
-      if (streamUrl.isEmpty) {
-        throw Exception("No download URL found for selected codec");
+      Map<String, String>? authHeaders;
+      if (!task.track.isCloudMusic) {
+        authHeaders = await ref.read(authHeadersProvider.future);
+        if (authHeaders == null) {
+          throw Exception("No auth headers available");
+        }
       }
 
-      final authHeaders = await ref.read(authHeadersProvider.future);
-      if (authHeaders == null) {
-        throw Exception("No auth headers available");
-      }
-
-      _updateTask(task.track, savePath: savePath);
-
-      final savePathFile = File(savePath);
-      final partialPath = '$savePath.part';
-      final partialFile = File(partialPath);
+      _updateTask(task.track, savePath: savePartPath);
+      final songSavePath = savePartPath.replaceFirst('.part', '.$container');
+      final savePathFile = File(songSavePath);
+      final partialFile = File(savePartPath);
 
       if (await savePathFile.exists()) {
         await _setStatus(task.track, DownloadStatus.completed);
         _completionController.add(task.track);
-        CacheLockManager.instance.unlock(savePath);
+        CacheLockManager.instance.unlock(savePartPath);
         lockHeld = false;
         return;
       }
@@ -1024,7 +1069,7 @@ class DownloadManager extends _$DownloadManager {
       final response = await downloadHttpClientWrapper.getStream(
         streamUrl,
         headers: rhttp.HttpHeaders.rawMap({
-          ...authHeaders,
+          ...(authHeaders ?? {}),
           'range': 'bytes=$existingBytes-',
         }),
         cancelToken: task.cancelToken,
@@ -1065,7 +1110,7 @@ class DownloadManager extends _$DownloadManager {
                 }
                 await _setStatus(task.track, DownloadStatus.canceled);
               }
-              CacheLockManager.instance.unlock(savePath);
+              CacheLockManager.instance.unlock(savePartPath);
               lockHeld = false;
               return;
             }
@@ -1108,7 +1153,7 @@ class DownloadManager extends _$DownloadManager {
           );
         }
 
-        await partialFile.rename(savePath);
+        await partialFile.rename(songSavePath);
 
         if (!await savePathFile.exists()) {
           throw Exception("Failed to rename partial file to final file");
@@ -1125,7 +1170,7 @@ class DownloadManager extends _$DownloadManager {
         await writeTrackMetadata(
           ref: ref,
           track: task.track,
-          cachePath: savePath,
+          cachePath: songSavePath,
           fileLength: await savePathFile.length(),
         );
       } else {
@@ -1137,15 +1182,15 @@ class DownloadManager extends _$DownloadManager {
         if (_pausedTracks.contains(task.track.id)) {
           _pausedTracks.remove(task.track.id);
           await _setStatus(task.track, DownloadStatus.paused);
-          CacheLockManager.instance.unlock(savePath);
+          CacheLockManager.instance.unlock(savePartPath);
           lockHeld = false;
         } else {
-          final partialFile = File('$savePath.part');
+          final partialFile = File(savePartPath);
           if (await partialFile.exists()) {
             await partialFile.delete();
           }
           await _setStatus(task.track, DownloadStatus.canceled);
-          CacheLockManager.instance.unlock(savePath);
+          CacheLockManager.instance.unlock(savePartPath);
           lockHeld = false;
         }
         return;
@@ -1168,12 +1213,12 @@ class DownloadManager extends _$DownloadManager {
         await _updateTaskStatusInDb(task.track.id, DownloadStatus.queued);
         await Future.delayed(_retryDelay * (task.retryCount + 1));
         _startDownloading();
-        CacheLockManager.instance.unlock(savePath);
+        CacheLockManager.instance.unlock(savePartPath);
         lockHeld = false;
         return;
       }
 
-      final partialFile = File('$savePath.part');
+      final partialFile = File(savePartPath);
       if (await partialFile.exists()) {
         await partialFile.delete();
       }
@@ -1185,241 +1230,7 @@ class DownloadManager extends _$DownloadManager {
       );
     } finally {
       if (lockHeld) {
-        CacheLockManager.instance.unlock(savePath);
-      }
-    }
-  }
-
-  Future<void> _downloadCloudMusicTrack(DownloadTask task) async {
-    final songId = int.tryParse(task.track.id);
-    if (songId == null) {
-      logger.e('[DownloadManager] Invalid cloud music ID: ${task.track.id}');
-      await _setStatus(task.track, DownloadStatus.failed);
-      return;
-    }
-
-    final cachedPath = await findCloudMusicCachePath(
-      task.track.id,
-      task.track.title,
-      task.track.artist,
-    );
-    if (cachedPath != null) {
-      logger.i('[DownloadManager] Cloud music already cached: $cachedPath');
-      await _setStatus(task.track, DownloadStatus.completed);
-      _completionController.add(task.track);
-      return;
-    }
-
-    final songUrlData = await getSongUrl(ref, songId: songId);
-    if (songUrlData == null || songUrlData.url.isEmpty) {
-      logger.e(
-        '[DownloadManager] Failed to get cloud music URL: ${task.track.id}',
-      );
-      await _setStatus(task.track, DownloadStatus.failed);
-      return;
-    }
-
-    final extension = songUrlData.fileExtension;
-    final savePath = getCloudMusicCachePath(
-      task.track.id,
-      task.track.title,
-      task.track.artist,
-      extension: extension,
-    );
-
-    if (!CacheLockManager.instance.tryLock(savePath)) {
-      logger.w(
-        '[DownloadManager] Cache locked by another process, skipping: ${task.track.id}',
-      );
-      return;
-    }
-
-    bool lockHeld = true;
-    try {
-      _updateTask(task.track, savePath: savePath);
-
-      final savePathFile = File(savePath);
-      final partialPath = '$savePath.part';
-      final partialFile = File(partialPath);
-
-      if (await savePathFile.exists()) {
-        await _setStatus(task.track, DownloadStatus.completed);
-        _completionController.add(task.track);
-        CacheLockManager.instance.unlock(savePath);
-        lockHeld = false;
-        return;
-      }
-
-      await partialFile.parent.create(recursive: true);
-
-      int existingBytes = 0;
-      if (await partialFile.exists()) {
-        existingBytes = await partialFile.length();
-        if (existingBytes > 0) {
-          logger.i(
-            '[DownloadManager] Resuming download from byte $existingBytes for cloud music: ${task.track.id}',
-          );
-        }
-      }
-
-      _updateTask(task.track, downloadedBytes: existingBytes);
-
-      final rangeHeader = existingBytes > 0
-          ? 'bytes=$existingBytes-'
-          : 'bytes=0-';
-
-      final response = await downloadHttpClientWrapper.getStream(
-        songUrlData.url,
-        headers: rhttp.HttpHeaders.rawMap({'range': rangeHeader}),
-        cancelToken: task.cancelToken,
-      );
-
-      if (response.statusCode < 400) {
-        final sink = partialFile.openWrite(mode: FileMode.writeOnlyAppend);
-        int? totalSize;
-
-        final contentRange = response.headers
-            .where((h) => h.$1.toLowerCase() == 'content-range')
-            .firstOrNull;
-        if (contentRange != null) {
-          final match = RegExp(
-            r'bytes \d+-\d+/(\d+)',
-          ).firstMatch(contentRange.$2);
-          if (match != null) {
-            totalSize = int.parse(match.group(1)!);
-            _updateTask(task.track, totalSizeBytes: totalSize);
-          }
-        }
-
-        var downloadedBytes = existingBytes;
-        var lastUpdateTime = DateTime.now();
-        var lastBytes = existingBytes;
-
-        try {
-          await for (final chunk in response.body) {
-            if (task.cancelToken.isCancelled) {
-              await sink.close();
-
-              if (_pausedTracks.contains(task.track.id)) {
-                _pausedTracks.remove(task.track.id);
-                await _setStatus(task.track, DownloadStatus.paused);
-              } else {
-                if (await partialFile.exists()) {
-                  await partialFile.delete();
-                }
-                await _setStatus(task.track, DownloadStatus.canceled);
-              }
-              CacheLockManager.instance.unlock(savePath);
-              lockHeld = false;
-              return;
-            }
-            sink.add(chunk);
-            downloadedBytes += chunk.length;
-            task._downloadedBytesStreamController.add(downloadedBytes);
-
-            final now = DateTime.now();
-            final elapsed = now.difference(lastUpdateTime).inMilliseconds;
-            if (elapsed >= 500) {
-              _updateTask(task.track, downloadedBytes: downloadedBytes);
-              final bytesPerSecond =
-                  (downloadedBytes - lastBytes) * 1000 / elapsed;
-              task._downloadSpeedStreamController.add(
-                bytesPerSecond / 1024 / 1024,
-              );
-              lastUpdateTime = now;
-              lastBytes = downloadedBytes;
-            }
-          }
-        } catch (e) {
-          await sink.close();
-          rethrow;
-        }
-
-        await sink.close();
-
-        if (!await partialFile.exists()) {
-          throw Exception("Partial file not found");
-        }
-
-        final partialFileSize = await partialFile.length();
-        if (partialFileSize == 0) {
-          throw Exception("Downloaded file is empty");
-        }
-
-        if (totalSize != null && partialFileSize != totalSize) {
-          throw Exception(
-            "File size mismatch: expected $totalSize, got $partialFileSize",
-          );
-        }
-
-        await partialFile.rename(savePath);
-
-        if (!await savePathFile.exists()) {
-          throw Exception("Failed to rename partial file to final file");
-        }
-
-        await _setStatus(task.track, DownloadStatus.completed);
-        _completionController.add(task.track);
-      } else {
-        throw Exception("HTTP ${response.statusCode}");
-      }
-    } catch (e, stack) {
-      if (e is rhttp.RhttpException) {
-        logger.i(
-          '[DownloadManager] Cloud music download cancelled: ${task.track.id}',
-        );
-        if (_pausedTracks.contains(task.track.id)) {
-          _pausedTracks.remove(task.track.id);
-          await _setStatus(task.track, DownloadStatus.paused);
-          CacheLockManager.instance.unlock(savePath);
-          lockHeld = false;
-        } else {
-          final partialFile = File('$savePath.part');
-          if (await partialFile.exists()) {
-            await partialFile.delete();
-          }
-          await _setStatus(task.track, DownloadStatus.canceled);
-          CacheLockManager.instance.unlock(savePath);
-          lockHeld = false;
-        }
-        return;
-      }
-
-      if (task.retryCount < _maxRetries) {
-        logger.i(
-          '[DownloadManager] Retrying cloud music download: ${task.track.id}, attempt ${task.retryCount + 1}/$_maxRetries',
-        );
-        _pausedTracks.remove(task.track.id);
-        state = state.map((e) {
-          if (e.track.id == task.track.id) {
-            return e.copyWith(
-              retryCount: e.retryCount + 1,
-              status: DownloadStatus.queued,
-            );
-          }
-          return e;
-        }).toList();
-        await _updateTaskStatusInDb(task.track.id, DownloadStatus.queued);
-        await Future.delayed(_retryDelay * (task.retryCount + 1));
-        _startDownloading();
-        CacheLockManager.instance.unlock(savePath);
-        lockHeld = false;
-        return;
-      }
-
-      final partialFile = File('$savePath.part');
-      if (await partialFile.exists()) {
-        await partialFile.delete();
-      }
-      await _setStatus(task.track, DownloadStatus.failed);
-      logger.e(
-        '[DownloadManager] Cloud music download failed after $_maxRetries retries: ${task.track.id}',
-        error: e,
-        stackTrace: stack,
-      );
-    } finally {
-      if (lockHeld) {
-        CacheLockManager.instance.unlock(savePath);
+        CacheLockManager.instance.unlock(savePartPath);
       }
     }
   }

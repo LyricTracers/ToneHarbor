@@ -754,10 +754,27 @@ class _DownloadHistoryTab extends HookConsumerWidget {
                       track.id,
                     });
                     final quality = ref.read(audioQualityProvider);
-                    final cachePath = getTrackCachePath(track, quality);
+                    final cachePath = getTrackCachePathPart(track, quality);
                     final file = File(cachePath);
                     if (await file.exists()) {
                       await file.delete();
+                    }
+                    if (track.isCloudMusic) {
+                      final cloudMusicCachePath = await findCloudMusicCachePath(
+                        track.id,
+                        track.title,
+                        track.artist,
+                      );
+                      if (cloudMusicCachePath != null &&
+                          await File(cloudMusicCachePath).exists()) {
+                        await File(cloudMusicCachePath).delete();
+                      }
+                    } else {
+                      final finishCachePath = getTrackCachePath(track, quality);
+                      final finishFile = File(finishCachePath);
+                      if (await finishFile.exists()) {
+                        await finishFile.delete();
+                      }
                     }
 
                     ref
@@ -773,7 +790,16 @@ class _DownloadHistoryTab extends HookConsumerWidget {
                     onSelected: (value) async {
                       var track = downloadTaskRecords[index].track;
                       final quality = ref.read(audioQualityProvider);
-                      final cachePath = getTrackCachePath(track, quality);
+
+                      String? cachePath = getTrackCachePath(track, quality);
+                      if (track.isCloudMusic) {
+                        cachePath = await findCloudMusicCachePath(
+                          track.id,
+                          track.title,
+                          track.artist,
+                        );
+                      }
+                      if (cachePath == null) return;
                       final file = File(cachePath);
                       if (await file.exists()) {
                         var fileTrack =

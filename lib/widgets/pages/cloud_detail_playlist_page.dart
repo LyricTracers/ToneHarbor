@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
@@ -439,10 +440,9 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
             index: index + 1,
             colorScheme: colorScheme,
             size: size,
-            onTap: (index) async {
+            onTap: (ci) async {
               var targetTracks = <ToneHarborTrackObject>[];
-              var initIndex = index;
-              initIndex = 0;
+              var initIndex = ci - 1;
               final isLoggedIn = ref.read(cloudMusicAuthStateProvider);
               final user = await ref.read(cloudUserInfoProvider.future);
               final userVipType = user?.vipType ?? 0;

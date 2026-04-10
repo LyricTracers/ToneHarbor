@@ -73,6 +73,7 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
     required Duration duration,
     String? coverUrl,
     String? container,
+    int? filesize,
   }) = ToneHarborTrackObjectCloudMusic;
 
   static Future<ToneHarborTrackObject?> localTrackFromFile(
@@ -242,6 +243,8 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
       return (this as ToneHarborTrackObjectFull).filesize;
     } else if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).filesize;
+    } else if (this is ToneHarborTrackObjectCloudMusic) {
+      return (this as ToneHarborTrackObjectCloudMusic).filesize ?? 0;
     }
     return 0;
   }

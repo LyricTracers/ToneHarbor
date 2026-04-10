@@ -58,7 +58,6 @@ Future<Lyrics?> _requestLyrics(
       return lyrics;
     }
   }
-
   try {
     final lyricsResponse = await ref
         .read(songCommonProvider.notifier)
@@ -78,7 +77,6 @@ Future<Lyrics?> _requestLyrics(
   } catch (e) {
     // ignore
   }
-
   if (title != null) {
     try {
       final searchTerm = SearchTerm(title: title, artist: artist);
