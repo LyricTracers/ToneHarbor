@@ -185,15 +185,24 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
     return AudioQuality.high;
   }
 
-  String getPath(AudioQuality quality) {
+  Future<String> getPath(AudioQuality quality) async {
     if (this is ToneHarborTrackObjectMultLocal) {
       final multLocal = this as ToneHarborTrackObjectMultLocal;
-      final filename = generateTrackFilename(
-        multLocal.title,
-        multLocal.artist,
-        multLocal.id,
-      );
-      return buildTrackPath(filename, multLocal.container, quality);
+      if (multLocal.id.startsWith("music_")) {
+        final filename = generateTrackFilename(
+          multLocal.title,
+          multLocal.artist,
+          multLocal.id,
+        );
+        return buildTrackPath(filename, multLocal.container, quality);
+      } else {
+        return await findCloudMusicCachePath(
+              multLocal.id,
+              multLocal.title,
+              multLocal.artist,
+            ) ??
+            '';
+      }
     }
     return '';
   }

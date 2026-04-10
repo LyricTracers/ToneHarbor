@@ -231,18 +231,22 @@ class LocalMusicStateService {
 
 ToneHarborTrackObjectMultLocal _localSongFromDb(LocalMusicStateData data) {
   final qualities = <AudioQuality>[];
-  for (final q in AudioQuality.values) {
-    if ((data.qualities & (1 << q.index)) != 0) {
-      final filename = generateTrackFilename(
-        data.title,
-        data.artist,
-        data.trackId,
-      );
-      final path = buildTrackPath(filename, data.container, q);
-      if (File(path).existsSync()) {
-        qualities.add(q);
+  if (data.trackId.startsWith("music_")) {
+    for (final q in AudioQuality.values) {
+      if ((data.qualities & (1 << q.index)) != 0) {
+        final filename = generateTrackFilename(
+          data.title,
+          data.artist,
+          data.trackId,
+        );
+        final path = buildTrackPath(filename, data.container, q);
+        if (File(path).existsSync()) {
+          qualities.add(q);
+        }
       }
     }
+  } else {
+    qualities.add(AudioQuality.high);
   }
 
   return ToneHarborTrackObjectMultLocal(
@@ -466,7 +470,7 @@ class LocalSongs extends _$LocalSongs
   ) async {
     final song = track;
 
-    final path = song.getPath(quality);
+    final path = await song.getPath(quality);
     if (path.isNotEmpty) {
       try {
         final file = File(path);
@@ -510,7 +514,7 @@ class LocalSongs extends _$LocalSongs
     final trackId = track.id;
 
     for (final quality in track.availableQualities) {
-      final path = track.getPath(quality);
+      final path = await track.getPath(quality);
       if (path.isNotEmpty) {
         try {
           final file = File(path);
@@ -540,7 +544,7 @@ class LocalSongs extends _$LocalSongs
     for (final track in tracks) {
       _totalCount--;
       for (final quality in track.availableQualities) {
-        final path = track.getPath(quality);
+        final path = await track.getPath(quality);
         if (path.isNotEmpty) {
           try {
             final file = File(path);

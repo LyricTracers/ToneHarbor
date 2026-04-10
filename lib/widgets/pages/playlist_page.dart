@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -300,7 +301,10 @@ class PlaylistPage extends HookConsumerWidget {
                         isDefault: isDefault,
                         colorScheme: colorScheme,
                         i10n: i10n,
-                        onTap: () => audioPlayer.jumpTo(index),
+                        onTap: () {
+                          logger.i("track: $track");
+                          audioPlayer.jumpTo(index);
+                        },
                         onDeleteTap: () {
                           ref
                               .read(audioPlayerStateProvider.notifier)
