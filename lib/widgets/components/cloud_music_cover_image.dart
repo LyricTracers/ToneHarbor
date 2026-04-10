@@ -41,7 +41,8 @@ class CloudMusicCoverImage extends HookConsumerWidget {
 
     Widget imageChild;
     if (config.isCircular) {
-      imageChild = ClipOval(
+      imageChild = ClipRRect(
+        borderRadius: BorderRadius.circular(config.size / 2),
         child: CachedNetworkImage.fromUrl(
           keepLiveDuration: const Duration(minutes: 1),
           imageUrl: imageUrl,
