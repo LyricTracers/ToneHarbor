@@ -163,14 +163,6 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   bool get isLocal => this is ToneHarborTrackObjectMultLocal;
   bool get isCloudMusic => this is ToneHarborTrackObjectCloudMusic;
 
-  String get path {
-    if (this is ToneHarborTrackObjectMultLocal) {
-      final multLocal = this as ToneHarborTrackObjectMultLocal;
-      return getTrackCachePath(multLocal, multLocal.bestQuality);
-    }
-    return '';
-  }
-
   List<AudioQuality> get availableQualities {
     if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).availableQualities;
@@ -185,7 +177,7 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
     return AudioQuality.high;
   }
 
-  Future<String> getPath(AudioQuality quality) async {
+  Future<String> getPath({AudioQuality? quality}) async {
     if (this is ToneHarborTrackObjectMultLocal) {
       final multLocal = this as ToneHarborTrackObjectMultLocal;
       if (multLocal.id.startsWith("music_")) {
@@ -194,7 +186,11 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
           multLocal.artist,
           multLocal.id,
         );
-        return buildTrackPath(filename, multLocal.container, quality);
+        return buildTrackPath(
+          filename,
+          multLocal.container,
+          quality ?? multLocal.bestQuality,
+        );
       } else {
         return await findCloudMusicCachePath(
               multLocal.id,

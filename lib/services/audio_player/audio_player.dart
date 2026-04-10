@@ -23,11 +23,9 @@ class ToneHarborMedia extends mk.Media {
   final ToneHarborTrackObject track;
 
   ToneHarborMedia(this.track)
-    : super(
-        track.isLocal ? track.path : getStreamUrl(track.id),
-        extras: track.toJson(),
-      );
+    : super(getStreamUrl(track.id), extras: track.toJson());
   static String get baseUrl => "http://$host:$serverPort";
+
   static String getStreamUrl(String songId) {
     if (serverPort == 0) {
       logger.w('[ToneHarborMedia] Server port is 0, stream URL may not work!');

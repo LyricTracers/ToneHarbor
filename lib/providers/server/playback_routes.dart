@@ -145,7 +145,7 @@ class PlaybackRoutes {
       }
 
       if (track.isLocal) {
-        final file = File(track.path);
+        final file = File(await track.getPath());
         if (!await file.exists()) {
           return Response.notFound("Local file not found");
         }
@@ -610,7 +610,7 @@ class PlaybackRoutes {
     Request request,
     ToneHarborTrackObject track,
   ) async {
-    final file = File(track.path);
+    final file = File(await track.getPath());
     if (!await file.exists()) {
       return Response.notFound("Local file not found");
     }

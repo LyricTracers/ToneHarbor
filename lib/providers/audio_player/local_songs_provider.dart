@@ -470,7 +470,7 @@ class LocalSongs extends _$LocalSongs
   ) async {
     final song = track;
 
-    final path = await song.getPath(quality);
+    final path = await song.getPath(quality: quality);
     if (path.isNotEmpty) {
       try {
         final file = File(path);
@@ -514,7 +514,7 @@ class LocalSongs extends _$LocalSongs
     final trackId = track.id;
 
     for (final quality in track.availableQualities) {
-      final path = await track.getPath(quality);
+      final path = await track.getPath(quality: quality);
       if (path.isNotEmpty) {
         try {
           final file = File(path);
@@ -544,7 +544,7 @@ class LocalSongs extends _$LocalSongs
     for (final track in tracks) {
       _totalCount--;
       for (final quality in track.availableQualities) {
-        final path = await track.getPath(quality);
+        final path = await track.getPath(quality: quality);
         if (path.isNotEmpty) {
           try {
             final file = File(path);

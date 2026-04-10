@@ -47,7 +47,7 @@ sealed class AudioPlayerState with _$AudioPlayerState {
     return tracks.isNotEmpty &&
         tracks.any(
           (t) => track.isLocal && t.isLocal
-              ? t.path == track.path
+              ? t.getPath() == track.getPath()
               : t.id == track.id,
         );
   }

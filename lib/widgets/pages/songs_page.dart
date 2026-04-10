@@ -359,23 +359,25 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                             var initIndex = index;
                             if (!isLocal) {
                               initIndex = 0;
-                              tracks.addAll(
-                                filteredItems.where((song) {
-                                  if (!song.isSong) return false;
-                                  if (song.id == item.id) {
-                                    initIndex = tracks.length;
+                              for (final song in filteredItems) {
+                                if (!song.isSong) continue;
+                                if (song.id == item.id) {
+                                  initIndex = tracks.length;
+                                }
+                                if (song is ToneHarborTrackObjectMultLocal) {
+                                  final path = await song.getPath();
+                                  if (song.availableQualities.isNotEmpty &&
+                                      File(path).existsSync()) {
+                                    tracks.add(song);
                                   }
-                                  if (song is ToneHarborTrackObjectMultLocal) {
-                                    return song.availableQualities.isNotEmpty &&
-                                        File(song.path).existsSync();
-                                  } else {
-                                    return true;
-                                  }
-                                }),
-                              );
+                                } else {
+                                  tracks.add(song);
+                                }
+                              }
                             } else {
                               tracks = filteredItems;
                             }
+                            logger.i('tracks: $tracks[${initIndex}]');
                             if (tracks.isEmpty) return;
                             await ref
                                 .read(audioPlayerStateProvider.notifier)
