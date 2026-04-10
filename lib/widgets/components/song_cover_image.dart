@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:metadata_god/metadata_god.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -16,6 +17,7 @@ class SongCoverImage extends HookConsumerWidget {
     required this.colorScheme,
     required this.config,
     this.onLongPress,
+    this.pictureFuture,
   });
 
   final String songId;
@@ -24,6 +26,7 @@ class SongCoverImage extends HookConsumerWidget {
   final ColorScheme colorScheme;
   final SongCoverImageConfig config;
   final VoidCallback? onLongPress;
+  final Future<Picture?>? pictureFuture;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,6 +43,13 @@ class SongCoverImage extends HookConsumerWidget {
       duration: config.rotationDuration,
     );
 
+    Picture? resolvedPicture;
+    if (pictureFuture != null) {
+      final cachedFuture = useMemoized(() => pictureFuture!);
+      final snapshot = useFuture(cachedFuture);
+      resolvedPicture = snapshot.data;
+    }
+
     useEffect(() {
       if (config.rotating) {
         rotationController.repeat();
@@ -49,9 +59,44 @@ class SongCoverImage extends HookConsumerWidget {
       return null;
     }, [config.rotating]);
 
-    Widget imageChild = ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: CachedNetworkImage(
+    Widget imageChild;
+    if (resolvedPicture != null) {
+      final pic = resolvedPicture;
+      imageChild = ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: GestureDetector(
+          onLongPress: () async {
+            if (onLongPress != null) {
+              onLongPress?.call();
+            } else {
+              final syncSongIcon = ref.read(syncSongIconProvider);
+              if (syncSongIcon == false && context.mounted) {
+                showSetBackgroundDialog(context, colorScheme, ref, () async {
+                  logger.i(
+                    'Setting theme icon from picture: ${pic.data.length} bytes',
+                  );
+                  saveDefaultThemeIcon(ref, pic.data);
+                });
+              }
+            }
+          },
+          child: Image.memory(
+            pic.data,
+            width: config.size,
+            height: config.size,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return CoverPlaceholder(
+                colorScheme: colorScheme,
+                size: config.size,
+                borderRadius: borderRadius,
+              );
+            },
+          ),
+        ),
+      );
+    } else {
+      imageChild = CachedNetworkImage(
         keepLiveDuration: const Duration(minutes: 1),
         songId: songId,
         albumName: albumName,
@@ -109,8 +154,8 @@ class SongCoverImage extends HookConsumerWidget {
           },
           child: child,
         ),
-      ),
-    );
+      );
+    }
 
     if (config.borderWidth != null && config.borderWidth! > 0) {
       imageChild = Container(

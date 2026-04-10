@@ -661,6 +661,18 @@ class BottomPlayer extends HookConsumerWidget {
             : const CloudMusicCoverImageConfig(size: 50, borderRadius: 5),
       );
     }
+    if (activeTrack is ToneHarborTrackObjectMultLocal) {
+      return SongCoverImage(
+        pictureFuture: activeTrack.getPicture(),
+        songId: activeTrack.id,
+        albumName: activeTrack.album,
+        artistName: activeTrack.artist,
+        colorScheme: colorScheme,
+        config: isXs
+            ? const SongCoverImageConfig(size: 50, isCircular: true)
+            : const SongCoverImageConfig(size: 50, borderRadius: 5),
+      );
+    }
     return SongCoverImage(
       songId: activeTrack.id,
       albumName: activeTrack.album,

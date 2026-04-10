@@ -26,6 +26,9 @@ Future<void> writeTrackMetadata({
       final cloudTrack = track as ToneHarborTrackObjectCloudMusic;
       coverUrl = cloudTrack.coverUrl ?? '';
       fileName = 'cloud_cover_${coverUrl.hashCode}';
+      logger.i(
+        '[Metadata] Cloud track cover URL: $coverUrl, fileName: $fileName,track.isCloudMusic: ${track.isCloudMusic}',
+      );
     } else if (track.id.isEmpty) {
       coverUrl = await ref.read(
         coverUrlByAlbumProvider(
@@ -43,6 +46,9 @@ Future<void> writeTrackMetadata({
 
     Uint8List? imageBytes;
     if (coverUrl.isNotEmpty) {
+      logger.i(
+        '[Metadata] Downloading2222 cover: $coverUrl, fileName: $fileName,track.isCloudMusic: ${track.isCloudMusic}',
+      );
       imageBytes = await getCoverBytes(
         ref,
         coverUrl,
@@ -50,6 +56,7 @@ Future<void> writeTrackMetadata({
         isCloudMusic: track.isCloudMusic,
       );
     }
+    logger.i('[Metadata] Downloaded cover: imageBytes:${imageBytes?.length}');
 
     final metadata = track.toMetadata(
       fileLength: fileLength,

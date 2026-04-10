@@ -97,37 +97,29 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
     final musicIndex = baseName.lastIndexOf('_music_');
     final cloudIndex = baseName.lastIndexOf('_cloud_');
 
-    var id = fileMetadata?.comment;
-    if (id == null || id.isEmpty) {
-      if (cloudIndex != -1) {
-        id = baseName.substring(cloudIndex + 1);
-      } else if (musicIndex != -1) {
+    var id = fileMetadata?.comment ?? '';
+    if (id.isEmpty) {
+      if (musicIndex != -1) {
         id = baseName.substring(musicIndex + 1);
+      } else if (cloudIndex != -1) {
+        id = baseName.substring(cloudIndex + 1);
       } else {
         id = baseName;
       }
     }
 
     if (id.startsWith('cloud_')) {
-      final cloudId = id.substring(6);
-      final titleFromFile = cloudIndex != -1
-          ? baseName.substring(0, cloudIndex)
-          : baseName;
-      return ToneHarborTrackObject.cloudMusic(
-        id: cloudId,
-        title: fileMetadata?.title ?? titleFromFile,
-        artist: fileMetadata?.artist ?? '',
-        album: fileMetadata?.album ?? '',
-        duration: Duration(
-          milliseconds: fileMetadata?.durationMs?.toInt() ?? 0,
-        ),
-        container: extension(file.path).replaceFirst('.', ''),
-      );
+      id = id.substring(6);
     }
 
-    final titleFromFile = musicIndex != -1
-        ? baseName.substring(0, musicIndex)
-        : baseName;
+    String titleFromFile;
+    if (musicIndex != -1) {
+      titleFromFile = baseName.substring(0, musicIndex);
+    } else if (cloudIndex != -1) {
+      titleFromFile = baseName.substring(0, cloudIndex);
+    } else {
+      titleFromFile = baseName;
+    }
 
     final parentDirName = file.parent.path.split(Platform.pathSeparator).last;
     final quality = AudioQuality.values.firstWhere(
@@ -346,6 +338,8 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
         album: album,
         duration: duration,
         fileLength: fileLength,
+        imageBytes: imageBytes,
+        mimeType: mimeType,
       );
     }
     if (this is ToneHarborTrackObjectCloudMusic) {
@@ -356,6 +350,8 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
         album: album,
         duration: duration,
         fileLength: fileLength,
+        imageBytes: imageBytes,
+        mimeType: mimeType,
       );
     }
     return null;
@@ -473,6 +469,24 @@ const List<AudioQuality> _qualityPriority = [
 
 extension ToneHarborTrackObjectMultLocalExtension
     on ToneHarborTrackObjectMultLocal {
+  Future<Picture?> getPicture() async {
+    final path = await getPath();
+    if (path.isEmpty) {
+      return null;
+    }
+    final File file = File(path);
+    if (!await file.exists()) {
+      return null;
+    }
+    try {
+      final fileMetadata = await MetadataGod.readMetadata(file: file.path);
+      return fileMetadata.picture!;
+    } catch (e) {
+      logger.w('[localTrackFromFile] Failed to read metadata: $e');
+    }
+    return null;
+  }
+
   AudioQuality get bestQuality {
     if (availableQualities.isEmpty) {
       return AudioQuality.high;
