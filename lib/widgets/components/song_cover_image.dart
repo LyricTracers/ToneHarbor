@@ -45,9 +45,11 @@ class SongCoverImage extends HookConsumerWidget {
 
     Picture? resolvedPicture;
     if (pictureFuture != null) {
-      final cachedFuture = useMemoized(() => pictureFuture!);
+      final cachedFuture = useMemoized(() => pictureFuture!, [songId]);
       final snapshot = useFuture(cachedFuture);
       resolvedPicture = snapshot.data;
+    } else {
+      resolvedPicture = null;
     }
 
     useEffect(() {
