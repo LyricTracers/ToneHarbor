@@ -149,7 +149,7 @@ class _PlaylistItem extends StatelessWidget {
                 child: AspectRatio(
                   aspectRatio: 1.0,
                   child: CloudMusicCoverImage(
-                    imageUrl: playlist.coverUrl,
+                    imageUrl: playlist.coverUrl(),
                     colorScheme: colorScheme,
                     config: CloudMusicCoverImageConfig(
                       size: coverSize,

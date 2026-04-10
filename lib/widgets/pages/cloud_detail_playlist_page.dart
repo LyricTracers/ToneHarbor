@@ -313,14 +313,14 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
 
     final coverImage = useMemoized(
       () => CloudMusicCoverImage(
-        imageUrl: playlist.coverUrl,
+        imageUrl: playlist.coverUrl(),
         colorScheme: colorScheme,
         config: CloudMusicCoverImageConfig(
           size: maxCoverSize,
           borderRadius: 8 * multiplier,
         ),
       ),
-      [playlist.coverUrl, colorScheme, maxCoverSize, multiplier],
+      [playlist.coverUrl(), colorScheme, maxCoverSize, multiplier],
     );
 
     final headerMaxExtent = kToolbarHeight * 5 * size.multiplier3;
@@ -734,7 +734,7 @@ class _TrackListItem extends HookConsumerWidget {
                       ),
                       SizedBox(width: 20 * multiplier),
                       CloudMusicCoverImage(
-                        imageUrl: track.cover,
+                        imageUrl: track.coverUrl(),
                         colorScheme: colorScheme,
                         config: CloudMusicCoverImageConfig(
                           size: itemHeight * 0.8,

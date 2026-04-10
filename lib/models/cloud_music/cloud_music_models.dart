@@ -31,9 +31,9 @@ sealed class CloudMusicPlaylistData with _$CloudMusicPlaylistData {
     return coverImgUrl ?? '';
   }
 
-  String get coverUrl {
+  String coverUrl({int size = 200}) {
     if (cover.isNotEmpty) {
-      return '${cover.replaceAll('http://', 'https://')}?param=200y200';
+      return '${cover.replaceAll('http://', 'https://')}?param=${size}y$size';
     }
     return '';
   }
@@ -66,9 +66,9 @@ sealed class CloudMusicAlbumData with _$CloudMusicAlbumData {
     return blurPicUrl ?? '';
   }
 
-  String get coverUrl {
+  String coverUrl({int size = 200}) {
     if (cover.isNotEmpty) {
-      return '${cover.replaceAll('http://', 'https://')}?param=200y200';
+      return '${cover.replaceAll('http://', 'https://')}?param=${size}y$size';
     }
     return '';
   }
@@ -101,7 +101,7 @@ sealed class CloudMusicArtistData with _$CloudMusicArtistData {
   factory CloudMusicArtistData.fromJson(Map<String, dynamic> json) =>
       _$CloudMusicArtistDataFromJson(json);
 
-  String get cover {
+  String coverUrl({int size = 200}) {
     if (img1v1Url != null && img1v1Url!.isNotEmpty) {
       final img1v1ID = img1v1Url!.split('/').last;
       if (img1v1ID == '5639395138885805.jpg') {
@@ -112,7 +112,7 @@ sealed class CloudMusicArtistData with _$CloudMusicArtistData {
     final img = img1v1Url != null && img1v1Url!.isNotEmpty
         ? img1v1Url!
         : picUrl ?? '';
-    return '${img.replaceAll('http://', 'https://')}?param=200y200';
+    return '${img.replaceAll('http://', 'https://')}?param=${size}y$size';
   }
 }
 
@@ -139,9 +139,9 @@ sealed class CloudMusicSongData with _$CloudMusicSongData {
       _$CloudMusicSongDataFromJson(json);
 
   String get artistName => ar?.map((e) => e.name).join('/') ?? '';
-  String get cover {
+  String coverUrl({int size = 200}) {
     if (al != null && al!.cover.isNotEmpty) {
-      return '${al!.cover.replaceAll('http://', 'https://')}?param=200y200';
+      return '${al!.cover.replaceAll('http://', 'https://')}?param=${size}y$size';
     }
     return '';
   }
@@ -153,7 +153,7 @@ sealed class CloudMusicSongData with _$CloudMusicSongData {
       artist: artistName,
       album: al?.name ?? '',
       duration: Duration(milliseconds: dt ?? 0),
-      coverUrl: cover,
+      coverUrl: coverUrl(),
     );
   }
 }
