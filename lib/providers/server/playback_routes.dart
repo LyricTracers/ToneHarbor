@@ -953,7 +953,7 @@ class PlaybackRoutes {
   void _clearAuthOnFailure() {
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
+      // ref.invalidate(authTokenProvider);
     });
   }
 

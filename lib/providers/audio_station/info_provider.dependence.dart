@@ -107,6 +107,9 @@ Future<SynoAPIInfoResponse> _queryAPI({
 
   if (!result.success) {
     final errorCode = jsonBody['error']?['code'];
+    if (errorCode == 105 || errorCode == 106) {
+      ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+    }
     final errorMessage = errorCode is int
         ? getAudioReuqestErrorMessage(l10n, l10n.error_network_error, errorCode)
         : l10n.error_network_error;
@@ -141,7 +144,7 @@ Future<AudioStationInfoResponse> _sendAudioStationInfoRequest({
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
+      // ref.invalidate(authTokenProvider);
     });
     return AudioStationInfoResponse(success: false);
   }
@@ -188,6 +191,9 @@ Future<AudioStationInfoResponse> _sendAudioStationInfoRequest({
   final result = AudioStationInfoResponse.fromJson(jsonBody);
   if (!result.success) {
     final errorCode = jsonBody['error']?['code'];
+    if (errorCode == 105 || errorCode == 106) {
+      ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+    }
     final errorMessage = errorCode is int
         ? getAudioReuqestErrorMessage(l10n, defaultError, errorCode)
         : defaultError;
@@ -213,7 +219,7 @@ Future<DSMInfoResponse> _sendDSMInfoRequest({
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
+      // ref.invalidate(authTokenProvider);
     });
     return DSMInfoResponse(success: false);
   }
@@ -255,6 +261,9 @@ Future<DSMInfoResponse> _sendDSMInfoRequest({
   final result = DSMInfoResponse.fromJson(jsonBody);
   if (!result.success) {
     final errorCode = jsonBody['error']?['code'];
+    if (errorCode == 105 || errorCode == 106 || errorCode == 119) {
+      ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+    }
     final errorMessage = errorCode is int
         ? getAudioReuqestErrorMessage(l10n, defaultError, errorCode)
         : defaultError;

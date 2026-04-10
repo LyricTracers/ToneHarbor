@@ -15,7 +15,7 @@ Future<ToneHarborTrackObjectList> _sendSongRequest<T>({
     Future.microtask(() async {
       if (!ref.mounted) return;
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
+      // ref.invalidate(authTokenProvider);
     });
     return ToneHarborTrackObjectListEmpty();
   }
@@ -67,6 +67,9 @@ Future<ToneHarborTrackObjectList> _sendSongRequest<T>({
         ? getAudioReuqestErrorMessage(l10n, defaultError, errorCode)
         : defaultError;
     logger.e('请求失败，错误码：$errorCode，错误信息：$errorMessage');
+    if (errorCode == 105 || errorCode == 106) {
+      ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+    }
     throw AudioStationException(
       message: errorMessage,
       statusCode: errorCode is int ? errorCode : null,
@@ -160,7 +163,7 @@ Future<SearchLyricsResponse> _sendSearchLyricsRequest<T>({
     Future.microtask(() async {
       if (!ref.mounted) return;
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
+      // ref.invalidate(authTokenProvider);
     });
     return SearchLyricsResponse(success: false);
   }
@@ -230,7 +233,7 @@ Future<SongInfoResponse> _sendSongInfoRequest<T>({
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
+      // ref.invalidate(authTokenProvider);
     });
     return SongInfoResponse(success: false, data: SongData(songs: []));
   }
@@ -387,7 +390,7 @@ Future<SetRatingResponse> _setRating({
     Future.microtask(() async {
       if (!ref.mounted) return;
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
+      // ref.invalidate(authTokenProvider);
     });
     return SetRatingResponse(success: false);
   }
@@ -487,7 +490,7 @@ Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
     Future.microtask(() async {
       if (!ref.mounted) return;
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
+      // ref.invalidate(authTokenProvider);
     });
     return GetNumberOfPlugInsResponse(success: false, hasPlugIn: 0);
   }

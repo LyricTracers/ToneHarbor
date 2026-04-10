@@ -3,7 +3,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_lyric/flutter_lyric.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
-import 'package:toneharbor/utils/use_progress.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -22,7 +21,6 @@ class LyricsContentPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = getColorSchemeWhenReady(ref);
     final i10n = ref.watch(l10nProvider);
-    final progressData = useProgress(ref);
     final controller = useMemoized(() {
       return LyricController();
     }, []);
@@ -97,11 +95,13 @@ class LyricsContentPage extends HookConsumerWidget {
     }, [currentLyrics, controller, isMounted]);
 
     useEffect(() {
-      if (isMounted.value) {
-        controller.setProgress(progressData.position);
-      }
-      return null;
-    }, [progressData.position, controller, isMounted]);
+      final subscription = audioPlayer.positionStream.listen((position) {
+        if (isMounted.value) {
+          controller.setProgress(position);
+        }
+      });
+      return subscription.cancel;
+    }, [controller, isMounted]);
 
     final isSelecting = useValueListenable(controller.isSelectingNotifier);
     final anchorPosition = useValueListenable(

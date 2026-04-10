@@ -13,7 +13,7 @@ Future<FolderResponse> _sendFolderRequest<T>({
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
+      // ref.invalidate(authTokenProvider);
     });
     return FolderResponse(success: false);
   }
@@ -60,6 +60,9 @@ Future<FolderResponse> _sendFolderRequest<T>({
   final result = FolderResponse.fromJson(jsonBody);
   if (!result.success) {
     final errorCode = jsonBody['error']?['code'];
+    if (errorCode == 105 || errorCode == 106) {
+      ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+    }
     final errorMessage = errorCode is int
         ? getAudioReuqestErrorMessage(l10n, defaultError, errorCode)
         : defaultError;

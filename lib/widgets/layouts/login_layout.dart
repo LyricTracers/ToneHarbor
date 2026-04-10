@@ -142,7 +142,8 @@ class LoginLayout extends BaseBgLayout {
         if (response.success) {
           logger.i("登录成功");
           if (context.mounted) {
-            ref.invalidate(authTokenProvider);
+            // ref.invalidate(authTokenProvider);
+            ref.invalidate(audioStationCookiesInfoProvider);
             context.go('/');
           }
         }

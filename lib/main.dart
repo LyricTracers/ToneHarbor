@@ -97,7 +97,8 @@ class MyApp extends HookConsumerWidget {
 
     final colorScheme = getColorSchemeWhenReady(ref);
     final localeAsync = ref.watch(localeProvider);
-    final synotokenAsync = ref.watch(authTokenProvider);
+    // final synotokenAsync = ref.watch(authTokenProvider);
+    final cookiesInfoAsync = ref.watch(audioStationCookiesInfoProvider);
 
     useEffect(() {
       if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
@@ -197,9 +198,13 @@ class MyApp extends HookConsumerWidget {
             return null;
           }
 
-          if (synotokenAsync.isLoading) return null;
-          if (synotokenAsync.hasError) return '/login';
-          if (synotokenAsync.value == null) return '/login';
+          if (cookiesInfoAsync == null || !cookiesInfoAsync.isValid) {
+            return '/login';
+          }
+
+          // if (synotokenAsync.isLoading) return null;
+          // if (synotokenAsync.hasError) return '/login';
+          // if (synotokenAsync.value == null) return '/login';
 
           return null;
         },
@@ -806,7 +811,7 @@ class MyApp extends HookConsumerWidget {
           ),
         ],
       );
-    }, [synotokenAsync]);
+    }, [cookiesInfoAsync]);
 
     return MaterialApp.router(
       title: 'ToneHarbor',

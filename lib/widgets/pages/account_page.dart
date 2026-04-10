@@ -80,7 +80,15 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     return ListTile(
       onTap: () async {
         audioPlayer.pause();
-        await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+        ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+        try {
+          await logout(ref);
+        } finally {
+          ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+          await ref
+              .read(audioStationCookiesInfoProvider.notifier)
+              .clearCookie();
+        }
       },
       title: Text(
         l10n.logout,

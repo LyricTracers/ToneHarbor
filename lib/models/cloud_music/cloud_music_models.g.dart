@@ -296,3 +296,50 @@ Map<String, dynamic> _$CloudMusicUserDataToJson(_CloudMusicUserData instance) =>
       'signature': instance.signature,
       'userName': instance.userName,
     };
+
+_CloudMusicLyricModel _$CloudMusicLyricModelFromJson(
+  Map<String, dynamic> json,
+) => _CloudMusicLyricModel(
+  lyric: json['lyric'] as String?,
+  version: (json['version'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$CloudMusicLyricModelToJson(
+  _CloudMusicLyricModel instance,
+) => <String, dynamic>{'lyric': instance.lyric, 'version': instance.version};
+
+_CloudMusicLyricData _$CloudMusicLyricDataFromJson(
+  Map<String, dynamic> json,
+) => _CloudMusicLyricData(
+  lrc: json['lrc'] == null
+      ? null
+      : CloudMusicLyricModel.fromJson(json['lrc'] as Map<String, dynamic>),
+  klyric: json['klyric'] == null
+      ? null
+      : CloudMusicLyricModel.fromJson(json['klyric'] as Map<String, dynamic>),
+  tlyric: json['tlyric'] == null
+      ? null
+      : CloudMusicLyricModel.fromJson(json['tlyric'] as Map<String, dynamic>),
+  ytlrc: json['ytlrc'] == null
+      ? null
+      : CloudMusicLyricModel.fromJson(json['ytlrc'] as Map<String, dynamic>),
+  romalrc: json['romalrc'] == null
+      ? null
+      : CloudMusicLyricModel.fromJson(json['romalrc'] as Map<String, dynamic>),
+  yrc: json['yrc'] == null
+      ? null
+      : CloudMusicLyricModel.fromJson(json['yrc'] as Map<String, dynamic>),
+  code: (json['code'] as num).toInt(),
+);
+
+Map<String, dynamic> _$CloudMusicLyricDataToJson(
+  _CloudMusicLyricData instance,
+) => <String, dynamic>{
+  'lrc': instance.lrc,
+  'klyric': instance.klyric,
+  'tlyric': instance.tlyric,
+  'ytlrc': instance.ytlrc,
+  'romalrc': instance.romalrc,
+  'yrc': instance.yrc,
+  'code': instance.code,
+};

@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/services/cloud_music/lyrics.dart';
 
 part 'lyrics_cache_provider.g.dart';
 
@@ -44,6 +45,18 @@ Future<Lyrics?> _requestLyrics(
   final cachedLyrics = await lyricCache.get(songId);
   if (cachedLyrics != null) {
     return Lyrics.fromJson(cachedLyrics);
+  }
+  logger.i('请求歌词，歌曲ID：$songId');
+  if (!songId.startsWith("music_")) {
+    final lyrics = await getNetLyrics(
+      ref: ref,
+      id: songId,
+      cacheDuration: const Duration(days: 7),
+    );
+    if (lyrics != null) {
+      await lyricCache.set(songId, lyrics.toJson(), permanent: true);
+      return lyrics;
+    }
   }
 
   try {

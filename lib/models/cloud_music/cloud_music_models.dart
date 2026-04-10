@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 
 part 'cloud_music_models.freezed.dart';
@@ -32,7 +33,7 @@ sealed class CloudMusicPlaylistData with _$CloudMusicPlaylistData {
 
   String get coverUrl {
     if (cover.isNotEmpty) {
-      return '${cover.replaceAll('http://', 'https://')}?param=512y512';
+      return '${cover.replaceAll('http://', 'https://')}?param=200y200';
     }
     return '';
   }
@@ -67,7 +68,7 @@ sealed class CloudMusicAlbumData with _$CloudMusicAlbumData {
 
   String get coverUrl {
     if (cover.isNotEmpty) {
-      return '${cover.replaceAll('http://', 'https://')}?param=512y512';
+      return '${cover.replaceAll('http://', 'https://')}?param=200y200';
     }
     return '';
   }
@@ -111,7 +112,7 @@ sealed class CloudMusicArtistData with _$CloudMusicArtistData {
     final img = img1v1Url != null && img1v1Url!.isNotEmpty
         ? img1v1Url!
         : picUrl ?? '';
-    return '${img.replaceAll('http://', 'https://')}?param=512y512';
+    return '${img.replaceAll('http://', 'https://')}?param=200y200';
   }
 }
 
@@ -140,7 +141,7 @@ sealed class CloudMusicSongData with _$CloudMusicSongData {
   String get artistName => ar?.map((e) => e.name).join('/') ?? '';
   String get cover {
     if (al != null && al!.cover.isNotEmpty) {
-      return '${al!.cover.replaceAll('http://', 'https://')}?param=512y512';
+      return '${al!.cover.replaceAll('http://', 'https://')}?param=200y200';
     }
     return '';
   }
@@ -272,4 +273,45 @@ sealed class CloudMusicUserData with _$CloudMusicUserData {
 
   factory CloudMusicUserData.fromJson(Map<String, dynamic> json) =>
       _$CloudMusicUserDataFromJson(json);
+}
+
+@freezed
+sealed class CloudMusicLyricModel with _$CloudMusicLyricModel {
+  const CloudMusicLyricModel._();
+  const factory CloudMusicLyricModel({String? lyric, int? version}) =
+      _CloudMusicLyricModel;
+
+  factory CloudMusicLyricModel.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicLyricModelFromJson(json);
+}
+
+@freezed
+sealed class CloudMusicLyricData with _$CloudMusicLyricData {
+  const CloudMusicLyricData._();
+
+  const factory CloudMusicLyricData({
+    CloudMusicLyricModel? lrc,
+    CloudMusicLyricModel? klyric,
+    CloudMusicLyricModel? tlyric,
+    CloudMusicLyricModel? ytlrc,
+    CloudMusicLyricModel? romalrc,
+    CloudMusicLyricModel? yrc,
+    required int code,
+  }) = _CloudMusicLyricData;
+
+  factory CloudMusicLyricData.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicLyricDataFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'lrc': lrc?.toJson(),
+      'klyric': klyric?.toJson(),
+      'tlyric': tlyric?.toJson(),
+      'ytlrc': ytlrc?.toJson(),
+      'romalrc': romalrc?.toJson(),
+      'yrc': yrc?.toJson(),
+      'code': code,
+    };
+  }
 }

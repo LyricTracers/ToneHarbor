@@ -42,7 +42,7 @@ Future<AuthResponse> _fullLogin(
     account: account.account,
     passwd: account.passwd,
     otpCode: null,
-    enableSynoToken: 'yes',
+    enableSynoToken: 'no',
     ikMessage: null,
     tabid: null,
     logintype: 'local',

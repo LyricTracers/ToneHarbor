@@ -196,7 +196,7 @@ final class AudioStationCookiesInfoProvider
 }
 
 String _$audioStationCookiesInfoHash() =>
-    r'f4b757bd20d6387d116006050a34766ce7daf2c1';
+    r'e3b2b481d2b18baf20c8ef63ef826d82429f9c50';
 
 abstract class _$AudioStationCookiesInfo
     extends $Notifier<AudioStationCookies?> {
@@ -281,7 +281,7 @@ final class AuthTokenProvider
   AuthToken create() => AuthToken();
 }
 
-String _$authTokenHash() => r'ed7c00b78ced13eb5329641816cc9f809c5f4407';
+String _$authTokenHash() => r'58fcb4195360e4d8e5d2bf73e2f81710ed0ffb14';
 
 abstract class _$AuthToken extends $AsyncNotifier<String?> {
   FutureOr<String?> build();
@@ -340,4 +340,4 @@ final class AuthHeadersProvider
   }
 }
 
-String _$authHeadersHash() => r'9b93e899c8e7fe127dea69884435c2034a4e0e0b';
+String _$authHeadersHash() => r'eae957f92a96718581092966106fa674ee74554e';

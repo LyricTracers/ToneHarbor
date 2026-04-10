@@ -2743,4 +2743,683 @@ as String?,
 
 }
 
+
+/// @nodoc
+mixin _$CloudMusicLyricModel {
+
+ String? get lyric; int? get version;
+/// Create a copy of CloudMusicLyricModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CloudMusicLyricModelCopyWith<CloudMusicLyricModel> get copyWith => _$CloudMusicLyricModelCopyWithImpl<CloudMusicLyricModel>(this as CloudMusicLyricModel, _$identity);
+
+  /// Serializes this CloudMusicLyricModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CloudMusicLyricModel&&(identical(other.lyric, lyric) || other.lyric == lyric)&&(identical(other.version, version) || other.version == version));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,lyric,version);
+
+@override
+String toString() {
+  return 'CloudMusicLyricModel(lyric: $lyric, version: $version)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CloudMusicLyricModelCopyWith<$Res>  {
+  factory $CloudMusicLyricModelCopyWith(CloudMusicLyricModel value, $Res Function(CloudMusicLyricModel) _then) = _$CloudMusicLyricModelCopyWithImpl;
+@useResult
+$Res call({
+ String? lyric, int? version
+});
+
+
+
+
+}
+/// @nodoc
+class _$CloudMusicLyricModelCopyWithImpl<$Res>
+    implements $CloudMusicLyricModelCopyWith<$Res> {
+  _$CloudMusicLyricModelCopyWithImpl(this._self, this._then);
+
+  final CloudMusicLyricModel _self;
+  final $Res Function(CloudMusicLyricModel) _then;
+
+/// Create a copy of CloudMusicLyricModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? lyric = freezed,Object? version = freezed,}) {
+  return _then(_self.copyWith(
+lyric: freezed == lyric ? _self.lyric : lyric // ignore: cast_nullable_to_non_nullable
+as String?,version: freezed == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [CloudMusicLyricModel].
+extension CloudMusicLyricModelPatterns on CloudMusicLyricModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CloudMusicLyricModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _CloudMusicLyricModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CloudMusicLyricModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _CloudMusicLyricModel():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CloudMusicLyricModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _CloudMusicLyricModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? lyric,  int? version)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _CloudMusicLyricModel() when $default != null:
+return $default(_that.lyric,_that.version);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? lyric,  int? version)  $default,) {final _that = this;
+switch (_that) {
+case _CloudMusicLyricModel():
+return $default(_that.lyric,_that.version);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? lyric,  int? version)?  $default,) {final _that = this;
+switch (_that) {
+case _CloudMusicLyricModel() when $default != null:
+return $default(_that.lyric,_that.version);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _CloudMusicLyricModel extends CloudMusicLyricModel {
+  const _CloudMusicLyricModel({this.lyric, this.version}): super._();
+  factory _CloudMusicLyricModel.fromJson(Map<String, dynamic> json) => _$CloudMusicLyricModelFromJson(json);
+
+@override final  String? lyric;
+@override final  int? version;
+
+/// Create a copy of CloudMusicLyricModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CloudMusicLyricModelCopyWith<_CloudMusicLyricModel> get copyWith => __$CloudMusicLyricModelCopyWithImpl<_CloudMusicLyricModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CloudMusicLyricModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CloudMusicLyricModel&&(identical(other.lyric, lyric) || other.lyric == lyric)&&(identical(other.version, version) || other.version == version));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,lyric,version);
+
+@override
+String toString() {
+  return 'CloudMusicLyricModel(lyric: $lyric, version: $version)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CloudMusicLyricModelCopyWith<$Res> implements $CloudMusicLyricModelCopyWith<$Res> {
+  factory _$CloudMusicLyricModelCopyWith(_CloudMusicLyricModel value, $Res Function(_CloudMusicLyricModel) _then) = __$CloudMusicLyricModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String? lyric, int? version
+});
+
+
+
+
+}
+/// @nodoc
+class __$CloudMusicLyricModelCopyWithImpl<$Res>
+    implements _$CloudMusicLyricModelCopyWith<$Res> {
+  __$CloudMusicLyricModelCopyWithImpl(this._self, this._then);
+
+  final _CloudMusicLyricModel _self;
+  final $Res Function(_CloudMusicLyricModel) _then;
+
+/// Create a copy of CloudMusicLyricModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? lyric = freezed,Object? version = freezed,}) {
+  return _then(_CloudMusicLyricModel(
+lyric: freezed == lyric ? _self.lyric : lyric // ignore: cast_nullable_to_non_nullable
+as String?,version: freezed == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int?,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$CloudMusicLyricData {
+
+ CloudMusicLyricModel? get lrc; CloudMusicLyricModel? get klyric; CloudMusicLyricModel? get tlyric; CloudMusicLyricModel? get ytlrc; CloudMusicLyricModel? get romalrc; CloudMusicLyricModel? get yrc; int get code;
+/// Create a copy of CloudMusicLyricData
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CloudMusicLyricDataCopyWith<CloudMusicLyricData> get copyWith => _$CloudMusicLyricDataCopyWithImpl<CloudMusicLyricData>(this as CloudMusicLyricData, _$identity);
+
+  /// Serializes this CloudMusicLyricData to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CloudMusicLyricData&&(identical(other.lrc, lrc) || other.lrc == lrc)&&(identical(other.klyric, klyric) || other.klyric == klyric)&&(identical(other.tlyric, tlyric) || other.tlyric == tlyric)&&(identical(other.ytlrc, ytlrc) || other.ytlrc == ytlrc)&&(identical(other.romalrc, romalrc) || other.romalrc == romalrc)&&(identical(other.yrc, yrc) || other.yrc == yrc)&&(identical(other.code, code) || other.code == code));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,lrc,klyric,tlyric,ytlrc,romalrc,yrc,code);
+
+@override
+String toString() {
+  return 'CloudMusicLyricData(lrc: $lrc, klyric: $klyric, tlyric: $tlyric, ytlrc: $ytlrc, romalrc: $romalrc, yrc: $yrc, code: $code)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CloudMusicLyricDataCopyWith<$Res>  {
+  factory $CloudMusicLyricDataCopyWith(CloudMusicLyricData value, $Res Function(CloudMusicLyricData) _then) = _$CloudMusicLyricDataCopyWithImpl;
+@useResult
+$Res call({
+ CloudMusicLyricModel? lrc, CloudMusicLyricModel? klyric, CloudMusicLyricModel? tlyric, CloudMusicLyricModel? ytlrc, CloudMusicLyricModel? romalrc, CloudMusicLyricModel? yrc, int code
+});
+
+
+$CloudMusicLyricModelCopyWith<$Res>? get lrc;$CloudMusicLyricModelCopyWith<$Res>? get klyric;$CloudMusicLyricModelCopyWith<$Res>? get tlyric;$CloudMusicLyricModelCopyWith<$Res>? get ytlrc;$CloudMusicLyricModelCopyWith<$Res>? get romalrc;$CloudMusicLyricModelCopyWith<$Res>? get yrc;
+
+}
+/// @nodoc
+class _$CloudMusicLyricDataCopyWithImpl<$Res>
+    implements $CloudMusicLyricDataCopyWith<$Res> {
+  _$CloudMusicLyricDataCopyWithImpl(this._self, this._then);
+
+  final CloudMusicLyricData _self;
+  final $Res Function(CloudMusicLyricData) _then;
+
+/// Create a copy of CloudMusicLyricData
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? lrc = freezed,Object? klyric = freezed,Object? tlyric = freezed,Object? ytlrc = freezed,Object? romalrc = freezed,Object? yrc = freezed,Object? code = null,}) {
+  return _then(_self.copyWith(
+lrc: freezed == lrc ? _self.lrc : lrc // ignore: cast_nullable_to_non_nullable
+as CloudMusicLyricModel?,klyric: freezed == klyric ? _self.klyric : klyric // ignore: cast_nullable_to_non_nullable
+as CloudMusicLyricModel?,tlyric: freezed == tlyric ? _self.tlyric : tlyric // ignore: cast_nullable_to_non_nullable
+as CloudMusicLyricModel?,ytlrc: freezed == ytlrc ? _self.ytlrc : ytlrc // ignore: cast_nullable_to_non_nullable
+as CloudMusicLyricModel?,romalrc: freezed == romalrc ? _self.romalrc : romalrc // ignore: cast_nullable_to_non_nullable
+as CloudMusicLyricModel?,yrc: freezed == yrc ? _self.yrc : yrc // ignore: cast_nullable_to_non_nullable
+as CloudMusicLyricModel?,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+/// Create a copy of CloudMusicLyricData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CloudMusicLyricModelCopyWith<$Res>? get lrc {
+    if (_self.lrc == null) {
+    return null;
+  }
+
+  return $CloudMusicLyricModelCopyWith<$Res>(_self.lrc!, (value) {
+    return _then(_self.copyWith(lrc: value));
+  });
+}/// Create a copy of CloudMusicLyricData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CloudMusicLyricModelCopyWith<$Res>? get klyric {
+    if (_self.klyric == null) {
+    return null;
+  }
+
+  return $CloudMusicLyricModelCopyWith<$Res>(_self.klyric!, (value) {
+    return _then(_self.copyWith(klyric: value));
+  });
+}/// Create a copy of CloudMusicLyricData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CloudMusicLyricModelCopyWith<$Res>? get tlyric {
+    if (_self.tlyric == null) {
+    return null;
+  }
+
+  return $CloudMusicLyricModelCopyWith<$Res>(_self.tlyric!, (value) {
+    return _then(_self.copyWith(tlyric: value));
+  });
+}/// Create a copy of CloudMusicLyricData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CloudMusicLyricModelCopyWith<$Res>? get ytlrc {
+    if (_self.ytlrc == null) {
+    return null;
+  }
+
+  return $CloudMusicLyricModelCopyWith<$Res>(_self.ytlrc!, (value) {
+    return _then(_self.copyWith(ytlrc: value));
+  });
+}/// Create a copy of CloudMusicLyricData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CloudMusicLyricModelCopyWith<$Res>? get romalrc {
+    if (_self.romalrc == null) {
+    return null;
+  }
+
+  return $CloudMusicLyricModelCopyWith<$Res>(_self.romalrc!, (value) {
+    return _then(_self.copyWith(romalrc: value));
+  });
+}/// Create a copy of CloudMusicLyricData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CloudMusicLyricModelCopyWith<$Res>? get yrc {
+    if (_self.yrc == null) {
+    return null;
+  }
+
+  return $CloudMusicLyricModelCopyWith<$Res>(_self.yrc!, (value) {
+    return _then(_self.copyWith(yrc: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [CloudMusicLyricData].
+extension CloudMusicLyricDataPatterns on CloudMusicLyricData {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CloudMusicLyricData value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _CloudMusicLyricData() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CloudMusicLyricData value)  $default,){
+final _that = this;
+switch (_that) {
+case _CloudMusicLyricData():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CloudMusicLyricData value)?  $default,){
+final _that = this;
+switch (_that) {
+case _CloudMusicLyricData() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( CloudMusicLyricModel? lrc,  CloudMusicLyricModel? klyric,  CloudMusicLyricModel? tlyric,  CloudMusicLyricModel? ytlrc,  CloudMusicLyricModel? romalrc,  CloudMusicLyricModel? yrc,  int code)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _CloudMusicLyricData() when $default != null:
+return $default(_that.lrc,_that.klyric,_that.tlyric,_that.ytlrc,_that.romalrc,_that.yrc,_that.code);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( CloudMusicLyricModel? lrc,  CloudMusicLyricModel? klyric,  CloudMusicLyricModel? tlyric,  CloudMusicLyricModel? ytlrc,  CloudMusicLyricModel? romalrc,  CloudMusicLyricModel? yrc,  int code)  $default,) {final _that = this;
+switch (_that) {
+case _CloudMusicLyricData():
+return $default(_that.lrc,_that.klyric,_that.tlyric,_that.ytlrc,_that.romalrc,_that.yrc,_that.code);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( CloudMusicLyricModel? lrc,  CloudMusicLyricModel? klyric,  CloudMusicLyricModel? tlyric,  CloudMusicLyricModel? ytlrc,  CloudMusicLyricModel? romalrc,  CloudMusicLyricModel? yrc,  int code)?  $default,) {final _that = this;
+switch (_that) {
+case _CloudMusicLyricData() when $default != null:
+return $default(_that.lrc,_that.klyric,_that.tlyric,_that.ytlrc,_that.romalrc,_that.yrc,_that.code);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _CloudMusicLyricData extends CloudMusicLyricData {
+  const _CloudMusicLyricData({this.lrc, this.klyric, this.tlyric, this.ytlrc, this.romalrc, this.yrc, required this.code}): super._();
+  factory _CloudMusicLyricData.fromJson(Map<String, dynamic> json) => _$CloudMusicLyricDataFromJson(json);
+
+@override final  CloudMusicLyricModel? lrc;
+@override final  CloudMusicLyricModel? klyric;
+@override final  CloudMusicLyricModel? tlyric;
+@override final  CloudMusicLyricModel? ytlrc;
+@override final  CloudMusicLyricModel? romalrc;
+@override final  CloudMusicLyricModel? yrc;
+@override final  int code;
+
+/// Create a copy of CloudMusicLyricData
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CloudMusicLyricDataCopyWith<_CloudMusicLyricData> get copyWith => __$CloudMusicLyricDataCopyWithImpl<_CloudMusicLyricData>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CloudMusicLyricDataToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CloudMusicLyricData&&(identical(other.lrc, lrc) || other.lrc == lrc)&&(identical(other.klyric, klyric) || other.klyric == klyric)&&(identical(other.tlyric, tlyric) || other.tlyric == tlyric)&&(identical(other.ytlrc, ytlrc) || other.ytlrc == ytlrc)&&(identical(other.romalrc, romalrc) || other.romalrc == romalrc)&&(identical(other.yrc, yrc) || other.yrc == yrc)&&(identical(other.code, code) || other.code == code));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,lrc,klyric,tlyric,ytlrc,romalrc,yrc,code);
+
+@override
+String toString() {
+  return 'CloudMusicLyricData(lrc: $lrc, klyric: $klyric, tlyric: $tlyric, ytlrc: $ytlrc, romalrc: $romalrc, yrc: $yrc, code: $code)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CloudMusicLyricDataCopyWith<$Res> implements $CloudMusicLyricDataCopyWith<$Res> {
+  factory _$CloudMusicLyricDataCopyWith(_CloudMusicLyricData value, $Res Function(_CloudMusicLyricData) _then) = __$CloudMusicLyricDataCopyWithImpl;
+@override @useResult
+$Res call({
+ CloudMusicLyricModel? lrc, CloudMusicLyricModel? klyric, CloudMusicLyricModel? tlyric, CloudMusicLyricModel? ytlrc, CloudMusicLyricModel? romalrc, CloudMusicLyricModel? yrc, int code
+});
+
+
+@override $CloudMusicLyricModelCopyWith<$Res>? get lrc;@override $CloudMusicLyricModelCopyWith<$Res>? get klyric;@override $CloudMusicLyricModelCopyWith<$Res>? get tlyric;@override $CloudMusicLyricModelCopyWith<$Res>? get ytlrc;@override $CloudMusicLyricModelCopyWith<$Res>? get romalrc;@override $CloudMusicLyricModelCopyWith<$Res>? get yrc;
+
+}
+/// @nodoc
+class __$CloudMusicLyricDataCopyWithImpl<$Res>
+    implements _$CloudMusicLyricDataCopyWith<$Res> {
+  __$CloudMusicLyricDataCopyWithImpl(this._self, this._then);
+
+  final _CloudMusicLyricData _self;
+  final $Res Function(_CloudMusicLyricData) _then;
+
+/// Create a copy of CloudMusicLyricData
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? lrc = freezed,Object? klyric = freezed,Object? tlyric = freezed,Object? ytlrc = freezed,Object? romalrc = freezed,Object? yrc = freezed,Object? code = null,}) {
+  return _then(_CloudMusicLyricData(
+lrc: freezed == lrc ? _self.lrc : lrc // ignore: cast_nullable_to_non_nullable
+as CloudMusicLyricModel?,klyric: freezed == klyric ? _self.klyric : klyric // ignore: cast_nullable_to_non_nullable
+as CloudMusicLyricModel?,tlyric: freezed == tlyric ? _self.tlyric : tlyric // ignore: cast_nullable_to_non_nullable
+as CloudMusicLyricModel?,ytlrc: freezed == ytlrc ? _self.ytlrc : ytlrc // ignore: cast_nullable_to_non_nullable
+as CloudMusicLyricModel?,romalrc: freezed == romalrc ? _self.romalrc : romalrc // ignore: cast_nullable_to_non_nullable
+as CloudMusicLyricModel?,yrc: freezed == yrc ? _self.yrc : yrc // ignore: cast_nullable_to_non_nullable
+as CloudMusicLyricModel?,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+/// Create a copy of CloudMusicLyricData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CloudMusicLyricModelCopyWith<$Res>? get lrc {
+    if (_self.lrc == null) {
+    return null;
+  }
+
+  return $CloudMusicLyricModelCopyWith<$Res>(_self.lrc!, (value) {
+    return _then(_self.copyWith(lrc: value));
+  });
+}/// Create a copy of CloudMusicLyricData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CloudMusicLyricModelCopyWith<$Res>? get klyric {
+    if (_self.klyric == null) {
+    return null;
+  }
+
+  return $CloudMusicLyricModelCopyWith<$Res>(_self.klyric!, (value) {
+    return _then(_self.copyWith(klyric: value));
+  });
+}/// Create a copy of CloudMusicLyricData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CloudMusicLyricModelCopyWith<$Res>? get tlyric {
+    if (_self.tlyric == null) {
+    return null;
+  }
+
+  return $CloudMusicLyricModelCopyWith<$Res>(_self.tlyric!, (value) {
+    return _then(_self.copyWith(tlyric: value));
+  });
+}/// Create a copy of CloudMusicLyricData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CloudMusicLyricModelCopyWith<$Res>? get ytlrc {
+    if (_self.ytlrc == null) {
+    return null;
+  }
+
+  return $CloudMusicLyricModelCopyWith<$Res>(_self.ytlrc!, (value) {
+    return _then(_self.copyWith(ytlrc: value));
+  });
+}/// Create a copy of CloudMusicLyricData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CloudMusicLyricModelCopyWith<$Res>? get romalrc {
+    if (_self.romalrc == null) {
+    return null;
+  }
+
+  return $CloudMusicLyricModelCopyWith<$Res>(_self.romalrc!, (value) {
+    return _then(_self.copyWith(romalrc: value));
+  });
+}/// Create a copy of CloudMusicLyricData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CloudMusicLyricModelCopyWith<$Res>? get yrc {
+    if (_self.yrc == null) {
+    return null;
+  }
+
+  return $CloudMusicLyricModelCopyWith<$Res>(_self.yrc!, (value) {
+    return _then(_self.copyWith(yrc: value));
+  });
+}
+}
+
 // dart format on

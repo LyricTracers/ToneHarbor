@@ -12,7 +12,7 @@ Future<PlaylistListResponse> _sendPlaylistRequest<T>({
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
+      // ref.invalidate(authTokenProvider);
     });
     return PlaylistListResponse(success: false);
   }
@@ -59,6 +59,9 @@ Future<PlaylistListResponse> _sendPlaylistRequest<T>({
   final result = PlaylistListResponse.fromJson(jsonBody);
   if (!result.success) {
     final errorCode = jsonBody['error']?['code'];
+    if (errorCode == 105 || errorCode == 106) {
+      ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+    }
     final errorMessage = errorCode is int
         ? getAudioReuqestErrorMessage(l10n, defaultError, errorCode)
         : defaultError;
@@ -84,7 +87,7 @@ Future<PlaylistDetailResponse> _sendPlaylistDetailRequest<T>({
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
+      // ref.invalidate(authTokenProvider);
     });
     return PlaylistDetailResponse(success: false);
   }
@@ -131,6 +134,9 @@ Future<PlaylistDetailResponse> _sendPlaylistDetailRequest<T>({
   final result = PlaylistDetailResponse.fromJson(jsonBody);
   if (!result.success) {
     final errorCode = jsonBody['error']?['code'];
+    if (errorCode == 105 || errorCode == 106) {
+      ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+    }
     final errorMessage = errorCode is int
         ? getAudioReuqestErrorMessage(l10n, defaultError, errorCode)
         : defaultError;
@@ -328,7 +334,7 @@ Future<CreatePlaylistResponse> _createPlaylist({
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
+      // ref.invalidate(authTokenProvider);
     });
     return CreatePlaylistResponse(success: false);
   }
@@ -412,7 +418,7 @@ Future<RenamePlaylistResponse> _renamePlaylist({
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
+      // ref.invalidate(authTokenProvider);
     });
     return RenamePlaylistResponse(success: false);
   }
@@ -495,7 +501,7 @@ Future<DeletePlaylistResponse> _deletePlaylist({
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
+      // ref.invalidate(authTokenProvider);
     });
     return DeletePlaylistResponse(success: false);
   }
@@ -558,6 +564,7 @@ Future<DeletePlaylistResponse> _deletePlaylist({
             errorCode,
           )
         : l10n.error_deletePlaylist_failed;
+
     logger.e('请求失败，错误码：$errorCode，错误信息：$errorMessage');
     throw AudioStationException(
       message: errorMessage,
@@ -581,7 +588,7 @@ Future<AddPlaylistSongsResponse> _addSongToPlaylist({
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
+      // ref.invalidate(authTokenProvider);
     });
     return AddPlaylistSongsResponse(success: false);
   }
@@ -667,7 +674,7 @@ Future<RemoveMissingSongsResponse> _removeMissingSongs({
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      ref.invalidate(authTokenProvider);
+      // ref.invalidate(authTokenProvider);
     });
     return RemoveMissingSongsResponse(success: false);
   }

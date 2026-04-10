@@ -3,10 +3,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/audio_player/local_songs_provider.dart';
+import 'package:toneharbor/providers/audio_player/lyrics_cache_provider.dart';
 import 'package:toneharbor/providers/database/database.dart';
+import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 
 part 'storage_provider.g.dart';
@@ -202,6 +205,11 @@ final clearStorageProvider = Provider((ref) {
             await dir.create(recursive: true);
           }
         }
+        await audioStationRequestCache.clearGroup("lyrics");
+        await lyricCache.clear();
+        ref.invalidate(getLyricsProvider);
+        ref.invalidate(fetchCoverBytesProvider);
+        ref.invalidate(fetchCloudMusicCoverBytesProvider);
         break;
     }
     ref.invalidate(storageInfoProvider);
