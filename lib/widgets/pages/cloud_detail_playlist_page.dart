@@ -5,11 +5,13 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
+import 'package:toneharbor/widgets/layouts/playing_detail_layout.dart';
 
 class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
   final String title;
@@ -374,6 +376,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
                 ),
                 detail.when(
                   data: (data) => _buildTrackList(
+                    ref,
                     data,
                     colorScheme,
                     size,
@@ -402,6 +405,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
   }
 
   Widget _buildTrackList(
+    WidgetRef ref,
     CloudMusicPlaylistDetailData? data,
     ColorScheme colorScheme,
     Size size,
@@ -435,6 +439,52 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
             index: index + 1,
             colorScheme: colorScheme,
             size: size,
+            onTap: (index) async {
+              var targetTracks = <ToneHarborTrackObject>[];
+              var initIndex = index;
+              initIndex = 0;
+              final isLoggedIn = ref.read(cloudMusicAuthStateProvider);
+              final user = await ref.read(cloudUserInfoProvider.future);
+              final userVipType = user?.vipType ?? 0;
+
+              for (var i = 0; i < tracks.length; i++) {
+                var currentTrack = tracks[i];
+                final isPlayable = isCloudTrackPlayable(
+                  track,
+                  l10n,
+                  isLoggedIn: isLoggedIn,
+                  userVipType: userVipType,
+                );
+                if (isPlayable.playable) {
+                  if (initIndex == i) {
+                    initIndex = targetTracks.length;
+                  }
+                  targetTracks.add(currentTrack.asTrack());
+                }
+              }
+              if (targetTracks.isEmpty) return;
+              await ref
+                  .read(audioPlayerStateProvider.notifier)
+                  .load(
+                    targetTracks,
+                    initialIndex: initIndex < targetTracks.length
+                        ? initIndex
+                        : 0,
+                    autoPlay: true,
+                  );
+              if (context.mounted) {
+                if (size.isXs) {
+                  showModalBottomSheetWidget(
+                    ref.context,
+                    colorScheme,
+                    isScrollControlled: true,
+                    (context) => const PlayingDetailLayout(),
+                  );
+                } else {
+                  context.pushWrapper("/playing_detail");
+                }
+              }
+            },
           ),
         );
       }, childCount: tracks.length + 1),
@@ -534,12 +584,14 @@ class _TrackListItem extends HookConsumerWidget {
   final int index;
   final ColorScheme colorScheme;
   final Size size;
+  final Function(int) onTap;
 
   const _TrackListItem({
     required this.track,
     required this.index,
     required this.colorScheme,
     required this.size,
+    required this.onTap,
   });
 
   @override
@@ -572,15 +624,42 @@ class _TrackListItem extends HookConsumerWidget {
             return <ContextMenuEntry>[
               MenuHeader(text: track.name),
               MenuDivider(),
-              MenuItem(
-                label: Text(l10n.play_queue),
-                onSelected: (value) async {
-                  ref.read(requestFlagProvider.notifier).setRequestFlag(true);
-                  await ref
-                      .read(audioPlayerStateProvider.notifier)
-                      .addTrack(track.asTrack());
-                  ref.read(requestFlagProvider.notifier).setRequestFlag(false);
-                },
+              MenuItem.submenu(
+                label: Text(l10n.add_to),
+                icon: const Icon(Icons.add_box_rounded),
+                items: [
+                  MenuItem(
+                    label: Text(l10n.next_song),
+                    onSelected: (value) async {
+                      ref
+                          .read(requestFlagProvider.notifier)
+                          .setRequestFlag(true);
+                      await ref
+                          .read(audioPlayerStateProvider.notifier)
+                          .addTrackAtFirst(
+                            track.asTrack(),
+                            allowDuplicates: true,
+                          );
+                      ref
+                          .read(requestFlagProvider.notifier)
+                          .setRequestFlag(false);
+                    },
+                  ),
+                  MenuItem(
+                    label: Text(l10n.play_queue),
+                    onSelected: (value) async {
+                      ref
+                          .read(requestFlagProvider.notifier)
+                          .setRequestFlag(true);
+                      await ref
+                          .read(audioPlayerStateProvider.notifier)
+                          .addTrack(track.asTrack());
+                      ref
+                          .read(requestFlagProvider.notifier)
+                          .setRequestFlag(false);
+                    },
+                  ),
+                ],
               ),
             ];
           },
@@ -613,7 +692,6 @@ class _TrackListItem extends HookConsumerWidget {
                   ),
                 ),
               ),
-
             Container(
               height: itemHeight,
               color: isHovered.value || isPressed.value
@@ -622,12 +700,18 @@ class _TrackListItem extends HookConsumerWidget {
               child: InkWell(
                 onDoubleTap: () {
                   isPressed.value = false;
+                  if (isPlayable.playable) {
+                    onTap(index);
+                  }
                 },
                 onTapDown: (details) => isPressed.value = true,
                 onTapUp: (details) => isPressed.value = false,
                 onTapCancel: () => isPressed.value = false,
                 onTap: () {
                   isPressed.value = false;
+                  if (isPlayable.playable) {
+                    onTap(index);
+                  }
                 },
                 child: Padding(
                   padding: EdgeInsets.only(
