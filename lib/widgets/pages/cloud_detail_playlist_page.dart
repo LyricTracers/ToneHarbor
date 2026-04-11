@@ -742,7 +742,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
               for (var i = 0; i < tracks.length; i++) {
                 var currentTrack = tracks[i];
                 final isPlayable = isCloudTrackPlayable(
-                  track,
+                  currentTrack,
                   l10n,
                   isLoggedIn: isLoggedIn,
                   userVipType: userVipType,
@@ -1162,8 +1162,7 @@ class _TrackListItem extends HookConsumerWidget {
                         ),
                       ],
                       if (duration != null &&
-                          !songSelectionState.selectionType &&
-                          isPlayable.playable) ...[
+                          !songSelectionState.selectionType) ...[
                         SizedBox(width: 15 * multiplier),
                         Text(
                           duration,
