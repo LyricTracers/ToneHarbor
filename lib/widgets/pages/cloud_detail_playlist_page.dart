@@ -6,15 +6,19 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
 import 'package:toneharbor/widgets/layouts/playing_detail_layout.dart';
 
 class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final WidgetRef ref;
+  final AppLocalizations l10n;
   final String title;
   final String? updateTime;
   final String? description;
@@ -24,8 +28,12 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
   final BuildContext context;
   final Widget coverImage;
   final Color headerBackgroundColor;
+  final CloudMusicPlaylistDetailData? detail;
+  final SongSelectionState songSelectionState;
 
   CloudDetailPlaylistHeaderDelegate({
+    required this.ref,
+    required this.l10n,
     required this.title,
     this.updateTime,
     this.description,
@@ -35,6 +43,8 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
     required this.context,
     required this.coverImage,
     required this.headerBackgroundColor,
+    required this.detail,
+    required this.songSelectionState,
   });
 
   @override
@@ -51,7 +61,8 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
       updateTime != oldDelegate.updateTime ||
       description != oldDelegate.description ||
       creator != oldDelegate.creator ||
-      headerBackgroundColor != oldDelegate.headerBackgroundColor;
+      headerBackgroundColor != oldDelegate.headerBackgroundColor ||
+      songSelectionState != oldDelegate.songSelectionState;
 
   @override
   Widget build(
@@ -64,7 +75,43 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
     return Material(
       color: headerBackgroundColor,
       elevation: 0,
-      child: Stack(children: [_buildBackButton(), _buildContent(progress)]),
+      child: Stack(
+        children: [
+          _buildBackButton(),
+          if (detail?.tracks != null &&
+              detail?.tracks!.isNotEmpty == true &&
+              !songSelectionState.selectionType)
+            _buildSelectedButton(),
+          _buildContent(progress),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSelectedButton() {
+    final h = minExtent;
+    return Positioned(
+      top: 0,
+      right: 0,
+      height: h,
+      child: SafeArea(
+        bottom: false,
+        child: SizedBox(
+          width: 56 * multiplier,
+          height: h,
+          child: IconButton(
+            onPressed: () {
+              ref.read(songSelectionProvider.notifier).toggle();
+            },
+            icon: Icon(
+              Icons.fact_check_rounded,
+              color: colorScheme.onSurface,
+              size: 24 * multiplier,
+            ),
+            tooltip: l10n.select_all,
+          ),
+        ),
+      ),
     );
   }
 
@@ -85,7 +132,13 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
               color: colorScheme.onSurface,
               size: 24 * multiplier,
             ),
-            onPressed: () => context.pop(),
+            onPressed: () {
+              if (ref.read(songSelectionProvider).selectionType) {
+                ref.invalidate(songSelectionProvider);
+              } else {
+                context.pop();
+              }
+            },
           ),
         ),
       ),
@@ -96,14 +149,13 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
     final coverOpacity = 1.0 - progress;
     final titleFontSize = _lerpDouble(24, 16, progress) * multiplier;
     final extraOpacity = (1.0 - progress / 0.7).clamp(0.0, 1.0);
-
     return Positioned.fill(
       child: SafeArea(
         bottom: false,
         child: Padding(
           padding: EdgeInsets.only(
             left: 40 * multiplier,
-            right: 16 * multiplier,
+            right: _lerpDouble(16, 80, progress) * multiplier,
           ),
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -325,6 +377,21 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
       [playlist.coverUrl(), colorScheme, maxCoverSize, multiplier],
     );
 
+    useEffect(() {
+      Future.microtask(() {
+        ref.invalidate(songSelectionProvider);
+      });
+      return null;
+    }, []);
+    final songSelectionState = ref.watch(
+      songSelectionProvider.select(
+        (state) => SongSelectionState(
+          selectionType: state.selectionType,
+          ids: {},
+          boxState: state.boxState,
+        ),
+      ),
+    );
     final headerMaxExtent = kToolbarHeight * 5 * size.multiplier3;
     final headerMinExtent = kToolbarHeight * size.multiplier3;
     final maxScroll = headerMaxExtent - headerMinExtent;
@@ -363,6 +430,8 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
                   pinned: true,
                   floating: false,
                   delegate: CloudDetailPlaylistHeaderDelegate(
+                    ref: ref,
+                    l10n: l10n,
                     title: playlist.name,
                     updateTime: createTime != null
                         ? "Created ${_formatDate(createTime)}"
@@ -374,6 +443,8 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
                     context: context,
                     coverImage: coverImage,
                     headerBackgroundColor: statusBarColor,
+                    detail: detail.value,
+                    songSelectionState: songSelectionState,
                   ),
                 ),
                 detail.when(
@@ -384,6 +455,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
                     size,
                     l10n,
                     isLoadingMore.value,
+                    songSelectionState,
                   ),
                   loading: () => _TrackListShimmerLoading(
                     colorScheme: colorScheme,
@@ -402,7 +474,224 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
             ),
           ),
         ),
+        if (songSelectionState.selectionType)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: _selectionBottom(ref, size, colorScheme, l10n, detail.value),
+          ),
       ],
+    );
+  }
+
+  bool _checkIdsEmpty(Set<String> ids, WidgetRef ref) {
+    if (ids.isEmpty) {
+      if (ref.context.mounted) {
+        showSnackBar(
+          ref.read(l10nProvider).no_selected_songs,
+          ref.context,
+          getColorSchemeWhenReady(ref).secondary,
+        );
+      }
+      return true;
+    }
+    return false;
+  }
+
+  Set<ToneHarborTrackObject> _getSelectedTracks(
+    List<CloudMusicSongData> tracks,
+    Set<String> ids,
+  ) {
+    return ids
+        .map(
+          (id) => tracks
+              .firstWhere((element) => element.id.toString() == id)
+              .asTrack(),
+        )
+        .toSet();
+  }
+
+  bool _checkIdsLimit(
+    Set<String> ids,
+    int limit,
+    WidgetRef ref,
+    String message,
+  ) {
+    if (ids.length > limit) {
+      if (ref.context.mounted) {
+        showSnackBar(
+          message,
+          ref.context,
+          getColorSchemeWhenReady(ref).secondary,
+        );
+      }
+      return true;
+    }
+    return false;
+  }
+
+  Widget _selectionBottom(
+    WidgetRef ref,
+    Size size,
+    ColorScheme colorScheme,
+    AppLocalizations l10n,
+    CloudMusicPlaylistDetailData? detail,
+  ) {
+    if (detail == null || detail.tracks == null || detail.tracks!.isEmpty) {
+      return SizedBox.shrink();
+    }
+    return SafeArea(
+      top: false,
+      child: Container(
+        height: kToolbarHeight * size.multiplier3,
+        color: colorScheme.surfaceContainerHighest,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20 * size.multiplier2),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      final ids = ref.read(songSelectionProvider).ids;
+                      if (_checkIdsEmpty(ids, ref)) return;
+                      ref.invalidate(songSelectionProvider);
+                      ref
+                          .read(downloadManagerProvider.notifier)
+                          .addAllToQueue(
+                            _getSelectedTracks(detail.tracks!, ids),
+                          );
+                    },
+                    icon: Icon(Icons.download_rounded, size: 18),
+                    tooltip: l10n.download,
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      final ids = ref.read(songSelectionProvider).ids;
+                      if (_checkIdsEmpty(ids, ref)) return;
+                      if (_checkIdsLimit(
+                        ids,
+                        1000,
+                        ref,
+                        l10n.queue_limit_exceeded,
+                      )) {
+                        return;
+                      }
+
+                      final selectedTracks = _getSelectedTracks(
+                        detail.tracks!,
+                        ids,
+                      );
+                      await ref
+                          .read(audioPlayerStateProvider.notifier)
+                          .addTracksAtFirst(
+                            selectedTracks,
+                            allowDuplicates: true,
+                          );
+                      if (!audioPlayer.isPlaying) {
+                        var index =
+                            audioPlayer.currentIndex < 0 ||
+                                audioPlayer.currentIndex >=
+                                    audioPlayer.sources.length
+                            ? 0
+                            : audioPlayer.currentIndex;
+                        await audioPlayer.jumpTo(index);
+                      }
+                      ref.invalidate(songSelectionProvider);
+                    },
+                    icon: Icon(Icons.queue_play_next_rounded, size: 18),
+                    tooltip: l10n.next_song,
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      final ids = ref.read(songSelectionProvider).ids;
+                      if (_checkIdsEmpty(ids, ref)) return;
+                      if (_checkIdsLimit(
+                        ids,
+                        1000,
+                        ref,
+                        l10n.queue_limit_exceeded,
+                      )) {
+                        return;
+                      }
+
+                      final selectedTracks = _getSelectedTracks(
+                        detail.tracks!,
+                        ids,
+                      );
+                      await ref
+                          .read(audioPlayerStateProvider.notifier)
+                          .addTracks(selectedTracks);
+                      if (!audioPlayer.isPlaying) {
+                        var index =
+                            audioPlayer.currentIndex < 0 ||
+                                audioPlayer.currentIndex >=
+                                    audioPlayer.sources.length
+                            ? 0
+                            : audioPlayer.currentIndex;
+                        await audioPlayer.jumpTo(index);
+                      }
+                      ref.invalidate(songSelectionProvider);
+                    },
+                    icon: Icon(Icons.queue_music_rounded, size: 18),
+                    tooltip: l10n.play_queue,
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(
+                    l10n.select_all,
+                    style: TextStyle(
+                      fontSize: 14 * size.multiplier2,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final selection = ref.watch(songSelectionProvider);
+                      final isLoggedIn = ref.read(cloudMusicAuthStateProvider);
+                      final user = ref.read(cloudUserInfoProvider);
+
+                      final selectableSongs = detail!.tracks!.where((song) {
+                        final isPlayable = isCloudTrackPlayable(
+                          song,
+                          l10n,
+                          isLoggedIn: isLoggedIn,
+                          userVipType: user.value?.vipType ?? 0,
+                        );
+                        return isPlayable.playable;
+                      }).toList();
+                      return Checkbox(
+                        shape: const CircleBorder(),
+                        value: selection.ids.length == selectableSongs.length,
+                        onChanged: (b) {
+                          if (b == true) {
+                            ref
+                                .read(songSelectionProvider.notifier)
+                                .selectAll(
+                                  selectableSongs.map((song) {
+                                    return song.id.toString();
+                                  }).toSet(),
+                                );
+                          } else {
+                            ref
+                                .read(songSelectionProvider.notifier)
+                                .deSelectAll();
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -413,6 +702,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
     Size size,
     AppLocalizations l10n,
     bool isLoadingMore,
+    SongSelectionState songSelectionState,
   ) {
     final tracks = data?.tracks ?? [];
 
@@ -441,6 +731,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
             index: index + 1,
             colorScheme: colorScheme,
             size: size,
+            songSelectionState: songSelectionState,
             onTap: (ci) async {
               var targetTracks = <ToneHarborTrackObject>[];
               var initIndex = ci - 1;
@@ -585,6 +876,7 @@ class _TrackListItem extends HookConsumerWidget {
   final int index;
   final ColorScheme colorScheme;
   final Size size;
+  final SongSelectionState songSelectionState;
   final Function(int) onTap;
 
   const _TrackListItem({
@@ -592,6 +884,7 @@ class _TrackListItem extends HookConsumerWidget {
     required this.index,
     required this.colorScheme,
     required this.size,
+    required this.songSelectionState,
     required this.onTap,
   });
 
@@ -614,12 +907,42 @@ class _TrackListItem extends HookConsumerWidget {
       isLoggedIn: isLoggedIn,
       userVipType: userVipType,
     );
+    var localSelected = useState(false);
+    useEffect(() {
+      localSelected.value = ref
+          .read(songSelectionProvider.notifier)
+          .isSelected(track.id.toString());
+      return null;
+    }, [songSelectionState.selectionType]);
+
+    useEffect(() {
+      localSelected.value = ref
+          .read(songSelectionProvider.notifier)
+          .isSelected(track.id.toString());
+      return null;
+    }, [songSelectionState.boxState]);
+    void updateState() {
+      localSelected.value = !ref
+          .read(songSelectionProvider.notifier)
+          .isSelected(track.id.toString());
+      var flag = localSelected.value;
+      Future.microtask(() {
+        if (flag) {
+          ref.read(songSelectionProvider.notifier).select(track.id.toString());
+        } else {
+          ref
+              .read(songSelectionProvider.notifier)
+              .deSelect(track.id.toString());
+        }
+      });
+    }
 
     return MouseRegion(
       onEnter: (event) => isHovered.value = true,
       onExit: (event) => isHovered.value = false,
       child: ContextMenuRegion(
-        enableDefaultGestures: isPlayable.playable,
+        enableDefaultGestures:
+            isPlayable.playable && !songSelectionState.selectionType,
         contextMenu: ContextMenu(
           entriesBuilder: () {
             return <ContextMenuEntry>[
@@ -713,7 +1036,11 @@ class _TrackListItem extends HookConsumerWidget {
                 onDoubleTap: () {
                   isPressed.value = false;
                   if (isPlayable.playable) {
-                    onTap(index);
+                    if (songSelectionState.selectionType) {
+                      updateState();
+                    } else {
+                      onTap(index);
+                    }
                   }
                 },
                 onTapDown: (details) => isPressed.value = true,
@@ -721,7 +1048,8 @@ class _TrackListItem extends HookConsumerWidget {
                 onTapCancel: () => isPressed.value = false,
                 onTap: () {
                   isPressed.value = false;
-                  if (isPlayable.playable) {
+                  if (isPlayable.playable &&
+                      !songSelectionState.selectionType) {
                     onTap(index);
                   }
                 },
@@ -833,7 +1161,9 @@ class _TrackListItem extends HookConsumerWidget {
                           ),
                         ),
                       ],
-                      if (duration != null) ...[
+                      if (duration != null &&
+                          !songSelectionState.selectionType &&
+                          isPlayable.playable) ...[
                         SizedBox(width: 15 * multiplier),
                         Text(
                           duration,
@@ -847,6 +1177,16 @@ class _TrackListItem extends HookConsumerWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         SizedBox(width: 10 * multiplier),
+                      ],
+                      if (songSelectionState.selectionType &&
+                          isPlayable.playable) ...[
+                        Checkbox(
+                          shape: const CircleBorder(),
+                          value: localSelected.value,
+                          onChanged: (_) {
+                            updateState();
+                          },
+                        ),
                       ],
                     ],
                   ),

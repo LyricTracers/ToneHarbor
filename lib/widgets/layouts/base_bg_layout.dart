@@ -133,7 +133,7 @@ abstract class BaseBgLayout extends HookConsumerWidget {
                 color: colorScheme.tertiary.withValues(alpha: 0.1),
               ),
             ),
-          if (selectionTypeState.selectionType)
+          if (selectionTypeState.selectionType && appbar)
             Positioned(
               bottom: 0,
               left: 0,
