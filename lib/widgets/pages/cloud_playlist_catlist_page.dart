@@ -7,6 +7,102 @@ import 'package:toneharbor/utils/cloud_playlist_static_data.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
+class _CategoryChipLayout extends HookConsumerWidget {
+  _CategoryChipLayout({required this.categoryChips, required this.addButton});
+
+  final List<Widget> categoryChips;
+  final Widget addButton;
+  final _wrapKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final needScroll = useState(false);
+    final mediaQuerySize = MediaQuery.of(context).size;
+
+    useEffect(() {
+      void checkLayout() {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final renderBox =
+              _wrapKey.currentContext?.findRenderObject() as RenderBox?;
+          if (renderBox != null) {
+            final wrapWidth = renderBox.size.width;
+            final parentWidth =
+                (context.findRenderObject() as RenderBox).size.width;
+            needScroll.value = wrapWidth > parentWidth;
+          }
+        });
+      }
+
+      checkLayout();
+
+      final observer = _LayoutObserver(() {
+        checkLayout();
+      });
+      WidgetsBinding.instance.addObserver(observer);
+
+      return () {
+        WidgetsBinding.instance.removeObserver(observer);
+      };
+    }, [categoryChips.length, mediaQuerySize]);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final allChips = [
+          ...categoryChips,
+          const SizedBox(width: 8),
+          addButton,
+        ];
+
+        if (needScroll.value) {
+          return Row(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Wrap(
+                    spacing: 5,
+                    runSpacing: 5,
+                    children: categoryChips,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              addButton,
+            ],
+          );
+        }
+
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Container(
+            constraints: BoxConstraints(minWidth: constraints.maxWidth),
+            child: Center(
+              child: Wrap(
+                key: _wrapKey,
+                spacing: 5,
+                runSpacing: 5,
+                children: allChips,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _LayoutObserver extends WidgetsBindingObserver {
+  _LayoutObserver(this.onMetricsChanged);
+
+  final VoidCallback onMetricsChanged;
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    onMetricsChanged();
+  }
+}
+
 class CloudPlaylistCategoryListPage extends HookConsumerWidget {
   const CloudPlaylistCategoryListPage({
     super.key,
@@ -23,6 +119,7 @@ class CloudPlaylistCategoryListPage extends HookConsumerWidget {
     ColorScheme colorScheme,
     TextEditingController searchController,
     Size size,
+    String currentCategoryName,
   ) {
     final showSearch = useState(false);
     useEffect(() {
@@ -62,7 +159,7 @@ class CloudPlaylistCategoryListPage extends HookConsumerWidget {
             surfaceTintColor: Colors.transparent,
             scrolledUnderElevation: 0,
             title: Text(
-              category.name,
+              currentCategoryName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -101,60 +198,73 @@ class CloudPlaylistCategoryListPage extends HookConsumerWidget {
         selectedIndex.value = 0;
       }
       return null;
-    }, [categories.length]);
+    }, [categories.length, selectedIndex.value]);
+
+    final categoryChips = List.generate(categories.length + 4, (index) {
+      final isSelected = index == selectedIndex.value;
+      final isBaseCategory = index < 4;
+      final categoryName = isBaseCategory
+          ? baseCategories[index].name
+          : categories[index - 4];
+
+      return RawChip(
+        label: Text(categoryName),
+        labelStyle: TextStyle(
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        backgroundColor: Colors.transparent,
+        selectedColor: colorScheme.primaryContainer.withValues(alpha: 0.5),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: isSelected
+              ? BorderSide(color: colorScheme.primary, width: 1.2)
+              : BorderSide(color: colorScheme.outline, width: 0.8),
+        ),
+        onSelected: (selected) {
+          if (selected) {
+            selectedIndex.value = index;
+            currentCategory.value = categoryName;
+          }
+        },
+        onDeleted: isBaseCategory
+            ? null
+            : () {
+                ref
+                    .read(cloudMusicCategoryProvider.notifier)
+                    .removeCategory(categoryName);
+              },
+      );
+    });
+
+    final addButton = IconButton(
+      icon: Icon(Icons.add, size: 18),
+      onPressed: () {},
+      style: IconButton.styleFrom(
+        backgroundColor: colorScheme.primaryContainer,
+        shape: const CircleBorder(),
+        padding: EdgeInsets.zero,
+        minimumSize: Size(32, 32),
+      ),
+    );
+
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        _buildAppBar(ref, colorScheme, searchController, size),
+        _buildAppBar(
+          ref,
+          colorScheme,
+          searchController,
+          size,
+          currentCategory.value,
+        ),
         Padding(
           padding: EdgeInsets.all(size.smAndUp ? 24 : 16),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Wrap(
-              spacing: 5,
-              runSpacing: 5,
-              children: List.generate(categories.length + 4, (index) {
-                final isSelected = index == selectedIndex.value;
-                final isBaseCategory = index < 4;
-                final categoryName = isBaseCategory
-                    ? baseCategories[index].name
-                    : categories[index - 4];
-
-                return RawChip(
-                  label: Text(categoryName),
-                  labelStyle: TextStyle(
-                    fontWeight: isSelected
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 2,
-                  ),
-                  backgroundColor: Colors.transparent,
-                  selectedColor: colorScheme.primaryContainer.withValues(
-                    alpha: 0.5,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    side: isSelected
-                        ? BorderSide(color: colorScheme.primary, width: 1.2)
-                        : BorderSide(color: colorScheme.outline, width: 0.8),
-                  ),
-                  onSelected: (selected) {
-                    if (selected) {
-                      selectedIndex.value = index;
-                    }
-                  },
-                  onDeleted: isBaseCategory
-                      ? null
-                      : () {
-                          ref
-                              .read(cloudMusicCategoryProvider.notifier)
-                              .removeCategory(categoryName);
-                        },
-                );
-              }),
-            ),
+          child: _CategoryChipLayout(
+            categoryChips: categoryChips,
+            addButton: addButton,
           ),
         ),
       ],
