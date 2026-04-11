@@ -1,10 +1,13 @@
 part of 'base_funs.dart';
 
 abstract class SharedPreferencesUtils {
-  static SharedPreferences? _sharedPreferences;
-  static SharedPreferences get sharedPreferences => _sharedPreferences!;
+  static SharedPreferencesWithCache? _sharedPreferences;
+  static SharedPreferencesWithCache get sharedPreferences =>
+      _sharedPreferences!;
   static Future<void> initialize() async {
-    _sharedPreferences = await SharedPreferences.getInstance();
+    _sharedPreferences = await SharedPreferencesWithCache.create(
+      cacheOptions: const SharedPreferencesWithCacheOptions(),
+    );
   }
 
   static double getTrayFontSize() {
