@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -96,18 +97,33 @@ class SongIcon extends _$SongIcon {
     if (activeTrack == null) {
       return null;
     }
-    final cacheKey = activeTrack.id.isNotEmpty
-        ? activeTrack.id
-        : sanitizeCacheKey("${activeTrack.artist}-${activeTrack.album}");
-    final asyncValue = ref.watch(
-      fetchCoverBytesProvider(
-        songId: activeTrack.id,
-        albumName: activeTrack.album,
-        artistName: activeTrack.artist,
-        key: cacheKey,
-        liveKeepDuration: const Duration(minutes: 1),
-      ),
-    );
+    AsyncValue<Uint8List?> asyncValue;
+    final keepLiveDuration = const Duration(minutes: 1);
+
+    if (activeTrack.externalUri.isNotEmpty) {
+      final imageUrl = activeTrack.externalUri;
+      final cacheKey = 'cloud_cover_${imageUrl.hashCode}';
+      asyncValue = ref.watch(
+        fetchCloudMusicCoverBytesProvider(
+          imageUrl: imageUrl,
+          key: cacheKey,
+          liveKeepDuration: keepLiveDuration,
+        ),
+      );
+    } else {
+      final cacheKey = activeTrack.id.isNotEmpty
+          ? activeTrack.id
+          : sanitizeCacheKey("${activeTrack.artist}-${activeTrack.album}");
+      asyncValue = ref.watch(
+        fetchCoverBytesProvider(
+          songId: activeTrack.id,
+          albumName: activeTrack.album,
+          artistName: activeTrack.artist,
+          key: cacheKey,
+          liveKeepDuration: keepLiveDuration,
+        ),
+      );
+    }
     return asyncValue.when(
       data: (bytes) =>
           bytes == null ? defaultSongIconProvider : MemoryImage(bytes),
