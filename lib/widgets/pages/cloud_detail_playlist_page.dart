@@ -69,15 +69,16 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
   }
 
   Widget _buildBackButton() {
+    final h = minExtent;
     return Positioned(
       top: 0,
       left: 0,
-      height: minExtent,
+      height: h,
       child: SafeArea(
         bottom: false,
         child: SizedBox(
           width: 56 * multiplier,
-          height: kToolbarHeight * multiplier3,
+          height: h,
           child: IconButton(
             icon: Icon(
               Icons.arrow_back,
