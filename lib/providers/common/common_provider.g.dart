@@ -683,3 +683,56 @@ abstract class _$CloudMusicAuthState extends $Notifier<bool> {
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(CloudMusicCategory)
+final cloudMusicCategoryProvider = CloudMusicCategoryProvider._();
+
+final class CloudMusicCategoryProvider
+    extends $NotifierProvider<CloudMusicCategory, List<String>> {
+  CloudMusicCategoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'cloudMusicCategoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudMusicCategoryHash();
+
+  @$internal
+  @override
+  CloudMusicCategory create() => CloudMusicCategory();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<String> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<String>>(value),
+    );
+  }
+}
+
+String _$cloudMusicCategoryHash() =>
+    r'c5b03b41b2bc096777c69efbaa4c011664ca09ca';
+
+abstract class _$CloudMusicCategory extends $Notifier<List<String>> {
+  List<String> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<List<String>, List<String>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<List<String>, List<String>>,
+              List<String>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

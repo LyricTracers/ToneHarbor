@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/cloud_playlist_static_data.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_common_artists.dart';
 import 'package:toneharbor/widgets/components/cloud_recommend_playlists.dart';
@@ -243,7 +244,13 @@ class RecommendPage extends HookConsumerWidget {
                               ),
                             ),
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                context.pushWrapper(
+                                  "/cloud-playlist-catlist",
+                                  extra: CloudPlaylistStaticData
+                                      .staticCategories[0],
+                                );
+                              },
                               child: Text(
                                 i10n.more,
                                 style: TextStyle(

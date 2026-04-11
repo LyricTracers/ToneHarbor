@@ -228,4 +228,12 @@ abstract class SharedPreferencesUtils {
   static Future<void> clearCloudMusicCookies() async {
     await sharedPreferences.remove(cloudMusicCookiesKey);
   }
+
+  static List<String> getCloudMusicCategory() =>
+      sharedPreferences.getStringList(cloudMusicCategoryKey) ??
+      ['华语', '欧美', '流行', '民谣', '治愈', '影视原声'];
+
+  static Future<void> setCloudMusicCategory(List<String> categories) async {
+    await sharedPreferences.setStringList(cloudMusicCategoryKey, categories);
+  }
 }

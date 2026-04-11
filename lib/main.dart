@@ -14,6 +14,7 @@ import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/connection_checker_service.dart';
 import 'package:toneharbor/services/server/server_health_check.dart';
+import 'package:toneharbor/utils/cloud_playlist_static_data.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/layouts/local_songs_layout.dart';
 import 'package:toneharbor/widgets/mobile/layouts/mobile_full_layout.dart';
@@ -21,6 +22,7 @@ import 'package:toneharbor/widgets/mobile/layouts/mobile_home_layout.dart';
 import 'package:toneharbor/widgets/pages/cloud_api_setting_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_detail_playlist_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_music_login_page.dart';
+import 'package:toneharbor/widgets/pages/cloud_playlist_catlist_page.dart';
 import 'package:toneharbor/widgets/pages/gesture_only_cupertino_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -481,6 +483,15 @@ class MyApp extends HookConsumerWidget {
                 pageBuilder: (context, state) =>
                     buildPage(key: state.pageKey, child: AudioDevicePage()),
               ),
+              GoRoute(
+                path: '/cloud-playlist-catlist',
+                pageBuilder: (context, state) => buildPage(
+                  key: state.pageKey,
+                  child: CloudPlaylistCategoryListPage(
+                    category: state.extra as CloudPlaylistCategory,
+                  ),
+                ),
+              ),
             ],
           ),
           // ================================
@@ -765,6 +776,18 @@ class MyApp extends HookConsumerWidget {
             pageBuilder: (context, state) => buildPage(
               key: state.pageKey,
               child: MobileFullLayout(child: AudioDevicePage()),
+            ),
+          ),
+          GoRoute(
+            path: '/mobile/cloud-playlist-catlist',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) => buildPage(
+              key: state.pageKey,
+              child: MobileFullLayout(
+                child: CloudPlaylistCategoryListPage(
+                  category: state.extra as CloudPlaylistCategory,
+                ),
+              ),
             ),
           ),
 

@@ -6,9 +6,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
-import 'package:toneharbor/providers/audio_player/local_songs_provider.dart';
-import 'package:toneharbor/providers/audio_player/lyrics_cache_provider.dart';
-import 'package:toneharbor/providers/database/database.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 

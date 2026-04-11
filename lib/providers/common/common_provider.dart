@@ -338,3 +338,21 @@ class CloudMusicAuthState extends _$CloudMusicAuthState {
     state = false;
   }
 }
+
+@riverpod
+class CloudMusicCategory extends _$CloudMusicCategory {
+  @override
+  List<String> build() {
+    return SharedPreferencesUtils.getCloudMusicCategory();
+  }
+
+  void addCategory(String category) async {
+    state = [...state, category];
+    await SharedPreferencesUtils.setCloudMusicCategory(state);
+  }
+
+  void removeCategory(String category) async {
+    state = state.where((element) => element != category).toList();
+    await SharedPreferencesUtils.setCloudMusicCategory(state);
+  }
+}
