@@ -598,7 +598,7 @@ class _TrackListItem extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final artists = track.ar?.map((a) => a.name).join(', ') ?? '';
     final duration = track.dt != null ? _formatDuration(track.dt!) : null;
-    final multiplier = size.multiplier;
+    final multiplier = size.multiplier2;
     double itemHeight = 66.0 * multiplier;
     var isHovered = useState(false);
     var isPressed = useState(false);
