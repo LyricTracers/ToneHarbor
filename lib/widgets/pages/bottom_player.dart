@@ -662,16 +662,24 @@ class BottomPlayer extends HookConsumerWidget {
       );
     }
     if (activeTrack is ToneHarborTrackObjectMultLocal) {
-      return SongCoverImage(
-        pictureFuture: activeTrack.getPicture(),
-        songId: activeTrack.id,
-        albumName: activeTrack.album,
-        artistName: activeTrack.artist,
-        colorScheme: colorScheme,
-        config: isXs
-            ? const SongCoverImageConfig(size: 50, isCircular: true)
-            : const SongCoverImageConfig(size: 50, borderRadius: 5),
-      );
+      return activeTrack.externalUri.isNotEmpty
+          ? CloudMusicCoverImage(
+              imageUrl: activeTrack.externalUri,
+              colorScheme: colorScheme,
+              config: isXs
+                  ? const CloudMusicCoverImageConfig(size: 50, isCircular: true)
+                  : const CloudMusicCoverImageConfig(size: 50, borderRadius: 5),
+            )
+          : SongCoverImage(
+              pictureFuture: activeTrack.getPicture(),
+              songId: activeTrack.id,
+              albumName: activeTrack.album,
+              artistName: activeTrack.artist,
+              colorScheme: colorScheme,
+              config: isXs
+                  ? const SongCoverImageConfig(size: 50, isCircular: true)
+                  : const SongCoverImageConfig(size: 50, borderRadius: 5),
+            );
     }
     return SongCoverImage(
       songId: activeTrack.id,

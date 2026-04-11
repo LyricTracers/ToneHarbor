@@ -747,6 +747,18 @@ class $DownloadTaskStateTable extends DownloadTaskState
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _externalUriMeta = const VerificationMeta(
+    'externalUri',
+  );
+  @override
+  late final GeneratedColumn<String> externalUri = GeneratedColumn<String>(
+    'external_uri',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   @override
   late final GeneratedColumnWithTypeConverter<DownloadType, int> type =
       GeneratedColumn<int>(
@@ -804,6 +816,7 @@ class $DownloadTaskStateTable extends DownloadTaskState
     trackTitle,
     trackArtist,
     container,
+    externalUri,
     type,
     quality,
     status,
@@ -857,6 +870,15 @@ class $DownloadTaskStateTable extends DownloadTaskState
     } else if (isInserting) {
       context.missing(_containerMeta);
     }
+    if (data.containsKey('external_uri')) {
+      context.handle(
+        _externalUriMeta,
+        externalUri.isAcceptableOrUnknown(
+          data['external_uri']!,
+          _externalUriMeta,
+        ),
+      );
+    }
     if (data.containsKey('file_size')) {
       context.handle(
         _fileSizeMeta,
@@ -893,6 +915,10 @@ class $DownloadTaskStateTable extends DownloadTaskState
       container: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}container'],
+      )!,
+      externalUri: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}external_uri'],
       )!,
       type: $DownloadTaskStateTable.$convertertype.fromSql(
         attachedDatabase.typeMapping.read(
@@ -942,6 +968,7 @@ class DownloadTaskStateData extends DataClass
   final String trackTitle;
   final String trackArtist;
   final String container;
+  final String externalUri;
   final DownloadType type;
   final AudioQuality quality;
   final DownloadStatus status;
@@ -952,6 +979,7 @@ class DownloadTaskStateData extends DataClass
     required this.trackTitle,
     required this.trackArtist,
     required this.container,
+    required this.externalUri,
     required this.type,
     required this.quality,
     required this.status,
@@ -965,6 +993,7 @@ class DownloadTaskStateData extends DataClass
     map['track_title'] = Variable<String>(trackTitle);
     map['track_artist'] = Variable<String>(trackArtist);
     map['container'] = Variable<String>(container);
+    map['external_uri'] = Variable<String>(externalUri);
     {
       map['type'] = Variable<int>(
         $DownloadTaskStateTable.$convertertype.toSql(type),
@@ -991,6 +1020,7 @@ class DownloadTaskStateData extends DataClass
       trackTitle: Value(trackTitle),
       trackArtist: Value(trackArtist),
       container: Value(container),
+      externalUri: Value(externalUri),
       type: Value(type),
       quality: Value(quality),
       status: Value(status),
@@ -1009,6 +1039,7 @@ class DownloadTaskStateData extends DataClass
       trackTitle: serializer.fromJson<String>(json['trackTitle']),
       trackArtist: serializer.fromJson<String>(json['trackArtist']),
       container: serializer.fromJson<String>(json['container']),
+      externalUri: serializer.fromJson<String>(json['externalUri']),
       type: $DownloadTaskStateTable.$convertertype.fromJson(
         serializer.fromJson<int>(json['type']),
       ),
@@ -1030,6 +1061,7 @@ class DownloadTaskStateData extends DataClass
       'trackTitle': serializer.toJson<String>(trackTitle),
       'trackArtist': serializer.toJson<String>(trackArtist),
       'container': serializer.toJson<String>(container),
+      'externalUri': serializer.toJson<String>(externalUri),
       'type': serializer.toJson<int>(
         $DownloadTaskStateTable.$convertertype.toJson(type),
       ),
@@ -1049,6 +1081,7 @@ class DownloadTaskStateData extends DataClass
     String? trackTitle,
     String? trackArtist,
     String? container,
+    String? externalUri,
     DownloadType? type,
     AudioQuality? quality,
     DownloadStatus? status,
@@ -1059,6 +1092,7 @@ class DownloadTaskStateData extends DataClass
     trackTitle: trackTitle ?? this.trackTitle,
     trackArtist: trackArtist ?? this.trackArtist,
     container: container ?? this.container,
+    externalUri: externalUri ?? this.externalUri,
     type: type ?? this.type,
     quality: quality ?? this.quality,
     status: status ?? this.status,
@@ -1075,6 +1109,9 @@ class DownloadTaskStateData extends DataClass
           ? data.trackArtist.value
           : this.trackArtist,
       container: data.container.present ? data.container.value : this.container,
+      externalUri: data.externalUri.present
+          ? data.externalUri.value
+          : this.externalUri,
       type: data.type.present ? data.type.value : this.type,
       quality: data.quality.present ? data.quality.value : this.quality,
       status: data.status.present ? data.status.value : this.status,
@@ -1090,6 +1127,7 @@ class DownloadTaskStateData extends DataClass
           ..write('trackTitle: $trackTitle, ')
           ..write('trackArtist: $trackArtist, ')
           ..write('container: $container, ')
+          ..write('externalUri: $externalUri, ')
           ..write('type: $type, ')
           ..write('quality: $quality, ')
           ..write('status: $status, ')
@@ -1105,6 +1143,7 @@ class DownloadTaskStateData extends DataClass
     trackTitle,
     trackArtist,
     container,
+    externalUri,
     type,
     quality,
     status,
@@ -1119,6 +1158,7 @@ class DownloadTaskStateData extends DataClass
           other.trackTitle == this.trackTitle &&
           other.trackArtist == this.trackArtist &&
           other.container == this.container &&
+          other.externalUri == this.externalUri &&
           other.type == this.type &&
           other.quality == this.quality &&
           other.status == this.status &&
@@ -1132,6 +1172,7 @@ class DownloadTaskStateCompanion
   final Value<String> trackTitle;
   final Value<String> trackArtist;
   final Value<String> container;
+  final Value<String> externalUri;
   final Value<DownloadType> type;
   final Value<AudioQuality> quality;
   final Value<DownloadStatus> status;
@@ -1143,6 +1184,7 @@ class DownloadTaskStateCompanion
     this.trackTitle = const Value.absent(),
     this.trackArtist = const Value.absent(),
     this.container = const Value.absent(),
+    this.externalUri = const Value.absent(),
     this.type = const Value.absent(),
     this.quality = const Value.absent(),
     this.status = const Value.absent(),
@@ -1155,6 +1197,7 @@ class DownloadTaskStateCompanion
     required String trackTitle,
     required String trackArtist,
     required String container,
+    this.externalUri = const Value.absent(),
     required DownloadType type,
     required AudioQuality quality,
     required DownloadStatus status,
@@ -1173,6 +1216,7 @@ class DownloadTaskStateCompanion
     Expression<String>? trackTitle,
     Expression<String>? trackArtist,
     Expression<String>? container,
+    Expression<String>? externalUri,
     Expression<int>? type,
     Expression<int>? quality,
     Expression<int>? status,
@@ -1185,6 +1229,7 @@ class DownloadTaskStateCompanion
       if (trackTitle != null) 'track_title': trackTitle,
       if (trackArtist != null) 'track_artist': trackArtist,
       if (container != null) 'container': container,
+      if (externalUri != null) 'external_uri': externalUri,
       if (type != null) 'type': type,
       if (quality != null) 'quality': quality,
       if (status != null) 'status': status,
@@ -1199,6 +1244,7 @@ class DownloadTaskStateCompanion
     Value<String>? trackTitle,
     Value<String>? trackArtist,
     Value<String>? container,
+    Value<String>? externalUri,
     Value<DownloadType>? type,
     Value<AudioQuality>? quality,
     Value<DownloadStatus>? status,
@@ -1211,6 +1257,7 @@ class DownloadTaskStateCompanion
       trackTitle: trackTitle ?? this.trackTitle,
       trackArtist: trackArtist ?? this.trackArtist,
       container: container ?? this.container,
+      externalUri: externalUri ?? this.externalUri,
       type: type ?? this.type,
       quality: quality ?? this.quality,
       status: status ?? this.status,
@@ -1234,6 +1281,9 @@ class DownloadTaskStateCompanion
     }
     if (container.present) {
       map['container'] = Variable<String>(container.value);
+    }
+    if (externalUri.present) {
+      map['external_uri'] = Variable<String>(externalUri.value);
     }
     if (type.present) {
       map['type'] = Variable<int>(
@@ -1269,6 +1319,7 @@ class DownloadTaskStateCompanion
           ..write('trackTitle: $trackTitle, ')
           ..write('trackArtist: $trackArtist, ')
           ..write('container: $container, ')
+          ..write('externalUri: $externalUri, ')
           ..write('type: $type, ')
           ..write('quality: $quality, ')
           ..write('status: $status, ')
@@ -2887,6 +2938,7 @@ typedef $$DownloadTaskStateTableCreateCompanionBuilder =
       required String trackTitle,
       required String trackArtist,
       required String container,
+      Value<String> externalUri,
       required DownloadType type,
       required AudioQuality quality,
       required DownloadStatus status,
@@ -2900,6 +2952,7 @@ typedef $$DownloadTaskStateTableUpdateCompanionBuilder =
       Value<String> trackTitle,
       Value<String> trackArtist,
       Value<String> container,
+      Value<String> externalUri,
       Value<DownloadType> type,
       Value<AudioQuality> quality,
       Value<DownloadStatus> status,
@@ -2934,6 +2987,11 @@ class $$DownloadTaskStateTableFilterComposer
 
   ColumnFilters<String> get container => $composableBuilder(
     column: $table.container,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get externalUri => $composableBuilder(
+    column: $table.externalUri,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2995,6 +3053,11 @@ class $$DownloadTaskStateTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get externalUri => $composableBuilder(
+    column: $table.externalUri,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get type => $composableBuilder(
     column: $table.type,
     builder: (column) => ColumnOrderings(column),
@@ -3045,6 +3108,11 @@ class $$DownloadTaskStateTableAnnotationComposer
 
   GeneratedColumn<String> get container =>
       $composableBuilder(column: $table.container, builder: (column) => column);
+
+  GeneratedColumn<String> get externalUri => $composableBuilder(
+    column: $table.externalUri,
+    builder: (column) => column,
+  );
 
   GeneratedColumnWithTypeConverter<DownloadType, int> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
@@ -3106,6 +3174,7 @@ class $$DownloadTaskStateTableTableManager
                 Value<String> trackTitle = const Value.absent(),
                 Value<String> trackArtist = const Value.absent(),
                 Value<String> container = const Value.absent(),
+                Value<String> externalUri = const Value.absent(),
                 Value<DownloadType> type = const Value.absent(),
                 Value<AudioQuality> quality = const Value.absent(),
                 Value<DownloadStatus> status = const Value.absent(),
@@ -3117,6 +3186,7 @@ class $$DownloadTaskStateTableTableManager
                 trackTitle: trackTitle,
                 trackArtist: trackArtist,
                 container: container,
+                externalUri: externalUri,
                 type: type,
                 quality: quality,
                 status: status,
@@ -3130,6 +3200,7 @@ class $$DownloadTaskStateTableTableManager
                 required String trackTitle,
                 required String trackArtist,
                 required String container,
+                Value<String> externalUri = const Value.absent(),
                 required DownloadType type,
                 required AudioQuality quality,
                 required DownloadStatus status,
@@ -3141,6 +3212,7 @@ class $$DownloadTaskStateTableTableManager
                 trackTitle: trackTitle,
                 trackArtist: trackArtist,
                 container: container,
+                externalUri: externalUri,
                 type: type,
                 quality: quality,
                 status: status,

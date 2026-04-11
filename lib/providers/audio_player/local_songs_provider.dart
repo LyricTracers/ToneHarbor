@@ -48,7 +48,7 @@ class LocalMusicStateService {
           : (quality.isTranscode
                 ? 'mp3'
                 : (actualContainer ?? track.container));
-
+      final externalUri = track.externalUri;
       if (existing != null) {
         final currentQualities = _bitmaskToQualities(existing.qualities);
         currentQualities.add(quality);
@@ -71,6 +71,7 @@ class LocalMusicStateService {
                 artist: Value(track.artist),
                 album: Value(track.album),
                 container: container,
+                externalUri: Value(externalUri),
                 duration: Value(track.duration.inMilliseconds),
                 fileSize: Value(actualFileSize ?? track.filesize),
                 bitrate: Value(actualBitrate ?? track.bitrate),

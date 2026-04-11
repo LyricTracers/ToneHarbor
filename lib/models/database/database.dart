@@ -35,7 +35,7 @@ part 'typeconverters/tone_harbor_object.dart';
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration {
@@ -60,6 +60,9 @@ class AppDatabase extends _$AppDatabase {
         if (from < 6) {
           await m.addColumn(localMusicState, localMusicState.rating);
           await m.addColumn(localMusicState, localMusicState.externalUri);
+        }
+        if (from < 7) {
+          await m.addColumn(downloadTaskState, downloadTaskState.externalUri);
         }
       },
     );

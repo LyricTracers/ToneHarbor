@@ -246,6 +246,7 @@ class DownloadManager extends _$DownloadManager {
             trackTitle: task.track.title,
             trackArtist: task.track.artist,
             container: task.track.container,
+            externalUri: Value(task.track.externalUri),
             fileSize: Value(task.track.filesize),
             type: task.type,
             quality: quality,

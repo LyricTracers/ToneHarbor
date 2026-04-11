@@ -29,6 +29,12 @@ Future<void> writeTrackMetadata({
       logger.i(
         '[Metadata] Cloud track cover URL: $coverUrl, fileName: $fileName,track.isCloudMusic: ${track.isCloudMusic}',
       );
+    } else if (track.externalUri.isNotEmpty) {
+      coverUrl = track.externalUri;
+      fileName = 'cloud_cover_${coverUrl.hashCode}';
+      logger.i(
+        '[Metadata] External track cover URL: $coverUrl, fileName: $fileName,track.runtimeType: ${track.runtimeType}',
+      );
     } else if (track.id.isEmpty) {
       coverUrl = await ref.read(
         coverUrlByAlbumProvider(

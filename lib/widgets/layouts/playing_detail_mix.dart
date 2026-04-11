@@ -177,19 +177,29 @@ mixin PlayingDetailMix {
                   ),
                 )
               : activeTrack is ToneHarborTrackObjectMultLocal
-              ? SongCoverImage(
-                  pictureFuture: activeTrack.getPicture(),
-                  songId: activeTrack.id,
-                  albumName: activeTrack.album,
-                  artistName: activeTrack.artist,
-                  colorScheme: colorScheme,
-                  config: SongCoverImageConfig(
-                    size: containerSize * 0.65,
-                    isCircular: true,
-                    rotating: audioPlayer.isPlaying,
-                    rotationDuration: Duration(seconds: 30),
-                  ),
-                )
+              ? activeTrack.externalUri.isNotEmpty
+                    ? CloudMusicCoverImage(
+                        imageUrl: activeTrack.externalUri,
+                        colorScheme: colorScheme,
+                        config: CloudMusicCoverImageConfig(
+                          size: containerSize * 0.65,
+                          isCircular: true,
+                          rotating: audioPlayer.isPlaying,
+                        ),
+                      )
+                    : SongCoverImage(
+                        pictureFuture: activeTrack.getPicture(),
+                        songId: activeTrack.id,
+                        albumName: activeTrack.album,
+                        artistName: activeTrack.artist,
+                        colorScheme: colorScheme,
+                        config: SongCoverImageConfig(
+                          size: containerSize * 0.65,
+                          isCircular: true,
+                          rotating: audioPlayer.isPlaying,
+                          rotationDuration: Duration(seconds: 30),
+                        ),
+                      )
               : SongCoverImage(
                   songId: activeTrack.id,
                   albumName: activeTrack.album,

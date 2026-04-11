@@ -5,6 +5,7 @@ class DownloadTaskState extends Table {
   TextColumn get trackTitle => text()();
   TextColumn get trackArtist => text()();
   TextColumn get container => text()();
+  TextColumn get externalUri => text().withDefault(const Constant(''))();
   IntColumn get type => intEnum<DownloadType>()();
   IntColumn get quality => intEnum<AudioQuality>()();
   IntColumn get status => intEnum<DownloadStatus>()();

@@ -201,6 +201,8 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
       return (this as ToneHarborTrackObjectFull).externalUri;
     } else if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).externalUri;
+    } else if (this is ToneHarborTrackObjectCloudMusic) {
+      return (this as ToneHarborTrackObjectCloudMusic).coverUrl ?? '';
     }
     return '';
   }
