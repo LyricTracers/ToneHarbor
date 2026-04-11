@@ -98,179 +98,188 @@ class SwitchLyricsLayout extends BaseBgLayout {
 
     var size = MediaQuery.of(context).size;
     if (size.lgAndUp) {
-      return Row(
-        children: [
-          SizedBox(
-            width: min(size.width * 0.3, 300),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 2000),
-              curve: Curves.easeInOutSine,
-              decoration: gradientDecoration,
-              child: _getListLyrics(
-                titleController,
-                artistController,
-                l10n,
-                activeTrack,
-                currentTrack,
-                title,
-                artist,
-                colorScheme,
-                searchProvider,
-                callBack,
-                selectedIndex,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Column(
-              children: [
-                _appBar(
-                  ref,
-                  l10n,
-                  selectedIndex,
-                  songId,
-                  searchProvider,
-                  colorScheme,
-                ),
-
-                Expanded(
-                  child: _lyricsContent(
-                    selectedIndex,
-                    songId,
-                    searchProvider,
-                    defaultLyrics,
-                  ),
-                ),
-                BottomPlayer(showArrowType: ShowArrowType.none),
-              ],
-            ),
-          ),
-        ],
-      );
-    }
-    final tabController = useTabController(initialLength: 2);
-    return Stack(
-      children: [
-        Positioned(
-          left: 20,
-          top: 0,
-          child: IconButton(
-            onPressed: () {
-              context.popWrap();
-            },
-            icon: Icon(Icons.arrow_back_ios_sharp, size: 18),
-          ),
-        ),
-        Positioned(
-          right: 20,
-          top: 0,
-          child: PopupMenuButton(
-            itemBuilder: (context) {
-              return [
-                getActionMenuItem(
-                  () {
-                    selectedIndex.value = -1;
-                  },
-                  l10n.reset_default,
-                  Icons.restore_rounded,
-                ),
-                getActionMenuItem(
-                  () async {
-                    if (searchProvider.hasValue && selectedIndex.value != -1) {
-                      var currentLyrics =
-                          searchProvider.value![selectedIndex.value];
-                      await lyricCache.set(
-                        songId.value,
-                        currentLyrics.toJson(),
-                        permanent: true,
-                      );
-                      ref.invalidate(getLyricsProvider);
-                      ref.invalidate(currentLyricsProvider);
-                      if (ref.context.mounted) {
-                        showSnackBar(
-                          l10n.save_success,
-                          ref.context,
-                          colorScheme.primary,
-                        );
-                      }
-                    }
-                  },
-                  l10n.save,
-                  Icons.save_rounded,
-                ),
-              ];
-            },
-            icon: Icon(Icons.more_vert_rounded, size: 18),
-            tooltip: l10n.more,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        ),
-        Column(
+      return SafeArea(
+        top: true,
+        bottom: false,
+        child: Row(
           children: [
-            Center(
-              child: Material(
-                color: colorScheme.tertiary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(30),
-                clipBehavior: Clip.antiAlias,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: 200 * size.multiplier2,
-                    maxHeight: 40 * size.multiplier2,
-                  ),
-                  child: TabBar(
-                    controller: tabController,
-                    labelColor: colorScheme.primary,
-                    labelStyle: TextStyle(
-                      fontSize: 16 * size.multiplier2,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    unselectedLabelStyle: TextStyle(
-                      fontSize: 14 * size.multiplier2,
-                      fontWeight: FontWeight.normal,
-                    ),
-                    unselectedLabelColor: colorScheme.onSurface,
-                    indicatorColor: colorScheme.primary,
-                    tabs: [
-                      Tab(text: l10n.lyrics_provider),
-                      Tab(text: l10n.lyrics),
-                    ],
-                  ),
+            SizedBox(
+              width: min(size.width * 0.3, 300),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 2000),
+                curve: Curves.easeInOutSine,
+                decoration: gradientDecoration,
+                child: _getListLyrics(
+                  titleController,
+                  artistController,
+                  l10n,
+                  activeTrack,
+                  currentTrack,
+                  title,
+                  artist,
+                  colorScheme,
+                  searchProvider,
+                  callBack,
+                  selectedIndex,
                 ),
               ),
             ),
             Expanded(
-              child: TabBarView(
-                controller: tabController,
+              child: Column(
                 children: [
-                  _getListLyrics(
-                    titleController,
-                    artistController,
+                  _appBar(
+                    ref,
                     l10n,
-                    activeTrack,
-                    currentTrack,
-                    title,
-                    artist,
-                    colorScheme,
-                    searchProvider,
-                    callBack,
-                    selectedIndex,
-                    tabController: tabController,
-                  ),
-                  _lyricsContent(
                     selectedIndex,
                     songId,
                     searchProvider,
-                    defaultLyrics,
+                    colorScheme,
                   ),
+
+                  Expanded(
+                    child: _lyricsContent(
+                      selectedIndex,
+                      songId,
+                      searchProvider,
+                      defaultLyrics,
+                    ),
+                  ),
+                  BottomPlayer(showArrowType: ShowArrowType.none),
                 ],
               ),
             ),
-            BottomPlayer(showArrowType: ShowArrowType.none),
           ],
         ),
-      ],
+      );
+    }
+    final tabController = useTabController(initialLength: 2);
+    return SafeArea(
+      top: true,
+      bottom: false,
+      child: Stack(
+        children: [
+          Positioned(
+            left: 20,
+            top: 0,
+            child: IconButton(
+              onPressed: () {
+                context.popWrap();
+              },
+              icon: Icon(Icons.arrow_back_ios_sharp, size: 18),
+            ),
+          ),
+          Positioned(
+            right: 20,
+            top: 0,
+            child: PopupMenuButton(
+              itemBuilder: (context) {
+                return [
+                  getActionMenuItem(
+                    () {
+                      selectedIndex.value = -1;
+                    },
+                    l10n.reset_default,
+                    Icons.restore_rounded,
+                  ),
+                  getActionMenuItem(
+                    () async {
+                      if (searchProvider.hasValue &&
+                          selectedIndex.value != -1) {
+                        var currentLyrics =
+                            searchProvider.value![selectedIndex.value];
+                        await lyricCache.set(
+                          songId.value,
+                          currentLyrics.toJson(),
+                          permanent: true,
+                        );
+                        ref.invalidate(getLyricsProvider);
+                        ref.invalidate(currentLyricsProvider);
+                        if (ref.context.mounted) {
+                          showSnackBar(
+                            l10n.save_success,
+                            ref.context,
+                            colorScheme.primary,
+                          );
+                        }
+                      }
+                    },
+                    l10n.save,
+                    Icons.save_rounded,
+                  ),
+                ];
+              },
+              icon: Icon(Icons.more_vert_rounded, size: 18),
+              tooltip: l10n.more,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          Column(
+            children: [
+              Center(
+                child: Material(
+                  color: colorScheme.tertiary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(30),
+                  clipBehavior: Clip.antiAlias,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: 200 * size.multiplier2,
+                      maxHeight: 40 * size.multiplier2,
+                    ),
+                    child: TabBar(
+                      controller: tabController,
+                      labelColor: colorScheme.primary,
+                      labelStyle: TextStyle(
+                        fontSize: 16 * size.multiplier2,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      unselectedLabelStyle: TextStyle(
+                        fontSize: 14 * size.multiplier2,
+                        fontWeight: FontWeight.normal,
+                      ),
+                      unselectedLabelColor: colorScheme.onSurface,
+                      indicatorColor: colorScheme.primary,
+                      tabs: [
+                        Tab(text: l10n.lyrics_provider),
+                        Tab(text: l10n.lyrics),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: TabBarView(
+                  controller: tabController,
+                  children: [
+                    _getListLyrics(
+                      titleController,
+                      artistController,
+                      l10n,
+                      activeTrack,
+                      currentTrack,
+                      title,
+                      artist,
+                      colorScheme,
+                      searchProvider,
+                      callBack,
+                      selectedIndex,
+                      tabController: tabController,
+                    ),
+                    _lyricsContent(
+                      selectedIndex,
+                      songId,
+                      searchProvider,
+                      defaultLyrics,
+                    ),
+                  ],
+                ),
+              ),
+              BottomPlayer(showArrowType: ShowArrowType.none),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
