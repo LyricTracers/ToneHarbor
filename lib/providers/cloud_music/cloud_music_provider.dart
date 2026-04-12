@@ -23,14 +23,12 @@ class RecommendPlaylists extends _$RecommendPlaylists
   Future<CloudMusicPlaylistDataList> build({
     int limit = 10,
     Duration? cacheDuration = const Duration(minutes: 60),
-    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) async {
-    ref.keepAliveFor(keepAliveDuration);
+    ref.keepAliveFor(Duration(minutes: 5));
     return await recommendPlaylists(
       ref,
       limit: limit,
       cacheDuration: cacheDuration,
-      keepAliveDuration: keepAliveDuration,
     );
   }
 
@@ -48,7 +46,6 @@ Future<CloudMusicPlaylistDataList> recommendPlaylists(
   Ref ref, {
   int limit = 10,
   Duration? cacheDuration = const Duration(minutes: 60),
-  Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
   final apiState = ref.watch(cloudMusicApiUrlsProvider);
   final loginState = ref.watch(cloudMusicAuthStateProvider);
@@ -190,4 +187,66 @@ class CloudUserInfo extends _$CloudUserInfo {
     }
     return null;
   }
+}
+
+@riverpod
+class CloudMusicPlaylistCatlist extends _$CloudMusicPlaylistCatlist
+    with ExtraProvider<CloudMusicPlaylistDataList> {
+  @override
+  Future<CloudMusicPlaylistDataList> build({
+    required String cat,
+    int limit = 50,
+    int offset = 0,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) async {
+    ref.keepAliveFor(Duration(minutes: 1));
+    return await getPlaylistCatlist(
+      ref,
+      cat: cat,
+      limit: limit,
+      offset: offset,
+      cacheDuration: cacheDuration,
+    );
+  }
+
+  @override
+  Future<void> loadMore() async {
+    logger.i('loadMore');
+    final currentData = state.value;
+    if (currentData == null) {
+      return;
+    }
+
+    final currentTotal = currentData.total;
+    final currentPlaylists = currentData.playlists;
+
+    if (currentPlaylists.length >= currentTotal) return;
+
+    final oldState = state.value;
+    try {
+      final newState = await getPlaylistCatlist(
+        ref,
+        cat: cat,
+        limit: limit,
+        offset: currentPlaylists.length,
+        cacheDuration: duration,
+      );
+
+      final newPlaylists = newState.playlists;
+      final mergedPlaylists = [...currentPlaylists, ...newPlaylists];
+
+      state = AsyncData(
+        newState.copyWith(playlists: mergedPlaylists, total: currentTotal),
+      );
+    } catch (e) {
+      logger.e('加载更多playlists失败: $e');
+      state = AsyncData(oldState!);
+    }
+  }
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {}
 }

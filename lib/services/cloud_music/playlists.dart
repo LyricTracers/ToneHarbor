@@ -353,3 +353,88 @@ Future<List<CloudMusicPlaylistData>> recommendPlaylist(
     throw CloudMusicException(message: l10n.error_network_error);
   }
 }
+
+Future<CloudMusicPlaylistDataList> getPlaylistCatlist(
+  Ref ref, {
+  required String cat,
+  int limit = 50,
+  int offset = 0,
+  Duration? cacheDuration = const Duration(minutes: 60),
+}) async {
+  final l10n = ref.read(l10nProvider);
+  final cacheKey = 'cloud_playlistCat:$cat$limit$offset';
+  final groupKey = 'cloud_playlistCat';
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+  if (cacheDuration != null) {
+    final cached = await getFromCache<CloudMusicPlaylistDataList>(
+      cacheKey: cacheKey,
+      group: groupKey,
+      fromJson: (json) {
+        if (json['code'] != 200) {
+          return CloudMusicPlaylistDataList(playlists: [], total: 0);
+        }
+        return CloudMusicPlaylistDataList.fromJson(json);
+      },
+    );
+    if (cached != null && cached.playlists.isNotEmpty) {
+      logger.i(
+        'getPlaylistCatlist, cat: $cat, limit: $limit, offset: $offset, total: ${cached.total}, playlists.length: ${cached.playlists.length}',
+      );
+      return cached;
+    }
+  }
+
+  final query = <String, String>{
+    'limit': limit.toString(),
+    'offset': offset.toString(),
+  };
+  if (cat != "精品歌单") {
+    query['cat'] = cat;
+  }
+
+  final cookieParams = CloudMusicAuth.getApiCookieParams();
+  if (cookieParams.isNotEmpty) {
+    query.addAll(cookieParams);
+  }
+
+  final response = await httpClientWrapper.get(
+    cat == "精品歌单"
+        ? '${apiState.defaultUrl}/top/playlist/highquality'
+        : '${apiState.defaultUrl}/top/playlist',
+    query: query,
+    cancelToken: ref.cancelToken(),
+  );
+  if (response.statusCode != 200) {
+    logger.e('请求失败，状态码：${response.statusCode}');
+    throw CloudMusicException(
+      message: l10n.error_getPlaylists_failed,
+      statusCode: response.statusCode,
+    );
+  }
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw CloudMusicException(message: l10n.error_response_parse_failed);
+  }
+  if (jsonBody['code'] != 200) {
+    throw CloudMusicException(
+      message: l10n.error_getPlaylists_failed,
+      statusCode: jsonBody['code'],
+    );
+  }
+  final playDatalists = CloudMusicPlaylistDataList.fromJson(jsonBody);
+  if (cacheDuration != null && playDatalists.playlists.isNotEmpty) {
+    await saveToCache(
+      cacheKey: cacheKey,
+      jsonBody: jsonBody,
+      cacheDuration: cacheDuration,
+      group: groupKey,
+    );
+  }
+  logger.i(
+    'getPlaylistCatlist, cat: $cat, limit: $limit, offset: $offset, total: ${playDatalists.total}, playlists.length: ${playDatalists.playlists.length}',
+  );
+  return playDatalists;
+}

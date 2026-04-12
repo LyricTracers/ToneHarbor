@@ -59,8 +59,7 @@ final class RecommendPlaylistsProvider
         $AsyncNotifierProvider<RecommendPlaylists, CloudMusicPlaylistDataList> {
   RecommendPlaylistsProvider._({
     required RecommendPlaylistsFamily super.from,
-    required ({int limit, Duration? cacheDuration, Duration? keepAliveDuration})
-    super.argument,
+    required ({int limit, Duration? cacheDuration}) super.argument,
   }) : super(
          retry: null,
          name: r'recommendPlaylistsProvider',
@@ -95,7 +94,7 @@ final class RecommendPlaylistsProvider
 }
 
 String _$recommendPlaylistsHash() =>
-    r'5a7ccf1a7746a310eec89f62b1dcdff53be43445';
+    r'ca677eeab6854980159f4677a10edda9f6bbb80d';
 
 final class RecommendPlaylistsFamily extends $Family
     with
@@ -104,7 +103,7 @@ final class RecommendPlaylistsFamily extends $Family
           AsyncValue<CloudMusicPlaylistDataList>,
           CloudMusicPlaylistDataList,
           FutureOr<CloudMusicPlaylistDataList>,
-          ({int limit, Duration? cacheDuration, Duration? keepAliveDuration})
+          ({int limit, Duration? cacheDuration})
         > {
   RecommendPlaylistsFamily._()
     : super(
@@ -118,13 +117,8 @@ final class RecommendPlaylistsFamily extends $Family
   RecommendPlaylistsProvider call({
     int limit = 10,
     Duration? cacheDuration = const Duration(minutes: 60),
-    Duration? keepAliveDuration = const Duration(minutes: 5),
   }) => RecommendPlaylistsProvider._(
-    argument: (
-      limit: limit,
-      cacheDuration: cacheDuration,
-      keepAliveDuration: keepAliveDuration,
-    ),
+    argument: (limit: limit, cacheDuration: cacheDuration),
     from: this,
   );
 
@@ -134,21 +128,13 @@ final class RecommendPlaylistsFamily extends $Family
 
 abstract class _$RecommendPlaylists
     extends $AsyncNotifier<CloudMusicPlaylistDataList> {
-  late final _$args =
-      ref.$arg
-          as ({
-            int limit,
-            Duration? cacheDuration,
-            Duration? keepAliveDuration,
-          });
+  late final _$args = ref.$arg as ({int limit, Duration? cacheDuration});
   int get limit => _$args.limit;
   Duration? get cacheDuration => _$args.cacheDuration;
-  Duration? get keepAliveDuration => _$args.keepAliveDuration;
 
   FutureOr<CloudMusicPlaylistDataList> build({
     int limit = 10,
     Duration? cacheDuration = const Duration(minutes: 60),
-    Duration? keepAliveDuration = const Duration(minutes: 5),
   });
   @$mustCallSuper
   @override
@@ -172,11 +158,7 @@ abstract class _$RecommendPlaylists
             >;
     element.handleCreate(
       ref,
-      () => build(
-        limit: _$args.limit,
-        cacheDuration: _$args.cacheDuration,
-        keepAliveDuration: _$args.keepAliveDuration,
-      ),
+      () => build(limit: _$args.limit, cacheDuration: _$args.cacheDuration),
     );
   }
 }
@@ -431,5 +413,140 @@ abstract class _$CloudUserInfo extends $AsyncNotifier<CloudMusicUserData?> {
               Object?
             >;
     element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(CloudMusicPlaylistCatlist)
+final cloudMusicPlaylistCatlistProvider = CloudMusicPlaylistCatlistFamily._();
+
+final class CloudMusicPlaylistCatlistProvider
+    extends
+        $AsyncNotifierProvider<
+          CloudMusicPlaylistCatlist,
+          CloudMusicPlaylistDataList
+        > {
+  CloudMusicPlaylistCatlistProvider._({
+    required CloudMusicPlaylistCatlistFamily super.from,
+    required ({String cat, int limit, int offset, Duration? cacheDuration})
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'cloudMusicPlaylistCatlistProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudMusicPlaylistCatlistHash();
+
+  @override
+  String toString() {
+    return r'cloudMusicPlaylistCatlistProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  CloudMusicPlaylistCatlist create() => CloudMusicPlaylistCatlist();
+
+  @override
+  bool operator ==(Object other) {
+    return other is CloudMusicPlaylistCatlistProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$cloudMusicPlaylistCatlistHash() =>
+    r'6bbd8e6080d51492194017a8bb49c203a02e2fe3';
+
+final class CloudMusicPlaylistCatlistFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          CloudMusicPlaylistCatlist,
+          AsyncValue<CloudMusicPlaylistDataList>,
+          CloudMusicPlaylistDataList,
+          FutureOr<CloudMusicPlaylistDataList>,
+          ({String cat, int limit, int offset, Duration? cacheDuration})
+        > {
+  CloudMusicPlaylistCatlistFamily._()
+    : super(
+        retry: null,
+        name: r'cloudMusicPlaylistCatlistProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CloudMusicPlaylistCatlistProvider call({
+    required String cat,
+    int limit = 50,
+    int offset = 0,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) => CloudMusicPlaylistCatlistProvider._(
+    argument: (
+      cat: cat,
+      limit: limit,
+      offset: offset,
+      cacheDuration: cacheDuration,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'cloudMusicPlaylistCatlistProvider';
+}
+
+abstract class _$CloudMusicPlaylistCatlist
+    extends $AsyncNotifier<CloudMusicPlaylistDataList> {
+  late final _$args =
+      ref.$arg
+          as ({String cat, int limit, int offset, Duration? cacheDuration});
+  String get cat => _$args.cat;
+  int get limit => _$args.limit;
+  int get offset => _$args.offset;
+  Duration? get cacheDuration => _$args.cacheDuration;
+
+  FutureOr<CloudMusicPlaylistDataList> build({
+    required String cat,
+    int limit = 50,
+    int offset = 0,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  });
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<CloudMusicPlaylistDataList>,
+              CloudMusicPlaylistDataList
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<CloudMusicPlaylistDataList>,
+                CloudMusicPlaylistDataList
+              >,
+              AsyncValue<CloudMusicPlaylistDataList>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(
+      ref,
+      () => build(
+        cat: _$args.cat,
+        limit: _$args.limit,
+        offset: _$args.offset,
+        cacheDuration: _$args.cacheDuration,
+      ),
+    );
   }
 }

@@ -3,6 +3,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -15,10 +17,16 @@ class CloudPlaylistsCat<T extends ExtraProvider<CloudMusicPlaylistDataList>>
   const CloudPlaylistsCat({
     super.key,
     this.visibleRows = -1,
+    this.mainAxisSpacing = 10,
+    this.crossAxisSpacing = 20,
+    this.childAspectRatio = 0.75,
     required this.baseProvider,
   });
 
   final int visibleRows;
+  final double mainAxisSpacing;
+  final double crossAxisSpacing;
+  final double childAspectRatio;
   final $AsyncNotifierProvider<T, CloudMusicPlaylistDataList> baseProvider;
 
   int _calculateCrossAxisCount(
@@ -36,6 +44,12 @@ class CloudPlaylistsCat<T extends ExtraProvider<CloudMusicPlaylistDataList>>
     final maxCrossAxisExtent = 180 * size.multiplier;
     final scrollController = useScrollController();
     final isLoadingMore = useState(false);
+    final l10n = ref.watch(l10nProvider);
+
+    useEffect(() {
+      isLoadingMore.value = false;
+      return null;
+    }, [baseProvider]);
 
     useEffect(() {
       if (visibleRows != -1) return null;
@@ -78,7 +92,7 @@ class CloudPlaylistsCat<T extends ExtraProvider<CloudMusicPlaylistDataList>>
           scrollController.removeListener(onScroll);
         }
       };
-    }, [scrollController, visibleRows]);
+    }, [scrollController, visibleRows, baseProvider]);
 
     return playlists.when(
       data: (data) => _buildGrid(
@@ -89,6 +103,7 @@ class CloudPlaylistsCat<T extends ExtraProvider<CloudMusicPlaylistDataList>>
         size.multiplier2,
         scrollController,
         isLoadingMore.value,
+        l10n,
       ),
       loading: () => _buildShimmerLoading(
         context,
@@ -108,9 +123,11 @@ class CloudPlaylistsCat<T extends ExtraProvider<CloudMusicPlaylistDataList>>
     double multiplier,
     ScrollController scrollController,
     bool isLoadingMore,
+    AppLocalizations l10n,
   ) {
     final playlists = playlistsList.playlists;
     final total = playlistsList.total;
+
     final hasMore = visibleRows == -1 && playlists.length < total;
 
     return Padding(
@@ -143,19 +160,19 @@ class CloudPlaylistsCat<T extends ExtraProvider<CloudMusicPlaylistDataList>>
             shrinkWrap: !shouldEnableScroll,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 20,
-              childAspectRatio: 0.75,
+              mainAxisSpacing: mainAxisSpacing,
+              crossAxisSpacing: crossAxisSpacing,
+              childAspectRatio: childAspectRatio,
             ),
             itemCount: displayItems.length + (hasMore && isLoadingMore ? 1 : 0),
             itemBuilder: (context, index) {
               if (index == displayItems.length) {
-                return const Padding(
+                return Padding(
                   padding: EdgeInsets.all(16),
                   child: Center(
                     child: SizedBox(
-                      width: 20,
-                      height: 20,
+                      width: mainAxisSpacing,
+                      height: mainAxisSpacing,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                   ),
@@ -171,8 +188,26 @@ class CloudPlaylistsCat<T extends ExtraProvider<CloudMusicPlaylistDataList>>
               );
             },
           );
+          final showEndText = visibleRows == -1 && !hasMore;
+          if (!showEndText) {
+            return grid;
+          }
 
-          return grid;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(child: grid),
+              SizedBox(height: 10),
+              Text(
+                l10n.reach_end,
+                style: TextStyle(
+                  fontSize: 14 * multiplier,
+                  color: colorScheme.onSurface.withValues(alpha: 0.5),
+                ),
+              ),
+              SizedBox(height: 10),
+            ],
+          );
         },
       ),
     );
@@ -193,7 +228,7 @@ class CloudPlaylistsCat<T extends ExtraProvider<CloudMusicPlaylistDataList>>
             maxCrossAxisExtent,
           );
           final itemCount = visibleRows == -1
-              ? crossAxisCount * 2
+              ? 50
               : crossAxisCount * visibleRows;
 
           return GridView.builder(
@@ -201,9 +236,9 @@ class CloudPlaylistsCat<T extends ExtraProvider<CloudMusicPlaylistDataList>>
             shrinkWrap: true,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 20,
-              childAspectRatio: 0.75,
+              mainAxisSpacing: mainAxisSpacing,
+              crossAxisSpacing: crossAxisSpacing,
+              childAspectRatio: childAspectRatio,
             ),
             itemCount: itemCount,
             itemBuilder: (context, index) {
