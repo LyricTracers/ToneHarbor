@@ -14,9 +14,10 @@ class AddToPlaylistsPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final i10n = ref.watch(l10nProvider);
+    final l10n = ref.watch(l10nProvider);
     final colorScheme = getColorSchemeWhenReady(ref);
-    var width = MediaQuery.of(context).size.width;
+    final size = MediaQuery.of(context).size;
+    var width = size.width;
 
     final scrollController = useScrollController();
     final nameController = useTextEditingController();
@@ -26,9 +27,7 @@ class AddToPlaylistsPage extends HookConsumerWidget {
     final total = playlistsState.value?.data?.total ?? 0;
     final hasMore = playlists.length < total;
     final isLoadingMore = useState(false);
-    final l10n = ref.watch(l10nProvider);
     final favoritePlaylistsState = ref.watch(favoritePlaylistStateProvider);
-    final size = MediaQuery.of(context).size;
     useEffect(() {
       void onScroll() {
         if (!scrollController.hasClients) return;
@@ -90,14 +89,14 @@ class AddToPlaylistsPage extends HookConsumerWidget {
       children: [
         Container(
           width: targetWidth,
-          color: colorScheme.surface.withValues(alpha: 0.8),
+          color: colorScheme.surfaceContainerHighest,
           height: double.infinity,
           child: Column(
             children: [
               AppBar(
                 toolbarHeight: kToolbarHeight * size.multiplier3,
                 title: Text(
-                  i10n.add_to_playlists,
+                  l10n.add_to_playlists,
                   style: TextStyle(
                     fontSize: 16 * size.multiplier2,
                     fontWeight: FontWeight.bold,
@@ -115,7 +114,7 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                       );
                     },
                     icon: Icon(Icons.create_rounded, size: 18),
-                    tooltip: i10n.create_playlist,
+                    tooltip: l10n.create_playlist,
                   ),
                 ],
                 centerTitle: false,
@@ -126,7 +125,7 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                 child: playlistsState.when(
                   data: (data) {
                     if (playlists.isEmpty) {
-                      return Center(child: Text(i10n.no_playlists));
+                      return Center(child: Text(l10n.no_playlists));
                     }
 
                     return ListView.builder(
@@ -227,7 +226,7 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                                       ref.invalidate(songSelectionProvider);
                                       if (context.mounted) {
                                         showSnackBar(
-                                          i10n.addsong_to_playlist_success
+                                          l10n.addsong_to_playlist_success
                                               .replaceFirst(
                                                 "%s",
                                                 playlist.name,

@@ -224,7 +224,7 @@ class PlaylistPage extends HookConsumerWidget {
     return SafeArea(
       child: Container(
         width: targetWidth,
-        color: colorScheme.surface.withValues(alpha: 0.8),
+        color: colorScheme.surfaceContainerHighest,
         height: double.infinity,
         child: Column(
           children: [

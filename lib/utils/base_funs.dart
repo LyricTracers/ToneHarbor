@@ -767,7 +767,10 @@ Future<T?> showSlidePanel<T>({
     pageBuilder: (context, animation, secondaryAnimation) {
       return Align(
         alignment: Alignment.centerRight,
-        child: Material(color: Colors.transparent, child: builder(context)),
+        child: Material(
+          color: Colors.black.withValues(alpha: 0.8),
+          child: builder(context),
+        ),
       );
     },
   );
@@ -818,10 +821,17 @@ void showModalBottomSheetWidget(
   } else {
     showModalBottomSheet(
       context: context,
+      barrierLabel: 'modalSheet',
+      barrierColor: Colors.black.withValues(alpha: 0.3),
       backgroundColor: colorScheme.brightness == Brightness.dark
-          ? const Color(0xFF2D2D2D)
+          ? Colors.transparent
           : Colors.white,
-      builder: (context) => builder(context),
+      builder: (context) {
+        return Material(
+          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.8),
+          child: builder(context),
+        );
+      },
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/cloud_playlist_static_data.dart';
 import 'package:toneharbor/utils/responsive.dart';
+import 'package:toneharbor/widgets/pages/choose_playlist_category_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class _CategoryChipLayout extends HookConsumerWidget {
@@ -12,23 +13,23 @@ class _CategoryChipLayout extends HookConsumerWidget {
 
   final List<Widget> categoryChips;
   final Widget addButton;
-  final _wrapKey = GlobalKey();
+  final _measurementKey = GlobalKey();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final needScroll = useState(false);
-    final mediaQuerySize = MediaQuery.of(context).size;
+    final needScroll = useState<bool?>(null);
+    final allChips = [...categoryChips, const SizedBox(width: 8), addButton];
 
     useEffect(() {
       void checkLayout() {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           final renderBox =
-              _wrapKey.currentContext?.findRenderObject() as RenderBox?;
+              _measurementKey.currentContext?.findRenderObject() as RenderBox?;
           if (renderBox != null) {
-            final wrapWidth = renderBox.size.width;
+            final totalWidth = renderBox.size.width;
             final parentWidth =
                 (context.findRenderObject() as RenderBox).size.width;
-            needScroll.value = wrapWidth > parentWidth;
+            needScroll.value = totalWidth > parentWidth;
           }
         });
       }
@@ -43,48 +44,55 @@ class _CategoryChipLayout extends HookConsumerWidget {
       return () {
         WidgetsBinding.instance.removeObserver(observer);
       };
-    }, [categoryChips.length, mediaQuerySize]);
+    }, [categoryChips.length]);
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final allChips = [
-          ...categoryChips,
-          const SizedBox(width: 8),
-          addButton,
-        ];
-
-        if (needScroll.value) {
-          return Row(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Wrap(
-                    spacing: 5,
-                    runSpacing: 5,
-                    children: categoryChips,
+        return Stack(
+          children: [
+            Positioned(
+              left: -10000,
+              child: Opacity(
+                opacity: 0,
+                alwaysIncludeSemantics: false,
+                child: Wrap(
+                  key: _measurementKey,
+                  spacing: 5,
+                  runSpacing: 5,
+                  children: allChips,
+                ),
+              ),
+            ),
+            if (needScroll.value == null)
+              const SizedBox.shrink()
+            else if (needScroll.value!)
+              Row(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Wrap(
+                        spacing: 5,
+                        runSpacing: 5,
+                        children: categoryChips,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  addButton,
+                ],
+              )
+            else
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Container(
+                  constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                  child: Center(
+                    child: Wrap(spacing: 5, runSpacing: 5, children: allChips),
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
-              addButton,
-            ],
-          );
-        }
-
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Container(
-            constraints: BoxConstraints(minWidth: constraints.maxWidth),
-            child: Center(
-              child: Wrap(
-                key: _wrapKey,
-                spacing: 5,
-                runSpacing: 5,
-                children: allChips,
-              ),
-            ),
-          ),
+          ],
         );
       },
     );
@@ -213,8 +221,6 @@ class CloudPlaylistCategoryListPage extends HookConsumerWidget {
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        backgroundColor: Colors.transparent,
-        selectedColor: colorScheme.primaryContainer.withValues(alpha: 0.5),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: isSelected
@@ -239,7 +245,20 @@ class CloudPlaylistCategoryListPage extends HookConsumerWidget {
 
     final addButton = IconButton(
       icon: Icon(Icons.add, size: 18),
-      onPressed: () {},
+      onPressed: () {
+        if (size.mdAndUp) {
+          showSlidePanel(
+            context: context,
+            builder: (context) => const ChoosePlaylistCategoryPage(),
+          );
+        } else {
+          showModalBottomSheetWidget(
+            context,
+            colorScheme,
+            (context) => const ChoosePlaylistCategoryPage(),
+          );
+        }
+      },
       style: IconButton.styleFrom(
         backgroundColor: colorScheme.primaryContainer,
         shape: const CircleBorder(),
