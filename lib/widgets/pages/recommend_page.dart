@@ -300,7 +300,18 @@ class RecommendPage extends HookConsumerWidget {
                         color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                       SizedBox(height: 15),
-                      const CloudMusicArtistHorizontalList(limit: 15),
+                      CloudMusicArtistHorizontalList(
+                        limit: 10,
+                        cloudLayoutConfig: CloudMusicArtistLayoutConfig
+                            .defaultConfig
+                            .copyWith(
+                              height: 220,
+                              fontSize: 14,
+                              horizontalPadding: 24,
+                              itemSpacing: 24,
+                              itemWidth: 180,
+                            ),
+                      ),
                       SizedBox(height: 15),
                     ],
                   ],

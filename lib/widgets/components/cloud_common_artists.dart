@@ -5,32 +5,53 @@ import 'package:toneharbor/providers/cloud_music/cloud_music_provider.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
 
-class _LayoutConfig {
-  const _LayoutConfig({
+class CloudMusicArtistLayoutConfig {
+  const CloudMusicArtistLayoutConfig({
     required this.height,
     required this.itemWidth,
     required this.itemSpacing,
     required this.horizontalPadding,
+    required this.fontSize,
   });
 
   final double height;
   final double itemWidth;
   final double itemSpacing;
   final double horizontalPadding;
+  final double fontSize;
 
-  static const _LayoutConfig defaultConfig = _LayoutConfig(
-    height: 160,
-    itemWidth: 100,
-    itemSpacing: 16,
-    horizontalPadding: 16,
-  );
+  static const CloudMusicArtistLayoutConfig defaultConfig =
+      CloudMusicArtistLayoutConfig(
+        height: 160,
+        itemWidth: 100,
+        itemSpacing: 16,
+        horizontalPadding: 16,
+        fontSize: 13,
+      );
 
-  _LayoutConfig withMultiplier(double multiplier) {
-    return _LayoutConfig(
+  CloudMusicArtistLayoutConfig withMultiplier(double multiplier) {
+    return CloudMusicArtistLayoutConfig(
       height: height * multiplier,
       itemWidth: itemWidth * multiplier,
       itemSpacing: itemSpacing * multiplier,
       horizontalPadding: horizontalPadding * multiplier,
+      fontSize: fontSize * multiplier,
+    );
+  }
+
+  CloudMusicArtistLayoutConfig copyWith({
+    double? height,
+    double? itemWidth,
+    double? itemSpacing,
+    double? horizontalPadding,
+    double? fontSize,
+  }) {
+    return CloudMusicArtistLayoutConfig(
+      height: height ?? this.height,
+      itemWidth: itemWidth ?? this.itemWidth,
+      itemSpacing: itemSpacing ?? this.itemSpacing,
+      horizontalPadding: horizontalPadding ?? this.horizontalPadding,
+      fontSize: fontSize ?? this.fontSize,
     );
   }
 }
@@ -40,10 +61,12 @@ class CloudMusicArtistItem extends StatelessWidget {
     super.key,
     required this.artist,
     required this.colorScheme,
+    required this.cloudLayoutConfig,
   });
 
   final CloudMusicArtistData artist;
   final ColorScheme colorScheme;
+  final CloudMusicArtistLayoutConfig cloudLayoutConfig;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +79,7 @@ class CloudMusicArtistItem extends StatelessWidget {
       onTap: () {},
       borderRadius: BorderRadius.circular(12),
       child: SizedBox(
-        width: 100,
+        width: cloudLayoutConfig.itemWidth,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -66,8 +89,7 @@ class CloudMusicArtistItem extends StatelessWidget {
                 imageUrl: artist.picUrl ?? '',
                 colorScheme: colorScheme,
                 config: CloudMusicCoverImageConfig(
-                  size: 100,
-                  borderRadius: 12,
+                  size: cloudLayoutConfig.itemWidth,
                   isCircular: true,
                 ),
               ),
@@ -81,7 +103,7 @@ class CloudMusicArtistItem extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: cloudLayoutConfig.fontSize,
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
@@ -96,18 +118,20 @@ class CloudMusicArtistItem extends StatelessWidget {
 class CloudMusicArtistHorizontalList extends ConsumerWidget {
   const CloudMusicArtistHorizontalList({
     super.key,
-    this.limit = 6,
+    this.limit = 10,
     this.onArtistTap,
+    this.cloudLayoutConfig = CloudMusicArtistLayoutConfig.defaultConfig,
   });
 
   final int limit;
   final void Function(CloudMusicArtistData artist)? onArtistTap;
+  final CloudMusicArtistLayoutConfig cloudLayoutConfig;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final size = MediaQuery.of(context).size;
-    final config = _LayoutConfig.defaultConfig.withMultiplier(size.multiplier2);
+    final config = cloudLayoutConfig.withMultiplier(size.multiplier);
     final artistsAsync = ref.watch(
       recommendTopArtistProvider(
         limit: limit,
@@ -129,6 +153,7 @@ class CloudMusicArtistHorizontalList extends ConsumerWidget {
               child: CloudMusicArtistItem(
                 artist: artist,
                 colorScheme: colorScheme,
+                cloudLayoutConfig: config,
               ),
             );
           },
@@ -143,7 +168,10 @@ class CloudMusicArtistHorizontalList extends ConsumerWidget {
           itemBuilder: (context, index) {
             return Padding(
               padding: EdgeInsets.only(right: config.itemSpacing),
-              child: CloudMusicArtistItemShimmer(colorScheme: colorScheme),
+              child: CloudMusicArtistItemShimmer(
+                colorScheme: colorScheme,
+                cloudLayoutConfig: config,
+              ),
             );
           },
         ),
@@ -154,15 +182,20 @@ class CloudMusicArtistHorizontalList extends ConsumerWidget {
 }
 
 class CloudMusicArtistItemShimmer extends StatelessWidget {
-  const CloudMusicArtistItemShimmer({super.key, required this.colorScheme});
+  const CloudMusicArtistItemShimmer({
+    super.key,
+    required this.colorScheme,
+    required this.cloudLayoutConfig,
+  });
 
   final ColorScheme colorScheme;
+  final CloudMusicArtistLayoutConfig cloudLayoutConfig;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = this.colorScheme;
     return SizedBox(
-      width: 100,
+      width: cloudLayoutConfig.itemWidth,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -177,7 +210,7 @@ class CloudMusicArtistItemShimmer extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Container(
-            width: 60,
+            width: cloudLayoutConfig.itemWidth * 0.7,
             height: 12,
             decoration: BoxDecoration(
               color: colorScheme.surfaceContainerHighest,
