@@ -77,8 +77,12 @@ class CloudPlaylistCategoryListPage extends HookConsumerWidget {
         label: Text(categoryName),
         labelStyle: TextStyle(
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          fontSize: 14 * size.multiplier2,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        padding: EdgeInsets.symmetric(
+          horizontal: 8 * size.multiplier2,
+          vertical: 2,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: isSelected
@@ -121,7 +125,7 @@ class CloudPlaylistCategoryListPage extends HookConsumerWidget {
         backgroundColor: colorScheme.primaryContainer,
         shape: const CircleBorder(),
         padding: EdgeInsets.zero,
-        minimumSize: Size(32, 32),
+        minimumSize: Size(32 * size.multiplier2, 32 * size.multiplier2),
       ),
     );
 
