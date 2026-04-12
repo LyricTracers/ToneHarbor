@@ -130,7 +130,7 @@ extension Contextbreakpoints on BuildContext {
     if (size.lgAndUp) {
       final router = GoRouter.of(this);
       if (router.state.path?.startsWith("/mobile") ?? false) {
-        go(location);
+        go(location, extra: extra);
         return;
       }
       await push<T>(location, extra: extra);

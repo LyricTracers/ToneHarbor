@@ -136,7 +136,7 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
               if (ref.read(songSelectionProvider).selectionType) {
                 ref.invalidate(songSelectionProvider);
               } else {
-                context.pop();
+                context.popWrap();
               }
             },
           ),

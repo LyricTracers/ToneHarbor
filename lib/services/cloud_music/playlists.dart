@@ -354,6 +354,76 @@ Future<List<CloudMusicPlaylistData>> recommendPlaylist(
   }
 }
 
+Future<CloudMusicPlaylistDataList> getToplist(
+  Ref ref, {
+  Duration? cacheDuration = const Duration(minutes: 60),
+}) async {
+  final l10n = ref.read(l10nProvider);
+  final cacheKey = 'cloud_playlistCat:toplist';
+  final groupKey = 'cloud_playlistCat';
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+  if (cacheDuration != null) {
+    final cached = await getFromCache<CloudMusicPlaylistDataList>(
+      cacheKey: cacheKey,
+      group: groupKey,
+      fromJson: (json) {
+        if (json['code'] != 200) {
+          return CloudMusicPlaylistDataList(playlists: [], total: 0);
+        }
+        final resultList = json['list'] as List? ?? [];
+        if (resultList.isEmpty) {
+          return CloudMusicPlaylistDataList(playlists: [], total: 0);
+        }
+        final playlists = resultList
+            .map((l) => CloudMusicPlaylistData.fromJson(l))
+            .toList();
+        return CloudMusicPlaylistDataList(
+          playlists: playlists,
+          total: playlists.length,
+        );
+      },
+    );
+    if (cached != null && cached.playlists.isNotEmpty) {
+      return cached;
+    }
+  }
+  final response = await httpClientWrapper.get(
+    '${apiState.defaultUrl}/toplist',
+    cancelToken: ref.cancelToken(),
+  );
+  if (response.statusCode != 200) {
+    logger.e('请求失败，状态码：${response.statusCode}');
+    throw CloudMusicException(
+      message: l10n.error_getPlaylists_failed,
+      statusCode: response.statusCode,
+    );
+  }
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw CloudMusicException(message: l10n.error_response_parse_failed);
+  }
+  if (jsonBody['code'] != 200) {
+    throw CloudMusicException(
+      message: l10n.error_getPlaylists_failed,
+      statusCode: jsonBody['code'],
+    );
+  }
+  final resultList = jsonBody['list'] as List? ?? [];
+  if (resultList.isEmpty) {
+    return CloudMusicPlaylistDataList(playlists: [], total: 0);
+  }
+  var playlists = resultList
+      .map((l) => CloudMusicPlaylistData.fromJson(l))
+      .toList();
+  return CloudMusicPlaylistDataList(
+    playlists: playlists,
+    total: playlists.length,
+  );
+}
+
 Future<CloudMusicPlaylistDataList> getPlaylistCatlist(
   Ref ref, {
   required String cat,
@@ -361,6 +431,9 @@ Future<CloudMusicPlaylistDataList> getPlaylistCatlist(
   int offset = 0,
   Duration? cacheDuration = const Duration(minutes: 60),
 }) async {
+  if (cat == "排行榜") {
+    return await getToplist(ref, cacheDuration: cacheDuration);
+  }
   final l10n = ref.read(l10nProvider);
   final cacheKey = 'cloud_playlistCat:$cat$limit$offset';
   final groupKey = 'cloud_playlistCat';
