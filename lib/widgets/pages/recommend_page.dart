@@ -5,7 +5,7 @@ import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/cloud_playlist_static_data.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_common_artists.dart';
-import 'package:toneharbor/widgets/components/cloud_recommend_playlists.dart';
+import 'package:toneharbor/widgets/components/cloud_playlists_cat.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class RecommendPage extends HookConsumerWidget {
@@ -269,10 +269,9 @@ class RecommendPage extends HookConsumerWidget {
                         color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                       SizedBox(height: 15),
-                      CloudRecommendPlaylists(
-                        onPlaylistTap: (playlist) {
-                          context.pushWrapper("/cloud-detail", extra: playlist);
-                        },
+                      CloudPlaylistsCat(
+                        baseProvider: recommendPlaylistsProvider(limit: 12),
+                        visibleRows: 2,
                       ),
                       Padding(
                         padding: const EdgeInsets.only(

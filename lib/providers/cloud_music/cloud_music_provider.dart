@@ -17,39 +17,70 @@ bool shouldUseCloudMusicHome(Ref ref) {
 }
 
 @riverpod
-Future<List<CloudMusicPlaylistData>> recommendPlaylists(
+class RecommendPlaylists extends _$RecommendPlaylists
+    with ExtraProvider<CloudMusicPlaylistDataList> {
+  @override
+  Future<CloudMusicPlaylistDataList> build({
+    int limit = 10,
+    Duration? cacheDuration = const Duration(minutes: 60),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
+  }) async {
+    ref.keepAliveFor(keepAliveDuration);
+    return await recommendPlaylists(
+      ref,
+      limit: limit,
+      cacheDuration: cacheDuration,
+      keepAliveDuration: keepAliveDuration,
+    );
+  }
+
+  @override
+  Future<void> loadMore() async {}
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {}
+}
+
+Future<CloudMusicPlaylistDataList> recommendPlaylists(
   Ref ref, {
   int limit = 10,
   Duration? cacheDuration = const Duration(minutes: 60),
   Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
-  final link = ref.keepAliveFor(keepAliveDuration);
   final apiState = ref.watch(cloudMusicApiUrlsProvider);
   final loginState = ref.watch(cloudMusicAuthStateProvider);
   if (apiState.defaultUrl.isNotEmpty) {
-    try {
-      if (loginState) {
-        final playlists = await Future.wait([
-          dailyRecommendPlaylist(ref, cacheDuration: cacheDuration),
-          recommendPlaylist(ref, limit: limit, cacheDuration: cacheDuration),
-        ]);
-        final dailyRecommend = playlists[0];
-        final recommend = playlists[1];
-        return [...dailyRecommend, ...recommend].take(limit).toList();
-      } else {
-        return await recommendPlaylist(
-          ref,
-          limit: limit,
-          cacheDuration: cacheDuration,
-        );
-      }
-    } finally {
-      if (keepAliveDuration == null) {
-        link.close();
-      }
+    if (loginState) {
+      final playlists = await Future.wait([
+        dailyRecommendPlaylist(ref, cacheDuration: cacheDuration),
+        recommendPlaylist(ref, limit: limit, cacheDuration: cacheDuration),
+      ]);
+      final dailyRecommend = playlists[0];
+      final recommend = playlists[1];
+      final playlistsList = [
+        ...dailyRecommend,
+        ...recommend,
+      ].take(limit).toList();
+      return CloudMusicPlaylistDataList(
+        playlists: playlistsList,
+        total: playlistsList.length,
+      );
+    } else {
+      final playlistsList = await recommendPlaylist(
+        ref,
+        limit: limit,
+        cacheDuration: cacheDuration,
+      );
+      return CloudMusicPlaylistDataList(
+        playlists: playlistsList,
+        total: playlistsList.length,
+      );
     }
   }
-  return const [];
+  return const CloudMusicPlaylistDataList(playlists: [], total: 0);
 }
 
 @riverpod

@@ -6,6 +6,22 @@ part of 'cloud_music_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+_CloudMusicPlaylistDataList _$CloudMusicPlaylistDataListFromJson(
+  Map<String, dynamic> json,
+) => _CloudMusicPlaylistDataList(
+  playlists: (json['playlists'] as List<dynamic>)
+      .map((e) => CloudMusicPlaylistData.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  total: (json['total'] as num).toInt(),
+);
+
+Map<String, dynamic> _$CloudMusicPlaylistDataListToJson(
+  _CloudMusicPlaylistDataList instance,
+) => <String, dynamic>{
+  'playlists': instance.playlists,
+  'total': instance.total,
+};
+
 _CloudMusicPlaylistData _$CloudMusicPlaylistDataFromJson(
   Map<String, dynamic> json,
 ) => _CloudMusicPlaylistData(
@@ -20,9 +36,11 @@ _CloudMusicPlaylistData _$CloudMusicPlaylistDataFromJson(
   playCount: (json['playCount'] as num?)?.toInt(),
   trackCount: (json['trackCount'] as num?)?.toInt(),
   createTime: (json['createTime'] as num?)?.toInt(),
+  updateTime: (json['updateTime'] as num?)?.toInt(),
   updateFrequency: json['updateFrequency'] as String?,
   copywriter: json['copywriter'] as String?,
   privacy: (json['privacy'] as num?)?.toInt(),
+  totalDuration: (json['totalDuration'] as num?)?.toDouble(),
 );
 
 Map<String, dynamic> _$CloudMusicPlaylistDataToJson(
@@ -37,9 +55,11 @@ Map<String, dynamic> _$CloudMusicPlaylistDataToJson(
   'playCount': instance.playCount,
   'trackCount': instance.trackCount,
   'createTime': instance.createTime,
+  'updateTime': instance.updateTime,
   'updateFrequency': instance.updateFrequency,
   'copywriter': instance.copywriter,
   'privacy': instance.privacy,
+  'totalDuration': instance.totalDuration,
 };
 
 _CloudMusicAlbumData _$CloudMusicAlbumDataFromJson(Map<String, dynamic> json) =>
@@ -280,6 +300,7 @@ _CloudMusicUserData _$CloudMusicUserDataFromJson(Map<String, dynamic> json) =>
       userId: (json['userId'] as num).toInt(),
       nickname: json['nickname'] as String,
       avatarUrl: json['avatarUrl'] as String?,
+      backgroundUrl: json['backgroundUrl'] as String?,
       vipType: (json['vipType'] as num?)?.toInt(),
       createTime: (json['createTime'] as num?)?.toInt(),
       signature: json['signature'] as String?,
@@ -291,6 +312,7 @@ Map<String, dynamic> _$CloudMusicUserDataToJson(_CloudMusicUserData instance) =>
       'userId': instance.userId,
       'nickname': instance.nickname,
       'avatarUrl': instance.avatarUrl,
+      'backgroundUrl': instance.backgroundUrl,
       'vipType': instance.vipType,
       'createTime': instance.createTime,
       'signature': instance.signature,

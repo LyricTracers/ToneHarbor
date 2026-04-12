@@ -51,19 +51,12 @@ final class ShouldUseCloudMusicHomeProvider
 String _$shouldUseCloudMusicHomeHash() =>
     r'9e560abf60ff1ec7433de82cc93033490f003971';
 
-@ProviderFor(recommendPlaylists)
+@ProviderFor(RecommendPlaylists)
 final recommendPlaylistsProvider = RecommendPlaylistsFamily._();
 
 final class RecommendPlaylistsProvider
     extends
-        $FunctionalProvider<
-          AsyncValue<List<CloudMusicPlaylistData>>,
-          List<CloudMusicPlaylistData>,
-          FutureOr<List<CloudMusicPlaylistData>>
-        >
-    with
-        $FutureModifier<List<CloudMusicPlaylistData>>,
-        $FutureProvider<List<CloudMusicPlaylistData>> {
+        $AsyncNotifierProvider<RecommendPlaylists, CloudMusicPlaylistDataList> {
   RecommendPlaylistsProvider._({
     required RecommendPlaylistsFamily super.from,
     required ({int limit, Duration? cacheDuration, Duration? keepAliveDuration})
@@ -88,26 +81,7 @@ final class RecommendPlaylistsProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<CloudMusicPlaylistData>> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<List<CloudMusicPlaylistData>> create(Ref ref) {
-    final argument =
-        this.argument
-            as ({
-              int limit,
-              Duration? cacheDuration,
-              Duration? keepAliveDuration,
-            });
-    return recommendPlaylists(
-      ref,
-      limit: argument.limit,
-      cacheDuration: argument.cacheDuration,
-      keepAliveDuration: argument.keepAliveDuration,
-    );
-  }
+  RecommendPlaylists create() => RecommendPlaylists();
 
   @override
   bool operator ==(Object other) {
@@ -121,12 +95,15 @@ final class RecommendPlaylistsProvider
 }
 
 String _$recommendPlaylistsHash() =>
-    r'08edfc2325b300588690194bb9c34010fca28926';
+    r'5a7ccf1a7746a310eec89f62b1dcdff53be43445';
 
 final class RecommendPlaylistsFamily extends $Family
     with
-        $FunctionalFamilyOverride<
-          FutureOr<List<CloudMusicPlaylistData>>,
+        $ClassFamilyOverride<
+          RecommendPlaylists,
+          AsyncValue<CloudMusicPlaylistDataList>,
+          CloudMusicPlaylistDataList,
+          FutureOr<CloudMusicPlaylistDataList>,
           ({int limit, Duration? cacheDuration, Duration? keepAliveDuration})
         > {
   RecommendPlaylistsFamily._()
@@ -153,6 +130,55 @@ final class RecommendPlaylistsFamily extends $Family
 
   @override
   String toString() => r'recommendPlaylistsProvider';
+}
+
+abstract class _$RecommendPlaylists
+    extends $AsyncNotifier<CloudMusicPlaylistDataList> {
+  late final _$args =
+      ref.$arg
+          as ({
+            int limit,
+            Duration? cacheDuration,
+            Duration? keepAliveDuration,
+          });
+  int get limit => _$args.limit;
+  Duration? get cacheDuration => _$args.cacheDuration;
+  Duration? get keepAliveDuration => _$args.keepAliveDuration;
+
+  FutureOr<CloudMusicPlaylistDataList> build({
+    int limit = 10,
+    Duration? cacheDuration = const Duration(minutes: 60),
+    Duration? keepAliveDuration = const Duration(minutes: 5),
+  });
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<CloudMusicPlaylistDataList>,
+              CloudMusicPlaylistDataList
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<CloudMusicPlaylistDataList>,
+                CloudMusicPlaylistDataList
+              >,
+              AsyncValue<CloudMusicPlaylistDataList>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(
+      ref,
+      () => build(
+        limit: _$args.limit,
+        cacheDuration: _$args.cacheDuration,
+        keepAliveDuration: _$args.keepAliveDuration,
+      ),
+    );
+  }
 }
 
 @ProviderFor(recommendTopArtist)

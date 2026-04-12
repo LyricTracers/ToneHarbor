@@ -13,9 +13,275 @@ part of 'cloud_music_models.dart';
 T _$identity<T>(T value) => value;
 
 /// @nodoc
+mixin _$CloudMusicPlaylistDataList {
+
+ List<CloudMusicPlaylistData> get playlists; int get total;
+/// Create a copy of CloudMusicPlaylistDataList
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CloudMusicPlaylistDataListCopyWith<CloudMusicPlaylistDataList> get copyWith => _$CloudMusicPlaylistDataListCopyWithImpl<CloudMusicPlaylistDataList>(this as CloudMusicPlaylistDataList, _$identity);
+
+  /// Serializes this CloudMusicPlaylistDataList to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CloudMusicPlaylistDataList&&const DeepCollectionEquality().equals(other.playlists, playlists)&&(identical(other.total, total) || other.total == total));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(playlists),total);
+
+@override
+String toString() {
+  return 'CloudMusicPlaylistDataList(playlists: $playlists, total: $total)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CloudMusicPlaylistDataListCopyWith<$Res>  {
+  factory $CloudMusicPlaylistDataListCopyWith(CloudMusicPlaylistDataList value, $Res Function(CloudMusicPlaylistDataList) _then) = _$CloudMusicPlaylistDataListCopyWithImpl;
+@useResult
+$Res call({
+ List<CloudMusicPlaylistData> playlists, int total
+});
+
+
+
+
+}
+/// @nodoc
+class _$CloudMusicPlaylistDataListCopyWithImpl<$Res>
+    implements $CloudMusicPlaylistDataListCopyWith<$Res> {
+  _$CloudMusicPlaylistDataListCopyWithImpl(this._self, this._then);
+
+  final CloudMusicPlaylistDataList _self;
+  final $Res Function(CloudMusicPlaylistDataList) _then;
+
+/// Create a copy of CloudMusicPlaylistDataList
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? playlists = null,Object? total = null,}) {
+  return _then(_self.copyWith(
+playlists: null == playlists ? _self.playlists : playlists // ignore: cast_nullable_to_non_nullable
+as List<CloudMusicPlaylistData>,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [CloudMusicPlaylistDataList].
+extension CloudMusicPlaylistDataListPatterns on CloudMusicPlaylistDataList {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CloudMusicPlaylistDataList value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _CloudMusicPlaylistDataList() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CloudMusicPlaylistDataList value)  $default,){
+final _that = this;
+switch (_that) {
+case _CloudMusicPlaylistDataList():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CloudMusicPlaylistDataList value)?  $default,){
+final _that = this;
+switch (_that) {
+case _CloudMusicPlaylistDataList() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<CloudMusicPlaylistData> playlists,  int total)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _CloudMusicPlaylistDataList() when $default != null:
+return $default(_that.playlists,_that.total);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<CloudMusicPlaylistData> playlists,  int total)  $default,) {final _that = this;
+switch (_that) {
+case _CloudMusicPlaylistDataList():
+return $default(_that.playlists,_that.total);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<CloudMusicPlaylistData> playlists,  int total)?  $default,) {final _that = this;
+switch (_that) {
+case _CloudMusicPlaylistDataList() when $default != null:
+return $default(_that.playlists,_that.total);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _CloudMusicPlaylistDataList extends CloudMusicPlaylistDataList {
+  const _CloudMusicPlaylistDataList({required final  List<CloudMusicPlaylistData> playlists, required this.total}): _playlists = playlists,super._();
+  factory _CloudMusicPlaylistDataList.fromJson(Map<String, dynamic> json) => _$CloudMusicPlaylistDataListFromJson(json);
+
+ final  List<CloudMusicPlaylistData> _playlists;
+@override List<CloudMusicPlaylistData> get playlists {
+  if (_playlists is EqualUnmodifiableListView) return _playlists;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_playlists);
+}
+
+@override final  int total;
+
+/// Create a copy of CloudMusicPlaylistDataList
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CloudMusicPlaylistDataListCopyWith<_CloudMusicPlaylistDataList> get copyWith => __$CloudMusicPlaylistDataListCopyWithImpl<_CloudMusicPlaylistDataList>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CloudMusicPlaylistDataListToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CloudMusicPlaylistDataList&&const DeepCollectionEquality().equals(other._playlists, _playlists)&&(identical(other.total, total) || other.total == total));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_playlists),total);
+
+@override
+String toString() {
+  return 'CloudMusicPlaylistDataList(playlists: $playlists, total: $total)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CloudMusicPlaylistDataListCopyWith<$Res> implements $CloudMusicPlaylistDataListCopyWith<$Res> {
+  factory _$CloudMusicPlaylistDataListCopyWith(_CloudMusicPlaylistDataList value, $Res Function(_CloudMusicPlaylistDataList) _then) = __$CloudMusicPlaylistDataListCopyWithImpl;
+@override @useResult
+$Res call({
+ List<CloudMusicPlaylistData> playlists, int total
+});
+
+
+
+
+}
+/// @nodoc
+class __$CloudMusicPlaylistDataListCopyWithImpl<$Res>
+    implements _$CloudMusicPlaylistDataListCopyWith<$Res> {
+  __$CloudMusicPlaylistDataListCopyWithImpl(this._self, this._then);
+
+  final _CloudMusicPlaylistDataList _self;
+  final $Res Function(_CloudMusicPlaylistDataList) _then;
+
+/// Create a copy of CloudMusicPlaylistDataList
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? playlists = null,Object? total = null,}) {
+  return _then(_CloudMusicPlaylistDataList(
+playlists: null == playlists ? _self._playlists : playlists // ignore: cast_nullable_to_non_nullable
+as List<CloudMusicPlaylistData>,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$CloudMusicPlaylistData {
 
- int get id; String get name; String? get picUrl; CloudMusicUserData? get creator; String? get coverImgUrl; String? get description; int? get playCount; int? get trackCount; int? get createTime; String? get updateFrequency; String? get copywriter; int? get privacy;
+ int get id; String get name; String? get picUrl; CloudMusicUserData? get creator; String? get coverImgUrl; String? get description; int? get playCount; int? get trackCount; int? get createTime; int? get updateTime; String? get updateFrequency; String? get copywriter; int? get privacy; double? get totalDuration;
 /// Create a copy of CloudMusicPlaylistData
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +294,16 @@ $CloudMusicPlaylistDataCopyWith<CloudMusicPlaylistData> get copyWith => _$CloudM
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CloudMusicPlaylistData&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.picUrl, picUrl) || other.picUrl == picUrl)&&(identical(other.creator, creator) || other.creator == creator)&&(identical(other.coverImgUrl, coverImgUrl) || other.coverImgUrl == coverImgUrl)&&(identical(other.description, description) || other.description == description)&&(identical(other.playCount, playCount) || other.playCount == playCount)&&(identical(other.trackCount, trackCount) || other.trackCount == trackCount)&&(identical(other.createTime, createTime) || other.createTime == createTime)&&(identical(other.updateFrequency, updateFrequency) || other.updateFrequency == updateFrequency)&&(identical(other.copywriter, copywriter) || other.copywriter == copywriter)&&(identical(other.privacy, privacy) || other.privacy == privacy));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CloudMusicPlaylistData&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.picUrl, picUrl) || other.picUrl == picUrl)&&(identical(other.creator, creator) || other.creator == creator)&&(identical(other.coverImgUrl, coverImgUrl) || other.coverImgUrl == coverImgUrl)&&(identical(other.description, description) || other.description == description)&&(identical(other.playCount, playCount) || other.playCount == playCount)&&(identical(other.trackCount, trackCount) || other.trackCount == trackCount)&&(identical(other.createTime, createTime) || other.createTime == createTime)&&(identical(other.updateTime, updateTime) || other.updateTime == updateTime)&&(identical(other.updateFrequency, updateFrequency) || other.updateFrequency == updateFrequency)&&(identical(other.copywriter, copywriter) || other.copywriter == copywriter)&&(identical(other.privacy, privacy) || other.privacy == privacy)&&(identical(other.totalDuration, totalDuration) || other.totalDuration == totalDuration));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,picUrl,creator,coverImgUrl,description,playCount,trackCount,createTime,updateFrequency,copywriter,privacy);
+int get hashCode => Object.hash(runtimeType,id,name,picUrl,creator,coverImgUrl,description,playCount,trackCount,createTime,updateTime,updateFrequency,copywriter,privacy,totalDuration);
 
 @override
 String toString() {
-  return 'CloudMusicPlaylistData(id: $id, name: $name, picUrl: $picUrl, creator: $creator, coverImgUrl: $coverImgUrl, description: $description, playCount: $playCount, trackCount: $trackCount, createTime: $createTime, updateFrequency: $updateFrequency, copywriter: $copywriter, privacy: $privacy)';
+  return 'CloudMusicPlaylistData(id: $id, name: $name, picUrl: $picUrl, creator: $creator, coverImgUrl: $coverImgUrl, description: $description, playCount: $playCount, trackCount: $trackCount, createTime: $createTime, updateTime: $updateTime, updateFrequency: $updateFrequency, copywriter: $copywriter, privacy: $privacy, totalDuration: $totalDuration)';
 }
 
 
@@ -48,7 +314,7 @@ abstract mixin class $CloudMusicPlaylistDataCopyWith<$Res>  {
   factory $CloudMusicPlaylistDataCopyWith(CloudMusicPlaylistData value, $Res Function(CloudMusicPlaylistData) _then) = _$CloudMusicPlaylistDataCopyWithImpl;
 @useResult
 $Res call({
- int id, String name, String? picUrl, CloudMusicUserData? creator, String? coverImgUrl, String? description, int? playCount, int? trackCount, int? createTime, String? updateFrequency, String? copywriter, int? privacy
+ int id, String name, String? picUrl, CloudMusicUserData? creator, String? coverImgUrl, String? description, int? playCount, int? trackCount, int? createTime, int? updateTime, String? updateFrequency, String? copywriter, int? privacy, double? totalDuration
 });
 
 
@@ -65,7 +331,7 @@ class _$CloudMusicPlaylistDataCopyWithImpl<$Res>
 
 /// Create a copy of CloudMusicPlaylistData
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? picUrl = freezed,Object? creator = freezed,Object? coverImgUrl = freezed,Object? description = freezed,Object? playCount = freezed,Object? trackCount = freezed,Object? createTime = freezed,Object? updateFrequency = freezed,Object? copywriter = freezed,Object? privacy = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? picUrl = freezed,Object? creator = freezed,Object? coverImgUrl = freezed,Object? description = freezed,Object? playCount = freezed,Object? trackCount = freezed,Object? createTime = freezed,Object? updateTime = freezed,Object? updateFrequency = freezed,Object? copywriter = freezed,Object? privacy = freezed,Object? totalDuration = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -76,10 +342,12 @@ as String?,description: freezed == description ? _self.description : description
 as String?,playCount: freezed == playCount ? _self.playCount : playCount // ignore: cast_nullable_to_non_nullable
 as int?,trackCount: freezed == trackCount ? _self.trackCount : trackCount // ignore: cast_nullable_to_non_nullable
 as int?,createTime: freezed == createTime ? _self.createTime : createTime // ignore: cast_nullable_to_non_nullable
+as int?,updateTime: freezed == updateTime ? _self.updateTime : updateTime // ignore: cast_nullable_to_non_nullable
 as int?,updateFrequency: freezed == updateFrequency ? _self.updateFrequency : updateFrequency // ignore: cast_nullable_to_non_nullable
 as String?,copywriter: freezed == copywriter ? _self.copywriter : copywriter // ignore: cast_nullable_to_non_nullable
 as String?,privacy: freezed == privacy ? _self.privacy : privacy // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,totalDuration: freezed == totalDuration ? _self.totalDuration : totalDuration // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 /// Create a copy of CloudMusicPlaylistData
@@ -173,10 +441,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  String? picUrl,  CloudMusicUserData? creator,  String? coverImgUrl,  String? description,  int? playCount,  int? trackCount,  int? createTime,  String? updateFrequency,  String? copywriter,  int? privacy)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  String? picUrl,  CloudMusicUserData? creator,  String? coverImgUrl,  String? description,  int? playCount,  int? trackCount,  int? createTime,  int? updateTime,  String? updateFrequency,  String? copywriter,  int? privacy,  double? totalDuration)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CloudMusicPlaylistData() when $default != null:
-return $default(_that.id,_that.name,_that.picUrl,_that.creator,_that.coverImgUrl,_that.description,_that.playCount,_that.trackCount,_that.createTime,_that.updateFrequency,_that.copywriter,_that.privacy);case _:
+return $default(_that.id,_that.name,_that.picUrl,_that.creator,_that.coverImgUrl,_that.description,_that.playCount,_that.trackCount,_that.createTime,_that.updateTime,_that.updateFrequency,_that.copywriter,_that.privacy,_that.totalDuration);case _:
   return orElse();
 
 }
@@ -194,10 +462,10 @@ return $default(_that.id,_that.name,_that.picUrl,_that.creator,_that.coverImgUrl
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  String? picUrl,  CloudMusicUserData? creator,  String? coverImgUrl,  String? description,  int? playCount,  int? trackCount,  int? createTime,  String? updateFrequency,  String? copywriter,  int? privacy)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  String? picUrl,  CloudMusicUserData? creator,  String? coverImgUrl,  String? description,  int? playCount,  int? trackCount,  int? createTime,  int? updateTime,  String? updateFrequency,  String? copywriter,  int? privacy,  double? totalDuration)  $default,) {final _that = this;
 switch (_that) {
 case _CloudMusicPlaylistData():
-return $default(_that.id,_that.name,_that.picUrl,_that.creator,_that.coverImgUrl,_that.description,_that.playCount,_that.trackCount,_that.createTime,_that.updateFrequency,_that.copywriter,_that.privacy);}
+return $default(_that.id,_that.name,_that.picUrl,_that.creator,_that.coverImgUrl,_that.description,_that.playCount,_that.trackCount,_that.createTime,_that.updateTime,_that.updateFrequency,_that.copywriter,_that.privacy,_that.totalDuration);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -211,10 +479,10 @@ return $default(_that.id,_that.name,_that.picUrl,_that.creator,_that.coverImgUrl
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  String? picUrl,  CloudMusicUserData? creator,  String? coverImgUrl,  String? description,  int? playCount,  int? trackCount,  int? createTime,  String? updateFrequency,  String? copywriter,  int? privacy)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  String? picUrl,  CloudMusicUserData? creator,  String? coverImgUrl,  String? description,  int? playCount,  int? trackCount,  int? createTime,  int? updateTime,  String? updateFrequency,  String? copywriter,  int? privacy,  double? totalDuration)?  $default,) {final _that = this;
 switch (_that) {
 case _CloudMusicPlaylistData() when $default != null:
-return $default(_that.id,_that.name,_that.picUrl,_that.creator,_that.coverImgUrl,_that.description,_that.playCount,_that.trackCount,_that.createTime,_that.updateFrequency,_that.copywriter,_that.privacy);case _:
+return $default(_that.id,_that.name,_that.picUrl,_that.creator,_that.coverImgUrl,_that.description,_that.playCount,_that.trackCount,_that.createTime,_that.updateTime,_that.updateFrequency,_that.copywriter,_that.privacy,_that.totalDuration);case _:
   return null;
 
 }
@@ -226,7 +494,7 @@ return $default(_that.id,_that.name,_that.picUrl,_that.creator,_that.coverImgUrl
 @JsonSerializable()
 
 class _CloudMusicPlaylistData extends CloudMusicPlaylistData {
-  const _CloudMusicPlaylistData({required this.id, required this.name, this.picUrl, this.creator, this.coverImgUrl, this.description, this.playCount, this.trackCount, this.createTime, this.updateFrequency, this.copywriter, this.privacy}): super._();
+  const _CloudMusicPlaylistData({required this.id, required this.name, this.picUrl, this.creator, this.coverImgUrl, this.description, this.playCount, this.trackCount, this.createTime, this.updateTime, this.updateFrequency, this.copywriter, this.privacy, this.totalDuration}): super._();
   factory _CloudMusicPlaylistData.fromJson(Map<String, dynamic> json) => _$CloudMusicPlaylistDataFromJson(json);
 
 @override final  int id;
@@ -238,9 +506,11 @@ class _CloudMusicPlaylistData extends CloudMusicPlaylistData {
 @override final  int? playCount;
 @override final  int? trackCount;
 @override final  int? createTime;
+@override final  int? updateTime;
 @override final  String? updateFrequency;
 @override final  String? copywriter;
 @override final  int? privacy;
+@override final  double? totalDuration;
 
 /// Create a copy of CloudMusicPlaylistData
 /// with the given fields replaced by the non-null parameter values.
@@ -255,16 +525,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CloudMusicPlaylistData&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.picUrl, picUrl) || other.picUrl == picUrl)&&(identical(other.creator, creator) || other.creator == creator)&&(identical(other.coverImgUrl, coverImgUrl) || other.coverImgUrl == coverImgUrl)&&(identical(other.description, description) || other.description == description)&&(identical(other.playCount, playCount) || other.playCount == playCount)&&(identical(other.trackCount, trackCount) || other.trackCount == trackCount)&&(identical(other.createTime, createTime) || other.createTime == createTime)&&(identical(other.updateFrequency, updateFrequency) || other.updateFrequency == updateFrequency)&&(identical(other.copywriter, copywriter) || other.copywriter == copywriter)&&(identical(other.privacy, privacy) || other.privacy == privacy));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CloudMusicPlaylistData&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.picUrl, picUrl) || other.picUrl == picUrl)&&(identical(other.creator, creator) || other.creator == creator)&&(identical(other.coverImgUrl, coverImgUrl) || other.coverImgUrl == coverImgUrl)&&(identical(other.description, description) || other.description == description)&&(identical(other.playCount, playCount) || other.playCount == playCount)&&(identical(other.trackCount, trackCount) || other.trackCount == trackCount)&&(identical(other.createTime, createTime) || other.createTime == createTime)&&(identical(other.updateTime, updateTime) || other.updateTime == updateTime)&&(identical(other.updateFrequency, updateFrequency) || other.updateFrequency == updateFrequency)&&(identical(other.copywriter, copywriter) || other.copywriter == copywriter)&&(identical(other.privacy, privacy) || other.privacy == privacy)&&(identical(other.totalDuration, totalDuration) || other.totalDuration == totalDuration));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,picUrl,creator,coverImgUrl,description,playCount,trackCount,createTime,updateFrequency,copywriter,privacy);
+int get hashCode => Object.hash(runtimeType,id,name,picUrl,creator,coverImgUrl,description,playCount,trackCount,createTime,updateTime,updateFrequency,copywriter,privacy,totalDuration);
 
 @override
 String toString() {
-  return 'CloudMusicPlaylistData(id: $id, name: $name, picUrl: $picUrl, creator: $creator, coverImgUrl: $coverImgUrl, description: $description, playCount: $playCount, trackCount: $trackCount, createTime: $createTime, updateFrequency: $updateFrequency, copywriter: $copywriter, privacy: $privacy)';
+  return 'CloudMusicPlaylistData(id: $id, name: $name, picUrl: $picUrl, creator: $creator, coverImgUrl: $coverImgUrl, description: $description, playCount: $playCount, trackCount: $trackCount, createTime: $createTime, updateTime: $updateTime, updateFrequency: $updateFrequency, copywriter: $copywriter, privacy: $privacy, totalDuration: $totalDuration)';
 }
 
 
@@ -275,7 +545,7 @@ abstract mixin class _$CloudMusicPlaylistDataCopyWith<$Res> implements $CloudMus
   factory _$CloudMusicPlaylistDataCopyWith(_CloudMusicPlaylistData value, $Res Function(_CloudMusicPlaylistData) _then) = __$CloudMusicPlaylistDataCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String name, String? picUrl, CloudMusicUserData? creator, String? coverImgUrl, String? description, int? playCount, int? trackCount, int? createTime, String? updateFrequency, String? copywriter, int? privacy
+ int id, String name, String? picUrl, CloudMusicUserData? creator, String? coverImgUrl, String? description, int? playCount, int? trackCount, int? createTime, int? updateTime, String? updateFrequency, String? copywriter, int? privacy, double? totalDuration
 });
 
 
@@ -292,7 +562,7 @@ class __$CloudMusicPlaylistDataCopyWithImpl<$Res>
 
 /// Create a copy of CloudMusicPlaylistData
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? picUrl = freezed,Object? creator = freezed,Object? coverImgUrl = freezed,Object? description = freezed,Object? playCount = freezed,Object? trackCount = freezed,Object? createTime = freezed,Object? updateFrequency = freezed,Object? copywriter = freezed,Object? privacy = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? picUrl = freezed,Object? creator = freezed,Object? coverImgUrl = freezed,Object? description = freezed,Object? playCount = freezed,Object? trackCount = freezed,Object? createTime = freezed,Object? updateTime = freezed,Object? updateFrequency = freezed,Object? copywriter = freezed,Object? privacy = freezed,Object? totalDuration = freezed,}) {
   return _then(_CloudMusicPlaylistData(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -303,10 +573,12 @@ as String?,description: freezed == description ? _self.description : description
 as String?,playCount: freezed == playCount ? _self.playCount : playCount // ignore: cast_nullable_to_non_nullable
 as int?,trackCount: freezed == trackCount ? _self.trackCount : trackCount // ignore: cast_nullable_to_non_nullable
 as int?,createTime: freezed == createTime ? _self.createTime : createTime // ignore: cast_nullable_to_non_nullable
+as int?,updateTime: freezed == updateTime ? _self.updateTime : updateTime // ignore: cast_nullable_to_non_nullable
 as int?,updateFrequency: freezed == updateFrequency ? _self.updateFrequency : updateFrequency // ignore: cast_nullable_to_non_nullable
 as String?,copywriter: freezed == copywriter ? _self.copywriter : copywriter // ignore: cast_nullable_to_non_nullable
 as String?,privacy: freezed == privacy ? _self.privacy : privacy // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,totalDuration: freezed == totalDuration ? _self.totalDuration : totalDuration // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 
@@ -2472,7 +2744,7 @@ as int?,
 /// @nodoc
 mixin _$CloudMusicUserData {
 
- int get userId; String get nickname; String? get avatarUrl; int? get vipType; int? get createTime; String? get signature; String? get userName;
+ int get userId; String get nickname; String? get avatarUrl; String? get backgroundUrl; int? get vipType; int? get createTime; String? get signature; String? get userName;
 /// Create a copy of CloudMusicUserData
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2485,16 +2757,16 @@ $CloudMusicUserDataCopyWith<CloudMusicUserData> get copyWith => _$CloudMusicUser
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CloudMusicUserData&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.vipType, vipType) || other.vipType == vipType)&&(identical(other.createTime, createTime) || other.createTime == createTime)&&(identical(other.signature, signature) || other.signature == signature)&&(identical(other.userName, userName) || other.userName == userName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CloudMusicUserData&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.backgroundUrl, backgroundUrl) || other.backgroundUrl == backgroundUrl)&&(identical(other.vipType, vipType) || other.vipType == vipType)&&(identical(other.createTime, createTime) || other.createTime == createTime)&&(identical(other.signature, signature) || other.signature == signature)&&(identical(other.userName, userName) || other.userName == userName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,userId,nickname,avatarUrl,vipType,createTime,signature,userName);
+int get hashCode => Object.hash(runtimeType,userId,nickname,avatarUrl,backgroundUrl,vipType,createTime,signature,userName);
 
 @override
 String toString() {
-  return 'CloudMusicUserData(userId: $userId, nickname: $nickname, avatarUrl: $avatarUrl, vipType: $vipType, createTime: $createTime, signature: $signature, userName: $userName)';
+  return 'CloudMusicUserData(userId: $userId, nickname: $nickname, avatarUrl: $avatarUrl, backgroundUrl: $backgroundUrl, vipType: $vipType, createTime: $createTime, signature: $signature, userName: $userName)';
 }
 
 
@@ -2505,7 +2777,7 @@ abstract mixin class $CloudMusicUserDataCopyWith<$Res>  {
   factory $CloudMusicUserDataCopyWith(CloudMusicUserData value, $Res Function(CloudMusicUserData) _then) = _$CloudMusicUserDataCopyWithImpl;
 @useResult
 $Res call({
- int userId, String nickname, String? avatarUrl, int? vipType, int? createTime, String? signature, String? userName
+ int userId, String nickname, String? avatarUrl, String? backgroundUrl, int? vipType, int? createTime, String? signature, String? userName
 });
 
 
@@ -2522,11 +2794,12 @@ class _$CloudMusicUserDataCopyWithImpl<$Res>
 
 /// Create a copy of CloudMusicUserData
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? nickname = null,Object? avatarUrl = freezed,Object? vipType = freezed,Object? createTime = freezed,Object? signature = freezed,Object? userName = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? nickname = null,Object? avatarUrl = freezed,Object? backgroundUrl = freezed,Object? vipType = freezed,Object? createTime = freezed,Object? signature = freezed,Object? userName = freezed,}) {
   return _then(_self.copyWith(
 userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as int,nickname: null == nickname ? _self.nickname : nickname // ignore: cast_nullable_to_non_nullable
 as String,avatarUrl: freezed == avatarUrl ? _self.avatarUrl : avatarUrl // ignore: cast_nullable_to_non_nullable
+as String?,backgroundUrl: freezed == backgroundUrl ? _self.backgroundUrl : backgroundUrl // ignore: cast_nullable_to_non_nullable
 as String?,vipType: freezed == vipType ? _self.vipType : vipType // ignore: cast_nullable_to_non_nullable
 as int?,createTime: freezed == createTime ? _self.createTime : createTime // ignore: cast_nullable_to_non_nullable
 as int?,signature: freezed == signature ? _self.signature : signature // ignore: cast_nullable_to_non_nullable
@@ -2613,10 +2886,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int userId,  String nickname,  String? avatarUrl,  int? vipType,  int? createTime,  String? signature,  String? userName)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int userId,  String nickname,  String? avatarUrl,  String? backgroundUrl,  int? vipType,  int? createTime,  String? signature,  String? userName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CloudMusicUserData() when $default != null:
-return $default(_that.userId,_that.nickname,_that.avatarUrl,_that.vipType,_that.createTime,_that.signature,_that.userName);case _:
+return $default(_that.userId,_that.nickname,_that.avatarUrl,_that.backgroundUrl,_that.vipType,_that.createTime,_that.signature,_that.userName);case _:
   return orElse();
 
 }
@@ -2634,10 +2907,10 @@ return $default(_that.userId,_that.nickname,_that.avatarUrl,_that.vipType,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int userId,  String nickname,  String? avatarUrl,  int? vipType,  int? createTime,  String? signature,  String? userName)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int userId,  String nickname,  String? avatarUrl,  String? backgroundUrl,  int? vipType,  int? createTime,  String? signature,  String? userName)  $default,) {final _that = this;
 switch (_that) {
 case _CloudMusicUserData():
-return $default(_that.userId,_that.nickname,_that.avatarUrl,_that.vipType,_that.createTime,_that.signature,_that.userName);}
+return $default(_that.userId,_that.nickname,_that.avatarUrl,_that.backgroundUrl,_that.vipType,_that.createTime,_that.signature,_that.userName);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -2651,10 +2924,10 @@ return $default(_that.userId,_that.nickname,_that.avatarUrl,_that.vipType,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int userId,  String nickname,  String? avatarUrl,  int? vipType,  int? createTime,  String? signature,  String? userName)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int userId,  String nickname,  String? avatarUrl,  String? backgroundUrl,  int? vipType,  int? createTime,  String? signature,  String? userName)?  $default,) {final _that = this;
 switch (_that) {
 case _CloudMusicUserData() when $default != null:
-return $default(_that.userId,_that.nickname,_that.avatarUrl,_that.vipType,_that.createTime,_that.signature,_that.userName);case _:
+return $default(_that.userId,_that.nickname,_that.avatarUrl,_that.backgroundUrl,_that.vipType,_that.createTime,_that.signature,_that.userName);case _:
   return null;
 
 }
@@ -2666,12 +2939,13 @@ return $default(_that.userId,_that.nickname,_that.avatarUrl,_that.vipType,_that.
 @JsonSerializable()
 
 class _CloudMusicUserData implements CloudMusicUserData {
-  const _CloudMusicUserData({required this.userId, required this.nickname, this.avatarUrl, this.vipType, this.createTime, this.signature, this.userName});
+  const _CloudMusicUserData({required this.userId, required this.nickname, this.avatarUrl, this.backgroundUrl, this.vipType, this.createTime, this.signature, this.userName});
   factory _CloudMusicUserData.fromJson(Map<String, dynamic> json) => _$CloudMusicUserDataFromJson(json);
 
 @override final  int userId;
 @override final  String nickname;
 @override final  String? avatarUrl;
+@override final  String? backgroundUrl;
 @override final  int? vipType;
 @override final  int? createTime;
 @override final  String? signature;
@@ -2690,16 +2964,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CloudMusicUserData&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.vipType, vipType) || other.vipType == vipType)&&(identical(other.createTime, createTime) || other.createTime == createTime)&&(identical(other.signature, signature) || other.signature == signature)&&(identical(other.userName, userName) || other.userName == userName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CloudMusicUserData&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.backgroundUrl, backgroundUrl) || other.backgroundUrl == backgroundUrl)&&(identical(other.vipType, vipType) || other.vipType == vipType)&&(identical(other.createTime, createTime) || other.createTime == createTime)&&(identical(other.signature, signature) || other.signature == signature)&&(identical(other.userName, userName) || other.userName == userName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,userId,nickname,avatarUrl,vipType,createTime,signature,userName);
+int get hashCode => Object.hash(runtimeType,userId,nickname,avatarUrl,backgroundUrl,vipType,createTime,signature,userName);
 
 @override
 String toString() {
-  return 'CloudMusicUserData(userId: $userId, nickname: $nickname, avatarUrl: $avatarUrl, vipType: $vipType, createTime: $createTime, signature: $signature, userName: $userName)';
+  return 'CloudMusicUserData(userId: $userId, nickname: $nickname, avatarUrl: $avatarUrl, backgroundUrl: $backgroundUrl, vipType: $vipType, createTime: $createTime, signature: $signature, userName: $userName)';
 }
 
 
@@ -2710,7 +2984,7 @@ abstract mixin class _$CloudMusicUserDataCopyWith<$Res> implements $CloudMusicUs
   factory _$CloudMusicUserDataCopyWith(_CloudMusicUserData value, $Res Function(_CloudMusicUserData) _then) = __$CloudMusicUserDataCopyWithImpl;
 @override @useResult
 $Res call({
- int userId, String nickname, String? avatarUrl, int? vipType, int? createTime, String? signature, String? userName
+ int userId, String nickname, String? avatarUrl, String? backgroundUrl, int? vipType, int? createTime, String? signature, String? userName
 });
 
 
@@ -2727,11 +3001,12 @@ class __$CloudMusicUserDataCopyWithImpl<$Res>
 
 /// Create a copy of CloudMusicUserData
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? nickname = null,Object? avatarUrl = freezed,Object? vipType = freezed,Object? createTime = freezed,Object? signature = freezed,Object? userName = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? nickname = null,Object? avatarUrl = freezed,Object? backgroundUrl = freezed,Object? vipType = freezed,Object? createTime = freezed,Object? signature = freezed,Object? userName = freezed,}) {
   return _then(_CloudMusicUserData(
 userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as int,nickname: null == nickname ? _self.nickname : nickname // ignore: cast_nullable_to_non_nullable
 as String,avatarUrl: freezed == avatarUrl ? _self.avatarUrl : avatarUrl // ignore: cast_nullable_to_non_nullable
+as String?,backgroundUrl: freezed == backgroundUrl ? _self.backgroundUrl : backgroundUrl // ignore: cast_nullable_to_non_nullable
 as String?,vipType: freezed == vipType ? _self.vipType : vipType // ignore: cast_nullable_to_non_nullable
 as int?,createTime: freezed == createTime ? _self.createTime : createTime // ignore: cast_nullable_to_non_nullable
 as int?,signature: freezed == signature ? _self.signature : signature // ignore: cast_nullable_to_non_nullable

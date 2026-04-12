@@ -1,9 +1,19 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 
 part 'cloud_music_models.freezed.dart';
 part 'cloud_music_models.g.dart';
+
+@freezed
+sealed class CloudMusicPlaylistDataList with _$CloudMusicPlaylistDataList {
+  const CloudMusicPlaylistDataList._();
+  const factory CloudMusicPlaylistDataList({
+    required List<CloudMusicPlaylistData> playlists,
+    required int total,
+  }) = _CloudMusicPlaylistDataList;
+  factory CloudMusicPlaylistDataList.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicPlaylistDataListFromJson(json);
+}
 
 @freezed
 sealed class CloudMusicPlaylistData with _$CloudMusicPlaylistData {
@@ -18,9 +28,11 @@ sealed class CloudMusicPlaylistData with _$CloudMusicPlaylistData {
     int? playCount,
     int? trackCount,
     int? createTime,
+    int? updateTime,
     String? updateFrequency,
     String? copywriter,
     int? privacy,
+    double? totalDuration,
   }) = _CloudMusicPlaylistData;
 
   factory CloudMusicPlaylistData.fromJson(Map<String, dynamic> json) =>
@@ -265,6 +277,7 @@ sealed class CloudMusicUserData with _$CloudMusicUserData {
     required int userId,
     required String nickname,
     String? avatarUrl,
+    String? backgroundUrl,
     int? vipType,
     int? createTime,
     String? signature,

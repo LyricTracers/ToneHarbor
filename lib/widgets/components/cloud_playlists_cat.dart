@@ -1,31 +1,84 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
-import 'package:toneharbor/providers/cloud_music/cloud_music_provider.dart';
+import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
-class CloudRecommendPlaylists extends ConsumerWidget {
-  const CloudRecommendPlaylists({
+class CloudPlaylistsCat<T extends ExtraProvider<CloudMusicPlaylistDataList>>
+    extends HookConsumerWidget {
+  const CloudPlaylistsCat({
     super.key,
-    this.limit = 12,
-    this.onPlaylistTap,
-    this.visibleRows = 2,
+    this.visibleRows = -1,
+    required this.baseProvider,
   });
 
-  final int limit;
-  final void Function(CloudMusicPlaylistData playlist)? onPlaylistTap;
   final int visibleRows;
+  final $AsyncNotifierProvider<T, CloudMusicPlaylistDataList> baseProvider;
+
+  int _calculateCrossAxisCount(
+    double availableWidth,
+    double maxCrossAxisExtent,
+  ) {
+    return (availableWidth / maxCrossAxisExtent).floor().clamp(3, 6);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = getColorSchemeWhenReady(ref);
-    final playlists = ref.watch(recommendPlaylistsProvider(limit: limit));
+    final playlists = ref.watch(baseProvider);
     final size = MediaQuery.of(context).size;
     final maxCrossAxisExtent = 180 * size.multiplier;
+    final scrollController = useScrollController();
+    final isLoadingMore = useState(false);
+
+    useEffect(() {
+      if (visibleRows != -1) return null;
+
+      void onScroll() {
+        if (!scrollController.hasClients) return;
+        if (isLoadingMore.value) return;
+
+        final maxScroll = scrollController.position.maxScrollExtent;
+        final currentScroll = scrollController.offset;
+
+        if (currentScroll >= maxScroll * 0.8) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!scrollController.hasClients) return;
+            if (isLoadingMore.value) return;
+
+            final currentData = ref.read(baseProvider).value;
+            final currentPlaylists = currentData?.playlists ?? [];
+            final currentTotal = currentData?.total ?? 0;
+
+            if (currentPlaylists.length < currentTotal) {
+              isLoadingMore.value = true;
+              ref
+                  .read(baseProvider.notifier)
+                  .loadMore()
+                  .then((_) {
+                    isLoadingMore.value = false;
+                  })
+                  .catchError((_) {
+                    isLoadingMore.value = false;
+                  });
+            }
+          });
+        }
+      }
+
+      scrollController.addListener(onScroll);
+      return () {
+        if (visibleRows == -1 && scrollController.hasClients) {
+          scrollController.removeListener(onScroll);
+        }
+      };
+    }, [scrollController, visibleRows]);
 
     return playlists.when(
       data: (data) => _buildGrid(
@@ -34,53 +87,92 @@ class CloudRecommendPlaylists extends ConsumerWidget {
         colorScheme,
         maxCrossAxisExtent,
         size.multiplier2,
+        scrollController,
+        isLoadingMore.value,
       ),
-      loading: () =>
-          _buildShimmerLoading(context, colorScheme, maxCrossAxisExtent),
+      loading: () => _buildShimmerLoading(
+        context,
+        colorScheme,
+        maxCrossAxisExtent,
+        visibleRows,
+      ),
       error: (error, stackTrace) => const SizedBox.shrink(),
     );
   }
 
   Widget _buildGrid(
     BuildContext context,
-    List<CloudMusicPlaylistData> playlists,
+    CloudMusicPlaylistDataList playlistsList,
     ColorScheme colorScheme,
     double maxCrossAxisExtent,
     double multiplier,
+    ScrollController scrollController,
+    bool isLoadingMore,
   ) {
+    final playlists = playlistsList.playlists;
+    final total = playlistsList.total;
+    final hasMore = visibleRows == -1 && playlists.length < total;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final availableWidth = constraints.maxWidth;
-          final crossAxisCount = (availableWidth / maxCrossAxisExtent)
-              .floor()
-              .clamp(3, 6);
-          final maxItems = crossAxisCount * visibleRows;
-          final displayItems = playlists.length > maxItems
-              ? playlists.sublist(0, maxItems)
-              : playlists;
+          final crossAxisCount = _calculateCrossAxisCount(
+            constraints.maxWidth,
+            maxCrossAxisExtent,
+          );
 
-          return GridView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
+          final hasHeightConstraint = !constraints.maxHeight.isInfinite;
+          final shouldEnableScroll = visibleRows == -1 && hasHeightConstraint;
+
+          List<CloudMusicPlaylistData> displayItems;
+          if (visibleRows != -1) {
+            final maxItems = crossAxisCount * visibleRows;
+            displayItems = playlists.length > maxItems
+                ? playlists.sublist(0, maxItems)
+                : playlists;
+          } else {
+            displayItems = playlists;
+          }
+
+          final grid = GridView.builder(
+            controller: shouldEnableScroll ? scrollController : null,
+            physics: shouldEnableScroll
+                ? const AlwaysScrollableScrollPhysics()
+                : const NeverScrollableScrollPhysics(),
+            shrinkWrap: !shouldEnableScroll,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
               mainAxisSpacing: 10,
               crossAxisSpacing: 20,
               childAspectRatio: 0.75,
             ),
-            itemCount: displayItems.length,
+            itemCount: displayItems.length + (hasMore && isLoadingMore ? 1 : 0),
             itemBuilder: (context, index) {
+              if (index == displayItems.length) {
+                return const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                );
+              }
               final playlist = displayItems[index];
               return _PlaylistItem(
                 playlist: playlist,
                 colorScheme: colorScheme,
-                onTap: () => onPlaylistTap?.call(playlist),
+                onTap: () =>
+                    context.pushWrapper("/cloud-detail", extra: playlist),
                 multiplier: multiplier,
               );
             },
           );
+
+          return grid;
         },
       ),
     );
@@ -90,16 +182,19 @@ class CloudRecommendPlaylists extends ConsumerWidget {
     BuildContext context,
     ColorScheme colorScheme,
     double maxCrossAxisExtent,
+    int visibleRows,
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final availableWidth = constraints.maxWidth;
-          final crossAxisCount = (availableWidth / maxCrossAxisExtent)
-              .floor()
-              .clamp(3, 6);
-          final maxItems = crossAxisCount * visibleRows;
+          final crossAxisCount = _calculateCrossAxisCount(
+            constraints.maxWidth,
+            maxCrossAxisExtent,
+          );
+          final itemCount = visibleRows == -1
+              ? crossAxisCount * 2
+              : crossAxisCount * visibleRows;
 
           return GridView.builder(
             physics: const NeverScrollableScrollPhysics(),
@@ -110,7 +205,7 @@ class CloudRecommendPlaylists extends ConsumerWidget {
               crossAxisSpacing: 20,
               childAspectRatio: 0.75,
             ),
-            itemCount: maxItems,
+            itemCount: itemCount,
             itemBuilder: (context, index) {
               return _PlaylistItemShimmer(colorScheme: colorScheme);
             },
@@ -158,9 +253,9 @@ class _PlaylistItem extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 6),
+              const SizedBox(height: 6),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 2),
                 child: SmartMarquee(
                   text: playlist.name,
                   style: TextStyle(
@@ -169,25 +264,26 @@ class _PlaylistItem extends StatelessWidget {
                     color: colorScheme.onSurface,
                   ),
                   pauseOnHover: true,
-                  pauseAfterRound: Duration(seconds: 5),
+                  pauseAfterRound: const Duration(seconds: 5),
                   alignment: Alignment.center,
                 ),
               ),
-              if (playlist.copywriter != null &&
-                  playlist.copywriter!.isNotEmpty)
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 2),
-                  child: Text(
-                    playlist.copywriter!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
+
+              // if (playlist.copywriter != null &&
+              //     playlist.copywriter!.isNotEmpty)
+              //   Padding(
+              //     padding: const EdgeInsets.symmetric(horizontal: 2),
+              //     child: Text(
+              //       playlist.copywriter!,
+              //       maxLines: 1,
+              //       overflow: TextOverflow.ellipsis,
+              //       textAlign: TextAlign.center,
+              //       style: TextStyle(
+              //         fontSize: 10,
+              //         color: colorScheme.onSurfaceVariant,
+              //       ),
+              //     ),
+              //   ),
             ],
           );
         },
@@ -223,7 +319,7 @@ class _PlaylistItemShimmer extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 6),
+              const SizedBox(height: 6),
               Container(
                 width: coverSize * 0.8,
                 height: 12,
@@ -232,7 +328,7 @@ class _PlaylistItemShimmer extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Container(
                 width: coverSize * 0.5,
                 height: 10,

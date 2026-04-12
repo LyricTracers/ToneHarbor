@@ -362,7 +362,9 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
     final createTime = playlist.createTime != null
         ? DateTime.fromMillisecondsSinceEpoch(playlist.createTime!)
         : null;
-
+    final updateTime = playlist.updateTime != null
+        ? DateTime.fromMillisecondsSinceEpoch(playlist.updateTime!)
+        : null;
     final maxCoverSize = kToolbarHeight * 4 * multiplier * 0.65;
 
     final coverImage = useMemoized(
@@ -433,10 +435,13 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
                     ref: ref,
                     l10n: l10n,
                     title: playlist.name,
-                    updateTime: createTime != null
+                    updateTime: updateTime != null
+                        ? "Updated ${_formatDate(updateTime)}"
+                        : createTime != null
                         ? "Created ${_formatDate(createTime)}"
                         : null,
-                    description: detail.value?.description,
+                    description:
+                        detail.value?.description ?? playlist.description,
                     creator: playlist.creator?.nickname,
                     size: size,
                     colorScheme: colorScheme,
