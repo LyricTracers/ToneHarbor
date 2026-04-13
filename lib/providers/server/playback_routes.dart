@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:metadata_god/metadata_god.dart';
 import 'package:rhttp/rhttp.dart' as rhttp;
 import 'package:shelf/shelf.dart';
 import 'package:toneharbor/init/initialized.dart';
@@ -659,33 +660,48 @@ class PlaybackRoutes {
       '[PlaybackRoutes] _serveCachedFile: path=${cacheFile.path}, fileLength=$fileLength',
     );
     final actualContainer = cacheFile.path.split('.').last;
+    logger.i('[PlaybackRoutes] File extension: $actualContainer');
+
+    final metadataOffset = await MetadataGod.getMetadataOffset(
+      file: cacheFile.path,
+    );
+    logger.i(
+      '[PlaybackRoutes] Metadata offset: $metadataOffset, fileLength: $fileLength',
+    );
 
     final rangeHeader = request.headers['range'];
     if (rangeHeader != null) {
       final rangeStart = _parseRangeStart(rangeHeader);
+      final adjustedRangeStart = rangeStart + metadataOffset;
       final rangeEnd = fileLength - 1;
-      final stream = cacheFile.openRead(rangeStart, rangeEnd + 1);
+
+      if (adjustedRangeStart >= fileLength) {
+        return Response(416, headers: {'content-range': 'bytes */$fileLength'});
+      }
+
+      final stream = cacheFile.openRead(adjustedRangeStart, rangeEnd + 1);
       logger.i(
-        '[PlaybackRoutes] Serving partial content: bytes $rangeStart-$rangeEnd/$fileLength',
+        '[PlaybackRoutes] Serving partial content: original=$rangeStart, adjusted=$adjustedRangeStart, bytes $rangeStart-${fileLength - metadataOffset - 1}/${fileLength - metadataOffset}',
       );
       return Response(
         206,
         body: stream,
         headers: {
           'content-type': _getMimeType(actualContainer),
-          'content-length': '${rangeEnd - rangeStart + 1}',
+          'content-length': '${rangeEnd - adjustedRangeStart + 1}',
           'accept-ranges': 'bytes',
-          'content-range': 'bytes $rangeStart-$rangeEnd/$fileLength',
+          'content-range':
+              'bytes $rangeStart-${fileLength - metadataOffset - 1}/${fileLength - metadataOffset}',
         },
       );
     }
 
     return Response(
       200,
-      body: cacheFile.openRead(),
+      body: cacheFile.openRead(metadataOffset),
       headers: {
         'content-type': _getMimeType(actualContainer),
-        'content-length': '$fileLength',
+        'content-length': '${fileLength - metadataOffset}',
         'accept-ranges': 'bytes',
       },
     );
