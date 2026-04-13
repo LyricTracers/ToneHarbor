@@ -130,7 +130,6 @@ class DownloadManager extends _$DownloadManager {
   }
 
   Future<void> _restoreTasks() async {
-    ref.read(requestFlagProvider.notifier).setRequestFlag(true);
     final db = ref.read(appDatabaseProvider);
     final query = db.select(db.downloadTaskState)
       ..where(
@@ -144,7 +143,6 @@ class DownloadManager extends _$DownloadManager {
     final savedTasks = await query.get();
 
     if (savedTasks.isEmpty) {
-      ref.read(requestFlagProvider.notifier).setRequestFlag(false);
       return;
     }
 
@@ -232,7 +230,6 @@ class DownloadManager extends _$DownloadManager {
         _startDownloading();
       }
     }
-    ref.read(requestFlagProvider.notifier).setRequestFlag(false);
   }
 
   Future<void> _insertTaskToDb(DownloadTask task) async {
@@ -297,14 +294,12 @@ class DownloadManager extends _$DownloadManager {
 
   Future<void> _deletePartFile(String? savePath) async {
     if (savePath == null) return;
-    final partialFile = File('$savePath.part');
+    final partialFile = File(savePath);
     if (await partialFile.exists()) {
       try {
         await partialFile.delete();
       } catch (e) {
-        logger.w(
-          '[DownloadManager] Failed to delete partial file: $savePath.part',
-        );
+        logger.w('[DownloadManager] Failed to delete partial file: $savePath');
       }
     }
   }
@@ -362,6 +357,7 @@ class DownloadManager extends _$DownloadManager {
       logger.i('[DownloadManager] Skip local track: ${track.id}');
       return;
     }
+
     final quality = ref.read(audioQualityProvider);
 
     final existingTask = state.firstWhereOrNull((e) => e.track.id == track.id);
@@ -705,13 +701,13 @@ class DownloadManager extends _$DownloadManager {
 
       if (task.status == DownloadStatus.failed) {
         try {
-          final partialFile = File('$savePath.part');
+          final partialFile = File(savePath);
           if (await partialFile.exists()) {
             await partialFile.delete();
           }
         } catch (e) {
           logger.w(
-            '[DownloadManager] Failed to delete partial file: $savePath.part',
+            '[DownloadManager] Failed to delete partial file: $savePath',
           );
         }
       }

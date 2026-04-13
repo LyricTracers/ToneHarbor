@@ -309,11 +309,14 @@ Future<void> initMusicCacheBaseDir() async {
   }
 }
 
-String getMusicCacheDirSync(AudioQuality quality) {
+String getMusicCacheDirSync(AudioQuality quality, {String? specialPath}) {
   if (_musicCacheBaseDir == null) {
     throw StateError(
       'Music cache base dir not initialized. Call initMusicCacheBaseDir() first.',
     );
+  }
+  if (specialPath != null) {
+    return join(_musicCacheBaseDir!, specialPath);
   }
   return join(_musicCacheBaseDir!, quality.name);
 }
@@ -370,8 +373,9 @@ Future<void> openCacheFolder() async {
 
 String getTrackCachePathPart(
   ToneHarborTrackObject track,
-  AudioQuality quality,
-) {
+  AudioQuality quality, {
+  String? specialPath,
+}) {
   var fileName = "${track.title}_${track.id}";
   if (track.isCloudMusic) {
     quality = AudioQuality.high;
@@ -381,7 +385,11 @@ String getTrackCachePathPart(
     fileName = "${track.artist}_$fileName";
   }
   fileName = sanitizeFilename(fileName, track.id);
-  return '${getMusicCacheDirSync(quality)}/$fileName.part';
+  if (specialPath != null) {
+    fileName = '${quality.name}_$fileName';
+  }
+  final dir = getMusicCacheDirSync(quality, specialPath: specialPath);
+  return '$dir/$fileName.part';
 }
 
 String getTrackCachePath(ToneHarborTrackObject track, AudioQuality quality) {
