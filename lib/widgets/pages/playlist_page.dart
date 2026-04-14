@@ -221,103 +221,101 @@ class PlaylistPage extends HookConsumerWidget {
     }
     final loopMode =
         useStream(audioPlayer.loopModeStream).data ?? audioPlayer.loopMode;
-    return SafeArea(
-      child: Container(
-        width: targetWidth,
-        color: colorScheme.surfaceContainerHighest,
-        height: double.infinity,
-        child: Column(
-          children: [
-            AppBar(
-              toolbarHeight: kToolbarHeight * size.multiplier3,
-              title: Text(
-                i10n.playlist_text.replaceFirst(
-                  '%s',
-                  '${playlist.tracks.length}',
-                ),
-                style: TextStyle(
-                  fontSize: 16 * size.multiplier2,
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurfaceVariant,
-                ),
+    return Container(
+      width: targetWidth,
+      color: colorScheme.surfaceContainerHighest,
+      height: double.infinity,
+      child: Column(
+        children: [
+          AppBar(
+            toolbarHeight: kToolbarHeight * size.multiplier3,
+            title: Text(
+              i10n.playlist_text.replaceFirst(
+                '%s',
+                '${playlist.tracks.length}',
               ),
-              actions: [
-                IconButton(
-                  onPressed: () {
-                    audioPlayer.clearPlaylist();
-                  },
-                  icon: Icon(Icons.delete_sweep_rounded, size: 18),
-                  tooltip: i10n.clear_all,
-                ),
-                IconButton(
-                  onPressed: () {
-                    if (shuffled) {
-                      audioPlayer.setShuffle(false);
-                    } else {
-                      audioPlayer.setShuffle(true);
-                    }
-                  },
-                  icon: Icon(
-                    Icons.shuffle_rounded,
-                    color: shuffled ? colorScheme.primary : null,
-                    size: 18,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    _getLoopIcon(loopMode),
-                    size: 18,
-                    color: loopMode != PlaylistMode.none
-                        ? colorScheme.primary
-                        : null,
-                  ),
-                  onPressed: () => _toggleLoopMode(loopMode),
-                ),
-              ],
-              centerTitle: false,
-              backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
-            ),
-            Expanded(
-              child: SlidableAutoCloseBehavior(
-                child: ReorderableListView.builder(
-                  scrollController: scrollController,
-                  itemCount: playlist.tracks.length,
-                  itemExtent: 44,
-                  cacheExtent: 50,
-                  buildDefaultDragHandles: false,
-                  onReorder: (oldIndex, newIndex) {
-                    ref
-                        .read(audioPlayerStateProvider.notifier)
-                        .moveTrack(oldIndex, newIndex);
-                  },
-                  itemBuilder: (context, index) {
-                    var isDefault = playlist.currentIndex == index;
-                    var track = playlist.tracks[index];
-                    return RepaintBoundary(
-                      key: ValueKey(index),
-                      child: _PlaylistItem(
-                        index: index,
-                        track: track,
-                        isDefault: isDefault,
-                        colorScheme: colorScheme,
-                        i10n: i10n,
-                        onTap: () {
-                          logger.i("track: $track");
-                          audioPlayer.jumpTo(index);
-                        },
-                        onDeleteTap: () {
-                          ref
-                              .read(audioPlayerStateProvider.notifier)
-                              .removeTrack(track.id, index: index);
-                        },
-                      ),
-                    );
-                  },
-                ),
+              style: TextStyle(
+                fontSize: 16 * size.multiplier2,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
-          ],
-        ),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  audioPlayer.clearPlaylist();
+                },
+                icon: Icon(Icons.delete_sweep_rounded, size: 18),
+                tooltip: i10n.clear_all,
+              ),
+              IconButton(
+                onPressed: () {
+                  if (shuffled) {
+                    audioPlayer.setShuffle(false);
+                  } else {
+                    audioPlayer.setShuffle(true);
+                  }
+                },
+                icon: Icon(
+                  Icons.shuffle_rounded,
+                  color: shuffled ? colorScheme.primary : null,
+                  size: 18,
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  _getLoopIcon(loopMode),
+                  size: 18,
+                  color: loopMode != PlaylistMode.none
+                      ? colorScheme.primary
+                      : null,
+                ),
+                onPressed: () => _toggleLoopMode(loopMode),
+              ),
+            ],
+            centerTitle: false,
+            backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
+          ),
+          Expanded(
+            child: SlidableAutoCloseBehavior(
+              child: ReorderableListView.builder(
+                scrollController: scrollController,
+                itemCount: playlist.tracks.length,
+                itemExtent: 44,
+                cacheExtent: 50,
+                buildDefaultDragHandles: false,
+                onReorder: (oldIndex, newIndex) {
+                  ref
+                      .read(audioPlayerStateProvider.notifier)
+                      .moveTrack(oldIndex, newIndex);
+                },
+                itemBuilder: (context, index) {
+                  var isDefault = playlist.currentIndex == index;
+                  var track = playlist.tracks[index];
+                  return RepaintBoundary(
+                    key: ValueKey(index),
+                    child: _PlaylistItem(
+                      index: index,
+                      track: track,
+                      isDefault: isDefault,
+                      colorScheme: colorScheme,
+                      i10n: i10n,
+                      onTap: () {
+                        logger.i("track: $track");
+                        audioPlayer.jumpTo(index);
+                      },
+                      onDeleteTap: () {
+                        ref
+                            .read(audioPlayerStateProvider.notifier)
+                            .removeTrack(track.id, index: index);
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

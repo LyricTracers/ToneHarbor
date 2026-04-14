@@ -180,11 +180,17 @@ class MyApp extends HookConsumerWidget {
       required Widget child,
       bool fullscreenDialog = false,
     }) {
-      if (Platform.isIOS || Platform.isAndroid) {
+      final size = MediaQuery.of(context).size;
+      if ((Platform.isIOS || Platform.isAndroid) & size.mdAndDown) {
         return GestureOnlyCupertinoPage<void>(
           key: key,
           child: child,
           fullscreenDialog: fullscreenDialog,
+          onPopInvoked: (didPop, result) {
+            if (didPop) {
+              ref.invalidate(songSelectionProvider);
+            }
+          },
         );
       }
       return NoTransitionPage<void>(key: key, child: child);

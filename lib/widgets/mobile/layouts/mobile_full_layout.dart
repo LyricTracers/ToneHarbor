@@ -12,12 +12,6 @@ class MobileFullLayout extends BaseBgLayout {
 
   @override
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
-    useEffect(() {
-      Future.microtask(() {
-        ref.invalidate(songSelectionProvider);
-      });
-      return null;
-    }, []);
     var selectionTypeState = ref.watch(
       songSelectionProvider.select((state) {
         return SongSelectionState(
