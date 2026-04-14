@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
@@ -284,7 +283,12 @@ class CloudArtistPage extends HookConsumerWidget {
         ? colorScheme.surfaceContainerHighest
         : Color.lerp(fromColor, toColor, statusBarProgress)!;
     final provider = cloudMusicArtistDetailProvider(artistData);
+    useEffect(() {
+      ref.invalidate(provider);
+      return null;
+    }, []);
     final artistDetail = ref.watch(provider);
+
     final coverImageConfig = useMemoized(() {
       var url = artistData.coverUrl();
       if (url.isEmpty) {
