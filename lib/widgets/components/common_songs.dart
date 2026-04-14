@@ -33,16 +33,16 @@ class _LayoutConfig {
   final double subtitleFontSize;
 
   static const _LayoutConfig defaultConfig = _LayoutConfig(
-    height: 160,
-    itemWidth: 100,
-    itemSpacing: 16,
-    horizontalPadding: 16,
-    coverSize: 100,
+    height: 200,
+    itemWidth: 140,
+    itemSpacing: 20,
+    horizontalPadding: 20,
+    coverSize: 140,
     coverBorderRadius: 12,
     textSpacing: 4,
-    titleFontSize: 13,
-    titleFontWeight: FontWeight.w500,
-    subtitleFontSize: 11,
+    titleFontSize: 15,
+    titleFontWeight: FontWeight.bold,
+    subtitleFontSize: 13,
   );
 
   _LayoutConfig multiply({required double multiplier}) => _LayoutConfig(
@@ -76,7 +76,7 @@ class CommonSongs extends ConsumerWidget {
     final colorScheme = getColorSchemeWhenReady(ref);
     var config = _LayoutConfig.defaultConfig;
     final size = MediaQuery.of(context).size;
-    config = config.multiply(multiplier: size.multiplier3);
+    config = config.multiply(multiplier: size.multiplier);
     return songs.when(
       data: (data) =>
           _buildHorizontalList(context, data.songs, colorScheme, config),

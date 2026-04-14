@@ -98,63 +98,66 @@ class SongCoverImage extends HookConsumerWidget {
         ),
       );
     } else {
-      imageChild = CachedNetworkImage(
-        keepLiveDuration: const Duration(minutes: 1),
-        songId: songId,
-        albumName: albumName,
-        artistName: artistName,
-        cacheKey: cacheKey,
-        width: config.size,
-        height: config.size,
-        fit: BoxFit.cover,
-        placeholder: (context) {
-          return CoverPlaceholder(
-            colorScheme: colorScheme,
-            size: config.size,
-            borderRadius: borderRadius,
-            isLoading: true,
-          );
-        },
-        errorWidget: (context, error) {
-          return CoverPlaceholder(
-            colorScheme: colorScheme,
-            size: config.size,
-            borderRadius: borderRadius,
-          );
-        },
-        packageChild: (child) => GestureDetector(
-          onLongPress: () async {
-            if (onLongPress != null) {
-              onLongPress?.call();
-            } else {
-              final syncSongIcon = ref.read(syncSongIconProvider);
-              if (syncSongIcon == false && context.mounted) {
-                showSetBackgroundDialog(context, colorScheme, ref, () async {
-                  try {
-                    final bytes = await ref.watch(
-                      fetchCoverBytesProvider(
-                        songId: songId,
-                        albumName: albumName,
-                        artistName: artistName,
-                        key: cacheKey,
-                        liveKeepDuration: const Duration(minutes: 10),
-                      ).future,
-                    );
-                    if (bytes == null) {
-                      return;
-                    }
-                    logger.i(
-                      'Setting theme icon from image: ${bytes.length} bytes',
-                    );
-                    saveDefaultThemeIcon(ref, bytes);
-                  } catch (e) {
-                    logger.e('Failed to save theme icon: $e');
-                  }
-                });
-              }
-            }
+      imageChild = ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: CachedNetworkImage(
+          keepLiveDuration: const Duration(minutes: 1),
+          songId: songId,
+          albumName: albumName,
+          artistName: artistName,
+          cacheKey: cacheKey,
+          width: config.size,
+          height: config.size,
+          fit: BoxFit.cover,
+          placeholder: (context) {
+            return CoverPlaceholder(
+              colorScheme: colorScheme,
+              size: config.size,
+              borderRadius: borderRadius,
+              isLoading: true,
+            );
           },
-          child: child,
+          errorWidget: (context, error) {
+            return CoverPlaceholder(
+              colorScheme: colorScheme,
+              size: config.size,
+              borderRadius: borderRadius,
+            );
+          },
+          packageChild: (child) => GestureDetector(
+            onLongPress: () async {
+              if (onLongPress != null) {
+                onLongPress?.call();
+              } else {
+                final syncSongIcon = ref.read(syncSongIconProvider);
+                if (syncSongIcon == false && context.mounted) {
+                  showSetBackgroundDialog(context, colorScheme, ref, () async {
+                    try {
+                      final bytes = await ref.watch(
+                        fetchCoverBytesProvider(
+                          songId: songId,
+                          albumName: albumName,
+                          artistName: artistName,
+                          key: cacheKey,
+                          liveKeepDuration: const Duration(minutes: 10),
+                        ).future,
+                      );
+                      if (bytes == null) {
+                        return;
+                      }
+                      logger.i(
+                        'Setting theme icon from image: ${bytes.length} bytes',
+                      );
+                      saveDefaultThemeIcon(ref, bytes);
+                    } catch (e) {
+                      logger.e('Failed to save theme icon: $e');
+                    }
+                  });
+                }
+              }
+            },
+            child: child,
+          ),
         ),
       );
     }
