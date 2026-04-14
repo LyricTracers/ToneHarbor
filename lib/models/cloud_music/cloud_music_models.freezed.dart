@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CloudMusicAristDetailData {
 
- CloudMusicArtistData get artist; List<CloudMusicAlbumData>? get hotAlbums; List<CloudMusicSongData>? get hotSongs; int? get hotAlbumsFlag; int? get hotSongFlag;
+ CloudMusicArtistData get artist; List<CloudMusicArtistData>? get similarArtists; List<CloudMusicAlbumData>? get hotAlbums; List<CloudMusicSongData>? get hotSongs; int? get hotAlbumsFlag; int? get hotSongFlag; int? get similarArtistsFlag;
 /// Create a copy of CloudMusicAristDetailData
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $CloudMusicAristDetailDataCopyWith<CloudMusicAristDetailData> get copyWith => _$
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CloudMusicAristDetailData&&(identical(other.artist, artist) || other.artist == artist)&&const DeepCollectionEquality().equals(other.hotAlbums, hotAlbums)&&const DeepCollectionEquality().equals(other.hotSongs, hotSongs)&&(identical(other.hotAlbumsFlag, hotAlbumsFlag) || other.hotAlbumsFlag == hotAlbumsFlag)&&(identical(other.hotSongFlag, hotSongFlag) || other.hotSongFlag == hotSongFlag));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CloudMusicAristDetailData&&(identical(other.artist, artist) || other.artist == artist)&&const DeepCollectionEquality().equals(other.similarArtists, similarArtists)&&const DeepCollectionEquality().equals(other.hotAlbums, hotAlbums)&&const DeepCollectionEquality().equals(other.hotSongs, hotSongs)&&(identical(other.hotAlbumsFlag, hotAlbumsFlag) || other.hotAlbumsFlag == hotAlbumsFlag)&&(identical(other.hotSongFlag, hotSongFlag) || other.hotSongFlag == hotSongFlag)&&(identical(other.similarArtistsFlag, similarArtistsFlag) || other.similarArtistsFlag == similarArtistsFlag));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,artist,const DeepCollectionEquality().hash(hotAlbums),const DeepCollectionEquality().hash(hotSongs),hotAlbumsFlag,hotSongFlag);
+int get hashCode => Object.hash(runtimeType,artist,const DeepCollectionEquality().hash(similarArtists),const DeepCollectionEquality().hash(hotAlbums),const DeepCollectionEquality().hash(hotSongs),hotAlbumsFlag,hotSongFlag,similarArtistsFlag);
 
 @override
 String toString() {
-  return 'CloudMusicAristDetailData(artist: $artist, hotAlbums: $hotAlbums, hotSongs: $hotSongs, hotAlbumsFlag: $hotAlbumsFlag, hotSongFlag: $hotSongFlag)';
+  return 'CloudMusicAristDetailData(artist: $artist, similarArtists: $similarArtists, hotAlbums: $hotAlbums, hotSongs: $hotSongs, hotAlbumsFlag: $hotAlbumsFlag, hotSongFlag: $hotSongFlag, similarArtistsFlag: $similarArtistsFlag)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $CloudMusicAristDetailDataCopyWith<$Res>  {
   factory $CloudMusicAristDetailDataCopyWith(CloudMusicAristDetailData value, $Res Function(CloudMusicAristDetailData) _then) = _$CloudMusicAristDetailDataCopyWithImpl;
 @useResult
 $Res call({
- CloudMusicArtistData artist, List<CloudMusicAlbumData>? hotAlbums, List<CloudMusicSongData>? hotSongs, int? hotAlbumsFlag, int? hotSongFlag
+ CloudMusicArtistData artist, List<CloudMusicArtistData>? similarArtists, List<CloudMusicAlbumData>? hotAlbums, List<CloudMusicSongData>? hotSongs, int? hotAlbumsFlag, int? hotSongFlag, int? similarArtistsFlag
 });
 
 
@@ -65,13 +65,15 @@ class _$CloudMusicAristDetailDataCopyWithImpl<$Res>
 
 /// Create a copy of CloudMusicAristDetailData
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? artist = null,Object? hotAlbums = freezed,Object? hotSongs = freezed,Object? hotAlbumsFlag = freezed,Object? hotSongFlag = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? artist = null,Object? similarArtists = freezed,Object? hotAlbums = freezed,Object? hotSongs = freezed,Object? hotAlbumsFlag = freezed,Object? hotSongFlag = freezed,Object? similarArtistsFlag = freezed,}) {
   return _then(_self.copyWith(
 artist: null == artist ? _self.artist : artist // ignore: cast_nullable_to_non_nullable
-as CloudMusicArtistData,hotAlbums: freezed == hotAlbums ? _self.hotAlbums : hotAlbums // ignore: cast_nullable_to_non_nullable
+as CloudMusicArtistData,similarArtists: freezed == similarArtists ? _self.similarArtists : similarArtists // ignore: cast_nullable_to_non_nullable
+as List<CloudMusicArtistData>?,hotAlbums: freezed == hotAlbums ? _self.hotAlbums : hotAlbums // ignore: cast_nullable_to_non_nullable
 as List<CloudMusicAlbumData>?,hotSongs: freezed == hotSongs ? _self.hotSongs : hotSongs // ignore: cast_nullable_to_non_nullable
 as List<CloudMusicSongData>?,hotAlbumsFlag: freezed == hotAlbumsFlag ? _self.hotAlbumsFlag : hotAlbumsFlag // ignore: cast_nullable_to_non_nullable
 as int?,hotSongFlag: freezed == hotSongFlag ? _self.hotSongFlag : hotSongFlag // ignore: cast_nullable_to_non_nullable
+as int?,similarArtistsFlag: freezed == similarArtistsFlag ? _self.similarArtistsFlag : similarArtistsFlag // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
 }
@@ -163,10 +165,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( CloudMusicArtistData artist,  List<CloudMusicAlbumData>? hotAlbums,  List<CloudMusicSongData>? hotSongs,  int? hotAlbumsFlag,  int? hotSongFlag)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( CloudMusicArtistData artist,  List<CloudMusicArtistData>? similarArtists,  List<CloudMusicAlbumData>? hotAlbums,  List<CloudMusicSongData>? hotSongs,  int? hotAlbumsFlag,  int? hotSongFlag,  int? similarArtistsFlag)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CloudMusicAristDetailData() when $default != null:
-return $default(_that.artist,_that.hotAlbums,_that.hotSongs,_that.hotAlbumsFlag,_that.hotSongFlag);case _:
+return $default(_that.artist,_that.similarArtists,_that.hotAlbums,_that.hotSongs,_that.hotAlbumsFlag,_that.hotSongFlag,_that.similarArtistsFlag);case _:
   return orElse();
 
 }
@@ -184,10 +186,10 @@ return $default(_that.artist,_that.hotAlbums,_that.hotSongs,_that.hotAlbumsFlag,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( CloudMusicArtistData artist,  List<CloudMusicAlbumData>? hotAlbums,  List<CloudMusicSongData>? hotSongs,  int? hotAlbumsFlag,  int? hotSongFlag)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( CloudMusicArtistData artist,  List<CloudMusicArtistData>? similarArtists,  List<CloudMusicAlbumData>? hotAlbums,  List<CloudMusicSongData>? hotSongs,  int? hotAlbumsFlag,  int? hotSongFlag,  int? similarArtistsFlag)  $default,) {final _that = this;
 switch (_that) {
 case _CloudMusicAristDetailData():
-return $default(_that.artist,_that.hotAlbums,_that.hotSongs,_that.hotAlbumsFlag,_that.hotSongFlag);}
+return $default(_that.artist,_that.similarArtists,_that.hotAlbums,_that.hotSongs,_that.hotAlbumsFlag,_that.hotSongFlag,_that.similarArtistsFlag);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -201,10 +203,10 @@ return $default(_that.artist,_that.hotAlbums,_that.hotSongs,_that.hotAlbumsFlag,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( CloudMusicArtistData artist,  List<CloudMusicAlbumData>? hotAlbums,  List<CloudMusicSongData>? hotSongs,  int? hotAlbumsFlag,  int? hotSongFlag)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( CloudMusicArtistData artist,  List<CloudMusicArtistData>? similarArtists,  List<CloudMusicAlbumData>? hotAlbums,  List<CloudMusicSongData>? hotSongs,  int? hotAlbumsFlag,  int? hotSongFlag,  int? similarArtistsFlag)?  $default,) {final _that = this;
 switch (_that) {
 case _CloudMusicAristDetailData() when $default != null:
-return $default(_that.artist,_that.hotAlbums,_that.hotSongs,_that.hotAlbumsFlag,_that.hotSongFlag);case _:
+return $default(_that.artist,_that.similarArtists,_that.hotAlbums,_that.hotSongs,_that.hotAlbumsFlag,_that.hotSongFlag,_that.similarArtistsFlag);case _:
   return null;
 
 }
@@ -216,10 +218,19 @@ return $default(_that.artist,_that.hotAlbums,_that.hotSongs,_that.hotAlbumsFlag,
 @JsonSerializable()
 
 class _CloudMusicAristDetailData extends CloudMusicAristDetailData {
-   _CloudMusicAristDetailData({required this.artist, final  List<CloudMusicAlbumData>? hotAlbums, final  List<CloudMusicSongData>? hotSongs, this.hotAlbumsFlag, this.hotSongFlag}): _hotAlbums = hotAlbums,_hotSongs = hotSongs,super._();
+   _CloudMusicAristDetailData({required this.artist, final  List<CloudMusicArtistData>? similarArtists, final  List<CloudMusicAlbumData>? hotAlbums, final  List<CloudMusicSongData>? hotSongs, this.hotAlbumsFlag, this.hotSongFlag, this.similarArtistsFlag}): _similarArtists = similarArtists,_hotAlbums = hotAlbums,_hotSongs = hotSongs,super._();
   factory _CloudMusicAristDetailData.fromJson(Map<String, dynamic> json) => _$CloudMusicAristDetailDataFromJson(json);
 
 @override final  CloudMusicArtistData artist;
+ final  List<CloudMusicArtistData>? _similarArtists;
+@override List<CloudMusicArtistData>? get similarArtists {
+  final value = _similarArtists;
+  if (value == null) return null;
+  if (_similarArtists is EqualUnmodifiableListView) return _similarArtists;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
  final  List<CloudMusicAlbumData>? _hotAlbums;
 @override List<CloudMusicAlbumData>? get hotAlbums {
   final value = _hotAlbums;
@@ -240,6 +251,7 @@ class _CloudMusicAristDetailData extends CloudMusicAristDetailData {
 
 @override final  int? hotAlbumsFlag;
 @override final  int? hotSongFlag;
+@override final  int? similarArtistsFlag;
 
 /// Create a copy of CloudMusicAristDetailData
 /// with the given fields replaced by the non-null parameter values.
@@ -254,16 +266,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CloudMusicAristDetailData&&(identical(other.artist, artist) || other.artist == artist)&&const DeepCollectionEquality().equals(other._hotAlbums, _hotAlbums)&&const DeepCollectionEquality().equals(other._hotSongs, _hotSongs)&&(identical(other.hotAlbumsFlag, hotAlbumsFlag) || other.hotAlbumsFlag == hotAlbumsFlag)&&(identical(other.hotSongFlag, hotSongFlag) || other.hotSongFlag == hotSongFlag));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CloudMusicAristDetailData&&(identical(other.artist, artist) || other.artist == artist)&&const DeepCollectionEquality().equals(other._similarArtists, _similarArtists)&&const DeepCollectionEquality().equals(other._hotAlbums, _hotAlbums)&&const DeepCollectionEquality().equals(other._hotSongs, _hotSongs)&&(identical(other.hotAlbumsFlag, hotAlbumsFlag) || other.hotAlbumsFlag == hotAlbumsFlag)&&(identical(other.hotSongFlag, hotSongFlag) || other.hotSongFlag == hotSongFlag)&&(identical(other.similarArtistsFlag, similarArtistsFlag) || other.similarArtistsFlag == similarArtistsFlag));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,artist,const DeepCollectionEquality().hash(_hotAlbums),const DeepCollectionEquality().hash(_hotSongs),hotAlbumsFlag,hotSongFlag);
+int get hashCode => Object.hash(runtimeType,artist,const DeepCollectionEquality().hash(_similarArtists),const DeepCollectionEquality().hash(_hotAlbums),const DeepCollectionEquality().hash(_hotSongs),hotAlbumsFlag,hotSongFlag,similarArtistsFlag);
 
 @override
 String toString() {
-  return 'CloudMusicAristDetailData(artist: $artist, hotAlbums: $hotAlbums, hotSongs: $hotSongs, hotAlbumsFlag: $hotAlbumsFlag, hotSongFlag: $hotSongFlag)';
+  return 'CloudMusicAristDetailData(artist: $artist, similarArtists: $similarArtists, hotAlbums: $hotAlbums, hotSongs: $hotSongs, hotAlbumsFlag: $hotAlbumsFlag, hotSongFlag: $hotSongFlag, similarArtistsFlag: $similarArtistsFlag)';
 }
 
 
@@ -274,7 +286,7 @@ abstract mixin class _$CloudMusicAristDetailDataCopyWith<$Res> implements $Cloud
   factory _$CloudMusicAristDetailDataCopyWith(_CloudMusicAristDetailData value, $Res Function(_CloudMusicAristDetailData) _then) = __$CloudMusicAristDetailDataCopyWithImpl;
 @override @useResult
 $Res call({
- CloudMusicArtistData artist, List<CloudMusicAlbumData>? hotAlbums, List<CloudMusicSongData>? hotSongs, int? hotAlbumsFlag, int? hotSongFlag
+ CloudMusicArtistData artist, List<CloudMusicArtistData>? similarArtists, List<CloudMusicAlbumData>? hotAlbums, List<CloudMusicSongData>? hotSongs, int? hotAlbumsFlag, int? hotSongFlag, int? similarArtistsFlag
 });
 
 
@@ -291,13 +303,15 @@ class __$CloudMusicAristDetailDataCopyWithImpl<$Res>
 
 /// Create a copy of CloudMusicAristDetailData
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? artist = null,Object? hotAlbums = freezed,Object? hotSongs = freezed,Object? hotAlbumsFlag = freezed,Object? hotSongFlag = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? artist = null,Object? similarArtists = freezed,Object? hotAlbums = freezed,Object? hotSongs = freezed,Object? hotAlbumsFlag = freezed,Object? hotSongFlag = freezed,Object? similarArtistsFlag = freezed,}) {
   return _then(_CloudMusicAristDetailData(
 artist: null == artist ? _self.artist : artist // ignore: cast_nullable_to_non_nullable
-as CloudMusicArtistData,hotAlbums: freezed == hotAlbums ? _self._hotAlbums : hotAlbums // ignore: cast_nullable_to_non_nullable
+as CloudMusicArtistData,similarArtists: freezed == similarArtists ? _self._similarArtists : similarArtists // ignore: cast_nullable_to_non_nullable
+as List<CloudMusicArtistData>?,hotAlbums: freezed == hotAlbums ? _self._hotAlbums : hotAlbums // ignore: cast_nullable_to_non_nullable
 as List<CloudMusicAlbumData>?,hotSongs: freezed == hotSongs ? _self._hotSongs : hotSongs // ignore: cast_nullable_to_non_nullable
 as List<CloudMusicSongData>?,hotAlbumsFlag: freezed == hotAlbumsFlag ? _self.hotAlbumsFlag : hotAlbumsFlag // ignore: cast_nullable_to_non_nullable
 as int?,hotSongFlag: freezed == hotSongFlag ? _self.hotSongFlag : hotSongFlag // ignore: cast_nullable_to_non_nullable
+as int?,similarArtistsFlag: freezed == similarArtistsFlag ? _self.similarArtistsFlag : similarArtistsFlag // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
 }

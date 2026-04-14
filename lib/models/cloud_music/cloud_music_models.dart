@@ -9,10 +9,12 @@ sealed class CloudMusicAristDetailData with _$CloudMusicAristDetailData {
   const CloudMusicAristDetailData._();
   factory CloudMusicAristDetailData({
     required CloudMusicArtistData artist,
+    List<CloudMusicArtistData>? similarArtists,
     List<CloudMusicAlbumData>? hotAlbums,
     List<CloudMusicSongData>? hotSongs,
     int? hotAlbumsFlag,
     int? hotSongFlag,
+    int? similarArtistsFlag,
   }) = _CloudMusicAristDetailData;
   factory CloudMusicAristDetailData.fromJson(Map<String, dynamic> json) =>
       _$CloudMusicAristDetailDataFromJson(json);

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
+import 'package:toneharbor/widgets/components/cloud_common_artists.dart';
 import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
 import 'package:toneharbor/widgets/components/smart_marquee.dart';
-import 'package:toneharbor/widgets/layouts/playing_detail_layout.dart';
 
 class CloudArtistHeaderDelegate extends SliverPersistentHeaderDelegate {
   final WidgetRef ref;
@@ -383,7 +383,6 @@ class CloudArtistPage extends HookConsumerWidget {
                     ),
                   ),
                 ),
-                // 专辑列表作为独立的 Sliver，实现真正的懒加载
                 SliverPadding(
                   padding: EdgeInsets.only(
                     left: 45 * size.multiplier2,
@@ -419,6 +418,13 @@ class CloudArtistPage extends HookConsumerWidget {
                             ),
                           ),
                           SizedBox(height: 10 * size.multiplier),
+                          _buildSimilarArtists(
+                            context,
+                            ref,
+                            artistDetail,
+                            colorScheme,
+                            size,
+                          ),
                         ],
                         SizedBox(height: 10 * size.multiplier),
                         Center(
@@ -826,83 +832,145 @@ class CloudArtistPage extends HookConsumerWidget {
         borderRadius: BorderRadius.circular(8 * multiplier),
         hoverColor: colorScheme.surface.withValues(alpha: 0.3),
         onTap: isPlayable.playable ? () => onTap?.call(index) : null,
-        child: Stack(
-          children: [
-            Container(
-              height: 56 * multiplier,
-              padding: EdgeInsets.symmetric(horizontal: 8 * multiplier),
-              child: Row(
-                children: [
-                  CloudMusicCoverImage(
-                    imageUrl: song.coverUrl(),
-                    colorScheme: colorScheme,
-                    config: CloudMusicCoverImageConfig(
-                      size: 50 * multiplier,
-                      borderRadius: 12 * multiplier,
+        child: ContextMenuRegion(
+          enableDefaultGestures: isPlayable.playable,
+          contextMenu: ContextMenu(
+            entriesBuilder: () {
+              return <ContextMenuEntry>[
+                MenuHeader(text: song.name),
+                MenuDivider(),
+                MenuItem(
+                  label: Text(l10n.download),
+                  icon: Icon(Icons.download_rounded),
+                  onSelected: (value) async {
+                    ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+                    await ref
+                        .read(downloadManagerProvider.notifier)
+                        .addToQueue(song.asTrack());
+                    ref
+                        .read(requestFlagProvider.notifier)
+                        .setRequestFlag(false);
+                  },
+                ),
+                MenuItem.submenu(
+                  label: Text(l10n.add_to),
+                  icon: const Icon(Icons.add_box_rounded),
+                  items: [
+                    MenuItem(
+                      label: Text(l10n.next_song),
+                      onSelected: (value) async {
+                        ref
+                            .read(requestFlagProvider.notifier)
+                            .setRequestFlag(true);
+                        await ref
+                            .read(audioPlayerStateProvider.notifier)
+                            .addTrackAtFirst(
+                              song.asTrack(),
+                              allowDuplicates: true,
+                            );
+                        ref
+                            .read(requestFlagProvider.notifier)
+                            .setRequestFlag(false);
+                      },
                     ),
-                  ),
-                  SizedBox(width: 8 * multiplier),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          song.name,
-                          style: TextStyle(
-                            fontSize: 16 * multiplier,
-                            fontWeight: FontWeight.bold,
-                            color: isPlayable.playable
-                                ? colorScheme.onSurface
-                                : Colors.grey,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 2 * multiplier),
-                        Text(
-                          song.artistName,
-                          style: TextStyle(
-                            fontSize: 14 * multiplier,
-                            color: isPlayable.playable
-                                ? colorScheme.onSurfaceVariant
-                                : Colors.grey,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                    MenuItem(
+                      label: Text(l10n.play_queue),
+                      onSelected: (value) async {
+                        ref
+                            .read(requestFlagProvider.notifier)
+                            .setRequestFlag(true);
+                        await ref
+                            .read(audioPlayerStateProvider.notifier)
+                            .addTrack(song.asTrack());
+                        ref
+                            .read(requestFlagProvider.notifier)
+                            .setRequestFlag(false);
+                      },
                     ),
-                  ),
-                ],
+                  ],
+                ),
+              ];
+            },
+            padding: const EdgeInsets.all(8.0),
+          ),
+          child: Stack(
+            children: [
+              Container(
+                height: 56 * multiplier,
+                padding: EdgeInsets.symmetric(horizontal: 8 * multiplier),
+                child: Row(
+                  children: [
+                    CloudMusicCoverImage(
+                      imageUrl: song.coverUrl(),
+                      colorScheme: colorScheme,
+                      config: CloudMusicCoverImageConfig(
+                        size: 50 * multiplier,
+                        borderRadius: 12 * multiplier,
+                      ),
+                    ),
+                    SizedBox(width: 8 * multiplier),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            song.name,
+                            style: TextStyle(
+                              fontSize: 16 * multiplier,
+                              fontWeight: FontWeight.bold,
+                              color: isPlayable.playable
+                                  ? colorScheme.onSurface
+                                  : Colors.grey,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(height: 2 * multiplier),
+                          Text(
+                            song.artistName,
+                            style: TextStyle(
+                              fontSize: 13 * multiplier,
+                              color: isPlayable.playable
+                                  ? colorScheme.onSurfaceVariant
+                                  : Colors.grey,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            if (!isPlayable.playable)
-              Positioned(
-                top: 0,
-                left: 0,
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 2 * multiplier,
-                    vertical: 2 * multiplier,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary,
-                    borderRadius: BorderRadius.only(
-                      bottomRight: Radius.circular(8),
+              if (!isPlayable.playable)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 2 * multiplier,
+                      vertical: 2 * multiplier,
                     ),
-                  ),
-                  child: Text(
-                    isPlayable.reason ?? l10n.paid_album,
-                    style: TextStyle(
-                      color: colorScheme.onPrimary,
-                      fontSize: 6 * multiplier,
-                      fontWeight: FontWeight.bold,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      isPlayable.reason ?? l10n.paid_album,
+                      style: TextStyle(
+                        color: colorScheme.onPrimary,
+                        fontSize: 6 * multiplier,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -943,6 +1011,28 @@ class CloudArtistPage extends HookConsumerWidget {
           ),
         );
       }),
+    );
+  }
+
+  Widget _buildSimilarArtists(
+    BuildContext context,
+    WidgetRef ref,
+    CloudMusicAristDetailData artistDetail,
+    ColorScheme colorScheme,
+    Size size,
+  ) {
+    final similarArtistsFlag = artistDetail.similarArtistsFlag ?? 0;
+    final similarArtists = artistDetail.similarArtists ?? [];
+    final config = CloudMusicArtistLayoutConfig.defaultConfig
+        .copyWith(height: 220, itemWidth: 180, itemSpacing: 20)
+        .withMultiplier(size.multiplier);
+
+    return CloudMusicArtistHorizontalListView(
+      artists: similarArtists,
+      colorScheme: colorScheme,
+      config: config,
+      isLoading: similarArtistsFlag == 1,
+      shimmerCount: 6,
     );
   }
 }

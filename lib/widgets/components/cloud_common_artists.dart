@@ -142,43 +142,61 @@ class CloudMusicArtistHorizontalList extends ConsumerWidget {
     );
 
     return artistsAsync.when(
-      data: (artists) => SizedBox(
-        height: config.height,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(horizontal: config.horizontalPadding),
-          itemCount: artists.length,
-          itemBuilder: (context, index) {
-            final artist = artists[index];
-            return Padding(
-              padding: EdgeInsets.only(right: config.itemSpacing),
-              child: CloudMusicArtistItem(
-                artist: artist,
-                colorScheme: colorScheme,
-                cloudLayoutConfig: config,
-              ),
-            );
-          },
-        ),
-      ),
-      loading: () => SizedBox(
-        height: config.height,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(horizontal: config.horizontalPadding),
-          itemCount: limit,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: EdgeInsets.only(right: config.itemSpacing),
-              child: CloudMusicArtistItemShimmer(
-                colorScheme: colorScheme,
-                cloudLayoutConfig: config,
-              ),
-            );
-          },
-        ),
-      ),
+      data: (artists) =>
+          _buildArtistList(context, artists, colorScheme, config),
+      loading: () => _buildShimmerList(colorScheme, config, limit),
       error: (_, __) => const SizedBox.shrink(),
+    );
+  }
+
+  Widget _buildArtistList(
+    BuildContext context,
+    List<CloudMusicArtistData> artists,
+    ColorScheme colorScheme,
+    CloudMusicArtistLayoutConfig config,
+  ) {
+    return SizedBox(
+      height: config.height,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.symmetric(horizontal: config.horizontalPadding),
+        itemCount: artists.length,
+        itemBuilder: (context, index) {
+          final artist = artists[index];
+          return Padding(
+            padding: EdgeInsets.only(right: config.itemSpacing),
+            child: CloudMusicArtistItem(
+              artist: artist,
+              colorScheme: colorScheme,
+              cloudLayoutConfig: config,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildShimmerList(
+    ColorScheme colorScheme,
+    CloudMusicArtistLayoutConfig config,
+    int count,
+  ) {
+    return SizedBox(
+      height: config.height,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.symmetric(horizontal: config.horizontalPadding),
+        itemCount: count,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsets.only(right: config.itemSpacing),
+            child: CloudMusicArtistItemShimmer(
+              colorScheme: colorScheme,
+              cloudLayoutConfig: config,
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -220,6 +238,81 @@ class CloudMusicArtistItemShimmer extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// 通用的艺术家水平列表组件，接受预加载的艺术家数据
+class CloudMusicArtistHorizontalListView extends StatelessWidget {
+  const CloudMusicArtistHorizontalListView({
+    super.key,
+    required this.artists,
+    required this.colorScheme,
+    required this.config,
+    this.isLoading = false,
+    this.shimmerCount = 6,
+    this.onArtistTap,
+  });
+
+  final List<CloudMusicArtistData>? artists;
+  final ColorScheme colorScheme;
+  final CloudMusicArtistLayoutConfig config;
+  final bool isLoading;
+  final int shimmerCount;
+  final void Function(CloudMusicArtistData artist)? onArtistTap;
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return _buildShimmerList(colorScheme, config, shimmerCount);
+    }
+
+    if (artists == null || artists!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return SizedBox(
+      height: config.height,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.symmetric(horizontal: config.horizontalPadding),
+        itemCount: artists!.length,
+        itemBuilder: (context, index) {
+          final artist = artists![index];
+          return Padding(
+            padding: EdgeInsets.only(right: config.itemSpacing),
+            child: CloudMusicArtistItem(
+              artist: artist,
+              colorScheme: colorScheme,
+              cloudLayoutConfig: config,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildShimmerList(
+    ColorScheme colorScheme,
+    CloudMusicArtistLayoutConfig config,
+    int count,
+  ) {
+    return SizedBox(
+      height: config.height,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.symmetric(horizontal: config.horizontalPadding),
+        itemCount: count,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsets.only(right: config.itemSpacing),
+            child: CloudMusicArtistItemShimmer(
+              colorScheme: colorScheme,
+              cloudLayoutConfig: config,
+            ),
+          );
+        },
       ),
     );
   }

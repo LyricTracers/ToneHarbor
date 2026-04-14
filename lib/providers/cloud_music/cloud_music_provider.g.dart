@@ -603,7 +603,7 @@ final class CloudMusicArtistDetailProvider
 }
 
 String _$cloudMusicArtistDetailHash() =>
-    r'4dc97472bbc0382654d9b5a036c33cb03a10a655';
+    r'064bc46a0fe95332c67fe7d54648e33dfa37811c';
 
 final class CloudMusicArtistDetailFamily extends $Family
     with
@@ -625,7 +625,7 @@ final class CloudMusicArtistDetailFamily extends $Family
 
   CloudMusicArtistDetailProvider call(
     CloudMusicArtistData artistData, {
-    Duration? cacheDuration = const Duration(minutes: 60),
+    Duration? cacheDuration = const Duration(days: 30),
   }) => CloudMusicArtistDetailProvider._(
     argument: (artistData, cacheDuration: cacheDuration),
     from: this,
@@ -644,7 +644,7 @@ abstract class _$CloudMusicArtistDetail
 
   CloudMusicAristDetailData build(
     CloudMusicArtistData artistData, {
-    Duration? cacheDuration = const Duration(minutes: 60),
+    Duration? cacheDuration = const Duration(days: 30),
   });
   @$mustCallSuper
   @override

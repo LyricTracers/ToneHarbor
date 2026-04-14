@@ -256,15 +256,17 @@ class CloudMusicArtistDetail extends _$CloudMusicArtistDetail {
   @override
   CloudMusicAristDetailData build(
     CloudMusicArtistData artistData, {
-    Duration? cacheDuration = const Duration(minutes: 60),
+    Duration? cacheDuration = const Duration(days: 30),
   }) {
     ref.keepAliveFor(Duration(minutes: 5));
     getArtistDetail();
     getAlbums();
+    getSimilarArtists();
     return CloudMusicAristDetailData(
       artist: artistData,
       hotAlbumsFlag: 1,
       hotSongFlag: 1,
+      similarArtistsFlag: 1,
     );
   }
 
@@ -302,6 +304,21 @@ class CloudMusicArtistDetail extends _$CloudMusicArtistDetail {
     } catch (e) {
       state = state.copyWith(hotAlbumsFlag: -1);
       logger.e('加载artist albums失败: $e');
+    }
+  }
+
+  Future<void> getSimilarArtists() async {
+    try {
+      var detail = await similarArtists(
+        ref,
+        artistId: artistData.id,
+        cacheDuration: cacheDuration,
+      );
+      state = state.copyWith(similarArtistsFlag: 0, similarArtists: detail);
+      logger.i('加载artist similar artists成功: $detail');
+    } catch (e) {
+      state = state.copyWith(similarArtistsFlag: -1);
+      logger.e('加载artist similar artists失败: $e');
     }
   }
 }

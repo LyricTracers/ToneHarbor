@@ -10,6 +10,9 @@ _CloudMusicAristDetailData _$CloudMusicAristDetailDataFromJson(
   Map<String, dynamic> json,
 ) => _CloudMusicAristDetailData(
   artist: CloudMusicArtistData.fromJson(json['artist'] as Map<String, dynamic>),
+  similarArtists: (json['similarArtists'] as List<dynamic>?)
+      ?.map((e) => CloudMusicArtistData.fromJson(e as Map<String, dynamic>))
+      .toList(),
   hotAlbums: (json['hotAlbums'] as List<dynamic>?)
       ?.map((e) => CloudMusicAlbumData.fromJson(e as Map<String, dynamic>))
       .toList(),
@@ -18,16 +21,19 @@ _CloudMusicAristDetailData _$CloudMusicAristDetailDataFromJson(
       .toList(),
   hotAlbumsFlag: (json['hotAlbumsFlag'] as num?)?.toInt(),
   hotSongFlag: (json['hotSongFlag'] as num?)?.toInt(),
+  similarArtistsFlag: (json['similarArtistsFlag'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$CloudMusicAristDetailDataToJson(
   _CloudMusicAristDetailData instance,
 ) => <String, dynamic>{
   'artist': instance.artist,
+  'similarArtists': instance.similarArtists,
   'hotAlbums': instance.hotAlbums,
   'hotSongs': instance.hotSongs,
   'hotAlbumsFlag': instance.hotAlbumsFlag,
   'hotSongFlag': instance.hotSongFlag,
+  'similarArtistsFlag': instance.similarArtistsFlag,
 };
 
 _CloudMusicPlaylistDataList _$CloudMusicPlaylistDataListFromJson(
