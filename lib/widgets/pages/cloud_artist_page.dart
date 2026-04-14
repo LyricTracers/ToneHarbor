@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
@@ -9,6 +10,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
+import 'package:toneharbor/widgets/components/smart_marquee.dart';
 import 'package:toneharbor/widgets/layouts/playing_detail_layout.dart';
 
 class CloudArtistHeaderDelegate extends SliverPersistentHeaderDelegate {
@@ -21,8 +23,7 @@ class CloudArtistHeaderDelegate extends SliverPersistentHeaderDelegate {
   final ColorScheme colorScheme;
   final BuildContext context;
   final Color headerBackgroundColor;
-  final ({String imageUrl, ColorScheme colorScheme, bool isCircular})
-  coverImageConfig;
+  final Widget? coverImage;
 
   CloudArtistHeaderDelegate({
     required this.ref,
@@ -34,7 +35,7 @@ class CloudArtistHeaderDelegate extends SliverPersistentHeaderDelegate {
     required this.colorScheme,
     required this.context,
     required this.headerBackgroundColor,
-    required this.coverImageConfig,
+    this.coverImage,
   });
 
   @override
@@ -244,18 +245,7 @@ class CloudArtistHeaderDelegate extends SliverPersistentHeaderDelegate {
   }
 
   Widget _buildCoverImage(double size) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: CloudMusicCoverImage(
-        imageUrl: coverImageConfig.imageUrl,
-        colorScheme: coverImageConfig.colorScheme,
-        config: CloudMusicCoverImageConfig(
-          size: size,
-          isCircular: coverImageConfig.isCircular,
-        ),
-      ),
-    );
+    return SizedBox(width: size, height: size, child: coverImage);
   }
 }
 
@@ -289,13 +279,28 @@ class CloudArtistPage extends HookConsumerWidget {
     }, []);
     final artistDetail = ref.watch(provider);
 
-    final coverImageConfig = useMemoized(() {
-      var url = artistData.coverUrl();
-      if (url.isEmpty) {
-        url = artistDetail.artist.coverUrl();
-      }
-      return (imageUrl: url, colorScheme: colorScheme, isCircular: true);
-    }, [artistData.coverUrl(), colorScheme, artistDetail.artist.coverUrl()]);
+    final coverImage = useMemoized(
+      () {
+        var url = artistData.coverUrl();
+        if (url.isEmpty) {
+          url = artistDetail.artist.coverUrl();
+        }
+        return CloudMusicCoverImage(
+          imageUrl: url,
+          colorScheme: colorScheme,
+          config: CloudMusicCoverImageConfig(
+            size: kToolbarHeight * 4 * size.multiplier3 * 0.55,
+            isCircular: true,
+          ),
+        );
+      },
+      [
+        artistData.coverUrl(),
+        colorScheme,
+        artistDetail.artist.coverUrl(),
+        size.multiplier3,
+      ],
+    );
 
     return Stack(
       children: [
@@ -308,7 +313,8 @@ class CloudArtistPage extends HookConsumerWidget {
         ),
         NotificationListener<ScrollNotification>(
           onNotification: (notification) {
-            if (notification is ScrollUpdateNotification) {
+            if (notification is ScrollUpdateNotification &&
+                notification.depth == 0) {
               scrollPixels.value = notification.metrics.pixels;
             }
             return false;
@@ -332,7 +338,7 @@ class CloudArtistPage extends HookConsumerWidget {
                     colorScheme: colorScheme,
                     context: context,
                     headerBackgroundColor: statusBarColor,
-                    coverImageConfig: coverImageConfig,
+                    coverImage: coverImage,
                   ),
                 ),
                 SliverToBoxAdapter(
@@ -362,8 +368,71 @@ class CloudArtistPage extends HookConsumerWidget {
                           colorScheme,
                           size,
                           l10n,
-                          artistDetail.hotSongFlag ?? 0,
                         ),
+                        SizedBox(height: 10 * size.multiplier),
+                        Text(
+                          l10n.albums,
+                          style: TextStyle(
+                            fontSize: 24 * size.multiplier,
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                        SizedBox(height: 10 * size.multiplier),
+                      ],
+                    ),
+                  ),
+                ),
+                // 专辑列表作为独立的 Sliver，实现真正的懒加载
+                SliverPadding(
+                  padding: EdgeInsets.only(
+                    left: 45 * size.multiplier2,
+                    right: 16 * size.multiplier2,
+                  ),
+                  sliver: _buildAlbums(
+                    context,
+                    ref,
+                    artistDetail,
+                    colorScheme,
+                    size,
+                    l10n,
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: 45 * size.multiplier2,
+                      right: 16 * size.multiplier2,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(height: 10 * size.multiplier),
+                        if (ref.watch(cloudMusicAuthStateProvider)) ...[
+                          Text(
+                            l10n.sim_artist,
+                            style: TextStyle(
+                              fontSize: 24 * size.multiplier,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+                          SizedBox(height: 10 * size.multiplier),
+                        ],
+                        SizedBox(height: 10 * size.multiplier),
+                        Center(
+                          child: Text(
+                            l10n.reach_end,
+                            style: TextStyle(
+                              fontSize: 12 * size.multiplier,
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10 * size.multiplier),
                       ],
                     ),
                   ),
@@ -376,6 +445,199 @@ class CloudArtistPage extends HookConsumerWidget {
     );
   }
 
+  Widget _buildAlbums(
+    BuildContext context,
+    WidgetRef ref,
+    CloudMusicAristDetailData artistDetail,
+    ColorScheme colorScheme,
+    Size size,
+    AppLocalizations l10n,
+  ) {
+    final albumsFlag = artistDetail.hotAlbumsFlag ?? 0;
+    final albums = artistDetail.hotAlbums ?? [];
+    final multiplier = size.multiplier;
+
+    if (albumsFlag == 1) {
+      return _buildAlbumShimmerLoading(context, colorScheme, size, multiplier);
+    }
+
+    if (albumsFlag == -1 || albums.isEmpty) {
+      return const SliverToBoxAdapter(child: SizedBox.shrink());
+    }
+
+    return SliverGrid(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: _calculateAlbumCrossAxisCount(
+          MediaQuery.of(context).size.width,
+          size.multiplier,
+        ),
+        mainAxisSpacing: 10 * multiplier,
+        crossAxisSpacing: 10 * multiplier,
+        childAspectRatio: 0.75,
+      ),
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          final album = albums[index];
+          return Padding(
+            padding: EdgeInsets.only(right: 15 * multiplier),
+            child: RepaintBoundary(
+              child: _buildAlbumItem(
+                context,
+                album,
+                colorScheme,
+                multiplier,
+                () {
+                  // context.pushWrapper("/cloud-detail", extra: album);
+                },
+              ),
+            ),
+          );
+        },
+        childCount: albums.length,
+        addAutomaticKeepAlives: true,
+        addRepaintBoundaries: true,
+      ),
+    );
+  }
+
+  int _calculateAlbumCrossAxisCount(double availableWidth, double multiplier) {
+    final maxCrossAxisExtent = 180 * multiplier;
+    return (availableWidth / maxCrossAxisExtent).floor().clamp(3, 6);
+  }
+
+  Widget _buildAlbumShimmerLoading(
+    BuildContext context,
+    ColorScheme colorScheme,
+    Size size,
+    double multiplier,
+  ) {
+    final crossAxisCount = _calculateAlbumCrossAxisCount(
+      MediaQuery.of(context).size.width,
+      size.multiplier,
+    );
+    final itemCount = crossAxisCount * 3;
+
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      sliver: SliverGrid(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+          mainAxisSpacing: 10 * multiplier,
+          crossAxisSpacing: 10 * multiplier,
+          childAspectRatio: 0.75,
+        ),
+        delegate: SliverChildBuilderDelegate((context, index) {
+          return _buildAlbumItemShimmer(context, colorScheme);
+        }, childCount: itemCount),
+      ),
+    );
+  }
+
+  Widget _buildAlbumItem(
+    BuildContext context,
+    CloudMusicAlbumData album,
+    ColorScheme colorScheme,
+    double multiplier,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final coverSize = constraints.maxWidth;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Expanded(
+                child: AspectRatio(
+                  aspectRatio: 1.0,
+                  child: CloudMusicCoverImage(
+                    imageUrl: album.picUrl ?? '',
+                    colorScheme: colorScheme,
+                    config: CloudMusicCoverImageConfig(
+                      size: coverSize,
+                      borderRadius: 12,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
+              SmartMarquee(
+                text: album.name,
+                style: TextStyle(
+                  fontSize: 16 * multiplier,
+                  fontWeight: FontWeight.normal,
+                ),
+                pauseOnHover: true,
+                pauseAfterRound: const Duration(seconds: 5),
+                alignment: Alignment.center,
+              ),
+
+              const SizedBox(height: 2),
+              Text(
+                formatTime(album.publishTime),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14 * multiplier,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildAlbumItemShimmer(BuildContext context, ColorScheme colorScheme) {
+    return Shimmer.fromColors(
+      baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      highlightColor: colorScheme.surface.withValues(alpha: 1.0),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final coverSize = constraints.maxWidth;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Expanded(
+                child: AspectRatio(
+                  aspectRatio: 1.0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                width: coverSize * 0.8,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Container(
+                width: coverSize * 0.5,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildHotSongs(
     BuildContext context,
     WidgetRef ref,
@@ -383,8 +645,8 @@ class CloudArtistPage extends HookConsumerWidget {
     ColorScheme colorScheme,
     Size size,
     AppLocalizations l10n,
-    int hotSongFlag,
   ) {
+    final hotSongFlag = artistDetail.hotSongFlag ?? 0;
     final hotSongs = artistDetail.hotSongs ?? [];
 
     if (hotSongFlag == 1) {
@@ -526,18 +788,6 @@ class CloudArtistPage extends HookConsumerWidget {
                                 : 0,
                             autoPlay: true,
                           );
-                      if (context.mounted) {
-                        if (size.isXs) {
-                          showModalBottomSheetWidget(
-                            ref.context,
-                            colorScheme,
-                            isScrollControlled: true,
-                            (context) => const PlayingDetailLayout(),
-                          );
-                        } else {
-                          context.pushWrapper("/playing_detail");
-                        }
-                      }
                     },
                   ),
                 ),

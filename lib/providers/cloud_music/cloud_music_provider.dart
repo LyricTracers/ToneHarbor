@@ -260,6 +260,7 @@ class CloudMusicArtistDetail extends _$CloudMusicArtistDetail {
   }) {
     ref.keepAliveFor(Duration(minutes: 5));
     getArtistDetail();
+    getAlbums();
     return CloudMusicAristDetailData(
       artist: artistData,
       hotAlbumsFlag: 1,
@@ -269,7 +270,7 @@ class CloudMusicArtistDetail extends _$CloudMusicArtistDetail {
 
   Future<void> getArtistDetail() async {
     try {
-      var detail = await artistDetail(
+      var detail = await cloudArtistDetail(
         ref,
         artistData: artistData,
         cacheDuration: cacheDuration,
@@ -279,9 +280,28 @@ class CloudMusicArtistDetail extends _$CloudMusicArtistDetail {
         final tracks = await getTrackDetail(ref, ids: trackIds);
         detail = detail.copyWith(hotSongs: tracks);
       }
-      state = detail.copyWith(hotSongFlag: 0);
+      state = state.copyWith(
+        hotSongFlag: 0,
+        hotSongs: detail.hotSongs,
+        artist: detail.artist,
+      );
     } catch (e) {
-      state = CloudMusicAristDetailData(artist: artistData, hotSongFlag: -1);
+      state = state.copyWith(hotSongFlag: -1);
+      logger.e('加载artist detail失败: $e');
+    }
+  }
+
+  Future<void> getAlbums() async {
+    try {
+      var detail = await cloudArtistAlbums(
+        ref,
+        artistData: artistData,
+        cacheDuration: cacheDuration,
+      );
+      state = state.copyWith(hotAlbumsFlag: 0, hotAlbums: detail.hotAlbums);
+    } catch (e) {
+      state = state.copyWith(hotAlbumsFlag: -1);
+      logger.e('加载artist albums失败: $e');
     }
   }
 }

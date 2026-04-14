@@ -944,5 +944,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get collapse => '收起';
 
   @override
+  String get sim_artist => '相似歌手';
+
+  @override
   String get invalid_cookie_format => 'Cookie 格式无效，必须包含 MUSIC_U';
 }

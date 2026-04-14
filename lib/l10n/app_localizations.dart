@@ -1964,6 +1964,12 @@ abstract class AppLocalizations {
   /// **'Collapse'**
   String get collapse;
 
+  /// No description provided for @sim_artist.
+  ///
+  /// In en, this message translates to:
+  /// **'Similar Artists'**
+  String get sim_artist;
+
   /// No description provided for @invalid_cookie_format.
   ///
   /// In en, this message translates to:

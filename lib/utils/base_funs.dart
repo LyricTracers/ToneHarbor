@@ -909,3 +909,26 @@ void showSetBackgroundDialog(
   }
   return (playable: true, reason: null);
 }
+
+String formatDuration(int milliseconds) {
+  final seconds = milliseconds ~/ 1000;
+  final minutes = seconds ~/ 60;
+  final remainingSeconds = seconds % 60;
+  return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
+}
+
+String formatDate(DateTime date) {
+  return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+}
+
+DateTime? parseDate(int? time) {
+  return time != null ? DateTime.fromMillisecondsSinceEpoch(time) : null;
+}
+
+String formatTime(int? time) {
+  final date = parseDate(time);
+  if (date == null) {
+    return '';
+  }
+  return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+}

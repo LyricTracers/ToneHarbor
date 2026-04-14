@@ -5,7 +5,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
-Future<CloudMusicAristDetailData> artistDetail(
+Future<CloudMusicAristDetailData> cloudArtistDetail(
   Ref ref, {
   required CloudMusicArtistData artistData,
   Duration? cacheDuration = const Duration(minutes: 60),
@@ -69,7 +69,7 @@ Future<CloudMusicAristDetailData> artistDetail(
   return CloudMusicAristDetailData.fromJson(jsonBody);
 }
 
-Future<CloudMusicAristDetailData> artistAlbums(
+Future<CloudMusicAristDetailData> cloudArtistAlbums(
   Ref ref, {
   required CloudMusicArtistData artistData,
   Duration? cacheDuration = const Duration(minutes: 60),
@@ -86,6 +86,7 @@ Future<CloudMusicAristDetailData> artistAlbums(
         if (json['code'] != 200) {
           return CloudMusicAristDetailData(artist: artistData);
         }
+
         return CloudMusicAristDetailData.fromJson(json);
       },
     );
@@ -96,6 +97,7 @@ Future<CloudMusicAristDetailData> artistAlbums(
 
   final query = <String, String>{
     'randomCNIP': 'true',
+    'limit': '200',
     'id': artistData.id.toString(),
   };
 

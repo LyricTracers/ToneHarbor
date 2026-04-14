@@ -428,9 +428,9 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
                     l10n: l10n,
                     title: playlist.name,
                     updateTime: updateTime != null
-                        ? "Updated ${_formatDate(updateTime)}"
+                        ? "Updated ${formatDate(updateTime)}"
                         : createTime != null
-                        ? "Created ${_formatDate(createTime)}"
+                        ? "Created ${formatDate(createTime)}"
                         : null,
                     description:
                         detail.value?.description ?? playlist.description,
@@ -780,10 +780,6 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
       }, childCount: tracks.length + 1),
     );
   }
-
-  String _formatDate(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-  }
 }
 
 class _TrackListShimmerLoading extends StatelessWidget {
@@ -889,7 +885,7 @@ class _TrackListItem extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final artists = track.ar?.map((a) => a.name).join(', ') ?? '';
-    final duration = track.dt != null ? _formatDuration(track.dt!) : null;
+    final duration = track.dt != null ? formatDuration(track.dt!) : null;
     final multiplier = size.multiplier2;
     double itemHeight = 66.0 * multiplier;
     var isHovered = useState(false);
@@ -1194,12 +1190,5 @@ class _TrackListItem extends HookConsumerWidget {
         ),
       ),
     );
-  }
-
-  String _formatDuration(int milliseconds) {
-    final seconds = milliseconds ~/ 1000;
-    final minutes = seconds ~/ 60;
-    final remainingSeconds = seconds % 60;
-    return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 }

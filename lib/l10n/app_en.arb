@@ -318,5 +318,6 @@
   "reach_end": "__Reached The End__",
   "hot_songs": "Hot Songs",
   "collapse": "Collapse",
+  "sim_artist": "Similar Artists",
   "invalid_cookie_format": "Invalid Cookie format, must contain MUSIC_U"
 }
