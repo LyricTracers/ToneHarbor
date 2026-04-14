@@ -5,6 +5,17 @@ part 'cloud_music_models.freezed.dart';
 part 'cloud_music_models.g.dart';
 
 @freezed
+sealed class CloudMusicAlbumDetailData with _$CloudMusicAlbumDetailData {
+  const CloudMusicAlbumDetailData._();
+  factory CloudMusicAlbumDetailData({
+    List<CloudMusicSongData>? songs,
+    required CloudMusicAlbumData album,
+  }) = _CloudMusicAlbumDetailData;
+  factory CloudMusicAlbumDetailData.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicAlbumDetailDataFromJson(json);
+}
+
+@freezed
 sealed class CloudMusicAristDetailData with _$CloudMusicAristDetailData {
   const CloudMusicAristDetailData._();
   factory CloudMusicAristDetailData({

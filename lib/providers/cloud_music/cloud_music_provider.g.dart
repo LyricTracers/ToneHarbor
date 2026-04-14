@@ -603,7 +603,7 @@ final class CloudMusicArtistDetailProvider
 }
 
 String _$cloudMusicArtistDetailHash() =>
-    r'064bc46a0fe95332c67fe7d54648e33dfa37811c';
+    r'0e32e0b1aa4c9be933fabbe36139246f94f49c6a';
 
 final class CloudMusicArtistDetailFamily extends $Family
     with
