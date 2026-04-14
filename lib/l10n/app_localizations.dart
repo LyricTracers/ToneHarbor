@@ -1970,6 +1970,12 @@ abstract class AppLocalizations {
   /// **'Similar Artists'**
   String get sim_artist;
 
+  /// No description provided for @track_count.
+  ///
+  /// In en, this message translates to:
+  /// **' Songs'**
+  String get track_count;
+
   /// No description provided for @invalid_cookie_format.
   ///
   /// In en, this message translates to:

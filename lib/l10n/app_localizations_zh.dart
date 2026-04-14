@@ -947,5 +947,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sim_artist => '相似歌手';
 
   @override
+  String get track_count => '首歌';
+
+  @override
   String get invalid_cookie_format => 'Cookie 格式无效，必须包含 MUSIC_U';
 }

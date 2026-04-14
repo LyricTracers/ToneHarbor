@@ -493,7 +493,7 @@ class CloudArtistPage extends HookConsumerWidget {
                 colorScheme,
                 multiplier,
                 () {
-                  // context.pushWrapper("/cloud-detail", extra: album);
+                  context.pushWrapper("/cloud-album-detail", extra: album);
                 },
               ),
             ),

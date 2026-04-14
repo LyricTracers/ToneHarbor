@@ -932,3 +932,11 @@ String formatTime(int? time) {
   }
   return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 }
+
+String formatYear(int? publishTime) {
+  if (publishTime != null) {
+    final date = DateTime.fromMillisecondsSinceEpoch(publishTime);
+    return date.year.toString();
+  }
+  return '';
+}

@@ -178,21 +178,24 @@ sealed class CloudMusicSongData with _$CloudMusicSongData {
       _$CloudMusicSongDataFromJson(json);
 
   String get artistName => ar?.map((e) => e.name).join('/') ?? '';
-  String coverUrl({int size = 200}) {
+  String coverUrl({int size = 200, CloudMusicAlbumData? album}) {
     if (al != null && al!.cover.isNotEmpty) {
       return '${al!.cover.replaceAll('http://', 'https://')}?param=${size}y$size';
+    }
+    if (album != null && album.cover.isNotEmpty) {
+      return '${album.cover.replaceAll('http://', 'https://')}?param=${size}y$size';
     }
     return '';
   }
 
-  ToneHarborTrackObjectCloudMusic asTrack() {
+  ToneHarborTrackObjectCloudMusic asTrack({CloudMusicAlbumData? album}) {
     return ToneHarborTrackObjectCloudMusic(
       id: id.toString(),
       title: name,
       artist: artistName,
-      album: al?.name ?? '',
+      album: album?.name ?? al?.name ?? '',
       duration: Duration(milliseconds: dt ?? 0),
-      coverUrl: coverUrl(),
+      coverUrl: coverUrl(album: album),
     );
   }
 }

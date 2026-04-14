@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/services/cloud_music/albums.dart';
 import 'package:toneharbor/services/cloud_music/artists.dart';
 import 'package:toneharbor/services/cloud_music/playlists.dart';
 import 'package:toneharbor/services/cloud_music/user.dart';
@@ -319,6 +320,27 @@ class CloudMusicArtistDetail extends _$CloudMusicArtistDetail {
     } catch (e) {
       state = state.copyWith(similarArtistsFlag: -1);
       logger.e('加载artist similar artists失败: $e');
+    }
+  }
+}
+
+@riverpod
+Future<CloudMusicAlbumDetailData?> getCloudAlbumDetail(
+  Ref ref, {
+  required int albumId,
+  Duration? keepAliveDuration = const Duration(minutes: 5),
+  Duration? cacheDuration = const Duration(days: 30),
+}) async {
+  final link = ref.keepAliveFor(keepAliveDuration);
+  try {
+    return await cloudAlbumDetail(
+      ref,
+      albumId: albumId,
+      cacheDuration: cacheDuration,
+    );
+  } finally {
+    if (keepAliveDuration == null) {
+      link.close();
     }
   }
 }

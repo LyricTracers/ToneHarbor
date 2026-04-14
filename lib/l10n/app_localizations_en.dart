@@ -975,6 +975,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sim_artist => 'Similar Artists';
 
   @override
+  String get track_count => ' Songs';
+
+  @override
   String get invalid_cookie_format =>
       'Invalid Cookie format, must contain MUSIC_U';
 }

@@ -665,3 +665,94 @@ abstract class _$CloudMusicArtistDetail
     );
   }
 }
+
+@ProviderFor(getCloudAlbumDetail)
+final getCloudAlbumDetailProvider = GetCloudAlbumDetailFamily._();
+
+final class GetCloudAlbumDetailProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<CloudMusicAlbumDetailData?>,
+          CloudMusicAlbumDetailData?,
+          FutureOr<CloudMusicAlbumDetailData?>
+        >
+    with
+        $FutureModifier<CloudMusicAlbumDetailData?>,
+        $FutureProvider<CloudMusicAlbumDetailData?> {
+  GetCloudAlbumDetailProvider._({
+    required GetCloudAlbumDetailFamily super.from,
+    required ({int albumId, Duration? cacheDuration}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'getCloudAlbumDetailProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$getCloudAlbumDetailHash();
+
+  @override
+  String toString() {
+    return r'getCloudAlbumDetailProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<CloudMusicAlbumDetailData?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<CloudMusicAlbumDetailData?> create(Ref ref) {
+    final argument = this.argument as ({int albumId, Duration? cacheDuration});
+    return getCloudAlbumDetail(
+      ref,
+      albumId: argument.albumId,
+      cacheDuration: argument.cacheDuration,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetCloudAlbumDetailProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$getCloudAlbumDetailHash() =>
+    r'16d528961acf8c322dcda37c6a6eab065702b02a';
+
+final class GetCloudAlbumDetailFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<CloudMusicAlbumDetailData?>,
+          ({int albumId, Duration? cacheDuration})
+        > {
+  GetCloudAlbumDetailFamily._()
+    : super(
+        retry: null,
+        name: r'getCloudAlbumDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  GetCloudAlbumDetailProvider call({
+    required int albumId,
+    Duration? cacheDuration = const Duration(days: 30),
+  }) => GetCloudAlbumDetailProvider._(
+    argument: (albumId: albumId, cacheDuration: cacheDuration),
+    from: this,
+  );
+
+  @override
+  String toString() => r'getCloudAlbumDetailProvider';
+}

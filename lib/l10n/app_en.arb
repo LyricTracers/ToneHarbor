@@ -319,5 +319,6 @@
   "hot_songs": "Hot Songs",
   "collapse": "Collapse",
   "sim_artist": "Similar Artists",
+  "track_count": " Songs",
   "invalid_cookie_format": "Invalid Cookie format, must contain MUSIC_U"
 }

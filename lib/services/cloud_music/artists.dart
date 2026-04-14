@@ -66,7 +66,16 @@ Future<CloudMusicAristDetailData> cloudArtistDetail(
     );
   }
 
-  return CloudMusicAristDetailData.fromJson(jsonBody);
+  var artistDetail = CloudMusicAristDetailData.fromJson(jsonBody);
+  if (cacheDuration != null && artistDetail.hotSongs != null) {
+    await saveToCache(
+      cacheKey: cacheKey,
+      jsonBody: jsonBody,
+      cacheDuration: cacheDuration,
+      group: groupKey,
+    );
+  }
+  return artistDetail;
 }
 
 Future<CloudMusicAristDetailData> cloudArtistAlbums(
@@ -131,7 +140,16 @@ Future<CloudMusicAristDetailData> cloudArtistAlbums(
       statusCode: jsonBody['code'],
     );
   }
-  return CloudMusicAristDetailData.fromJson(jsonBody);
+  var artistDetail = CloudMusicAristDetailData.fromJson(jsonBody);
+  if (cacheDuration != null && artistDetail.hotAlbums != null) {
+    await saveToCache(
+      cacheKey: cacheKey,
+      jsonBody: jsonBody,
+      cacheDuration: cacheDuration,
+      group: groupKey,
+    );
+  }
+  return artistDetail;
 }
 
 Future<List<CloudMusicArtistData>> toplistOfArtists(

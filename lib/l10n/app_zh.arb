@@ -318,5 +318,6 @@
   "collapse": "收起",
   "hot_songs": "热门歌曲",
   "sim_artist": "相似歌手",
+  "track_count": "首歌",
   "invalid_cookie_format": "Cookie 格式无效，必须包含 MUSIC_U"
 }
