@@ -5,6 +5,20 @@ part 'cloud_music_models.freezed.dart';
 part 'cloud_music_models.g.dart';
 
 @freezed
+sealed class CloudMusicAristDetailData with _$CloudMusicAristDetailData {
+  const CloudMusicAristDetailData._();
+  factory CloudMusicAristDetailData({
+    required CloudMusicArtistData artist,
+    List<CloudMusicAlbumData>? hotAlbums,
+    List<CloudMusicSongData>? hotSongs,
+    int? hotAlbumsFlag,
+    int? hotSongFlag,
+  }) = _CloudMusicAristDetailData;
+  factory CloudMusicAristDetailData.fromJson(Map<String, dynamic> json) =>
+      _$CloudMusicAristDetailDataFromJson(json);
+}
+
+@freezed
 sealed class CloudMusicPlaylistDataList with _$CloudMusicPlaylistDataList {
   const CloudMusicPlaylistDataList._();
   const factory CloudMusicPlaylistDataList({
@@ -114,16 +128,16 @@ sealed class CloudMusicArtistData with _$CloudMusicArtistData {
       _$CloudMusicArtistDataFromJson(json);
 
   String coverUrl({int size = 200}) {
+    final img = picUrl != null && picUrl!.isNotEmpty
+        ? picUrl!
+        : img1v1Url ?? '';
     if (img1v1Url != null && img1v1Url!.isNotEmpty) {
-      final img1v1ID = img1v1Url!.split('/').last;
+      final img1v1ID = img.split('/').last;
       if (img1v1ID == '5639395138885805.jpg') {
         // return 'https://p2.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg?param=512y512';
         return '';
       }
     }
-    final img = img1v1Url != null && img1v1Url!.isNotEmpty
-        ? img1v1Url!
-        : picUrl ?? '';
     return '${img.replaceAll('http://', 'https://')}?param=${size}y$size';
   }
 }

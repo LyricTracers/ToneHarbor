@@ -150,9 +150,9 @@ class AudioPlayerStreamListeners {
             .read(downloadManagerProvider.notifier)
             .isDownloading(nextTrack.id);
         if (isDownloading) {
-          logger.i(
-            '[AudioPlayer] Track already downloading: ${nextTrack.title}',
-          );
+          // logger.i(
+          //   '[AudioPlayer] Track already downloading: ${nextTrack.title}',
+          // );
           return;
         }
 

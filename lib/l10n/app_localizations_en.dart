@@ -966,6 +966,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reach_end => '__Reached The End__';
 
   @override
+  String get hot_songs => 'Hot Songs';
+
+  @override
+  String get collapse => 'Collapse';
+
+  @override
   String get invalid_cookie_format =>
       'Invalid Cookie format, must contain MUSIC_U';
 }

@@ -20,6 +20,7 @@ import 'package:toneharbor/widgets/layouts/local_songs_layout.dart';
 import 'package:toneharbor/widgets/mobile/layouts/mobile_full_layout.dart';
 import 'package:toneharbor/widgets/mobile/layouts/mobile_home_layout.dart';
 import 'package:toneharbor/widgets/pages/cloud_api_setting_page.dart';
+import 'package:toneharbor/widgets/pages/cloud_artist_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_detail_playlist_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_music_login_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_playlist_catlist_page.dart';
@@ -492,6 +493,15 @@ class MyApp extends HookConsumerWidget {
                   ),
                 ),
               ),
+              GoRoute(
+                path: '/cloud-artist-detail',
+                pageBuilder: (context, state) => buildPage(
+                  key: state.pageKey,
+                  child: CloudArtistPage(
+                    artistData: state.extra as CloudMusicArtistData,
+                  ),
+                ),
+              ),
             ],
           ),
           // ================================
@@ -786,6 +796,18 @@ class MyApp extends HookConsumerWidget {
               child: MobileFullLayout(
                 child: CloudPlaylistCategoryListPage(
                   category: state.extra as CloudPlaylistCategory,
+                ),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/mobile/cloud-artist-detail',
+            pageBuilder: (context, state) => buildPage(
+              key: state.pageKey,
+              child: MobileFullLayout(
+                appbar: false,
+                child: CloudArtistPage(
+                  artistData: state.extra as CloudMusicArtistData,
                 ),
               ),
             ),

@@ -250,3 +250,38 @@ class CloudMusicPlaylistCatlist extends _$CloudMusicPlaylistCatlist
     required String sortDirection,
   }) async {}
 }
+
+@riverpod
+class CloudMusicArtistDetail extends _$CloudMusicArtistDetail {
+  @override
+  CloudMusicAristDetailData build(
+    CloudMusicArtistData artistData, {
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) {
+    ref.keepAliveFor(Duration(minutes: 5));
+    getArtistDetail();
+    return CloudMusicAristDetailData(
+      artist: artistData,
+      hotAlbumsFlag: 1,
+      hotSongFlag: 1,
+    );
+  }
+
+  Future<void> getArtistDetail() async {
+    try {
+      var detail = await artistDetail(
+        ref,
+        artistData: artistData,
+        cacheDuration: cacheDuration,
+      );
+      if (detail.hotSongs != null) {
+        final trackIds = detail.hotSongs!.map((t) => t.id).toList();
+        final tracks = await getTrackDetail(ref, ids: trackIds);
+        detail = detail.copyWith(hotSongs: tracks);
+      }
+      state = detail.copyWith(hotSongFlag: 0);
+    } catch (e) {
+      state = CloudMusicAristDetailData(artist: artistData, hotSongFlag: -1);
+    }
+  }
+}

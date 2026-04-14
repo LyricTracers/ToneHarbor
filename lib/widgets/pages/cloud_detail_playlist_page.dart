@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
@@ -379,12 +377,6 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
       [playlist.coverUrl(), colorScheme, maxCoverSize, multiplier],
     );
 
-    useEffect(() {
-      Future.microtask(() {
-        ref.invalidate(songSelectionProvider);
-      });
-      return null;
-    }, []);
     final songSelectionState = ref.watch(
       songSelectionProvider.select(
         (state) => SongSelectionState(
@@ -548,6 +540,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
     }
     return SafeArea(
       top: false,
+      bottom: false,
       child: Container(
         height: kToolbarHeight * size.multiplier3,
         color: colorScheme.surfaceContainerHighest,
@@ -661,7 +654,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
                       final isLoggedIn = ref.read(cloudMusicAuthStateProvider);
                       final user = ref.read(cloudUserInfoProvider);
 
-                      final selectableSongs = detail!.tracks!.where((song) {
+                      final selectableSongs = detail.tracks!.where((song) {
                         final isPlayable = isCloudTrackPlayable(
                           song,
                           l10n,

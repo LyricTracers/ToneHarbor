@@ -32,4 +32,6 @@ class CacheLockManager {
   void clearAll() {
     _locks.clear();
   }
+
+  List<String> get lockedKeys => _locks.keys.toList();
 }

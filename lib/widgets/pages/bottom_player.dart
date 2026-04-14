@@ -3,10 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lyricskit/lyricskit.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
@@ -1074,6 +1074,7 @@ class BottomPlayer extends HookConsumerWidget {
       onPressed: () async {
         try {
           ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+          logger.i('Setting rating to $rating for track ${activeTrack.id}');
           SetRatingResponse response;
           if (rating) {
             response = await ref
@@ -1085,6 +1086,7 @@ class BottomPlayer extends HookConsumerWidget {
                 .setRating(id: activeTrack.id, rating: 5);
           }
           if (response.success) {
+            if (!context.mounted) return;
             ref
                 .read(favoriteSongsProvider(limit: 50).notifier)
                 .invalidateCache();
@@ -1095,7 +1097,12 @@ class BottomPlayer extends HookConsumerWidget {
             showSnackBarError(e, context, colorScheme.secondary);
           }
         } finally {
-          ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+          if (context.mounted) {
+            ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+          }
+          logger.i(
+            'finish Setting rating to $rating for track ${activeTrack.id}',
+          );
         }
       },
     );

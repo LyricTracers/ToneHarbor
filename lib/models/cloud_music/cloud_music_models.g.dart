@@ -6,6 +6,30 @@ part of 'cloud_music_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+_CloudMusicAristDetailData _$CloudMusicAristDetailDataFromJson(
+  Map<String, dynamic> json,
+) => _CloudMusicAristDetailData(
+  artist: CloudMusicArtistData.fromJson(json['artist'] as Map<String, dynamic>),
+  hotAlbums: (json['hotAlbums'] as List<dynamic>?)
+      ?.map((e) => CloudMusicAlbumData.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  hotSongs: (json['hotSongs'] as List<dynamic>?)
+      ?.map((e) => CloudMusicSongData.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  hotAlbumsFlag: (json['hotAlbumsFlag'] as num?)?.toInt(),
+  hotSongFlag: (json['hotSongFlag'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$CloudMusicAristDetailDataToJson(
+  _CloudMusicAristDetailData instance,
+) => <String, dynamic>{
+  'artist': instance.artist,
+  'hotAlbums': instance.hotAlbums,
+  'hotSongs': instance.hotSongs,
+  'hotAlbumsFlag': instance.hotAlbumsFlag,
+  'hotSongFlag': instance.hotSongFlag,
+};
+
 _CloudMusicPlaylistDataList _$CloudMusicPlaylistDataListFromJson(
   Map<String, dynamic> json,
 ) => _CloudMusicPlaylistDataList(

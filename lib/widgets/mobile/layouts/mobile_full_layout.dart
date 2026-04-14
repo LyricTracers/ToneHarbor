@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -11,6 +12,12 @@ class MobileFullLayout extends BaseBgLayout {
 
   @override
   Widget buildContent(BuildContext context, WidgetRef ref, bool requestFlag) {
+    useEffect(() {
+      Future.microtask(() {
+        ref.invalidate(songSelectionProvider);
+      });
+      return null;
+    }, []);
     var selectionTypeState = ref.watch(
       songSelectionProvider.select((state) {
         return SongSelectionState(

@@ -137,8 +137,6 @@ class LoginLayout extends BaseBgLayout {
       try {
         ref.read(requestFlagProvider.notifier).setRequestFlag(true);
         final response = await login(ref);
-        ref.read(requestFlagProvider.notifier).setRequestFlag(false);
-
         if (response.success) {
           logger.i("登录成功");
           if (context.mounted) {
@@ -149,8 +147,6 @@ class LoginLayout extends BaseBgLayout {
         }
       } catch (e) {
         logger.e("登录异常: $e");
-
-        ref.read(requestFlagProvider.notifier).setRequestFlag(false);
 
         if (context.mounted) {
           if (e is AudioStationException) {
@@ -163,6 +159,8 @@ class LoginLayout extends BaseBgLayout {
             );
           }
         }
+      } finally {
+        ref.read(requestFlagProvider.notifier).setRequestFlag(false);
       }
     }
 

@@ -16,6 +16,12 @@ class MobileHomeLayout extends BaseBgLayout {
     final tabController = useTabController(initialLength: 3);
     final l10n = ref.watch(l10nProvider);
     final colorScheme = Theme.of(context).colorScheme;
+    useEffect(() {
+      Future.microtask(() {
+        ref.invalidate(songSelectionProvider);
+      });
+      return null;
+    }, []);
     var selectionTypeState = ref.watch(
       songSelectionProvider.select((state) {
         return SongSelectionState(

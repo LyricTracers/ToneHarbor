@@ -210,6 +210,7 @@ Future<List<CloudMusicSongData>> getTrackDetail(
 
   try {
     final query = <String, String>{'ids': ids.join(',')};
+    logger.i('ids: $ids');
 
     final cookieParams = CloudMusicAuth.getApiCookieParams();
     if (cookieParams.isNotEmpty) {

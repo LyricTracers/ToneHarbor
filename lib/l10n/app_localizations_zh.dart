@@ -938,5 +938,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reach_end => '__到底了__';
 
   @override
+  String get hot_songs => '热门歌曲';
+
+  @override
+  String get collapse => '收起';
+
+  @override
   String get invalid_cookie_format => 'Cookie 格式无效，必须包含 MUSIC_U';
 }

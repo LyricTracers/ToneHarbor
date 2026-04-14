@@ -316,5 +316,7 @@
   "no_copyright": "No Copyright",
   "out_of_stock": "Out Of Stock",
   "reach_end": "__Reached The End__",
+  "hot_songs": "Hot Songs",
+  "collapse": "Collapse",
   "invalid_cookie_format": "Invalid Cookie format, must contain MUSIC_U"
 }

@@ -5,6 +5,133 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
+Future<CloudMusicAristDetailData> artistDetail(
+  Ref ref, {
+  required CloudMusicArtistData artistData,
+  Duration? cacheDuration = const Duration(minutes: 60),
+}) async {
+  final l10n = ref.read(l10nProvider);
+  final cacheKey = 'cloud_artists:${artistData.id}';
+  final groupKey = 'cloud_artistDetail';
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+  if (cacheDuration != null) {
+    final cached = await getFromCache<CloudMusicAristDetailData>(
+      cacheKey: cacheKey,
+      group: groupKey,
+      fromJson: (json) {
+        if (json['code'] != 200) {
+          return CloudMusicAristDetailData(artist: artistData);
+        }
+        return CloudMusicAristDetailData.fromJson(json);
+      },
+    );
+    if (cached != null && cached.hotSongs != null) {
+      return cached;
+    }
+  }
+
+  final query = <String, String>{
+    'randomCNIP': 'true',
+    'id': artistData.id.toString(),
+  };
+
+  final cookieParams = CloudMusicAuth.getApiCookieParams();
+  if (cookieParams.isNotEmpty) {
+    query.addAll(cookieParams);
+  }
+
+  final response = await httpClientWrapper.get(
+    '${apiState.defaultUrl}/artists',
+    query: query,
+    cancelToken: ref.cancelToken(),
+  );
+  if (response.statusCode != 200) {
+    logger.e('请求失败，状态码：${response.statusCode}');
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: response.statusCode,
+    );
+  }
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw CloudMusicException(message: l10n.error_response_parse_failed);
+  }
+  if (jsonBody['code'] != 200) {
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: jsonBody['code'],
+    );
+  }
+
+  return CloudMusicAristDetailData.fromJson(jsonBody);
+}
+
+Future<CloudMusicAristDetailData> artistAlbums(
+  Ref ref, {
+  required CloudMusicArtistData artistData,
+  Duration? cacheDuration = const Duration(minutes: 60),
+}) async {
+  final l10n = ref.read(l10nProvider);
+  final cacheKey = 'cloud_artists_albums:${artistData.id}';
+  final groupKey = 'cloud_artistDetail';
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+  if (cacheDuration != null) {
+    final cached = await getFromCache<CloudMusicAristDetailData>(
+      cacheKey: cacheKey,
+      group: groupKey,
+      fromJson: (json) {
+        if (json['code'] != 200) {
+          return CloudMusicAristDetailData(artist: artistData);
+        }
+        return CloudMusicAristDetailData.fromJson(json);
+      },
+    );
+    if (cached != null && cached.hotAlbums != null) {
+      return cached;
+    }
+  }
+
+  final query = <String, String>{
+    'randomCNIP': 'true',
+    'id': artistData.id.toString(),
+  };
+
+  final cookieParams = CloudMusicAuth.getApiCookieParams();
+  if (cookieParams.isNotEmpty) {
+    query.addAll(cookieParams);
+  }
+
+  final response = await httpClientWrapper.get(
+    '${apiState.defaultUrl}/artist/album',
+    query: query,
+    cancelToken: ref.cancelToken(),
+  );
+  if (response.statusCode != 200) {
+    logger.e('请求失败，状态码：${response.statusCode}');
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: response.statusCode,
+    );
+  }
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw CloudMusicException(message: l10n.error_response_parse_failed);
+  }
+  if (jsonBody['code'] != 200) {
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: jsonBody['code'],
+    );
+  }
+  return CloudMusicAristDetailData.fromJson(jsonBody);
+}
+
 Future<List<CloudMusicArtistData>> toplistOfArtists(
   Ref ref, {
   required int type,

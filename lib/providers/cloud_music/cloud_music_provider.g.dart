@@ -464,7 +464,7 @@ final class CloudMusicPlaylistCatlistProvider
 }
 
 String _$cloudMusicPlaylistCatlistHash() =>
-    r'6bbd8e6080d51492194017a8bb49c203a02e2fe3';
+    r'05ba20abc55e1e31cb561c0e13c40f89ec19c92b';
 
 final class CloudMusicPlaylistCatlistFamily extends $Family
     with
@@ -547,6 +547,121 @@ abstract class _$CloudMusicPlaylistCatlist
         offset: _$args.offset,
         cacheDuration: _$args.cacheDuration,
       ),
+    );
+  }
+}
+
+@ProviderFor(CloudMusicArtistDetail)
+final cloudMusicArtistDetailProvider = CloudMusicArtistDetailFamily._();
+
+final class CloudMusicArtistDetailProvider
+    extends
+        $NotifierProvider<CloudMusicArtistDetail, CloudMusicAristDetailData> {
+  CloudMusicArtistDetailProvider._({
+    required CloudMusicArtistDetailFamily super.from,
+    required (CloudMusicArtistData, {Duration? cacheDuration}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'cloudMusicArtistDetailProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudMusicArtistDetailHash();
+
+  @override
+  String toString() {
+    return r'cloudMusicArtistDetailProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  CloudMusicArtistDetail create() => CloudMusicArtistDetail();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CloudMusicAristDetailData value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CloudMusicAristDetailData>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CloudMusicArtistDetailProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$cloudMusicArtistDetailHash() =>
+    r'4dc97472bbc0382654d9b5a036c33cb03a10a655';
+
+final class CloudMusicArtistDetailFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          CloudMusicArtistDetail,
+          CloudMusicAristDetailData,
+          CloudMusicAristDetailData,
+          CloudMusicAristDetailData,
+          (CloudMusicArtistData, {Duration? cacheDuration})
+        > {
+  CloudMusicArtistDetailFamily._()
+    : super(
+        retry: null,
+        name: r'cloudMusicArtistDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CloudMusicArtistDetailProvider call(
+    CloudMusicArtistData artistData, {
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) => CloudMusicArtistDetailProvider._(
+    argument: (artistData, cacheDuration: cacheDuration),
+    from: this,
+  );
+
+  @override
+  String toString() => r'cloudMusicArtistDetailProvider';
+}
+
+abstract class _$CloudMusicArtistDetail
+    extends $Notifier<CloudMusicAristDetailData> {
+  late final _$args =
+      ref.$arg as (CloudMusicArtistData, {Duration? cacheDuration});
+  CloudMusicArtistData get artistData => _$args.$1;
+  Duration? get cacheDuration => _$args.cacheDuration;
+
+  CloudMusicAristDetailData build(
+    CloudMusicArtistData artistData, {
+    Duration? cacheDuration = const Duration(minutes: 60),
+  });
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<CloudMusicAristDetailData, CloudMusicAristDetailData>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<CloudMusicAristDetailData, CloudMusicAristDetailData>,
+              CloudMusicAristDetailData,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(
+      ref,
+      () => build(_$args.$1, cacheDuration: _$args.cacheDuration),
     );
   }
 }

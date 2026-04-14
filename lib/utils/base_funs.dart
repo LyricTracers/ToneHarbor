@@ -121,38 +121,35 @@ void showSnackBar(String text, BuildContext context, Color color) {
       );
 }
 
-OverlayEntry? _loadingEntry;
-
 void showLoading(BuildContext context, Widget child) {
   hideLoading();
-  final overlay = Overlay.of(context);
-  final entry = OverlayEntry(
-    builder: (context) => Stack(
-      children: [
-        ModalBarrier(color: Colors.black38, dismissible: false),
-        Center(
-          child: Material(color: Colors.transparent, child: child),
-        ),
-      ],
-    ),
+  _loadingContext = context;
+  showGeneralDialog(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+    barrierColor: Colors.black.withValues(alpha: 0.5),
+    transitionDuration: const Duration(milliseconds: 200),
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return Center(
+        child: Material(color: Colors.transparent, child: child),
+      );
+    },
   );
-  _loadingEntry = entry;
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    overlay.insert(entry);
-  });
 }
 
 void hideLoading() {
-  final entry = _loadingEntry;
-  _loadingEntry = null;
-  if (entry != null) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (entry.mounted) {
-        entry.remove();
-      }
-    });
+  final ctx = _loadingContext;
+  _loadingContext = null;
+  if (ctx != null && ctx.mounted) {
+    final rootNav = Navigator.of(ctx, rootNavigator: true);
+    if (rootNav.canPop()) {
+      rootNav.pop();
+    }
   }
 }
+
+BuildContext? _loadingContext;
 
 void copyToClipboard(String text, BuildContext context, Color color) {
   if (text.isEmpty) {

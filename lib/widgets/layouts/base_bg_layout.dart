@@ -53,23 +53,25 @@ abstract class BaseBgLayout extends HookConsumerWidget {
     );
     final size = MediaQuery.of(context).size;
 
-    useEffect(() {
-      if (enableLoading && requestFlag) {
-        showLoading(
-          context,
-          AudioEqualizerLoader(
-            color: colorScheme.primary.withValues(alpha: .7),
-          ),
-        );
-      } else {
-        hideLoading();
-      }
-      return null;
-    }, [enableLoading, requestFlag]);
-
-    useEffect(() {
-      return hideLoading;
-    }, []);
+    if (enableLoading) {
+      useEffect(() {
+        if (requestFlag) {
+          Future.delayed(Duration.zero, () {
+            if (context.mounted) {
+              showLoading(
+                context,
+                AudioEqualizerLoader(
+                  color: colorScheme.primary.withValues(alpha: 1.0),
+                ),
+              );
+            }
+          });
+        } else {
+          Future.delayed(Duration.zero, () => hideLoading());
+        }
+        return;
+      }, [requestFlag]);
+    }
 
     return Scaffold(
       body: Stack(

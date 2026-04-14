@@ -1952,6 +1952,18 @@ abstract class AppLocalizations {
   /// **'__Reached The End__'**
   String get reach_end;
 
+  /// No description provided for @hot_songs.
+  ///
+  /// In en, this message translates to:
+  /// **'Hot Songs'**
+  String get hot_songs;
+
+  /// No description provided for @collapse.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse'**
+  String get collapse;
+
   /// No description provided for @invalid_cookie_format.
   ///
   /// In en, this message translates to:

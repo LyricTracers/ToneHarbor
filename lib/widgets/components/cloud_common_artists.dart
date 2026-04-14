@@ -76,7 +76,9 @@ class CloudMusicArtistItem extends StatelessWidget {
     }
 
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        context.pushWrapper("/cloud-artist-detail", extra: artist);
+      },
       borderRadius: BorderRadius.circular(12),
       child: SizedBox(
         width: cloudLayoutConfig.itemWidth,
@@ -86,7 +88,7 @@ class CloudMusicArtistItem extends StatelessWidget {
             AspectRatio(
               aspectRatio: 1.0,
               child: CloudMusicCoverImage(
-                imageUrl: artist.picUrl ?? '',
+                imageUrl: artist.coverUrl(),
                 colorScheme: colorScheme,
                 config: CloudMusicCoverImageConfig(
                   size: cloudLayoutConfig.itemWidth,
