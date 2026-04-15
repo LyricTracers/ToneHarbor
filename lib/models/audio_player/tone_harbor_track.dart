@@ -8,6 +8,7 @@ import 'package:path/path.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 
@@ -17,7 +18,7 @@ part 'tone_harbor_track.g.dart';
 
 abstract mixin class AsTrack {
   String get id;
-  ToneHarborTrackObject asTrack();
+  ToneHarborTrackObject asTrack({CloudMusicAlbumData? album});
   bool isSong() {
     return true;
   }
@@ -74,6 +75,9 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
     String? coverUrl,
     String? container,
     int? filesize,
+    List<CloudMusicArtistData>? ar,
+    CloudMusicAlbumData? al,
+    CloudMusicPrivilegeData? privilege,
   }) = ToneHarborTrackObjectCloudMusic;
 
   static Future<ToneHarborTrackObject?> localTrackFromFile(

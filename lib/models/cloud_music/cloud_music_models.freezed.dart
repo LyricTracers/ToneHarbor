@@ -1835,7 +1835,7 @@ as List<String>?,
 /// @nodoc
 mixin _$CloudMusicSongData {
 
- int get id; String get name; List<CloudMusicArtistData>? get ar; CloudMusicAlbumData? get al; CloudMusicPrivilegeData? get privilege; int? get dt; int? get pop; int? get no; int? get fee; int? get copyright; int? get mark; int? get mv; dynamic get noCopyrightRcmd;
+@JsonKey(name: 'id') int get songId; String get name; List<CloudMusicArtistData>? get ar; CloudMusicAlbumData? get al; CloudMusicPrivilegeData? get privilege; int? get dt; int? get pop; int? get no; int? get fee; int? get copyright; int? get mark; int? get mv; dynamic get noCopyrightRcmd;
 /// Create a copy of CloudMusicSongData
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1848,16 +1848,16 @@ $CloudMusicSongDataCopyWith<CloudMusicSongData> get copyWith => _$CloudMusicSong
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CloudMusicSongData&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.ar, ar)&&(identical(other.al, al) || other.al == al)&&(identical(other.privilege, privilege) || other.privilege == privilege)&&(identical(other.dt, dt) || other.dt == dt)&&(identical(other.pop, pop) || other.pop == pop)&&(identical(other.no, no) || other.no == no)&&(identical(other.fee, fee) || other.fee == fee)&&(identical(other.copyright, copyright) || other.copyright == copyright)&&(identical(other.mark, mark) || other.mark == mark)&&(identical(other.mv, mv) || other.mv == mv)&&const DeepCollectionEquality().equals(other.noCopyrightRcmd, noCopyrightRcmd));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CloudMusicSongData&&(identical(other.songId, songId) || other.songId == songId)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.ar, ar)&&(identical(other.al, al) || other.al == al)&&(identical(other.privilege, privilege) || other.privilege == privilege)&&(identical(other.dt, dt) || other.dt == dt)&&(identical(other.pop, pop) || other.pop == pop)&&(identical(other.no, no) || other.no == no)&&(identical(other.fee, fee) || other.fee == fee)&&(identical(other.copyright, copyright) || other.copyright == copyright)&&(identical(other.mark, mark) || other.mark == mark)&&(identical(other.mv, mv) || other.mv == mv)&&const DeepCollectionEquality().equals(other.noCopyrightRcmd, noCopyrightRcmd));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(ar),al,privilege,dt,pop,no,fee,copyright,mark,mv,const DeepCollectionEquality().hash(noCopyrightRcmd));
+int get hashCode => Object.hash(runtimeType,songId,name,const DeepCollectionEquality().hash(ar),al,privilege,dt,pop,no,fee,copyright,mark,mv,const DeepCollectionEquality().hash(noCopyrightRcmd));
 
 @override
 String toString() {
-  return 'CloudMusicSongData(id: $id, name: $name, ar: $ar, al: $al, privilege: $privilege, dt: $dt, pop: $pop, no: $no, fee: $fee, copyright: $copyright, mark: $mark, mv: $mv, noCopyrightRcmd: $noCopyrightRcmd)';
+  return 'CloudMusicSongData(songId: $songId, name: $name, ar: $ar, al: $al, privilege: $privilege, dt: $dt, pop: $pop, no: $no, fee: $fee, copyright: $copyright, mark: $mark, mv: $mv, noCopyrightRcmd: $noCopyrightRcmd)';
 }
 
 
@@ -1868,7 +1868,7 @@ abstract mixin class $CloudMusicSongDataCopyWith<$Res>  {
   factory $CloudMusicSongDataCopyWith(CloudMusicSongData value, $Res Function(CloudMusicSongData) _then) = _$CloudMusicSongDataCopyWithImpl;
 @useResult
 $Res call({
- int id, String name, List<CloudMusicArtistData>? ar, CloudMusicAlbumData? al, CloudMusicPrivilegeData? privilege, int? dt, int? pop, int? no, int? fee, int? copyright, int? mark, int? mv, dynamic noCopyrightRcmd
+@JsonKey(name: 'id') int songId, String name, List<CloudMusicArtistData>? ar, CloudMusicAlbumData? al, CloudMusicPrivilegeData? privilege, int? dt, int? pop, int? no, int? fee, int? copyright, int? mark, int? mv, dynamic noCopyrightRcmd
 });
 
 
@@ -1885,9 +1885,9 @@ class _$CloudMusicSongDataCopyWithImpl<$Res>
 
 /// Create a copy of CloudMusicSongData
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? ar = freezed,Object? al = freezed,Object? privilege = freezed,Object? dt = freezed,Object? pop = freezed,Object? no = freezed,Object? fee = freezed,Object? copyright = freezed,Object? mark = freezed,Object? mv = freezed,Object? noCopyrightRcmd = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? songId = null,Object? name = null,Object? ar = freezed,Object? al = freezed,Object? privilege = freezed,Object? dt = freezed,Object? pop = freezed,Object? no = freezed,Object? fee = freezed,Object? copyright = freezed,Object? mark = freezed,Object? mv = freezed,Object? noCopyrightRcmd = freezed,}) {
   return _then(_self.copyWith(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+songId: null == songId ? _self.songId : songId // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,ar: freezed == ar ? _self.ar : ar // ignore: cast_nullable_to_non_nullable
 as List<CloudMusicArtistData>?,al: freezed == al ? _self.al : al // ignore: cast_nullable_to_non_nullable
@@ -2006,10 +2006,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  List<CloudMusicArtistData>? ar,  CloudMusicAlbumData? al,  CloudMusicPrivilegeData? privilege,  int? dt,  int? pop,  int? no,  int? fee,  int? copyright,  int? mark,  int? mv,  dynamic noCopyrightRcmd)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  int songId,  String name,  List<CloudMusicArtistData>? ar,  CloudMusicAlbumData? al,  CloudMusicPrivilegeData? privilege,  int? dt,  int? pop,  int? no,  int? fee,  int? copyright,  int? mark,  int? mv,  dynamic noCopyrightRcmd)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CloudMusicSongData() when $default != null:
-return $default(_that.id,_that.name,_that.ar,_that.al,_that.privilege,_that.dt,_that.pop,_that.no,_that.fee,_that.copyright,_that.mark,_that.mv,_that.noCopyrightRcmd);case _:
+return $default(_that.songId,_that.name,_that.ar,_that.al,_that.privilege,_that.dt,_that.pop,_that.no,_that.fee,_that.copyright,_that.mark,_that.mv,_that.noCopyrightRcmd);case _:
   return orElse();
 
 }
@@ -2027,10 +2027,10 @@ return $default(_that.id,_that.name,_that.ar,_that.al,_that.privilege,_that.dt,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  List<CloudMusicArtistData>? ar,  CloudMusicAlbumData? al,  CloudMusicPrivilegeData? privilege,  int? dt,  int? pop,  int? no,  int? fee,  int? copyright,  int? mark,  int? mv,  dynamic noCopyrightRcmd)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  int songId,  String name,  List<CloudMusicArtistData>? ar,  CloudMusicAlbumData? al,  CloudMusicPrivilegeData? privilege,  int? dt,  int? pop,  int? no,  int? fee,  int? copyright,  int? mark,  int? mv,  dynamic noCopyrightRcmd)  $default,) {final _that = this;
 switch (_that) {
 case _CloudMusicSongData():
-return $default(_that.id,_that.name,_that.ar,_that.al,_that.privilege,_that.dt,_that.pop,_that.no,_that.fee,_that.copyright,_that.mark,_that.mv,_that.noCopyrightRcmd);}
+return $default(_that.songId,_that.name,_that.ar,_that.al,_that.privilege,_that.dt,_that.pop,_that.no,_that.fee,_that.copyright,_that.mark,_that.mv,_that.noCopyrightRcmd);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -2044,10 +2044,10 @@ return $default(_that.id,_that.name,_that.ar,_that.al,_that.privilege,_that.dt,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  List<CloudMusicArtistData>? ar,  CloudMusicAlbumData? al,  CloudMusicPrivilegeData? privilege,  int? dt,  int? pop,  int? no,  int? fee,  int? copyright,  int? mark,  int? mv,  dynamic noCopyrightRcmd)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  int songId,  String name,  List<CloudMusicArtistData>? ar,  CloudMusicAlbumData? al,  CloudMusicPrivilegeData? privilege,  int? dt,  int? pop,  int? no,  int? fee,  int? copyright,  int? mark,  int? mv,  dynamic noCopyrightRcmd)?  $default,) {final _that = this;
 switch (_that) {
 case _CloudMusicSongData() when $default != null:
-return $default(_that.id,_that.name,_that.ar,_that.al,_that.privilege,_that.dt,_that.pop,_that.no,_that.fee,_that.copyright,_that.mark,_that.mv,_that.noCopyrightRcmd);case _:
+return $default(_that.songId,_that.name,_that.ar,_that.al,_that.privilege,_that.dt,_that.pop,_that.no,_that.fee,_that.copyright,_that.mark,_that.mv,_that.noCopyrightRcmd);case _:
   return null;
 
 }
@@ -2059,10 +2059,10 @@ return $default(_that.id,_that.name,_that.ar,_that.al,_that.privilege,_that.dt,_
 @JsonSerializable()
 
 class _CloudMusicSongData extends CloudMusicSongData {
-  const _CloudMusicSongData({required this.id, required this.name, final  List<CloudMusicArtistData>? ar, this.al, this.privilege, this.dt, this.pop, this.no, this.fee, this.copyright, this.mark, this.mv, this.noCopyrightRcmd}): _ar = ar,super._();
+  const _CloudMusicSongData({@JsonKey(name: 'id') required this.songId, required this.name, final  List<CloudMusicArtistData>? ar, this.al, this.privilege, this.dt, this.pop, this.no, this.fee, this.copyright, this.mark, this.mv, this.noCopyrightRcmd}): _ar = ar,super._();
   factory _CloudMusicSongData.fromJson(Map<String, dynamic> json) => _$CloudMusicSongDataFromJson(json);
 
-@override final  int id;
+@override@JsonKey(name: 'id') final  int songId;
 @override final  String name;
  final  List<CloudMusicArtistData>? _ar;
 @override List<CloudMusicArtistData>? get ar {
@@ -2097,16 +2097,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CloudMusicSongData&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._ar, _ar)&&(identical(other.al, al) || other.al == al)&&(identical(other.privilege, privilege) || other.privilege == privilege)&&(identical(other.dt, dt) || other.dt == dt)&&(identical(other.pop, pop) || other.pop == pop)&&(identical(other.no, no) || other.no == no)&&(identical(other.fee, fee) || other.fee == fee)&&(identical(other.copyright, copyright) || other.copyright == copyright)&&(identical(other.mark, mark) || other.mark == mark)&&(identical(other.mv, mv) || other.mv == mv)&&const DeepCollectionEquality().equals(other.noCopyrightRcmd, noCopyrightRcmd));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CloudMusicSongData&&(identical(other.songId, songId) || other.songId == songId)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._ar, _ar)&&(identical(other.al, al) || other.al == al)&&(identical(other.privilege, privilege) || other.privilege == privilege)&&(identical(other.dt, dt) || other.dt == dt)&&(identical(other.pop, pop) || other.pop == pop)&&(identical(other.no, no) || other.no == no)&&(identical(other.fee, fee) || other.fee == fee)&&(identical(other.copyright, copyright) || other.copyright == copyright)&&(identical(other.mark, mark) || other.mark == mark)&&(identical(other.mv, mv) || other.mv == mv)&&const DeepCollectionEquality().equals(other.noCopyrightRcmd, noCopyrightRcmd));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(_ar),al,privilege,dt,pop,no,fee,copyright,mark,mv,const DeepCollectionEquality().hash(noCopyrightRcmd));
+int get hashCode => Object.hash(runtimeType,songId,name,const DeepCollectionEquality().hash(_ar),al,privilege,dt,pop,no,fee,copyright,mark,mv,const DeepCollectionEquality().hash(noCopyrightRcmd));
 
 @override
 String toString() {
-  return 'CloudMusicSongData(id: $id, name: $name, ar: $ar, al: $al, privilege: $privilege, dt: $dt, pop: $pop, no: $no, fee: $fee, copyright: $copyright, mark: $mark, mv: $mv, noCopyrightRcmd: $noCopyrightRcmd)';
+  return 'CloudMusicSongData(songId: $songId, name: $name, ar: $ar, al: $al, privilege: $privilege, dt: $dt, pop: $pop, no: $no, fee: $fee, copyright: $copyright, mark: $mark, mv: $mv, noCopyrightRcmd: $noCopyrightRcmd)';
 }
 
 
@@ -2117,7 +2117,7 @@ abstract mixin class _$CloudMusicSongDataCopyWith<$Res> implements $CloudMusicSo
   factory _$CloudMusicSongDataCopyWith(_CloudMusicSongData value, $Res Function(_CloudMusicSongData) _then) = __$CloudMusicSongDataCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String name, List<CloudMusicArtistData>? ar, CloudMusicAlbumData? al, CloudMusicPrivilegeData? privilege, int? dt, int? pop, int? no, int? fee, int? copyright, int? mark, int? mv, dynamic noCopyrightRcmd
+@JsonKey(name: 'id') int songId, String name, List<CloudMusicArtistData>? ar, CloudMusicAlbumData? al, CloudMusicPrivilegeData? privilege, int? dt, int? pop, int? no, int? fee, int? copyright, int? mark, int? mv, dynamic noCopyrightRcmd
 });
 
 
@@ -2134,9 +2134,9 @@ class __$CloudMusicSongDataCopyWithImpl<$Res>
 
 /// Create a copy of CloudMusicSongData
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? ar = freezed,Object? al = freezed,Object? privilege = freezed,Object? dt = freezed,Object? pop = freezed,Object? no = freezed,Object? fee = freezed,Object? copyright = freezed,Object? mark = freezed,Object? mv = freezed,Object? noCopyrightRcmd = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? songId = null,Object? name = null,Object? ar = freezed,Object? al = freezed,Object? privilege = freezed,Object? dt = freezed,Object? pop = freezed,Object? no = freezed,Object? fee = freezed,Object? copyright = freezed,Object? mark = freezed,Object? mv = freezed,Object? noCopyrightRcmd = freezed,}) {
   return _then(_CloudMusicSongData(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+songId: null == songId ? _self.songId : songId // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,ar: freezed == ar ? _self._ar : ar // ignore: cast_nullable_to_non_nullable
 as List<CloudMusicArtistData>?,al: freezed == al ? _self.al : al // ignore: cast_nullable_to_non_nullable

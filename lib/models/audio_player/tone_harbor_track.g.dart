@@ -122,6 +122,17 @@ ToneHarborTrackObjectCloudMusic _$ToneHarborTrackObjectCloudMusicFromJson(
   coverUrl: json['coverUrl'] as String?,
   container: json['container'] as String?,
   filesize: (json['filesize'] as num?)?.toInt(),
+  ar: (json['ar'] as List<dynamic>?)
+      ?.map((e) => CloudMusicArtistData.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  al: json['al'] == null
+      ? null
+      : CloudMusicAlbumData.fromJson(json['al'] as Map<String, dynamic>),
+  privilege: json['privilege'] == null
+      ? null
+      : CloudMusicPrivilegeData.fromJson(
+          json['privilege'] as Map<String, dynamic>,
+        ),
   $type: json['runtimeType'] as String?,
 );
 
@@ -136,6 +147,9 @@ Map<String, dynamic> _$ToneHarborTrackObjectCloudMusicToJson(
   'coverUrl': instance.coverUrl,
   'container': instance.container,
   'filesize': instance.filesize,
+  'ar': instance.ar,
+  'al': instance.al,
+  'privilege': instance.privilege,
   'runtimeType': instance.$type,
 };
 

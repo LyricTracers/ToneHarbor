@@ -184,7 +184,7 @@ Map<String, dynamic> _$CloudMusicArtistDataToJson(
 
 _CloudMusicSongData _$CloudMusicSongDataFromJson(Map<String, dynamic> json) =>
     _CloudMusicSongData(
-      id: (json['id'] as num).toInt(),
+      songId: (json['id'] as num).toInt(),
       name: json['name'] as String,
       ar: (json['ar'] as List<dynamic>?)
           ?.map((e) => CloudMusicArtistData.fromJson(e as Map<String, dynamic>))
@@ -209,7 +209,7 @@ _CloudMusicSongData _$CloudMusicSongDataFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$CloudMusicSongDataToJson(_CloudMusicSongData instance) =>
     <String, dynamic>{
-      'id': instance.id,
+      'id': instance.songId,
       'name': instance.name,
       'ar': instance.ar,
       'al': instance.al,

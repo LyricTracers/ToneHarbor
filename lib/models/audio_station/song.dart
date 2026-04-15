@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/folder.dart';
+import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 part 'song.freezed.dart';
 part 'song.g.dart';
 
@@ -91,7 +92,7 @@ sealed class Song with _$Song, AsTrack {
   factory Song.fromJson(Map<String, dynamic> json) => _$SongFromJson(json);
 
   @override
-  ToneHarborTrackObject asTrack() {
+  ToneHarborTrackObject asTrack({CloudMusicAlbumData? album}) {
     var artist = additional?.songTag?.artist;
     if (artist == null || artist.isEmpty) {
       artist = additional?.songTag?.albumArtist;

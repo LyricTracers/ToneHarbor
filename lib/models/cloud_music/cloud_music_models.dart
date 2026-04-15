@@ -158,10 +158,10 @@ sealed class CloudMusicArtistData with _$CloudMusicArtistData {
 }
 
 @freezed
-sealed class CloudMusicSongData with _$CloudMusicSongData {
+sealed class CloudMusicSongData with _$CloudMusicSongData, AsTrack {
   const CloudMusicSongData._();
   const factory CloudMusicSongData({
-    required int id,
+    @JsonKey(name: 'id') required int songId,
     required String name,
     List<CloudMusicArtistData>? ar,
     CloudMusicAlbumData? al,
@@ -179,6 +179,9 @@ sealed class CloudMusicSongData with _$CloudMusicSongData {
   factory CloudMusicSongData.fromJson(Map<String, dynamic> json) =>
       _$CloudMusicSongDataFromJson(json);
 
+  @override
+  String get id => songId.toString();
+
   String get artistName => ar?.map((e) => e.name).join('/') ?? '';
   String coverUrl({int size = 200, CloudMusicAlbumData? album}) {
     if (al != null && al!.cover.isNotEmpty) {
@@ -190,14 +193,18 @@ sealed class CloudMusicSongData with _$CloudMusicSongData {
     return '';
   }
 
+  @override
   ToneHarborTrackObjectCloudMusic asTrack({CloudMusicAlbumData? album}) {
     return ToneHarborTrackObjectCloudMusic(
-      id: id.toString(),
+      id: id,
       title: name,
       artist: artistName,
       album: album?.name ?? al?.name ?? '',
       duration: Duration(milliseconds: dt ?? 0),
       coverUrl: coverUrl(album: album),
+      ar: ar,
+      al: al,
+      privilege: privilege,
     );
   }
 }

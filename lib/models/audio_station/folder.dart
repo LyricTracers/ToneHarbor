@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/audio_station/song.dart';
+import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 part 'folder.freezed.dart';
 part 'folder.g.dart';
 
@@ -44,7 +45,7 @@ sealed class FolderItem with _$FolderItem, AsTrack {
   }
 
   @override
-  ToneHarborTrackObject asTrack() {
+  ToneHarborTrackObject asTrack({CloudMusicAlbumData? album}) {
     if (type == "folder") {
       return ToneHarborTrackObject.folder(id: id, title: title);
     }

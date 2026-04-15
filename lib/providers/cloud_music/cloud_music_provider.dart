@@ -279,7 +279,7 @@ class CloudMusicArtistDetail extends _$CloudMusicArtistDetail {
         cacheDuration: cacheDuration,
       );
       if (detail.hotSongs != null) {
-        final trackIds = detail.hotSongs!.map((t) => t.id).toList();
+        final trackIds = detail.hotSongs!.map((t) => t.songId).toList();
         final tracks = await getTrackDetail(ref, ids: trackIds);
         detail = detail.copyWith(hotSongs: tracks);
       }
