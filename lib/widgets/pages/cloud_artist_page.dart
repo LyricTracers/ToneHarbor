@@ -693,6 +693,7 @@ class CloudArtistPage extends HookConsumerWidget {
           columns,
           totalRows,
           l10n,
+          artistDetail.artist.id,
         ),
         if (canExpand || canCollapse)
           Padding(
@@ -735,6 +736,7 @@ class CloudArtistPage extends HookConsumerWidget {
     int columns,
     int rows,
     AppLocalizations l10n,
+    int artistId,
   ) {
     final isLoggedIn = ref.watch(cloudMusicAuthStateProvider);
     final user = ref.watch(cloudUserInfoProvider);
@@ -766,6 +768,7 @@ class CloudArtistPage extends HookConsumerWidget {
                     l10n,
                     isLoggedIn,
                     userVipType,
+                    artistId,
                     (ci) async {
                       var targetTracks = <ToneHarborTrackObject>[];
                       var initIndex = ci;
@@ -819,6 +822,7 @@ class CloudArtistPage extends HookConsumerWidget {
     AppLocalizations l10n,
     bool isLoggedIn,
     int? userVipType,
+    int artistId,
     Function(int ci)? onTap,
   ) {
     final multiplier = size.multiplier;
@@ -832,71 +836,100 @@ class CloudArtistPage extends HookConsumerWidget {
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(8 * multiplier),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(8 * multiplier),
-        hoverColor: colorScheme.surface.withValues(alpha: 0.3),
-        onTap: isPlayable.playable ? () => onTap?.call(index) : null,
-        child: ContextMenuRegion(
-          enableDefaultGestures: isPlayable.playable,
-          contextMenu: ContextMenu(
-            entriesBuilder: () {
-              return <ContextMenuEntry>[
-                MenuHeader(text: song.name),
-                MenuDivider(),
-                MenuItem(
-                  label: Text(l10n.download),
-                  icon: Icon(Icons.download_rounded),
-                  onSelected: (value) async {
-                    ref.read(requestFlagProvider.notifier).setRequestFlag(true);
-                    await ref
-                        .read(downloadManagerProvider.notifier)
-                        .addToQueue(song.asTrack());
-                    ref
-                        .read(requestFlagProvider.notifier)
-                        .setRequestFlag(false);
-                  },
-                ),
+      child: ContextMenuRegion(
+        enableDefaultGestures: isPlayable.playable,
+        contextMenu: ContextMenu(
+          entriesBuilder: () {
+            return <ContextMenuEntry>[
+              MenuHeader(text: song.name),
+              MenuDivider(),
+              MenuItem(
+                label: Text(l10n.download),
+                icon: Icon(Icons.download_rounded),
+                onSelected: (value) async {
+                  ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+                  await ref
+                      .read(downloadManagerProvider.notifier)
+                      .addToQueue(song.asTrack());
+                  ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+                },
+              ),
+              MenuItem.submenu(
+                label: Text(l10n.add_to),
+                icon: const Icon(Icons.add_box_rounded),
+                items: [
+                  MenuItem(
+                    label: Text(l10n.next_song),
+                    onSelected: (value) async {
+                      ref
+                          .read(requestFlagProvider.notifier)
+                          .setRequestFlag(true);
+                      await ref
+                          .read(audioPlayerStateProvider.notifier)
+                          .addTrackAtFirst(
+                            song.asTrack(),
+                            allowDuplicates: true,
+                          );
+                      ref
+                          .read(requestFlagProvider.notifier)
+                          .setRequestFlag(false);
+                    },
+                  ),
+                  MenuItem(
+                    label: Text(l10n.play_queue),
+                    onSelected: (value) async {
+                      ref
+                          .read(requestFlagProvider.notifier)
+                          .setRequestFlag(true);
+                      await ref
+                          .read(audioPlayerStateProvider.notifier)
+                          .addTrack(song.asTrack());
+                      ref
+                          .read(requestFlagProvider.notifier)
+                          .setRequestFlag(false);
+                    },
+                  ),
+                ],
+              ),
+              MenuDivider(),
+              if (song.ar!.length > 1) ...[
                 MenuItem.submenu(
-                  label: Text(l10n.add_to),
-                  icon: const Icon(Icons.add_box_rounded),
+                  label: Text(l10n.artist_profile),
+                  icon: const Icon(Icons.person_rounded),
                   items: [
-                    MenuItem(
-                      label: Text(l10n.next_song),
-                      onSelected: (value) async {
-                        ref
-                            .read(requestFlagProvider.notifier)
-                            .setRequestFlag(true);
-                        await ref
-                            .read(audioPlayerStateProvider.notifier)
-                            .addTrackAtFirst(
-                              song.asTrack(),
-                              allowDuplicates: true,
+                    ...song.ar!.map(
+                      (artist) => MenuItem(
+                        icon: const Icon(Icons.person_rounded),
+                        label: Text(artist.name),
+                        onSelected: (value) async {
+                          if (artist.id != artistId) {
+                            context.pushWrapper(
+                              "/cloud-artist-detail",
+                              extra: artist,
                             );
-                        ref
-                            .read(requestFlagProvider.notifier)
-                            .setRequestFlag(false);
-                      },
-                    ),
-                    MenuItem(
-                      label: Text(l10n.play_queue),
-                      onSelected: (value) async {
-                        ref
-                            .read(requestFlagProvider.notifier)
-                            .setRequestFlag(true);
-                        await ref
-                            .read(audioPlayerStateProvider.notifier)
-                            .addTrack(song.asTrack());
-                        ref
-                            .read(requestFlagProvider.notifier)
-                            .setRequestFlag(false);
-                      },
+                          }
+                        },
+                      ),
                     ),
                   ],
                 ),
-              ];
-            },
-            padding: const EdgeInsets.all(8.0),
-          ),
+              ],
+              if (song.al != null)
+                MenuItem(
+                  label: Text(song.al!.name),
+                  icon: const Icon(Icons.album_rounded),
+                  onSelected: (value) async {
+                    context.pushWrapper("/cloud-album-detail", extra: song.al!);
+                  },
+                ),
+            ];
+          },
+          padding: const EdgeInsets.all(8.0),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8 * multiplier),
+          hoverColor: colorScheme.surface.withValues(alpha: 0.3),
+          onTap: isPlayable.playable ? () => onTap?.call(index) : null,
           child: Stack(
             children: [
               Container(
