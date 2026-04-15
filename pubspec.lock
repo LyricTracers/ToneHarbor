@@ -819,11 +819,9 @@ packages:
   lyricskit:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "v1.0.0-macos"
-      resolved-ref: de95b15a5a5f4ead1eb8162571bde68ec52290f0
-      url: "https://git.nxcloud.club:12750/LyricTracers/lyricskit.git"
-    source: git
+      path: "../lyricskit"
+      relative: true
+    source: path
     version: "0.1.0"
   matcher:
     dependency: transitive
@@ -915,11 +913,9 @@ packages:
   metadata_god:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "v1.0.0-macos"
-      resolved-ref: "80b3367b97124afaf41d697d83dda7c180163dd8"
-      url: "https://git.nxcloud.club:12750/LyricTracers/metadata_god.git"
-    source: git
+      path: "../metadata_god"
+      relative: true
+    source: path
     version: "1.1.0"
   mime:
     dependency: "direct main"

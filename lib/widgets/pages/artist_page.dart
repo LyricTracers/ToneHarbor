@@ -7,6 +7,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/responsive.dart';
+import 'package:toneharbor/widgets/components/common_shimmer_loader.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class ArtistPage extends HookConsumerWidget {
@@ -210,7 +211,10 @@ class ArtistPage extends HookConsumerWidget {
                 ),
               );
             },
-            loading: () => const Center(child: AudioEqualizerLoader()),
+            loading: () => CommonShimmerLoader.artistGrid(
+              colorScheme: colorScheme,
+              size: size,
+            ),
             error: (error, stackTrace) {
               return buildErrorView(context, ref, colorScheme, () {});
             },

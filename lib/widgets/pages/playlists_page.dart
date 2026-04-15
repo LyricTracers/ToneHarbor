@@ -8,8 +8,8 @@ import 'package:toneharbor/models/audio_station/playlist_list.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/responsive.dart';
-import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/components/common_search_field.dart';
+import 'package:toneharbor/widgets/components/common_shimmer_loader.dart';
 
 class _PlaylistItemWidget extends HookConsumerWidget {
   final List<PlaylistInfo> playlists;
@@ -447,7 +447,10 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                 },
               );
             },
-            loading: () => const Center(child: AudioEqualizerLoader()),
+            loading: () => CommonShimmerLoader.playlistList(
+              colorScheme: colorScheme,
+              size: size,
+            ),
             error: (error, s) => const SizedBox.shrink(),
           ),
         ),
