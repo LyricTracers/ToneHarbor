@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
@@ -55,6 +56,15 @@ class CommonTrackListItem extends HookConsumerWidget {
       userVipType: userVipType,
     );
 
+    final isFavorite = isLoggedIn
+        ? (ref
+                  .watch(cloudLikelistStateProvider)
+                  .value
+                  ?.songs
+                  .any((t) => t.id == track.id) ??
+              false)
+        : false;
+
     return MouseRegion(
       onEnter: (event) => isHovered.value = true,
       onExit: (event) => isHovered.value = false,
@@ -65,6 +75,40 @@ class CommonTrackListItem extends HookConsumerWidget {
             return <ContextMenuEntry>[
               MenuHeader(text: track.name),
               MenuDivider(),
+              if (isLoggedIn) ...[
+                MenuItem(
+                  label: isFavorite
+                      ? Text(l10n.no_favorite_playlist)
+                      : Text(l10n.favorite),
+                  icon: Icon(
+                    isFavorite
+                        ? Icons.favorite_border_rounded
+                        : Icons.favorite_rounded,
+                  ),
+                  onSelected: (value) async {
+                    try {
+                      ref
+                          .read(requestFlagProvider.notifier)
+                          .setRequestFlag(true);
+                      await ref
+                          .read(cloudLikelistStateProvider.notifier)
+                          .updateLike(track.asTrack(album: album));
+                    } catch (e) {
+                      if (ref.context.mounted) {
+                        showSnackBarError(
+                          e,
+                          ref.context,
+                          colorScheme.secondary,
+                        );
+                      }
+                    } finally {
+                      ref
+                          .read(requestFlagProvider.notifier)
+                          .setRequestFlag(false);
+                    }
+                  },
+                ),
+              ],
               MenuItem(
                 label: Text(l10n.download),
                 icon: const Icon(Icons.download_rounded),
@@ -231,17 +275,35 @@ class CommonTrackListItem extends HookConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              track.name,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              style: TextStyle(
-                                fontSize: 16 * multiplier,
-                                fontWeight: FontWeight.bold,
-                                color: isPlayable.playable
-                                    ? colorScheme.onSurface
-                                    : Colors.grey,
-                              ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    track.name,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontSize: 16 * multiplier,
+                                      fontWeight: FontWeight.bold,
+                                      color: isPlayable.playable
+                                          ? colorScheme.onSurface
+                                          : Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                                if (isFavorite)
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      left: 4 * multiplier,
+                                    ),
+                                    child: Icon(
+                                      Icons.favorite_rounded,
+                                      size: 14 * multiplier,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                              ],
                             ),
                             SizedBox(height: 4 * multiplier),
                             Row(

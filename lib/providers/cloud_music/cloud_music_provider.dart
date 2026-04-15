@@ -358,20 +358,23 @@ class CloudLikelistState extends _$CloudLikelistState
 
   Future<void> updateLike(ToneHarborTrackObjectCloudMusic track) async {
     bool flag = isLike(track.id);
+
     bool isSuccess = await cloudLikeTrack(track.id, !flag, ref);
     if (isSuccess) {
       if (flag) {
         final songs = List<ToneHarborTrackObject>.from(state.value!.songs);
-        songs.remove(track);
+        songs.removeWhere((t) => t.id == track.id);
         if (songs.isNotEmpty) {
           state = AsyncData(ToneHarborTrackObjectListData(songs: songs));
         } else {
           state = AsyncData(ToneHarborTrackObjectListEmpty());
         }
       } else {
-        state = AsyncData(
-          ToneHarborTrackObjectListData(songs: [...state.value!.songs, track]),
-        );
+        final songs = List<ToneHarborTrackObject>.from(state.value!.songs);
+        if (!songs.any((t) => t.id == track.id)) {
+          songs.add(track);
+        }
+        state = AsyncData(ToneHarborTrackObjectListData(songs: songs));
       }
     }
   }

@@ -90,6 +90,7 @@ class RequestFlag extends _$RequestFlag {
   bool build() => false;
 
   void setRequestFlag(bool value) {
+    logger.i('setRequestFlag $value');
     state = value;
   }
 }

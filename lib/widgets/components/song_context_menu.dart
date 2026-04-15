@@ -101,13 +101,15 @@ class SongContextMenu {
             isFavorite ? l10n.no_favorite_playlist : l10n.favorite_playlist,
           ),
           icon: Icon(
-            isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+            isFavorite ? Icons.favorite_border_rounded : Icons.favorite_rounded,
           ),
           onSelected: (value) async {
             try {
               ref.read(requestFlagProvider.notifier).setRequestFlag(true);
               if (item is ToneHarborTrackObjectCloudMusic) {
-                ref.read(cloudLikelistStateProvider.notifier).updateLike(item);
+                await ref
+                    .read(cloudLikelistStateProvider.notifier)
+                    .updateLike(item);
               } else {
                 final response = await ref
                     .read(songRatingProvider.notifier)

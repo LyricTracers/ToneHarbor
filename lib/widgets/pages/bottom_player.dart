@@ -1052,7 +1052,7 @@ class BottomPlayer extends HookConsumerWidget {
           ref.read(requestFlagProvider.notifier).setRequestFlag(true);
           logger.i('Setting rating to $rating for track ${activeTrack.id}');
           if (activeTrack is ToneHarborTrackObjectCloudMusic) {
-            ref
+            await ref
                 .read(cloudLikelistStateProvider.notifier)
                 .updateLike(activeTrack);
           } else {
