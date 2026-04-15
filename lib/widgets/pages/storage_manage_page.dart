@@ -5,6 +5,7 @@ import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
+import 'package:toneharbor/widgets/components/common_shimmer_loader.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 const _chartColors = [
@@ -40,7 +41,10 @@ class StorageManagePage extends HookConsumerWidget with BuildItem {
         ),
         Expanded(
           child: storageAsync.when(
-            loading: () => const Center(child: AudioEqualizerLoader()),
+            loading: () => CommonShimmerLoader.storageList(
+              colorScheme: colorScheme,
+              size: size,
+            ),
             error: (e, _) =>
                 Center(child: buildErrorView(context, ref, colorScheme, () {})),
             data: (infos) {

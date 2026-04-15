@@ -9,7 +9,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
-import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
+import 'package:toneharbor/widgets/components/common_shimmer_loader.dart';
 import 'package:toneharbor/widgets/pages/build_item.dart';
 
 class AccountPage extends HookConsumerWidget with BuildItem {
@@ -305,8 +305,12 @@ class AccountPage extends HookConsumerWidget with BuildItem {
               ),
             ]);
           },
-          loading: () =>
-              const Expanded(child: Center(child: AudioEqualizerLoader())),
+          loading: () => Expanded(
+            child: CommonShimmerLoader.accountList(
+              colorScheme: colorScheme,
+              size: size,
+            ),
+          ),
           error: (error, stackTrace) {
             return buildErrorView(context, ref, colorScheme, () {});
           },

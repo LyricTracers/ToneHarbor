@@ -10,6 +10,7 @@ import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
+import 'package:toneharbor/widgets/components/common_shimmer_loader.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class SwitchLyricsLayout extends BaseBgLayout {
@@ -121,6 +122,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
                   searchProvider,
                   callBack,
                   selectedIndex,
+                  size,
                 ),
               ),
             ),
@@ -264,6 +266,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
                       searchProvider,
                       callBack,
                       selectedIndex,
+                      size,
                       tabController: tabController,
                     ),
                     _lyricsContent(
@@ -367,7 +370,8 @@ class SwitchLyricsLayout extends BaseBgLayout {
     ColorScheme colorScheme,
     AsyncValue<List<Lyrics>> searchProvider,
     Function() callBack,
-    ValueNotifier<int> selectedIndex, {
+    ValueNotifier<int> selectedIndex,
+    Size size, {
     TabController? tabController,
   }) {
     return Column(
@@ -453,11 +457,10 @@ class SwitchLyricsLayout extends BaseBgLayout {
         SizedBox(height: 15),
         if (searchProvider.isLoading)
           Expanded(
-            child: Center(
-              child: Transform.scale(
-                scale: 0.7,
-                child: const AudioEqualizerLoader(),
-              ),
+            child: CommonShimmerLoader.lyricsList(
+              colorScheme: colorScheme,
+              size: size,
+              itemCount: 20,
             ),
           ),
         if (searchProvider.hasError)
