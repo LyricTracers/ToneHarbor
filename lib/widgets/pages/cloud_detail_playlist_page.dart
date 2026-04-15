@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
@@ -930,6 +931,17 @@ class _TrackListItem extends HookConsumerWidget {
           onTap(idx);
         }
       },
+      contextMenuEntries: track.al != null && track.al!.name.isNotEmpty
+          ? <ContextMenuEntry>[
+              MenuItem(
+                label: Text(track.al!.name),
+                icon: const Icon(Icons.album_rounded, size: 18),
+                onSelected: (value) {
+                  context.pushWrapper("/cloud-album-detail", extra: track.al);
+                },
+              ),
+            ]
+          : null,
       enableSelection: songSelectionState.selectionType,
       showAlbumName: true,
       leading: CloudMusicCoverImage(

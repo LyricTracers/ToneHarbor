@@ -681,7 +681,12 @@ final class GetCloudAlbumDetailProvider
         $FutureProvider<CloudMusicAlbumDetailData?> {
   GetCloudAlbumDetailProvider._({
     required GetCloudAlbumDetailFamily super.from,
-    required ({int albumId, Duration? cacheDuration}) super.argument,
+    required ({
+      int albumId,
+      Duration? keepAliveDuration,
+      Duration? cacheDuration,
+    })
+    super.argument,
   }) : super(
          retry: null,
          name: r'getCloudAlbumDetailProvider',
@@ -708,10 +713,17 @@ final class GetCloudAlbumDetailProvider
 
   @override
   FutureOr<CloudMusicAlbumDetailData?> create(Ref ref) {
-    final argument = this.argument as ({int albumId, Duration? cacheDuration});
+    final argument =
+        this.argument
+            as ({
+              int albumId,
+              Duration? keepAliveDuration,
+              Duration? cacheDuration,
+            });
     return getCloudAlbumDetail(
       ref,
       albumId: argument.albumId,
+      keepAliveDuration: argument.keepAliveDuration,
       cacheDuration: argument.cacheDuration,
     );
   }
@@ -728,13 +740,13 @@ final class GetCloudAlbumDetailProvider
 }
 
 String _$getCloudAlbumDetailHash() =>
-    r'16d528961acf8c322dcda37c6a6eab065702b02a';
+    r'e31eba34891b4a31c2d954042a149739edfb0083';
 
 final class GetCloudAlbumDetailFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<CloudMusicAlbumDetailData?>,
-          ({int albumId, Duration? cacheDuration})
+          ({int albumId, Duration? keepAliveDuration, Duration? cacheDuration})
         > {
   GetCloudAlbumDetailFamily._()
     : super(
@@ -747,9 +759,14 @@ final class GetCloudAlbumDetailFamily extends $Family
 
   GetCloudAlbumDetailProvider call({
     required int albumId,
+    Duration? keepAliveDuration = const Duration(minutes: 5),
     Duration? cacheDuration = const Duration(days: 30),
   }) => GetCloudAlbumDetailProvider._(
-    argument: (albumId: albumId, cacheDuration: cacheDuration),
+    argument: (
+      albumId: albumId,
+      keepAliveDuration: keepAliveDuration,
+      cacheDuration: cacheDuration,
+    ),
     from: this,
   );
 

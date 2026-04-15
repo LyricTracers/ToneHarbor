@@ -191,9 +191,7 @@ _CloudMusicSongData _$CloudMusicSongDataFromJson(Map<String, dynamic> json) =>
           .toList(),
       al: json['al'] == null
           ? null
-          : CloudMusicAlbumSimpleData.fromJson(
-              json['al'] as Map<String, dynamic>,
-            ),
+          : CloudMusicAlbumData.fromJson(json['al'] as Map<String, dynamic>),
       privilege: json['privilege'] == null
           ? null
           : CloudMusicPrivilegeData.fromJson(
@@ -225,22 +223,6 @@ Map<String, dynamic> _$CloudMusicSongDataToJson(_CloudMusicSongData instance) =>
       'mv': instance.mv,
       'noCopyrightRcmd': instance.noCopyrightRcmd,
     };
-
-_CloudMusicAlbumSimpleData _$CloudMusicAlbumSimpleDataFromJson(
-  Map<String, dynamic> json,
-) => _CloudMusicAlbumSimpleData(
-  id: (json['id'] as num).toInt(),
-  name: json['name'] as String,
-  picUrl: json['picUrl'] as String?,
-);
-
-Map<String, dynamic> _$CloudMusicAlbumSimpleDataToJson(
-  _CloudMusicAlbumSimpleData instance,
-) => <String, dynamic>{
-  'id': instance.id,
-  'name': instance.name,
-  'picUrl': instance.picUrl,
-};
 
 _CloudMusicPlaylistDetailData _$CloudMusicPlaylistDetailDataFromJson(
   Map<String, dynamic> json,

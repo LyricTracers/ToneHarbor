@@ -164,7 +164,7 @@ sealed class CloudMusicSongData with _$CloudMusicSongData {
     required int id,
     required String name,
     List<CloudMusicArtistData>? ar,
-    CloudMusicAlbumSimpleData? al,
+    CloudMusicAlbumData? al,
     CloudMusicPrivilegeData? privilege,
     int? dt,
     int? pop,
@@ -200,21 +200,6 @@ sealed class CloudMusicSongData with _$CloudMusicSongData {
       coverUrl: coverUrl(album: album),
     );
   }
-}
-
-@freezed
-sealed class CloudMusicAlbumSimpleData with _$CloudMusicAlbumSimpleData {
-  const CloudMusicAlbumSimpleData._();
-  const factory CloudMusicAlbumSimpleData({
-    required int id,
-    required String name,
-    String? picUrl,
-  }) = _CloudMusicAlbumSimpleData;
-
-  factory CloudMusicAlbumSimpleData.fromJson(Map<String, dynamic> json) =>
-      _$CloudMusicAlbumSimpleDataFromJson(json);
-
-  String get cover => picUrl ?? '';
 }
 
 @freezed
