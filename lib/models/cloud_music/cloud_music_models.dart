@@ -151,6 +151,8 @@ sealed class CloudMusicArtistData with _$CloudMusicArtistData {
         return '';
       }
     }
+    if (img.isEmpty) return '';
+
     return '${img.replaceAll('http://', 'https://')}?param=${size}y$size';
   }
 }

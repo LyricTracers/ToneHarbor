@@ -26,6 +26,14 @@ class CloudMusicCoverImage extends HookConsumerWidget {
         ? config.size / 2
         : config.borderRadius;
 
+    if (imageUrl.isEmpty) {
+      return CloudCoverPlaceholder(
+        colorScheme: colorScheme,
+        size: config.size,
+        borderRadius: borderRadius,
+      );
+    }
+
     final rotationController = useAnimationController(
       duration: config.rotationDuration,
     );

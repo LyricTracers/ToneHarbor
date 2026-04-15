@@ -1976,6 +1976,12 @@ abstract class AppLocalizations {
   /// **' Songs'**
   String get track_count;
 
+  /// No description provided for @artist_profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Artist Profile'**
+  String get artist_profile;
+
   /// No description provided for @invalid_cookie_format.
   ///
   /// In en, this message translates to:

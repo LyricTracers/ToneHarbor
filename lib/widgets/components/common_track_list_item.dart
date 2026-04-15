@@ -18,6 +18,7 @@ class CommonTrackListItem extends HookConsumerWidget {
   final Widget? trailing;
   final bool showAlbumName;
   final bool enableSelection;
+  final List<ContextMenuEntry>? contextMenuEntries;
 
   const CommonTrackListItem({
     super.key,
@@ -31,6 +32,7 @@ class CommonTrackListItem extends HookConsumerWidget {
     this.trailing,
     this.showAlbumName = false,
     this.enableSelection = false,
+    this.contextMenuEntries,
   });
 
   @override
@@ -111,6 +113,42 @@ class CommonTrackListItem extends HookConsumerWidget {
                   ),
                 ],
               ),
+              MenuDivider(),
+              if (track.ar != null && track.ar!.isNotEmpty) ...[
+                if (track.ar!.length == 1) ...[
+                  MenuItem(
+                    label: Text(track.ar![0].name),
+                    icon: const Icon(Icons.person_rounded),
+                    onSelected: (value) async {
+                      context.pushWrapper(
+                        "/cloud-artist-detail",
+                        extra: track.ar![0],
+                      );
+                    },
+                  ),
+                ],
+                if (track.ar!.length > 1) ...[
+                  MenuItem.submenu(
+                    label: Text(l10n.artist_profile),
+                    icon: const Icon(Icons.person_rounded),
+                    items: [
+                      ...track.ar!.map(
+                        (artist) => MenuItem(
+                          icon: const Icon(Icons.person_rounded),
+                          label: Text(artist.name),
+                          onSelected: (value) async {
+                            context.pushWrapper(
+                              "/cloud-artist-detail",
+                              extra: artist,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+              ...contextMenuEntries ?? [],
             ];
           },
           padding: const EdgeInsets.all(8.0),

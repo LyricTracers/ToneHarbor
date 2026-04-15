@@ -319,5 +319,6 @@
   "hot_songs": "热门歌曲",
   "sim_artist": "相似歌手",
   "track_count": "首歌",
+  "artist_profile": "歌手详情",
   "invalid_cookie_format": "Cookie 格式无效，必须包含 MUSIC_U"
 }

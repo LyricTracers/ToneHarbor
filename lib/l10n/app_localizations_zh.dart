@@ -950,5 +950,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get track_count => '首歌';
 
   @override
+  String get artist_profile => '歌手详情';
+
+  @override
   String get invalid_cookie_format => 'Cookie 格式无效，必须包含 MUSIC_U';
 }

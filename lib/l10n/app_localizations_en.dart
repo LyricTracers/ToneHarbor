@@ -978,6 +978,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get track_count => ' Songs';
 
   @override
+  String get artist_profile => 'Artist Profile';
+
+  @override
   String get invalid_cookie_format =>
       'Invalid Cookie format, must contain MUSIC_U';
 }
