@@ -271,24 +271,23 @@ Widget buildErrorView(
   ColorScheme colorScheme,
   Function() onTap,
 ) {
-  return Expanded(
-    child: Center(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: onTap,
-              child: SvgPicture.asset(
-                loadingErrorIcon,
-                colorFilter: ColorFilter.mode(
-                  colorScheme.onSurface.withValues(alpha: 0.5),
-                  BlendMode.srcIn,
-                ),
+  return Center(
+    child: SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: onTap,
+            child: SvgPicture.asset(
+              loadingErrorIcon,
+              colorFilter: ColorFilter.mode(
+                colorScheme.onSurface.withValues(alpha: 0.5),
+                BlendMode.srcIn,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     ),
   );
@@ -867,6 +866,51 @@ void showSetBackgroundDialog(
 
 ({bool playable, String? reason}) isCloudTrackPlayable(
   CloudMusicSongData track,
+  AppLocalizations localizations, {
+  bool isLoggedIn = false,
+  int? userVipType,
+}) {
+  final privilege = track.privilege;
+  if (privilege != null) {
+    if (privilege.pl != null && privilege.pl! > 0) {
+      return (playable: true, reason: null);
+    }
+    if (isLoggedIn && privilege.cs == true) {
+      return (playable: true, reason: null);
+    }
+    if (privilege.fee == 1 || track.fee == 1) {
+      if (isLoggedIn && userVipType == 11) {
+        return (playable: true, reason: null);
+      }
+      return (playable: false, reason: 'VIP Only');
+    }
+    if (privilege.fee == 4 || track.fee == 4) {
+      return (playable: false, reason: localizations.paid_album);
+    }
+    if (track.noCopyrightRcmd != null) {
+      return (playable: false, reason: localizations.no_copyright);
+    }
+    if (privilege.st != null && privilege.st! < 0 && isLoggedIn) {
+      return (playable: false, reason: localizations.out_of_stock);
+    }
+  }
+  if (track.fee == 1) {
+    if (isLoggedIn && userVipType == 11) {
+      return (playable: true, reason: null);
+    }
+    return (playable: false, reason: 'VIP Only');
+  }
+  if (track.fee == 4) {
+    return (playable: false, reason: localizations.paid_album);
+  }
+  if (track.noCopyrightRcmd != null) {
+    return (playable: false, reason: localizations.no_copyright);
+  }
+  return (playable: true, reason: null);
+}
+
+({bool playable, String? reason}) isCloudToneTrackPlayable(
+  ToneHarborTrackObjectCloudMusic track,
   AppLocalizations localizations, {
   bool isLoggedIn = false,
   int? userVipType,

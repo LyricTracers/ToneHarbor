@@ -46,8 +46,11 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
     required int frequency,
     required int rating,
   }) = ToneHarborTrackObjectFull;
-  factory ToneHarborTrackObject.fromJson(Map<String, dynamic> json) =>
-      _$ToneHarborTrackObjectFromJson(json);
+  factory ToneHarborTrackObject.fromJson(Map<String, dynamic> json) {
+    return json['runtimeType'] == 'cloudMusic'
+        ? fromCloudMusicJson(json)
+        : _$ToneHarborTrackObjectFromJson(json);
+  }
 
   factory ToneHarborTrackObject.multLocal({
     required String id,
@@ -75,10 +78,58 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
     String? coverUrl,
     String? container,
     int? filesize,
+    int? fee,
+    String? noCopyrightRcmd,
     List<CloudMusicArtistData>? ar,
     CloudMusicAlbumData? al,
     CloudMusicPrivilegeData? privilege,
   }) = ToneHarborTrackObjectCloudMusic;
+
+  static ToneHarborTrackObject fromCloudMusicJson(Map<String, dynamic> json) {
+    final arList = (json['ar'] as List<dynamic>?)?.map((e) {
+      if (e is CloudMusicArtistData) {
+        return e;
+      }
+      return CloudMusicArtistData.fromJson(e as Map<String, dynamic>);
+    }).toList();
+
+    CloudMusicAlbumData? al;
+    if (json['al'] != null) {
+      if (json['al'] is CloudMusicAlbumData) {
+        al = json['al'] as CloudMusicAlbumData;
+      } else {
+        al = CloudMusicAlbumData.fromJson(json['al'] as Map<String, dynamic>);
+      }
+    }
+
+    CloudMusicPrivilegeData? privilege;
+    if (json['privilege'] != null) {
+      if (json['privilege'] is CloudMusicPrivilegeData) {
+        privilege = json['privilege'] as CloudMusicPrivilegeData;
+      } else {
+        privilege = CloudMusicPrivilegeData.fromJson(
+          json['privilege'] as Map<String, dynamic>,
+        );
+      }
+    }
+
+    return ToneHarborTrackObjectCloudMusic(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      artist: json['artist'] as String,
+      album: json['album'] as String,
+      duration: Duration(microseconds: (json['duration'] as num).toInt()),
+      coverUrl: json['coverUrl'] as String?,
+      container: json['container'] as String?,
+      filesize: (json['filesize'] as num?)?.toInt(),
+      fee: (json['fee'] as num?)?.toInt(),
+      noCopyrightRcmd: json['noCopyrightRcmd'] as String?,
+      ar: arList,
+      al: al,
+      privilege: privilege,
+      $type: json['runtimeType'] as String?,
+    );
+  }
 
   static Future<ToneHarborTrackObject?> localTrackFromFile(
     File file, {
@@ -453,6 +504,10 @@ extension ToneHarborTrackObjectListExtension on ToneHarborTrackObjectList {
       when(empty: () => 0, data: (songs, offset, total) => total ?? 0);
   List<ToneHarborTrackObject> get songs =>
       when(empty: () => [], data: (songs, offset, total) => songs);
+
+  bool contains(String id) {
+    return songs.any((element) => element.id == id);
+  }
 }
 
 extension AsToneHarborTrackObjectListResponse on SongListResponse {

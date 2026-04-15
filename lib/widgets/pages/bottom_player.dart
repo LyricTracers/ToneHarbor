@@ -16,6 +16,7 @@ import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/utils/use_progress.dart';
 import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
+import 'package:toneharbor/widgets/components/track_cover_image.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 enum ShowArrowType { up, down, none }
@@ -167,9 +168,15 @@ class BottomPlayer extends HookConsumerWidget {
         return null;
       }, [systemBrightness, statusBarState, currentLineLyrics.value]);
     }
+    bool rating;
+    if (activeTrack is ToneHarborTrackObjectCloudMusic) {
+      final cloudLike = ref.watch(cloudLikelistStateProvider);
+      rating = cloudLike.value?.contains(activeTrack.id) ?? false;
+    } else {
+      final favoritePlaylist = ref.watch(songRatingProvider);
+      rating = favoritePlaylist.contains(activeTrack.id);
+    }
 
-    final favoritePlaylist = ref.watch(songRatingProvider);
-    final rating = favoritePlaylist.contains(activeTrack.id);
     final volume = ref.watch(volumeProvider);
     final authHeaders = ref.watch(authHeadersProvider);
 
@@ -652,43 +659,12 @@ class BottomPlayer extends HookConsumerWidget {
     required ColorScheme colorScheme,
     required bool isXs,
   }) {
-    if (activeTrack is ToneHarborTrackObjectCloudMusic) {
-      return CloudMusicCoverImage(
-        imageUrl: activeTrack.coverUrl ?? '',
-        colorScheme: colorScheme,
-        config: isXs
-            ? const CloudMusicCoverImageConfig(size: 50, isCircular: true)
-            : const CloudMusicCoverImageConfig(size: 50, borderRadius: 5),
-      );
-    }
-    if (activeTrack is ToneHarborTrackObjectMultLocal) {
-      return activeTrack.externalUri.isNotEmpty
-          ? CloudMusicCoverImage(
-              imageUrl: activeTrack.externalUri,
-              colorScheme: colorScheme,
-              config: isXs
-                  ? const CloudMusicCoverImageConfig(size: 50, isCircular: true)
-                  : const CloudMusicCoverImageConfig(size: 50, borderRadius: 5),
-            )
-          : SongCoverImage(
-              pictureFuture: activeTrack.getPicture(),
-              songId: activeTrack.id,
-              albumName: activeTrack.album,
-              artistName: activeTrack.artist,
-              colorScheme: colorScheme,
-              config: isXs
-                  ? const SongCoverImageConfig(size: 50, isCircular: true)
-                  : const SongCoverImageConfig(size: 50, borderRadius: 5),
-            );
-    }
-    return SongCoverImage(
-      songId: activeTrack.id,
-      albumName: activeTrack.album,
-      artistName: activeTrack.artist,
+    return TrackCoverImage(
+      track: activeTrack,
       colorScheme: colorScheme,
       config: isXs
-          ? const SongCoverImageConfig(size: 50, isCircular: true)
-          : const SongCoverImageConfig(size: 50, borderRadius: 5),
+          ? const TrackCoverImageConfig(size: 50, isCircular: true)
+          : const TrackCoverImageConfig(size: 50, borderRadius: 5),
     );
   }
 
@@ -1075,22 +1051,28 @@ class BottomPlayer extends HookConsumerWidget {
         try {
           ref.read(requestFlagProvider.notifier).setRequestFlag(true);
           logger.i('Setting rating to $rating for track ${activeTrack.id}');
-          SetRatingResponse response;
-          if (rating) {
-            response = await ref
-                .read(songRatingProvider.notifier)
-                .setRating(id: activeTrack.id, rating: 0);
-          } else {
-            response = await ref
-                .read(songRatingProvider.notifier)
-                .setRating(id: activeTrack.id, rating: 5);
-          }
-          if (response.success) {
-            if (!context.mounted) return;
+          if (activeTrack is ToneHarborTrackObjectCloudMusic) {
             ref
-                .read(favoriteSongsProvider(limit: 50).notifier)
-                .invalidateCache();
-            ref.invalidate(favoriteSongsProvider);
+                .read(cloudLikelistStateProvider.notifier)
+                .updateLike(activeTrack);
+          } else {
+            SetRatingResponse response;
+            if (rating) {
+              response = await ref
+                  .read(songRatingProvider.notifier)
+                  .setRating(id: activeTrack.id, rating: 0);
+            } else {
+              response = await ref
+                  .read(songRatingProvider.notifier)
+                  .setRating(id: activeTrack.id, rating: 5);
+            }
+            if (response.success) {
+              if (!context.mounted) return;
+              ref
+                  .read(favoriteSongsProvider(limit: 50).notifier)
+                  .invalidateCache();
+              ref.invalidate(favoriteSongsProvider);
+            }
           }
         } catch (e) {
           if (context.mounted) {

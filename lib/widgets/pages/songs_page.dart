@@ -350,7 +350,11 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                         activeSongId: activeSongId,
                         colorScheme: colorScheme,
                         l10n: l10n,
-                        isFavorite: songRating.contains(item.id),
+                        isFavorite: item is ToneHarborTrackObjectCloudMusic
+                            ? ref
+                                  .read(cloudLikelistStateProvider.notifier)
+                                  .isLike(item.id)
+                            : songRating.contains(item.id),
                         selectionState: songSelectionState,
                         multiplier: size.multiplier2,
                         onTap: () async {
@@ -359,6 +363,13 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                             var initIndex = index;
                             if (!isLocal) {
                               initIndex = 0;
+                              final isLoggedIn = ref.read(
+                                cloudMusicAuthStateProvider,
+                              );
+                              final user = await ref.read(
+                                cloudUserInfoProvider.future,
+                              );
+                              final userVipType = user?.vipType ?? 0;
                               for (final song in filteredItems) {
                                 if (!song.isSong) continue;
                                 if (song.id == item.id) {
@@ -371,13 +382,27 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                                     tracks.add(song);
                                   }
                                 } else {
-                                  tracks.add(song);
+                                  if (song is ToneHarborTrackObjectCloudMusic) {
+                                    final isPlayable = isCloudToneTrackPlayable(
+                                      song,
+                                      l10n,
+                                      isLoggedIn: isLoggedIn,
+                                      userVipType: userVipType,
+                                    );
+                                    if (isPlayable.playable) {
+                                      if (song.id == item.id) {
+                                        initIndex = tracks.length;
+                                      }
+                                      tracks.add(song);
+                                    }
+                                  } else {
+                                    tracks.add(song);
+                                  }
                                 }
                               }
                             } else {
                               tracks = filteredItems;
                             }
-                            logger.i('tracks: $tracks[${initIndex}]');
                             if (tracks.isEmpty) return;
                             await ref
                                 .read(audioPlayerStateProvider.notifier)

@@ -202,6 +202,8 @@ sealed class CloudMusicSongData with _$CloudMusicSongData, AsTrack {
       album: album?.name ?? al?.name ?? '',
       duration: Duration(milliseconds: dt ?? 0),
       coverUrl: coverUrl(album: album),
+      fee: fee,
+      noCopyrightRcmd: noCopyrightRcmd != null ? '1' : null,
       ar: ar,
       al: al,
       privilege: privilege,

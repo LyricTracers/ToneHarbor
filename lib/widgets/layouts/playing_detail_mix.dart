@@ -12,6 +12,7 @@ import "package:toneharbor/services/translate/translate_service.dart";
 import "package:toneharbor/utils/base_funs.dart";
 import "package:toneharbor/utils/responsive.dart";
 import "package:toneharbor/widgets/components/cloud_music_cover_image.dart";
+import "package:toneharbor/widgets/components/track_cover_image.dart";
 import "package:toneharbor/widgets/widgets.dart";
 
 mixin PlayingDetailMix {
@@ -165,52 +166,16 @@ mixin PlayingDetailMix {
           transitionBuilder: (Widget child, Animation<double> animation) {
             return FadeTransition(opacity: animation, child: child);
           },
-          child: activeTrack is ToneHarborTrackObjectCloudMusic
-              ? CloudMusicCoverImage(
-                  imageUrl: activeTrack.coverUrl ?? '',
-                  colorScheme: colorScheme,
-                  config: CloudMusicCoverImageConfig(
-                    size: containerSize * 0.65,
-                    isCircular: true,
-                    rotating: audioPlayer.isPlaying,
-                  ),
-                )
-              : activeTrack is ToneHarborTrackObjectMultLocal
-              ? activeTrack.externalUri.isNotEmpty
-                    ? CloudMusicCoverImage(
-                        imageUrl: activeTrack.externalUri,
-                        colorScheme: colorScheme,
-                        config: CloudMusicCoverImageConfig(
-                          size: containerSize * 0.65,
-                          isCircular: true,
-                          rotating: audioPlayer.isPlaying,
-                        ),
-                      )
-                    : SongCoverImage(
-                        pictureFuture: activeTrack.getPicture(),
-                        songId: activeTrack.id,
-                        albumName: activeTrack.album,
-                        artistName: activeTrack.artist,
-                        colorScheme: colorScheme,
-                        config: SongCoverImageConfig(
-                          size: containerSize * 0.65,
-                          isCircular: true,
-                          rotating: audioPlayer.isPlaying,
-                          rotationDuration: Duration(seconds: 30),
-                        ),
-                      )
-              : SongCoverImage(
-                  songId: activeTrack.id,
-                  albumName: activeTrack.album,
-                  artistName: activeTrack.artist,
-                  colorScheme: colorScheme,
-                  config: SongCoverImageConfig(
-                    size: containerSize * 0.65,
-                    isCircular: true,
-                    rotating: audioPlayer.isPlaying,
-                    rotationDuration: Duration(seconds: 30),
-                  ),
-                ),
+          child: TrackCoverImage(
+            track: activeTrack,
+            colorScheme: colorScheme,
+            config: TrackCoverImageConfig(
+              size: containerSize * 0.65,
+              isCircular: true,
+              rotating: audioPlayer.isPlaying,
+              rotationDuration: Duration(seconds: 30),
+            ),
+          ),
         ),
       ],
     );

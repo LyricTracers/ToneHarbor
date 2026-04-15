@@ -603,7 +603,7 @@ final class CloudMusicArtistDetailProvider
 }
 
 String _$cloudMusicArtistDetailHash() =>
-    r'0e32e0b1aa4c9be933fabbe36139246f94f49c6a';
+    r'a91f083df5b37788868ea1b9b170298fe37838fb';
 
 final class CloudMusicArtistDetailFamily extends $Family
     with
@@ -772,4 +772,59 @@ final class GetCloudAlbumDetailFamily extends $Family
 
   @override
   String toString() => r'getCloudAlbumDetailProvider';
+}
+
+@ProviderFor(CloudLikelistState)
+final cloudLikelistStateProvider = CloudLikelistStateProvider._();
+
+final class CloudLikelistStateProvider
+    extends
+        $AsyncNotifierProvider<CloudLikelistState, ToneHarborTrackObjectList> {
+  CloudLikelistStateProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'cloudLikelistStateProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudLikelistStateHash();
+
+  @$internal
+  @override
+  CloudLikelistState create() => CloudLikelistState();
+}
+
+String _$cloudLikelistStateHash() =>
+    r'c3546db65b50ba118746d8ae29dcb6f0a14bd846';
+
+abstract class _$CloudLikelistState
+    extends $AsyncNotifier<ToneHarborTrackObjectList> {
+  FutureOr<ToneHarborTrackObjectList> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<ToneHarborTrackObjectList>,
+              ToneHarborTrackObjectList
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<ToneHarborTrackObjectList>,
+                ToneHarborTrackObjectList
+              >,
+              AsyncValue<ToneHarborTrackObjectList>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
 }

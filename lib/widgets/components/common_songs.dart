@@ -5,6 +5,7 @@ import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
+import 'package:toneharbor/widgets/components/track_cover_image.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class _LayoutConfig {
@@ -171,12 +172,10 @@ class _SongItem extends ConsumerWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SongCoverImage(
-            songId: song.id,
-            albumName: albumName,
-            artistName: artistName,
+          TrackCoverImage(
+            track: song,
             colorScheme: colorScheme,
-            config: SongCoverImageConfig(
+            config: TrackCoverImageConfig(
               size: config.coverSize,
               borderRadius: config.coverBorderRadius,
             ),

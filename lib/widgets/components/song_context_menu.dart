@@ -20,9 +20,14 @@ class SongContextMenu {
   }) {
     final itemId = item.id;
     final itemTitle = item.title;
-
-    final songRating = ref.read(songRatingProvider);
-    final isFavorite = songRating.contains(itemId);
+    bool isFavorite;
+    if (item is ToneHarborTrackObjectCloudMusic) {
+      final cloudLike = ref.watch(cloudLikelistStateProvider);
+      isFavorite = cloudLike.value?.contains(itemId) ?? false;
+    } else {
+      final songRating = ref.read(songRatingProvider);
+      isFavorite = songRating.contains(itemId);
+    }
 
     final entries = <ContextMenuEntry>[
       MenuHeader(text: itemTitle),
@@ -92,21 +97,27 @@ class SongContextMenu {
     } else {
       entries.addAll([
         MenuItem(
-          label: Text(isFavorite ? l10n.no_favorite_playlist : l10n.favorite),
+          label: Text(
+            isFavorite ? l10n.no_favorite_playlist : l10n.favorite_playlist,
+          ),
           icon: Icon(
-            isFavorite ? Icons.favorite_border_rounded : Icons.favorite_rounded,
+            isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
           ),
           onSelected: (value) async {
             try {
               ref.read(requestFlagProvider.notifier).setRequestFlag(true);
-              final response = await ref
-                  .read(songRatingProvider.notifier)
-                  .setRating(id: itemId, rating: isFavorite ? 0 : 5);
-              if (response.success) {
-                ref
-                    .read(favoriteSongsProvider(limit: 50).notifier)
-                    .invalidateCache();
-                ref.invalidate(favoriteSongsProvider);
+              if (item is ToneHarborTrackObjectCloudMusic) {
+                ref.read(cloudLikelistStateProvider.notifier).updateLike(item);
+              } else {
+                final response = await ref
+                    .read(songRatingProvider.notifier)
+                    .setRating(id: itemId, rating: isFavorite ? 0 : 5);
+                if (response.success) {
+                  ref
+                      .read(favoriteSongsProvider(limit: 50).notifier)
+                      .invalidateCache();
+                  ref.invalidate(favoriteSongsProvider);
+                }
               }
             } catch (e) {
               if (ref.context.mounted) {
@@ -201,6 +212,52 @@ class SongContextMenu {
               }
             },
           ),
+        if (item is ToneHarborTrackObjectCloudMusic) ...[
+          MenuDivider(),
+          if (item.ar != null && item.ar!.isNotEmpty) ...[
+            if (item.ar!.length == 1) ...[
+              MenuItem(
+                label: Text(item.ar![0].name),
+                icon: const Icon(Icons.person_rounded),
+                onSelected: (value) async {
+                  ref.context.pushWrapper(
+                    "/cloud-artist-detail",
+                    extra: item.ar![0],
+                  );
+                },
+              ),
+            ],
+            if (item.ar!.length > 1) ...[
+              MenuItem.submenu(
+                label: Text(l10n.artist_profile),
+                icon: const Icon(Icons.person_rounded),
+                items: [
+                  ...item.ar!.map(
+                    (artist) => MenuItem(
+                      icon: const Icon(Icons.person_rounded),
+                      label: Text(artist.name),
+                      onSelected: (value) async {
+                        ref.context.pushWrapper(
+                          "/cloud-artist-detail",
+                          extra: artist,
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+
+          if (item.al != null && item.al!.name.isNotEmpty)
+            MenuItem(
+              label: Text(item.al!.name),
+              icon: const Icon(Icons.album_rounded, size: 18),
+              onSelected: (value) {
+                ref.context.pushWrapper("/cloud-album-detail", extra: item.al);
+              },
+            ),
+        ],
       ]);
     }
 

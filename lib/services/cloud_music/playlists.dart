@@ -190,7 +190,7 @@ CloudMusicPlaylistDetailData _parsePlaylistWithPrivileges(
 
   final playlistData = CloudMusicPlaylistDetailData.fromJson(playlistJson);
   final tracks = playlistData.tracks?.map((track) {
-    final privilege = privilegeMap[track.id];
+    final privilege = privilegeMap[track.songId];
     return privilege != null ? track.copyWith(privilege: privilege) : track;
   }).toList();
 
@@ -262,7 +262,7 @@ Future<List<CloudMusicSongData>> getTrackDetail(
 
     final privilegeMap = {for (var p in privileges) p.id: p};
     final songsWithPrivilege = songs.map((song) {
-      final privilege = privilegeMap[song.id];
+      final privilege = privilegeMap[song.songId];
       if (privilege != null) {
         return song.copyWith(privilege: privilege);
       }

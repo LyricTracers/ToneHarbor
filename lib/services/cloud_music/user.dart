@@ -12,7 +12,7 @@ Future<CloudMusicUserData?> getUserInfo(
   final l10n = ref.read(l10nProvider);
   final apiState = ref.read(cloudMusicApiUrlsProvider);
   final cookieParams = CloudMusicAuth.getApiCookieParams();
-  if (cookieParams.isEmpty) {
+  if (cookieParams.isEmpty || apiState.defaultUrl.isEmpty) {
     return null;
   }
   final cacheKey = 'cloud_userInfo';

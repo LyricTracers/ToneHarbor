@@ -1,8 +1,10 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
+import 'package:toneharbor/services/cloud_music/playlists.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
 Future<CloudMusicAristDetailData> cloudArtistDetail(
@@ -320,4 +322,97 @@ Future<List<CloudMusicArtistData>> similarArtists(
     );
   }
   return artists;
+}
+
+Future<ToneHarborTrackObjectList> cloudLikeList(Ref ref) async {
+  final useInfo = ref.watch(cloudUserInfoProvider);
+  if (useInfo.value == null) {
+    return ToneHarborTrackObjectListEmpty();
+  }
+
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+  if (apiState.defaultUrl.isEmpty) {
+    logger.e('API URL为空');
+    return ToneHarborTrackObjectListEmpty();
+  }
+  final l10n = ref.read(l10nProvider);
+  final query = <String, String>{};
+  query['uid'] = useInfo.value!.userId.toString();
+
+  final cookieParams = CloudMusicAuth.getApiCookieParams();
+  if (cookieParams.isNotEmpty) {
+    query.addAll(cookieParams);
+  }
+
+  final response = await httpClientWrapper.post(
+    '${apiState.defaultUrl}/likelist',
+    query: query,
+    cancelToken: ref.cancelToken(),
+  );
+  if (response.statusCode != 200) {
+    logger.e('请求失败，状态码：${response.statusCode}');
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: response.statusCode,
+    );
+  }
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw CloudMusicException(message: l10n.error_response_parse_failed);
+  }
+  if (jsonBody['code'] != 200) {
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: jsonBody['code'],
+    );
+  }
+
+  final ids = jsonBody['ids'] as List?;
+  final resultList = ids?.map((e) => e as int).toList() ?? <int>[];
+  if (resultList.isEmpty) {
+    return ToneHarborTrackObjectListEmpty();
+  }
+
+  final tracks = await getTrackDetail(ref, ids: resultList);
+  final trackObjects = tracks.map((track) => track.asTrack()).toList();
+  return ToneHarborTrackObjectList.data(songs: trackObjects);
+}
+
+Future<bool> cloudLikeTrack(String trackId, bool isLike, Ref ref) async {
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+  if (apiState.defaultUrl.isEmpty) {
+    return false;
+  }
+  final query = <String, String>{};
+
+  final cookieParams = CloudMusicAuth.getApiCookieParams();
+  if (cookieParams.isNotEmpty) {
+    query.addAll(cookieParams);
+  }
+  query['id'] = trackId;
+  query['like'] = isLike ? 'true' : 'false';
+
+  final response = await httpClientWrapper.post(
+    '${apiState.defaultUrl}/like',
+    query: query,
+    cancelToken: ref.cancelToken(),
+  );
+  if (response.statusCode != 200) {
+    logger.e('请求失败，状态码：${response.statusCode}');
+    return false;
+  }
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    return false;
+  }
+  if (jsonBody['code'] != 200) {
+    return false;
+  }
+  return true;
 }

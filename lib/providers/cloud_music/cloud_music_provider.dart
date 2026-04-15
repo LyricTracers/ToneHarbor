@@ -1,7 +1,9 @@
 import 'dart:math';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
+import 'package:toneharbor/models/database/database.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/albums.dart';
 import 'package:toneharbor/services/cloud_music/artists.dart';
@@ -343,4 +345,50 @@ Future<CloudMusicAlbumDetailData?> getCloudAlbumDetail(
       link.close();
     }
   }
+}
+
+@keepAlive
+class CloudLikelistState extends _$CloudLikelistState
+    with ExtraProvider<ToneHarborTrackObjectList> {
+  @override
+  Future<ToneHarborTrackObjectList> build() async {
+    logger.i('CloudLikelistState build');
+    return await cloudLikeList(ref);
+  }
+
+  Future<void> updateLike(ToneHarborTrackObjectCloudMusic track) async {
+    bool flag = isLike(track.id);
+    bool isSuccess = await cloudLikeTrack(track.id, !flag, ref);
+    if (isSuccess) {
+      if (flag) {
+        final songs = List<ToneHarborTrackObject>.from(state.value!.songs);
+        songs.remove(track);
+        if (songs.isNotEmpty) {
+          state = AsyncData(ToneHarborTrackObjectListData(songs: songs));
+        } else {
+          state = AsyncData(ToneHarborTrackObjectListEmpty());
+        }
+      } else {
+        state = AsyncData(
+          ToneHarborTrackObjectListData(songs: [...state.value!.songs, track]),
+        );
+      }
+    }
+  }
+
+  bool isLike(String trackId) {
+    if (state.value != null && state.value is ToneHarborTrackObjectListData) {
+      return state.value!.songs.any((t) => t.id == trackId);
+    }
+    return false;
+  }
+
+  @override
+  Future<void> loadMore() async {}
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {}
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/services/cloud_music/artists.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/cloud_playlist_static_data.dart';
 import 'package:toneharbor/utils/responsive.dart';
@@ -45,7 +46,7 @@ class RecommendPage extends HookConsumerWidget {
     final i10n = ref.watch(l10nProvider);
     final size = MediaQuery.of(context).size;
     final useCloudMusic = ref.watch(shouldUseCloudMusicHomeProvider);
-
+    final useInfo = ref.watch(cloudUserInfoProvider);
     return Column(
       children: [
         if (size.lgAndUp) buildAppBar(context, ref, colorScheme),
@@ -58,60 +59,68 @@ class RecommendPage extends HookConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 16,
-                        right: 16,
-                        top: 8,
-                        bottom: 8,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            i10n.my_favorite,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              context.pushWrapper(
-                                "/songs/${Uri.encodeComponent(i10n.my_favorite)}",
-                                extra: (
-                                  favoriteSongsProvider(limit: 50),
-                                  -1,
-                                  SongsPageSortAction.all,
-                                ),
-                              );
-                            },
-                            child: Text(
-                              i10n.more,
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: colorScheme.tertiary,
+                    if (!useCloudMusic ||
+                        (useCloudMusic && useInfo.value != null)) ...[
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          top: 8,
+                          bottom: 8,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              i10n.my_favorite,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
-                        ],
+                            TextButton(
+                              onPressed: () {
+                                context.pushWrapper(
+                                  "/songs/${Uri.encodeComponent(i10n.my_favorite)}",
+                                  extra: (
+                                    !useCloudMusic
+                                        ? favoriteSongsProvider(limit: 50)
+                                        : cloudLikelistStateProvider,
+                                    -1,
+                                    !useCloudMusic
+                                        ? SongsPageSortAction.all
+                                        : SongsPageSortAction.none,
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                i10n.more,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: colorScheme.tertiary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    Divider(
-                      height: 2,
-                      indent: 16,
-                      endIndent: 16,
-                      color: colorScheme.onSurface.withValues(alpha: 0.5),
-                    ),
-                    SizedBox(height: 8),
-                    CommonSongs(
-                      songs: ref.watch(favoriteSongsProvider(limit: 50)),
-                      onErrorTap: () {
-                        ref.invalidate(favoriteSongsProvider(limit: 50));
-                      },
-                      limit: 20,
-                    ),
+                      Divider(
+                        height: 2,
+                        indent: 16,
+                        endIndent: 16,
+                        color: colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
+                    ],
+
                     if (!useCloudMusic) ...[
+                      SizedBox(height: 8),
+                      CommonSongs(
+                        songs: ref.watch(favoriteSongsProvider(limit: 50)),
+                        onErrorTap: () {
+                          ref.invalidate(favoriteSongsProvider(limit: 50));
+                        },
+                        limit: 20,
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(
                           left: 16,
@@ -226,6 +235,17 @@ class RecommendPage extends HookConsumerWidget {
                       ),
                     ],
                     if (useCloudMusic) ...[
+                      if (useInfo.value != null) ...[
+                        SizedBox(height: 8),
+                        CommonSongs(
+                          songs: ref.watch(cloudLikelistStateProvider),
+                          onErrorTap: () {
+                            ref.invalidate(cloudLikelistStateProvider);
+                          },
+                          limit: 20,
+                        ),
+                      ],
+
                       Padding(
                         padding: const EdgeInsets.only(
                           left: 16,
