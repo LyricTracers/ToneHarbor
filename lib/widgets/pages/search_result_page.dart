@@ -88,163 +88,174 @@ class SearchResultPage extends HookConsumerWidget {
           ],
         ),
         Expanded(
-          child: SingleChildScrollView(
-            child: SizedBox(
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ...[
-                    if (searchResult.searchArtistFlag == 1)
-                      CommonShimmerLoader.artistHorizontalList(
-                        colorScheme: colorScheme,
-                        size: size,
-                        itemCount: 10,
-                      ),
-                    if (searchResult.searchArtistFlag == 0 &&
-                        searchResult.artists != null &&
-                        searchResult.artists!.data != null &&
-                        searchResult.artists!.data!.artists != null &&
-                        searchResult.artists!.data!.artists!.isNotEmpty) ...[
-                      Padding(
-                        padding: EdgeInsets.all(20 * multiplier),
-                        child: Text(
-                          l10n.artist,
-                          style: TextStyle(
-                            color: colorScheme.secondary,
-                            fontSize: 18 * multiplier,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      AritistHorizontalList(
-                        artists: searchResult.artists!.data!.artists!,
-                      ),
-                    ],
-                    if (searchResult.searchAlbumFlag == 1)
-                      CommonShimmerLoader.albumHorizontalList(
-                        colorScheme: colorScheme,
-                        size: size,
-                        itemCount: 10,
-                      ),
-                    if (searchResult.searchAlbumFlag == 0 &&
-                        searchResult.albums != null &&
-                        searchResult.albums!.data != null &&
-                        searchResult.albums!.data!.albums != null &&
-                        searchResult.albums!.data!.albums!.isNotEmpty) ...[
-                      Padding(
-                        padding: EdgeInsets.all(20 * multiplier),
-                        child: Text(
-                          l10n.albums,
-                          style: TextStyle(
-                            color: colorScheme.secondary,
-                            fontSize: 18 * multiplier,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      AlbumHorizontalList(
-                        albums: searchResult.albums!.data?.albums ?? [],
-                      ),
-                    ],
-                  ],
-                  if (searchResult.searchSongFlag == 1)
-                    CommonShimmerLoader.searchSongList(
-                      colorScheme: colorScheme,
-                      size: size,
-                      itemCount: 10,
+          child: CustomScrollView(
+            slivers: [
+              SliverPadding(
+                padding: EdgeInsets.all(20 * multiplier),
+                sliver: SliverToBoxAdapter(
+                  child: Text(
+                    l10n.artist,
+                    style: TextStyle(
+                      color: colorScheme.secondary,
+                      fontSize: 18 * multiplier,
+                      fontWeight: FontWeight.bold,
                     ),
-                  if (searchResult.searchSongFlag == 0 &&
-                      searchResult.songs != null &&
-                      searchResult.songs!.songs.isNotEmpty) ...[
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: 20 * multiplier,
-                        top: 20 * multiplier,
-                        bottom: 20 * multiplier,
-                        right: 15 * multiplier,
-                      ),
-                      child: Text(
-                        l10n.all_music,
-                        style: TextStyle(
-                          color: colorScheme.secondary,
-                          fontSize: 18 * multiplier,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: searchResult.songs!.songs.length,
-                      itemBuilder: (context, index) {
-                        var item = searchResult.songs!.songs[index];
-                        return RepaintBoundary(
-                          child: ContextMenuRegion(
-                            enableDefaultGestures: true,
-                            contextMenu: ContextMenu(
-                              entriesBuilder: () => SongContextMenu.build(
-                                ref,
-                                colorScheme,
-                                l10n,
-                                size,
-                                item,
-                              ),
-                              padding: const EdgeInsets.all(8.0),
-                            ),
-                            child: SongItem(
-                              key: ValueKey(item.id),
-                              index: index,
-                              song: item,
-                              activeSongId: activeSongId,
-                              colorScheme: colorScheme,
-                              l10n: l10n,
-                              multiplier: multiplier,
-                              isFavorite: songRating.contains(item.id),
-                              onTap: () async {
-                                List<ToneHarborTrackObject> tracks;
-                                var initIndex = index;
-                                tracks = searchResult.songs!.songs;
-                                if (tracks.isEmpty) return;
-                                await ref
-                                    .read(audioPlayerStateProvider.notifier)
-                                    .load(
-                                      tracks,
-                                      initialIndex: initIndex < tracks.length
-                                          ? initIndex
-                                          : 0,
-                                      autoPlay: true,
-                                    );
-                                if (context.mounted) {
-                                  if (size.isXs) {
-                                    showModalBottomSheetWidget(
-                                      ref.context,
-                                      colorScheme,
-                                      isScrollControlled: true,
-                                      (context) => const PlayingDetailLayout(),
-                                    );
-                                  } else {
-                                    context.pushWrapper("/playing_detail");
-                                  }
-                                }
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                  if (searchResult.searchSongFlag == 0 &&
-                      searchResult.searchArtistFlag == 0 &&
-                      searchResult.searchAlbumFlag == 0 &&
-                      searchResult.albums == null &&
-                      searchResult.artists == null &&
-                      searchResult.songs == null) ...[
-                    buildErrorView(context, ref, colorScheme, () {}),
-                  ],
-                ],
+                  ),
+                ),
               ),
-            ),
+              if (searchResult.searchArtistFlag == 1)
+                SliverToBoxAdapter(
+                  child: CommonShimmerLoader.artistHorizontalList(
+                    colorScheme: colorScheme,
+                    size: size,
+                    itemCount: 10,
+                  ),
+                ),
+              if (searchResult.searchArtistFlag == 0 &&
+                  searchResult.artists != null &&
+                  searchResult.artists!.data != null &&
+                  searchResult.artists!.data!.artists != null &&
+                  searchResult.artists!.data!.artists!.isNotEmpty)
+                SliverToBoxAdapter(
+                  child: AritistHorizontalList(
+                    artists: searchResult.artists!.data!.artists!,
+                  ),
+                ),
+              SliverPadding(
+                padding: EdgeInsets.all(20 * multiplier),
+                sliver: SliverToBoxAdapter(
+                  child: Text(
+                    l10n.albums,
+                    style: TextStyle(
+                      color: colorScheme.secondary,
+                      fontSize: 18 * multiplier,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              if (searchResult.searchAlbumFlag == 1)
+                SliverToBoxAdapter(
+                  child: CommonShimmerLoader.albumHorizontalList(
+                    colorScheme: colorScheme,
+                    size: size,
+                    itemCount: 10,
+                  ),
+                ),
+              if (searchResult.searchAlbumFlag == 0 &&
+                  searchResult.albums != null &&
+                  searchResult.albums!.data != null &&
+                  searchResult.albums!.data!.albums != null &&
+                  searchResult.albums!.data!.albums!.isNotEmpty)
+                SliverToBoxAdapter(
+                  child: AlbumHorizontalList(
+                    albums: searchResult.albums!.data?.albums ?? [],
+                  ),
+                ),
+
+              SliverPadding(
+                padding: EdgeInsets.only(
+                  left: 20 * multiplier,
+                  top: 20 * multiplier,
+                  bottom: 20 * multiplier,
+                  right: 15 * multiplier,
+                ),
+                sliver: SliverToBoxAdapter(
+                  child: Text(
+                    l10n.all_music,
+                    style: TextStyle(
+                      color: colorScheme.secondary,
+                      fontSize: 18 * multiplier,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              if (searchResult.searchSongFlag == 1)
+                SliverToBoxAdapter(
+                  child: CommonShimmerLoader.searchSongList(
+                    colorScheme: colorScheme,
+                    size: size,
+                    itemCount: 10,
+                  ),
+                ),
+              if (searchResult.searchSongFlag == 0 &&
+                  searchResult.songs != null &&
+                  searchResult.songs!.songs.isNotEmpty)
+                SliverList.builder(
+                  itemCount: searchResult.songs!.songs.length,
+                  itemBuilder: (context, index) {
+                    var item = searchResult.songs!.songs[index];
+                    return RepaintBoundary(
+                      child: ContextMenuRegion(
+                        enableDefaultGestures: true,
+                        contextMenu: ContextMenu(
+                          entriesBuilder: () => SongContextMenu.build(
+                            ref,
+                            colorScheme,
+                            l10n,
+                            size,
+                            item,
+                          ),
+                          padding: const EdgeInsets.all(8.0),
+                        ),
+                        child: SongItem(
+                          key: ValueKey(item.id),
+                          index: index,
+                          song: item,
+                          activeSongId: activeSongId,
+                          colorScheme: colorScheme,
+                          l10n: l10n,
+                          multiplier: multiplier,
+                          isFavorite: songRating.contains(item.id),
+                          onTap: () async {
+                            List<ToneHarborTrackObject> tracks;
+                            var initIndex = index;
+                            tracks = searchResult.songs!.songs;
+                            if (tracks.isEmpty) return;
+                            await ref
+                                .read(audioPlayerStateProvider.notifier)
+                                .load(
+                                  tracks,
+                                  initialIndex: initIndex < tracks.length
+                                      ? initIndex
+                                      : 0,
+                                  autoPlay: true,
+                                );
+                            if (context.mounted) {
+                              if (size.isXs) {
+                                showModalBottomSheetWidget(
+                                  ref.context,
+                                  colorScheme,
+                                  isScrollControlled: true,
+                                  (context) => const PlayingDetailLayout(),
+                                );
+                              } else {
+                                context.pushWrapper("/playing_detail");
+                              }
+                            }
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+              SliverToBoxAdapter(child: SizedBox(height: 20 * multiplier)),
+              SliverToBoxAdapter(
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    l10n.reach_end,
+                    style: TextStyle(
+                      fontSize: 12 * size.multiplier,
+                      color: colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(child: SizedBox(height: 20 * multiplier)),
+            ],
           ),
         ),
       ],
