@@ -80,18 +80,20 @@ class RecommendPage extends HookConsumerWidget {
                             ),
                             TextButton(
                               onPressed: () {
-                                context.pushWrapper(
-                                  "/songs/${Uri.encodeComponent(i10n.my_favorite)}",
-                                  extra: (
-                                    !useCloudMusic
-                                        ? favoriteSongsProvider(limit: 50)
-                                        : cloudLikelistStateProvider,
-                                    -1,
-                                    !useCloudMusic
-                                        ? SongsPageSortAction.all
-                                        : SongsPageSortAction.none,
-                                  ),
-                                );
+                                if (useCloudMusic) {
+                                  context.pushWrapper(
+                                    "/cloud-favorite-songs/${Uri.encodeComponent(i10n.my_favorite)}",
+                                  );
+                                } else {
+                                  context.pushWrapper(
+                                    "/songs/${Uri.encodeComponent(i10n.my_favorite)}",
+                                    extra: (
+                                      favoriteSongsProvider(limit: 50),
+                                      -1,
+                                      SongsPageSortAction.all,
+                                    ),
+                                  );
+                                }
                               },
                               child: Text(
                                 i10n.more,

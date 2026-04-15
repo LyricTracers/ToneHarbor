@@ -518,6 +518,22 @@ class MyApp extends HookConsumerWidget {
                   ),
                 ),
               ),
+              GoRoute(
+                path: '/cloud-favorite-songs/:title',
+                pageBuilder: (context, state) {
+                  return buildPage(
+                    key: state.pageKey,
+                    child: SongsPage(
+                      title: state.pathParameters['title'] ?? 'Playlist Songs',
+                      baseProvider: cloudLikelistStateProvider,
+                      limitTotal: -1,
+                      sortAction: SongsPageSortAction.none,
+                      isLocal: false,
+                      isCloud: true,
+                    ),
+                  );
+                },
+              ),
             ],
           ),
           // ================================
@@ -839,6 +855,24 @@ class MyApp extends HookConsumerWidget {
                 ),
               ),
             ),
+          ),
+          GoRoute(
+            path: '/mobile/cloud-favorite-songs/:title',
+            pageBuilder: (context, state) {
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(
+                  child: SongsPage(
+                    title: state.pathParameters['title'] ?? 'Playlist Songs',
+                    baseProvider: cloudLikelistStateProvider,
+                    limitTotal: -1,
+                    sortAction: SongsPageSortAction.none,
+                    isLocal: false,
+                    isCloud: true,
+                  ),
+                ),
+              );
+            },
           ),
 
           // ================================

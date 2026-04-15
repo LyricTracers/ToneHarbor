@@ -33,6 +33,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
     this.isLocal = false,
     this.refreshRandom = false,
     this.playlistId = '',
+    this.isCloud = false,
   });
 
   final int limitTotal;
@@ -42,6 +43,7 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
   final bool isLocal;
   final bool refreshRandom;
   final String playlistId;
+  final bool isCloud;
 
   PreferredSizeWidget _buildAppBar(
     WidgetRef ref,
@@ -444,7 +446,11 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
           ),
         ),
         if (songSelectionState.selectionType)
-          SubSongSelectionBottom(songs: filteredItems, isLocal: isLocal),
+          SubSongSelectionBottom(
+            songs: filteredItems,
+            isLocal: isLocal,
+            isCloud: isCloud,
+          ),
       ],
     );
   }

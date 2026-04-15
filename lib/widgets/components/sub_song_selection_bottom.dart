@@ -11,11 +11,13 @@ import 'package:toneharbor/widgets/pages/add_to_playlists_page.dart';
 class SubSongSelectionBottom extends HookConsumerWidget {
   final List<ToneHarborTrackObject> songs;
   final bool isLocal;
+  final bool isCloud;
 
   const SubSongSelectionBottom({
     super.key,
     required this.songs,
     this.isLocal = false,
+    this.isCloud = false,
   });
 
   bool _checkIdsEmpty(Set<String> ids, BuildContext context, WidgetRef ref) {
@@ -88,111 +90,113 @@ class SubSongSelectionBottom extends HookConsumerWidget {
             icon: Icon(Icons.download_rounded, size: 18),
             tooltip: l10n.download,
           ),
-          IconButton(
-            onPressed: () async {
-              final ids = ref.read(songSelectionProvider).ids;
-              if (_checkIdsEmpty(ids, context, ref)) return;
-              if (_checkIdsLimit(
-                ids,
-                100,
-                context,
-                ref,
-                l10n.favorite_limit_exceeded,
-              )) {
-                return;
-              }
+          if (!isCloud) ...[
+            IconButton(
+              onPressed: () async {
+                final ids = ref.read(songSelectionProvider).ids;
+                if (_checkIdsEmpty(ids, context, ref)) return;
+                if (_checkIdsLimit(
+                  ids,
+                  100,
+                  context,
+                  ref,
+                  l10n.favorite_limit_exceeded,
+                )) {
+                  return;
+                }
 
-              try {
-                ref.read(requestFlagProvider.notifier).setRequestFlag(true);
-                final response = await ref
-                    .read(songRatingProvider.notifier)
-                    .setRatings(ids: ids, rating: 5);
-                if (response.success) {
-                  ref
-                      .read(favoriteSongsProvider(limit: 50).notifier)
-                      .invalidateCache();
-                  ref.invalidate(favoriteSongsProvider);
-                  ref.invalidate(songSelectionProvider);
+                try {
+                  ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+                  final response = await ref
+                      .read(songRatingProvider.notifier)
+                      .setRatings(ids: ids, rating: 5);
+                  if (response.success) {
+                    ref
+                        .read(favoriteSongsProvider(limit: 50).notifier)
+                        .invalidateCache();
+                    ref.invalidate(favoriteSongsProvider);
+                    ref.invalidate(songSelectionProvider);
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    showSnackBarError(e, context, colorScheme.secondary);
+                  }
+                } finally {
+                  ref.read(requestFlagProvider.notifier).setRequestFlag(false);
                 }
-              } catch (e) {
-                if (context.mounted) {
-                  showSnackBarError(e, context, colorScheme.secondary);
+              },
+              icon: Icon(Icons.favorite_rounded, size: 18),
+              tooltip: l10n.favorite,
+            ),
+            IconButton(
+              onPressed: () async {
+                final ids = ref.read(songSelectionProvider).ids;
+                if (_checkIdsEmpty(ids, context, ref)) return;
+                if (_checkIdsLimit(
+                  ids,
+                  100,
+                  context,
+                  ref,
+                  l10n.cancel_favorite_limit_exceeded,
+                )) {
+                  return;
                 }
-              } finally {
-                ref.read(requestFlagProvider.notifier).setRequestFlag(false);
-              }
-            },
-            icon: Icon(Icons.favorite_rounded, size: 18),
-            tooltip: l10n.favorite,
-          ),
-          IconButton(
-            onPressed: () async {
-              final ids = ref.read(songSelectionProvider).ids;
-              if (_checkIdsEmpty(ids, context, ref)) return;
-              if (_checkIdsLimit(
-                ids,
-                100,
-                context,
-                ref,
-                l10n.cancel_favorite_limit_exceeded,
-              )) {
-                return;
-              }
 
-              try {
-                ref.read(requestFlagProvider.notifier).setRequestFlag(true);
-                final response = await ref
-                    .read(songRatingProvider.notifier)
-                    .setRatings(ids: ids, rating: 0);
-                if (response.success) {
-                  ref
-                      .read(favoriteSongsProvider(limit: 50).notifier)
-                      .invalidateCache();
-                  ref.invalidate(favoriteSongsProvider);
-                  ref.invalidate(songSelectionProvider);
+                try {
+                  ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+                  final response = await ref
+                      .read(songRatingProvider.notifier)
+                      .setRatings(ids: ids, rating: 0);
+                  if (response.success) {
+                    ref
+                        .read(favoriteSongsProvider(limit: 50).notifier)
+                        .invalidateCache();
+                    ref.invalidate(favoriteSongsProvider);
+                    ref.invalidate(songSelectionProvider);
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    showSnackBarError(e, context, colorScheme.secondary);
+                  }
+                } finally {
+                  ref.read(requestFlagProvider.notifier).setRequestFlag(false);
                 }
-              } catch (e) {
-                if (context.mounted) {
-                  showSnackBarError(e, context, colorScheme.secondary);
+              },
+              icon: Icon(Icons.favorite_border_rounded, size: 18),
+              tooltip: l10n.no_favorite_playlist,
+            ),
+            IconButton(
+              onPressed: () {
+                final ids = ref.read(songSelectionProvider).ids;
+                if (_checkIdsEmpty(ids, context, ref)) return;
+                if (_checkIdsLimit(
+                  ids,
+                  1000,
+                  context,
+                  ref,
+                  l10n.cancel_favorite_limit_exceeded,
+                )) {
+                  return;
                 }
-              } finally {
-                ref.read(requestFlagProvider.notifier).setRequestFlag(false);
-              }
-            },
-            icon: Icon(Icons.favorite_border_rounded, size: 18),
-            tooltip: l10n.no_favorite_playlist,
-          ),
-          IconButton(
-            onPressed: () {
-              final ids = ref.read(songSelectionProvider).ids;
-              if (_checkIdsEmpty(ids, context, ref)) return;
-              if (_checkIdsLimit(
-                ids,
-                1000,
-                context,
-                ref,
-                l10n.cancel_favorite_limit_exceeded,
-              )) {
-                return;
-              }
 
-              final itemId = ids.join(',');
-              if (size.mdAndUp) {
-                showSlidePanel(
-                  context: context,
-                  builder: (context) => AddToPlaylistsPage(itemId),
-                );
-              } else {
-                showModalBottomSheetWidget(
-                  ref.context,
-                  colorScheme,
-                  (context) => AddToPlaylistsPage(itemId),
-                );
-              }
-            },
-            icon: Icon(Icons.playlist_add_rounded, size: 18),
-            tooltip: l10n.song_playlist,
-          ),
+                final itemId = ids.join(',');
+                if (size.mdAndUp) {
+                  showSlidePanel(
+                    context: context,
+                    builder: (context) => AddToPlaylistsPage(itemId),
+                  );
+                } else {
+                  showModalBottomSheetWidget(
+                    ref.context,
+                    colorScheme,
+                    (context) => AddToPlaylistsPage(itemId),
+                  );
+                }
+              },
+              icon: Icon(Icons.playlist_add_rounded, size: 18),
+              tooltip: l10n.song_playlist,
+            ),
+          ],
         ],
         if (isLocal)
           IconButton(
