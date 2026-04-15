@@ -12,8 +12,8 @@ import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
-import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 import 'package:toneharbor/widgets/components/common_search_field.dart';
+import 'package:toneharbor/widgets/components/common_shimmer_loader.dart';
 import 'package:toneharbor/widgets/components/song_context_menu.dart';
 import 'package:toneharbor/widgets/components/song_item.dart';
 import 'package:toneharbor/widgets/components/sub_song_selection_bottom.dart';
@@ -408,7 +408,11 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
                 },
               );
             },
-            loading: () => const Center(child: AudioEqualizerLoader()),
+            loading: () => CommonShimmerLoader.songList(
+              colorScheme: colorScheme,
+              size: size,
+              itemCount: 20,
+            ),
             error: (error, stackTrace) {
               return buildErrorView(context, ref, colorScheme, () {});
             },
