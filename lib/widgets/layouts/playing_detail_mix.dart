@@ -66,27 +66,28 @@ mixin PlayingDetailMix {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                IconButton(
-                  tooltip: l10n.song_playlist,
-                  onPressed: isLocal
-                      ? null
-                      : () {
-                          if (size.mdAndUp) {
-                            showSlidePanel(
-                              context: ref.context,
-                              builder: (context) =>
-                                  AddToPlaylistsPage(activeTrack.id),
-                            );
-                          } else {
-                            showModalBottomSheetWidget(
-                              ref.context,
-                              colorScheme,
-                              (context) => AddToPlaylistsPage(activeTrack.id),
-                            );
-                          }
-                        },
-                  icon: Icon(Icons.playlist_add_rounded, size: size24),
-                ),
+                if (activeTrack is! ToneHarborTrackObjectCloudMusic)
+                  IconButton(
+                    tooltip: l10n.song_playlist,
+                    onPressed: isLocal
+                        ? null
+                        : () {
+                            if (size.mdAndUp) {
+                              showSlidePanel(
+                                context: ref.context,
+                                builder: (context) =>
+                                    AddToPlaylistsPage(activeTrack.id),
+                              );
+                            } else {
+                              showModalBottomSheetWidget(
+                                ref.context,
+                                colorScheme,
+                                (context) => AddToPlaylistsPage(activeTrack.id),
+                              );
+                            }
+                          },
+                    icon: Icon(Icons.playlist_add_rounded, size: size24),
+                  ),
                 if (defaultTargetPlatform == TargetPlatform.iOS)
                   SizedBox(
                     width: size32,

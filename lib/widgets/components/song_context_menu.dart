@@ -163,23 +163,24 @@ class SongContextMenu {
                 ref.read(requestFlagProvider.notifier).setRequestFlag(false);
               },
             ),
-            MenuItem(
-              label: Text(l10n.song_playlist),
-              onSelected: (value) {
-                if (size.mdAndUp) {
-                  showSlidePanel(
-                    context: ref.context,
-                    builder: (context) => AddToPlaylistsPage(itemId),
-                  );
-                } else {
-                  showModalBottomSheetWidget(
-                    ref.context,
-                    colorScheme,
-                    (context) => AddToPlaylistsPage(itemId),
-                  );
-                }
-              },
-            ),
+            if (item is! ToneHarborTrackObjectCloudMusic)
+              MenuItem(
+                label: Text(l10n.song_playlist),
+                onSelected: (value) {
+                  if (size.mdAndUp) {
+                    showSlidePanel(
+                      context: ref.context,
+                      builder: (context) => AddToPlaylistsPage(itemId),
+                    );
+                  } else {
+                    showModalBottomSheetWidget(
+                      ref.context,
+                      colorScheme,
+                      (context) => AddToPlaylistsPage(itemId),
+                    );
+                  }
+                },
+              ),
           ],
         ),
         if (playlistId.isNotEmpty && index != -1)
