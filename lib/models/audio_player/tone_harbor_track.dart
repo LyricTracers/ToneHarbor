@@ -46,11 +46,10 @@ sealed class ToneHarborTrackObject with _$ToneHarborTrackObject {
     required int frequency,
     required int rating,
   }) = ToneHarborTrackObjectFull;
-  factory ToneHarborTrackObject.fromJson(Map<String, dynamic> json) {
-    return json['runtimeType'] == 'cloudMusic'
-        ? fromCloudMusicJson(json)
-        : _$ToneHarborTrackObjectFromJson(json);
-  }
+  factory ToneHarborTrackObject.fromJson(Map<String, dynamic> json) =>
+      json['runtimeType'] == 'cloudMusic'
+      ? fromCloudMusicJson(json)
+      : _$ToneHarborTrackObjectFromJson(json);
 
   factory ToneHarborTrackObject.multLocal({
     required String id,

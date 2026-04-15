@@ -647,4 +647,222 @@ class CommonShimmerLoader {
       ),
     );
   }
+
+  static Widget artistHorizontalList({
+    required ColorScheme colorScheme,
+    required Size size,
+    int itemCount = 5,
+  }) {
+    final multiplier = size.multiplier2;
+
+    return Shimmer.fromColors(
+      baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      highlightColor: colorScheme.surface.withValues(alpha: 1.0),
+      child: Padding(
+        padding: EdgeInsets.all(20 * multiplier),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 20 * multiplier,
+              width: 80 * multiplier,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            SizedBox(height: 16 * multiplier),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(itemCount, (index) {
+                  return Padding(
+                    padding: EdgeInsets.only(right: 16 * multiplier),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 100 * multiplier,
+                          height: 100 * multiplier,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        SizedBox(height: 8 * multiplier),
+                        Container(
+                          height: 14 * multiplier,
+                          width: 80 * multiplier,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static Widget albumHorizontalList({
+    required ColorScheme colorScheme,
+    required Size size,
+    int itemCount = 5,
+  }) {
+    final multiplier = size.multiplier2;
+
+    return Shimmer.fromColors(
+      baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      highlightColor: colorScheme.surface.withValues(alpha: 1.0),
+      child: Padding(
+        padding: EdgeInsets.all(20 * multiplier),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 20 * multiplier,
+              width: 80 * multiplier,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            SizedBox(height: 16 * multiplier),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(itemCount, (index) {
+                  return Padding(
+                    padding: EdgeInsets.only(right: 16 * multiplier),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 100 * multiplier,
+                          height: 100 * multiplier,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8 * multiplier),
+                          ),
+                        ),
+                        SizedBox(height: 8 * multiplier),
+                        Container(
+                          height: 14 * multiplier,
+                          width: 80 * multiplier,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        SizedBox(height: 4 * multiplier),
+                        Container(
+                          height: 12 * multiplier,
+                          width: 60 * multiplier,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static Widget searchSongList({
+    required ColorScheme colorScheme,
+    required Size size,
+    int itemCount = 6,
+  }) {
+    final multiplier = size.multiplier2;
+
+    return Shimmer.fromColors(
+      baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      highlightColor: colorScheme.surface.withValues(alpha: 1.0),
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(
+              left: 20 * multiplier,
+              top: 20 * multiplier,
+              bottom: 20 * multiplier,
+              right: 15 * multiplier,
+            ),
+            child: Container(
+              height: 20 * multiplier,
+              width: 100 * multiplier,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+          ...List.generate(itemCount, (index) {
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 16 * multiplier,
+                vertical: 8 * multiplier,
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 40 * multiplier,
+                    height: 40 * multiplier,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4 * multiplier),
+                    ),
+                  ),
+                  SizedBox(width: 12 * multiplier),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 16 * multiplier,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        SizedBox(height: 4 * multiplier),
+                        Container(
+                          height: 12 * multiplier,
+                          width: 150 * multiplier,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 12 * multiplier),
+                  Container(
+                    height: 12 * multiplier,
+                    width: 40 * multiplier,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
 }

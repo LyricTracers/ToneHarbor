@@ -13,10 +13,10 @@ part of 'search_provider.dart';
 final mixSearchProvider = MixSearchFamily._();
 
 final class MixSearchProvider
-    extends $AsyncNotifierProvider<MixSearch, MixSearchData> {
+    extends $NotifierProvider<MixSearch, MixSearchData> {
   MixSearchProvider._({
     required MixSearchFamily super.from,
-    required ({String query, SearchType type}) super.argument,
+    required String super.argument,
   }) : super(
          retry: null,
          name: r'mixSearchProvider',
@@ -32,12 +32,20 @@ final class MixSearchProvider
   String toString() {
     return r'mixSearchProvider'
         ''
-        '$argument';
+        '($argument)';
   }
 
   @$internal
   @override
   MixSearch create() => MixSearch();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(MixSearchData value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<MixSearchData>(value),
+    );
+  }
 
   @override
   bool operator ==(Object other) {
@@ -50,16 +58,16 @@ final class MixSearchProvider
   }
 }
 
-String _$mixSearchHash() => r'58ceba7a61cfba84338802790e02f620f4a56f16';
+String _$mixSearchHash() => r'a7d81426d7811d33032356290e11a38775cbd1e1';
 
 final class MixSearchFamily extends $Family
     with
         $ClassFamilyOverride<
           MixSearch,
-          AsyncValue<MixSearchData>,
           MixSearchData,
-          FutureOr<MixSearchData>,
-          ({String query, SearchType type})
+          MixSearchData,
+          MixSearchData,
+          String
         > {
   MixSearchFamily._()
     : super(
@@ -70,39 +78,30 @@ final class MixSearchFamily extends $Family
         isAutoDispose: true,
       );
 
-  MixSearchProvider call({
-    required String query,
-    SearchType type = SearchType.all,
-  }) => MixSearchProvider._(argument: (query: query, type: type), from: this);
+  MixSearchProvider call({required String query}) =>
+      MixSearchProvider._(argument: query, from: this);
 
   @override
   String toString() => r'mixSearchProvider';
 }
 
-abstract class _$MixSearch extends $AsyncNotifier<MixSearchData> {
-  late final _$args = ref.$arg as ({String query, SearchType type});
-  String get query => _$args.query;
-  SearchType get type => _$args.type;
+abstract class _$MixSearch extends $Notifier<MixSearchData> {
+  late final _$args = ref.$arg as String;
+  String get query => _$args;
 
-  FutureOr<MixSearchData> build({
-    required String query,
-    SearchType type = SearchType.all,
-  });
+  MixSearchData build({required String query});
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<MixSearchData>, MixSearchData>;
+    final ref = this.ref as $Ref<MixSearchData, MixSearchData>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<MixSearchData>, MixSearchData>,
-              AsyncValue<MixSearchData>,
+              AnyNotifier<MixSearchData, MixSearchData>,
+              MixSearchData,
               Object?,
               Object?
             >;
-    element.handleCreate(
-      ref,
-      () => build(query: _$args.query, type: _$args.type),
-    );
+    element.handleCreate(ref, () => build(query: _$args));
   }
 }

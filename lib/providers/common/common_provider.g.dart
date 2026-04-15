@@ -93,7 +93,7 @@ final class RequestFlagProvider extends $NotifierProvider<RequestFlag, bool> {
   }
 }
 
-String _$requestFlagHash() => r'48979857bd3627fa81f0747f453efb30ad525a1c';
+String _$requestFlagHash() => r'1dc0571034f5f11ba90d41e77f780f05c6e7ca0b';
 
 abstract class _$RequestFlag extends $Notifier<bool> {
   bool build();

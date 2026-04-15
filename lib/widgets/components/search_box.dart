@@ -20,6 +20,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
   final BoxDecoration? listDecoration;
   final List<String>? lockItems;
   final Color? lockTextColor;
+  final String? query;
   final Function(String)? onSubmitSearch;
   final Function(bool)? onFocusChanged;
   final bool updateSelectedHistoryItemDateTime;
@@ -45,16 +46,17 @@ class SearchHistoryTextField extends HookConsumerWidget {
     this.lockTextColor,
     this.onSubmitSearch,
     this.onFocusChanged,
+    this.query,
     this.updateSelectedHistoryItemDateTime = false,
     this.decoration,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = useTextEditingController();
+    final controller = useTextEditingController(text: query);
     final focusNode = useFocusNode();
     final historyList = ref.watch(searchHistoryProvider);
-    final currentText = useState(controller.text);
+    final currentText = useState(query ?? controller.text);
     final menuWidth = useState<double?>(null);
     final menuController = useMemoized(() => MenuController());
 
