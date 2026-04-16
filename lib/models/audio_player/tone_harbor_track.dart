@@ -545,7 +545,7 @@ extension ToneHarborTrackObjectMultLocalExtension
       final fileMetadata = await MetadataGod.readMetadata(file: file.path);
       return fileMetadata.picture!;
     } catch (e) {
-      logger.w('[localTrackFromFile] Failed to read metadata: $e');
+      logger.i('[localTrackFromFile] Failed to read metadata: $e, path: $path');
     }
     return null;
   }

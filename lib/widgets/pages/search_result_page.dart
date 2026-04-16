@@ -171,7 +171,10 @@ class SearchResultPage extends HookConsumerWidget {
                   ),
                 ),
               ),
-              if (searchResult.searchSongFlag == 1)
+              if ((searchResult.searchSongFlag == 1 ||
+                      searchResult.searchCloudFlag == 1) &&
+                  (searchResult.songs == null ||
+                      searchResult.songs!.songs.isEmpty))
                 SliverToBoxAdapter(
                   child: CommonShimmerLoader.searchSongList(
                     colorScheme: colorScheme,
@@ -179,7 +182,8 @@ class SearchResultPage extends HookConsumerWidget {
                     itemCount: 10,
                   ),
                 ),
-              if (searchResult.searchSongFlag == 0 &&
+              if ((searchResult.searchSongFlag == 0 ||
+                      searchResult.searchCloudFlag == 0) &&
                   searchResult.songs != null &&
                   searchResult.songs!.songs.isNotEmpty)
                 SliverList.builder(

@@ -390,3 +390,23 @@ Map<String, dynamic> _$CloudMusicLyricDataToJson(
   'yrc': instance.yrc,
   'code': instance.code,
 };
+
+_CloudSearchData _$CloudSearchDataFromJson(Map<String, dynamic> json) =>
+    _CloudSearchData(
+      songs: (json['songs'] as List<dynamic>?)
+          ?.map((e) => CloudMusicSongData.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      artists: (json['artists'] as List<dynamic>?)
+          ?.map((e) => CloudMusicArtistData.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      albums: (json['albums'] as List<dynamic>?)
+          ?.map((e) => CloudMusicAlbumData.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$CloudSearchDataToJson(_CloudSearchData instance) =>
+    <String, dynamic>{
+      'songs': instance.songs,
+      'artists': instance.artists,
+      'albums': instance.albums,
+    };

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'cloud_music_cover_image.dart';
 import 'song_cover_image.dart';
@@ -51,8 +52,11 @@ class TrackCoverImage extends HookConsumerWidget {
           ),
         );
       }
+      final pictureFuture = useMemoized(() => localTrack.getPicture(), [
+        localTrack.id,
+      ]);
       return SongCoverImage(
-        pictureFuture: localTrack.getPicture(),
+        pictureFuture: pictureFuture,
         songId: localTrack.id,
         albumName: localTrack.album,
         artistName: localTrack.artist,

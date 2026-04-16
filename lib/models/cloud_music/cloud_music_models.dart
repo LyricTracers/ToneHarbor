@@ -354,3 +354,15 @@ sealed class CloudMusicLyricData with _$CloudMusicLyricData {
     };
   }
 }
+
+@freezed
+sealed class CloudSearchData with _$CloudSearchData {
+  const CloudSearchData._();
+  const factory CloudSearchData({
+    List<CloudMusicSongData>? songs,
+    List<CloudMusicArtistData>? artists,
+    List<CloudMusicAlbumData>? albums,
+  }) = _CloudSearchData;
+  factory CloudSearchData.fromJson(Map<String, dynamic> json) =>
+      _$CloudSearchDataFromJson(json);
+}
