@@ -83,7 +83,7 @@ class CommonSongs extends ConsumerWidget {
           _buildHorizontalList(context, data.songs, colorScheme, config),
       loading: () => _buildShimmerLoading(context, colorScheme, config),
       error: (error, stackTrace) {
-        return buildErrorView(context, ref, colorScheme, onErrorTap);
+        return SizedBox.shrink();
       },
     );
   }

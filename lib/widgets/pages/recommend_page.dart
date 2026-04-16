@@ -241,9 +241,35 @@ class RecommendPage extends HookConsumerWidget {
                         SizedBox(height: 8),
                         CommonSongs(
                           songs: ref.watch(cloudLikelistStateProvider),
-                          onErrorTap: () {
-                            ref.invalidate(cloudLikelistStateProvider);
-                          },
+                          onErrorTap: () {},
+                          limit: 20,
+                        ),
+                        SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 16,
+                            right: 16,
+                            top: 8,
+                            bottom: 8,
+                          ),
+                          child: Text(
+                            i10n.daily_recommend,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Divider(
+                          height: 2,
+                          indent: 16,
+                          endIndent: 16,
+                          color: colorScheme.onSurface.withValues(alpha: 0.5),
+                        ),
+                        SizedBox(height: 8),
+                        CommonSongs(
+                          songs: ref.watch(cloudDailyRecommendProvider),
+                          onErrorTap: () {},
                           limit: 20,
                         ),
                       ],

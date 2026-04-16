@@ -828,3 +828,58 @@ abstract class _$CloudLikelistState
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(CloudDailyRecommend)
+final cloudDailyRecommendProvider = CloudDailyRecommendProvider._();
+
+final class CloudDailyRecommendProvider
+    extends
+        $AsyncNotifierProvider<CloudDailyRecommend, ToneHarborTrackObjectList> {
+  CloudDailyRecommendProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'cloudDailyRecommendProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudDailyRecommendHash();
+
+  @$internal
+  @override
+  CloudDailyRecommend create() => CloudDailyRecommend();
+}
+
+String _$cloudDailyRecommendHash() =>
+    r'1f89a680806427cdf14d32b0306960d21960d01f';
+
+abstract class _$CloudDailyRecommend
+    extends $AsyncNotifier<ToneHarborTrackObjectList> {
+  FutureOr<ToneHarborTrackObjectList> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<ToneHarborTrackObjectList>,
+              ToneHarborTrackObjectList
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<ToneHarborTrackObjectList>,
+                ToneHarborTrackObjectList
+              >,
+              AsyncValue<ToneHarborTrackObjectList>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

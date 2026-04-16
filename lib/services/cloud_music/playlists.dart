@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
+import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
@@ -203,14 +206,15 @@ Future<List<CloudMusicSongData>> getTrackDetail(
 }) async {
   final l10n = ref.read(l10nProvider);
   final apiState = ref.read(cloudMusicApiUrlsProvider);
-
   if (ids.isEmpty) {
     return [];
   }
 
   try {
-    final query = <String, String>{'ids': ids.join(',')};
-    logger.i('ids: $ids');
+    final query = <String, String>{
+      'ids': ids.join(','),
+      'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
 
     final cookieParams = CloudMusicAuth.getApiCookieParams();
     if (cookieParams.isNotEmpty) {
@@ -232,6 +236,9 @@ Future<List<CloudMusicSongData>> getTrackDetail(
         message: l10n.error_getPlaylists_failed,
         statusCode: response.statusCode,
       );
+    }
+    if (ids.length == 30) {
+      logger.i("getTrackDetail, ids: ${response.body}");
     }
 
     late final Map<String, dynamic> jsonBody;
@@ -268,7 +275,6 @@ Future<List<CloudMusicSongData>> getTrackDetail(
       }
       return song;
     }).toList();
-
     return songsWithPrivilege;
   } catch (e) {
     logger.e('获取歌曲详情失败: $e');
@@ -511,4 +517,99 @@ Future<CloudMusicPlaylistDataList> getPlaylistCatlist(
     'getPlaylistCatlist, cat: $cat, limit: $limit, offset: $offset, total: ${playDatalists.total}, playlists.length: ${playDatalists.playlists.length}',
   );
   return playDatalists;
+}
+
+Future<ToneHarborTrackObjectList> getDailyRecommend(
+  Ref ref, {
+  Duration? cacheDuration = const Duration(minutes: 120),
+}) async {
+  final useInfo = ref.watch(cloudUserInfoProvider);
+  if (useInfo.value == null) {
+    return ToneHarborTrackObjectListEmpty();
+  }
+
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+  if (apiState.defaultUrl.isEmpty) {
+    logger.e('API URL为空');
+    return ToneHarborTrackObjectListEmpty();
+  }
+  final l10n = ref.read(l10nProvider);
+  final cacheKey = 'cloud_dailyRecommend';
+  final groupKey = 'cloud_dailyRecommend';
+  if (cacheDuration != null) {
+    final cached = await getFromCache<List<ToneHarborTrackObject>>(
+      cacheKey: cacheKey,
+      group: groupKey,
+      fromJson: (json) {
+        if (json['tracks'] == null) {
+          return [];
+        }
+        final trackObjects =
+            (json['tracks'] as List?)
+                ?.map(
+                  (e) =>
+                      ToneHarborTrackObject.fromJson(e as Map<String, dynamic>),
+                )
+                .toList() ??
+            [];
+        return trackObjects;
+      },
+    );
+    if (cached != null && cached.isNotEmpty) {
+      return ToneHarborTrackObjectList.data(songs: cached);
+    }
+  }
+  final query = <String, String>{
+    'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+    'randomCNIP': 'true',
+  };
+  final cookieParams = CloudMusicAuth.getApiCookieParams();
+  if (cookieParams.isNotEmpty) {
+    query.addAll(cookieParams);
+  }
+  final response = await httpClientWrapper.get(
+    '${apiState.defaultUrl}/recommend/songs',
+    cancelToken: ref.cancelToken(),
+  );
+  if (response.statusCode != 200) {
+    logger.e('请求失败，状态码：${response.statusCode}');
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: response.statusCode,
+    );
+  }
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw CloudMusicException(message: l10n.error_response_parse_failed);
+  }
+  if (jsonBody['code'] != 200) {
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: jsonBody['code'],
+    );
+  }
+  final dailySongs = jsonBody['data']?['dailySongs'] ?? [] as List? ?? [];
+  if (dailySongs.isEmpty) {
+    return ToneHarborTrackObjectListEmpty();
+  }
+  final resultList =
+      dailySongs?.map((e) => e['id'])?.whereType<int>().toList() ?? [];
+
+  final tracks = await getTrackDetail(ref, ids: resultList);
+
+  final trackObjects = tracks.map((track) => track.asTrack()).toList();
+  if (cacheDuration != null && trackObjects.isNotEmpty) {
+    await saveToCache(
+      cacheKey: cacheKey,
+      jsonBody: {
+        'tracks': trackObjects.map((track) => track.toJson()).toList(),
+      },
+      cacheDuration: cacheDuration,
+      group: groupKey,
+    );
+  }
+  return ToneHarborTrackObjectList.data(songs: trackObjects);
 }

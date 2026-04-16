@@ -395,3 +395,22 @@ class CloudLikelistState extends _$CloudLikelistState
     required String sortDirection,
   }) async {}
 }
+
+@keepAlive
+class CloudDailyRecommend extends _$CloudDailyRecommend
+    with ExtraProvider<ToneHarborTrackObjectList> {
+  @override
+  Future<ToneHarborTrackObjectList> build() async {
+    ref.keepAliveFor(Duration(minutes: 1));
+    return await getDailyRecommend(ref);
+  }
+
+  @override
+  Future<void> loadMore() async {}
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {}
+}
