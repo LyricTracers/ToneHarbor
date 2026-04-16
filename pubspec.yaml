@@ -28,7 +28,11 @@ dependencies:
       url: https://git.nxcloud.club:12750/LyricTracers/flutter_context_menu.git
       ref: v1.0.0-macos
   audio_service: 
-    path: ../audio_service/audio_service
+    # path: ../audio_service/audio_service
+    git:
+      url: https://git.nxcloud.club:12750/agile/audio_service.git
+      path: audio_service
+      ref: minor
   audio_session: ^0.2.3
   smtc_windows: ^1.1.0
   open_file: ^3.5.10
@@ -56,7 +60,10 @@ dependencies:
   shelf_router: ^1.1.4
   flutter_slidable: ^4.0.3
   metadata_god: 
-    path: ../metadata_god
+    # path: ../metadata_god
+    git:
+      url: https://git.nxcloud.club:12750/LyricTracers/metadata_god.git
+      ref: main
   file: ^7.0.1
   drift: 2.29.0
   mime: ^2.0.0
@@ -71,10 +78,10 @@ dependencies:
       url: https://git.nxcloud.club:12750/LyricTracers/archive_gbk.git
       ref: v1.0.0-macos
   lyricskit:
-    path: ../lyricskit
-       # git:
-      # url: https://git.nxcloud.club:12750/LyricTracers/lyricskit.git
-      # ref: main
+    # path: ../lyricskit
+      git:
+        url: https://git.nxcloud.club:12750/LyricTracers/lyricskit.git
+        ref: main
   tray_manager:
     git:
       url: https://git.nxcloud.club:12750/LyricTracers/tray_manager.git
@@ -84,10 +91,10 @@ dependencies:
       url: https://git.nxcloud.club:12750/LyricTracers/window_manager.git
       ref: v1.0.0-macos 
   flutter_native_splash:
-    path: ../flutter_native_splash
-    # git:
-    #   url: https://git.nxcloud.club:12750/LyricTracers/flutter_native_splash.git
-    #   ref: v1.0.0-macos
+    # path: ../flutter_native_splash
+    git:
+      url: https://git.nxcloud.club:12750/LyricTracers/flutter_native_splash.git
+      ref: main
   flutter_lyric:
     git:
       url: https://git.nxcloud.club:12750/LyricTracers/flutter_lyric.git
@@ -111,22 +118,22 @@ dev_dependencies:
 
 dependency_overrides:
   media_kit_libs_ios_audio:
-    path: ../media-kit/libs/ios/media_kit_libs_ios_audio
-    # git:
-    #   url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
-    #   ref: main
-    #   path: libs/ios/media_kit_libs_ios_audio
+    # path: ../media-kit/libs/ios/media_kit_libs_ios_audio
+    git:
+      url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
+      ref: main
+      path: libs/ios/media_kit_libs_ios_audio
   # media_kit_libs_android_audio:
   #   git:
   #     url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
   #     ref: v1.0.0-macos
   #     path: libs/android/media_kit_libs_android_audio
   media_kit_libs_macos_audio:
-    path: ../media-kit/libs/macos/media_kit_libs_macos_audio
-    # git:
-    #   url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
-    #   ref: main
-    #   path: libs/macos/media_kit_libs_macos_audio
+    # path: ../media-kit/libs/macos/media_kit_libs_macos_audio
+    git:
+      url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
+      ref: main
+      path: libs/macos/media_kit_libs_macos_audio
   # media_kit_libs_windows_audio:
   #   git:
   #     url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git

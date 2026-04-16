@@ -69,9 +69,11 @@ packages:
   audio_service:
     dependency: "direct main"
     description:
-      path: "../audio_service/audio_service"
-      relative: true
-    source: path
+      path: audio_service
+      ref: minor
+      resolved-ref: d74933cbbb9f4e2c1c0070ce4664ad0fd4616cd9
+      url: "https://git.nxcloud.club:12750/agile/audio_service.git"
+    source: git
     version: "0.18.19"
   audio_service_platform_interface:
     dependency: transitive
@@ -529,9 +531,11 @@ packages:
   flutter_native_splash:
     dependency: "direct main"
     description:
-      path: "../flutter_native_splash"
-      relative: true
-    source: path
+      path: "."
+      ref: main
+      resolved-ref: "9b7ba936264f4207a8e2c7ca2b969e498a01a444"
+      url: "https://git.nxcloud.club:12750/LyricTracers/flutter_native_splash.git"
+    source: git
     version: "2.4.7"
   flutter_plugin_android_lifecycle:
     dependency: transitive
@@ -819,9 +823,11 @@ packages:
   lyricskit:
     dependency: "direct main"
     description:
-      path: "../lyricskit"
-      relative: true
-    source: path
+      path: "."
+      ref: main
+      resolved-ref: c95119f08d887070af8c2a9ae0f77001fca6ce74
+      url: "https://git.nxcloud.club:12750/LyricTracers/lyricskit.git"
+    source: git
     version: "0.1.0"
   matcher:
     dependency: transitive
@@ -867,9 +873,11 @@ packages:
   media_kit_libs_ios_audio:
     dependency: "direct overridden"
     description:
-      path: "../media-kit/libs/ios/media_kit_libs_ios_audio"
-      relative: true
-    source: path
+      path: "libs/ios/media_kit_libs_ios_audio"
+      ref: main
+      resolved-ref: ab490c9ee379fa67390c86a12301300f43f56726
+      url: "https://git.nxcloud.club:12750/LyricTracers/media-kit.git"
+    source: git
     version: "1.1.4"
   media_kit_libs_linux:
     dependency: transitive
@@ -882,9 +890,11 @@ packages:
   media_kit_libs_macos_audio:
     dependency: "direct overridden"
     description:
-      path: "../media-kit/libs/macos/media_kit_libs_macos_audio"
-      relative: true
-    source: path
+      path: "libs/macos/media_kit_libs_macos_audio"
+      ref: main
+      resolved-ref: ab490c9ee379fa67390c86a12301300f43f56726
+      url: "https://git.nxcloud.club:12750/LyricTracers/media-kit.git"
+    source: git
     version: "1.1.5"
   media_kit_libs_windows_audio:
     dependency: transitive
@@ -913,9 +923,11 @@ packages:
   metadata_god:
     dependency: "direct main"
     description:
-      path: "../metadata_god"
-      relative: true
-    source: path
+      path: "."
+      ref: main
+      resolved-ref: "96b3526032f80c87245eec38964a1307e350cf16"
+      url: "https://git.nxcloud.club:12750/LyricTracers/metadata_god.git"
+    source: git
     version: "1.1.0"
   mime:
     dependency: "direct main"
