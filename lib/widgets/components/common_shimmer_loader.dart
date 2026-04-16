@@ -62,70 +62,23 @@ class CommonShimmerLoader {
                             ),
                           ),
                           SizedBox(width: 15 * size.multiplier),
-                          Container(
-                            height: 12 * size.multiplier2,
-                            width: size.width * 0.3,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(4),
+                          Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                right: 15 * size.multiplier,
+                              ),
+                              child: Container(
+                                height: 14 * size.multiplier2,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  static Widget folderList({
-    required ColorScheme colorScheme,
-    required Size size,
-    int itemCount = 6,
-  }) {
-    return Shimmer.fromColors(
-      baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-      highlightColor: colorScheme.surface.withValues(alpha: 1.0),
-      child: ListView.builder(
-        itemCount: itemCount,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 20 * size.multiplier,
-              vertical: 4 * size.multiplier,
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 16 * size.multiplier2,
-                  height: 16 * size.multiplier2,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                SizedBox(width: 15 * size.multiplier),
-                Container(
-                  width: 20 * size.multiplier2,
-                  height: 20 * size.multiplier2,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                SizedBox(width: 10 * size.multiplier),
-                Expanded(
-                  child: Container(
-                    height: 16 * size.multiplier2,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
                   ),
                 ),
               ],
