@@ -58,7 +58,7 @@ final class MixSearchProvider
   }
 }
 
-String _$mixSearchHash() => r'a7d81426d7811d33032356290e11a38775cbd1e1';
+String _$mixSearchHash() => r'23aab25fc7d2f8e1fbc6366dd19f95aff0859c14';
 
 final class MixSearchFamily extends $Family
     with
@@ -105,3 +105,42 @@ abstract class _$MixSearch extends $Notifier<MixSearchData> {
     element.handleCreate(ref, () => build(query: _$args));
   }
 }
+
+@ProviderFor(searchCloudHot)
+final searchCloudHotProvider = SearchCloudHotProvider._();
+
+final class SearchCloudHotProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<String>?>,
+          List<String>?,
+          FutureOr<List<String>?>
+        >
+    with $FutureModifier<List<String>?>, $FutureProvider<List<String>?> {
+  SearchCloudHotProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'searchCloudHotProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$searchCloudHotHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<String>?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<String>?> create(Ref ref) {
+    return searchCloudHot(ref);
+  }
+}
+
+String _$searchCloudHotHash() => r'2045ba891d67f07c80505d3e3d6c6182571daa4a';

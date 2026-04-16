@@ -819,4 +819,23 @@ class CommonShimmerLoader {
       ),
     );
   }
+
+  static Widget chipLoader({
+    required ColorScheme colorScheme,
+    required double width,
+    required double height,
+  }) {
+    return Shimmer.fromColors(
+      baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      highlightColor: colorScheme.surface.withValues(alpha: 1.0),
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+    );
+  }
 }

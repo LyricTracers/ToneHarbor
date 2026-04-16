@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
@@ -6,6 +7,7 @@ import 'package:toneharbor/models/audio_station/album.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/search.dart';
+import 'package:toneharbor/utils/base_utils.dart';
 part 'search_provider.g.dart';
 
 class MixSearchData {
@@ -19,6 +21,7 @@ class MixSearchData {
   final int searchArtistFlag;
   final int searchAlbumFlag;
   final int searchCloudFlag;
+  final int searchHotFlag;
 
   const MixSearchData({
     this.songs,
@@ -31,6 +34,7 @@ class MixSearchData {
     this.searchArtistFlag = 0,
     this.searchAlbumFlag = 0,
     this.searchCloudFlag = 0,
+    this.searchHotFlag = 0,
   });
   MixSearchData copyWith({
     ToneHarborTrackObjectList? songs,
@@ -42,6 +46,7 @@ class MixSearchData {
     int? searchArtistFlag,
     int? searchAlbumFlag,
     int? searchCloudFlag,
+    int? searchHotFlag,
   }) => MixSearchData(
     songs: songs ?? this.songs,
     artists: artists ?? this.artists,
@@ -52,6 +57,7 @@ class MixSearchData {
     searchArtistFlag: searchArtistFlag ?? this.searchArtistFlag,
     searchAlbumFlag: searchAlbumFlag ?? this.searchAlbumFlag,
     searchCloudFlag: searchCloudFlag ?? this.searchCloudFlag,
+    searchHotFlag: searchHotFlag ?? this.searchHotFlag,
   );
 }
 
@@ -71,6 +77,7 @@ class MixSearch extends _$MixSearch {
       searchArtistFlag: 1,
       searchAlbumFlag: 1,
       searchCloudFlag: 1,
+      searchHotFlag: 1,
     );
   }
 
@@ -141,4 +148,10 @@ class MixSearch extends _$MixSearch {
       state = state.copyWith(searchCloudFlag: 0);
     }
   }
+}
+
+@riverpod
+Future<List<String>?> searchCloudHot(Ref ref) async {
+  ref.keepAliveFor(Duration(minutes: 1));
+  return await searchHot(ref);
 }

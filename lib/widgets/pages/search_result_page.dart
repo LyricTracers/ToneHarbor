@@ -18,7 +18,39 @@ class SearchResultPage extends HookConsumerWidget {
     final l10n = ref.watch(l10nProvider);
     final colorScheme = getColorSchemeWhenReady(ref);
     final queryState = useState(query);
-    final searchResult = ref.watch(mixSearchProvider(query: queryState.value));
+    final provider = mixSearchProvider(query: queryState.value);
+    final searchResultHot = ref.watch(searchCloudHotProvider);
+    final searchAlbumsResult = ref.watch(
+      provider.select(
+        (state) => state.copyWith(
+          searchAlbumFlag: state.searchAlbumFlag,
+          searchCloudFlag: state.searchCloudFlag,
+          albums: state.albums,
+          cloudAlbumsList: state.cloudAlbumsList,
+        ),
+      ),
+    );
+
+    final searchArtistsResult = ref.watch(
+      provider.select(
+        (state) => state.copyWith(
+          searchArtistFlag: state.searchArtistFlag,
+          artists: state.artists,
+          cloudArtistsList: state.cloudArtistsList,
+        ),
+      ),
+    );
+
+    final searchSongsResult = ref.watch(
+      provider.select(
+        (state) => state.copyWith(
+          searchSongFlag: state.searchSongFlag,
+          searchCloudFlag: state.searchCloudFlag,
+          songs: state.songs,
+        ),
+      ),
+    );
+
     final activeTrack = ref.watch(audioPlayerStateProvider).activeTrack;
     final activeSongId = activeTrack?.id;
     final songRating = ref.watch(songRatingProvider);
@@ -90,6 +122,84 @@ class SearchResultPage extends HookConsumerWidget {
         Expanded(
           child: CustomScrollView(
             slivers: [
+              if (searchResultHot.isLoading)
+                SliverPadding(
+                  padding: EdgeInsets.all(size.smAndUp ? 16 : 8),
+                  sliver: SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: 36 * size.multiplier2,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        padding: EdgeInsets.zero,
+                        itemCount: 6,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: EdgeInsets.only(
+                              right: 8 * size.multiplier2,
+                            ),
+                            child: CommonShimmerLoader.chipLoader(
+                              colorScheme: colorScheme,
+                              width: 80 + (index % 3) * 20,
+                              height: 28 * size.multiplier2,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              if (searchResultHot.value != null &&
+                  searchResultHot.value!.isNotEmpty)
+                SliverPadding(
+                  padding: EdgeInsets.all(size.smAndUp ? 16 : 8),
+                  sliver: SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: 36 * size.multiplier2,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        padding: EdgeInsets.zero,
+                        itemCount: searchResultHot.value!.length,
+                        itemBuilder: (context, index) {
+                          final hotKeyword = searchResultHot.value![index];
+                          final isSelected = hotKeyword == queryState.value;
+                          return Padding(
+                            padding: EdgeInsets.only(
+                              right: 8 * size.multiplier2,
+                            ),
+                            child: RawChip(
+                              label: Text(hotKeyword),
+                              labelStyle: TextStyle(
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                fontSize: 14 * size.multiplier2,
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12 * size.multiplier2,
+                                vertical: 4,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                side: isSelected
+                                    ? BorderSide(
+                                        color: colorScheme.primary,
+                                        width: 1.2,
+                                      )
+                                    : BorderSide(
+                                        color: colorScheme.outline,
+                                        width: 0.8,
+                                      ),
+                              ),
+                              onSelected: (selected) {
+                                queryState.value = hotKeyword;
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
               SliverPadding(
                 padding: EdgeInsets.all(20 * multiplier),
                 sliver: SliverToBoxAdapter(
@@ -103,10 +213,11 @@ class SearchResultPage extends HookConsumerWidget {
                   ),
                 ),
               ),
-              if ((searchResult.searchArtistFlag == 1 ||
-                      searchResult.searchCloudFlag == 1) &&
-                  (searchResult.artists?.data?.artists?.isEmpty ?? true) &&
-                  (searchResult.cloudArtistsList?.isEmpty ?? true))
+              if ((searchArtistsResult.searchArtistFlag == 1 ||
+                      searchArtistsResult.searchCloudFlag == 1) &&
+                  (searchArtistsResult.artists?.data?.artists?.isEmpty ??
+                      true) &&
+                  (searchArtistsResult.cloudArtistsList?.isEmpty ?? true))
                 SliverToBoxAdapter(
                   child: CommonShimmerLoader.artistHorizontalList(
                     colorScheme: colorScheme,
@@ -114,12 +225,13 @@ class SearchResultPage extends HookConsumerWidget {
                     itemCount: 10,
                   ),
                 ),
-              if ((searchResult.artists?.data?.artists?.isNotEmpty ?? false) ||
-                  (searchResult.cloudArtistsList?.isNotEmpty ?? false))
+              if ((searchArtistsResult.artists?.data?.artists?.isNotEmpty ??
+                      false) ||
+                  (searchArtistsResult.cloudArtistsList?.isNotEmpty ?? false))
                 SliverToBoxAdapter(
                   child: ArtistHorizontalList(
-                    artists: searchResult.artists?.data?.artists,
-                    cloudArtists: searchResult.cloudArtistsList,
+                    artists: searchArtistsResult.artists?.data?.artists,
+                    cloudArtists: searchArtistsResult.cloudArtistsList,
                   ),
                 ),
               SliverPadding(
@@ -135,10 +247,10 @@ class SearchResultPage extends HookConsumerWidget {
                   ),
                 ),
               ),
-              if ((searchResult.searchAlbumFlag == 1 ||
-                      searchResult.searchCloudFlag == 1) &&
-                  (searchResult.albums?.data?.albums?.isEmpty ?? true) &&
-                  (searchResult.cloudAlbumsList?.isEmpty ?? true))
+              if ((searchAlbumsResult.searchAlbumFlag == 1 ||
+                      searchAlbumsResult.searchCloudFlag == 1) &&
+                  (searchAlbumsResult.albums?.data?.albums?.isEmpty ?? true) &&
+                  (searchAlbumsResult.cloudAlbumsList?.isEmpty ?? true))
                 SliverToBoxAdapter(
                   child: CommonShimmerLoader.albumHorizontalList(
                     colorScheme: colorScheme,
@@ -146,12 +258,13 @@ class SearchResultPage extends HookConsumerWidget {
                     itemCount: 10,
                   ),
                 ),
-              if ((searchResult.albums?.data?.albums?.isNotEmpty ?? false) ||
-                  (searchResult.cloudAlbumsList?.isNotEmpty ?? false))
+              if ((searchAlbumsResult.albums?.data?.albums?.isNotEmpty ??
+                      false) ||
+                  (searchAlbumsResult.cloudAlbumsList?.isNotEmpty ?? false))
                 SliverToBoxAdapter(
                   child: AlbumHorizontalList(
-                    albums: searchResult.albums?.data?.albums ?? [],
-                    cloudAlbums: searchResult.cloudAlbumsList,
+                    albums: searchAlbumsResult.albums?.data?.albums ?? [],
+                    cloudAlbums: searchAlbumsResult.cloudAlbumsList,
                   ),
                 ),
 
@@ -173,10 +286,10 @@ class SearchResultPage extends HookConsumerWidget {
                   ),
                 ),
               ),
-              if ((searchResult.searchSongFlag == 1 ||
-                      searchResult.searchCloudFlag == 1) &&
-                  (searchResult.songs == null ||
-                      searchResult.songs!.songs.isEmpty))
+              if ((searchSongsResult.searchSongFlag == 1 ||
+                      searchSongsResult.searchCloudFlag == 1) &&
+                  (searchSongsResult.songs == null ||
+                      searchSongsResult.songs!.songs.isEmpty))
                 SliverToBoxAdapter(
                   child: CommonShimmerLoader.searchSongList(
                     colorScheme: colorScheme,
@@ -184,14 +297,14 @@ class SearchResultPage extends HookConsumerWidget {
                     itemCount: 10,
                   ),
                 ),
-              if ((searchResult.searchSongFlag == 0 ||
-                      searchResult.searchCloudFlag == 0) &&
-                  searchResult.songs != null &&
-                  searchResult.songs!.songs.isNotEmpty)
+              if ((searchSongsResult.searchSongFlag == 0 ||
+                      searchSongsResult.searchCloudFlag == 0) &&
+                  searchSongsResult.songs != null &&
+                  searchSongsResult.songs!.songs.isNotEmpty)
                 SliverList.builder(
-                  itemCount: searchResult.songs!.songs.length,
+                  itemCount: searchSongsResult.songs!.songs.length,
                   itemBuilder: (context, index) {
-                    var item = searchResult.songs!.songs[index];
+                    var item = searchSongsResult.songs!.songs[index];
                     return RepaintBoundary(
                       child: ContextMenuRegion(
                         enableDefaultGestures: true,
@@ -217,7 +330,7 @@ class SearchResultPage extends HookConsumerWidget {
                           onTap: () async {
                             List<ToneHarborTrackObject> tracks;
                             var initIndex = index;
-                            tracks = searchResult.songs!.songs;
+                            tracks = searchSongsResult.songs!.songs;
                             if (tracks.isEmpty) return;
                             await ref
                                 .read(audioPlayerStateProvider.notifier)
