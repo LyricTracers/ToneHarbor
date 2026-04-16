@@ -58,53 +58,53 @@ class _PlaylistItem extends HookConsumerWidget {
       child: MouseRegion(
         onEnter: (event) => isHovered.value = true,
         onExit: (event) => isHovered.value = false,
-        child: Container(
-          height: 35,
-          color: isPressed.value || isHovered.value
-              ? colorScheme.outline.withValues(alpha: .1)
-              : Colors.transparent,
-          child: Stack(
-            children: [
-              if (isDefault)
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary,
-                      borderRadius: const BorderRadius.only(
-                        bottomRight: Radius.circular(8),
+        child: InkWell(
+          onTapDown: (details) => isPressed.value = true,
+          onTapUp: (details) => isPressed.value = false,
+          onTapCancel: () => isPressed.value = false,
+          onTap: () {
+            isPressed.value = false;
+            onTap();
+          },
+          onDoubleTap: () {
+            isPressed.value = false;
+            onTap();
+          },
+          child: Container(
+            height: 35,
+            color: isPressed.value || isHovered.value
+                ? colorScheme.outline.withValues(alpha: .1)
+                : Colors.transparent,
+            child: Stack(
+              children: [
+                if (isDefault)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
                       ),
-                    ),
-                    child: Text(
-                      i10n.playing,
-                      style: TextStyle(
-                        color: colorScheme.onPrimary,
-                        fontSize: 7,
-                        fontWeight: FontWeight.bold,
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary,
+                        borderRadius: const BorderRadius.only(
+                          bottomRight: Radius.circular(8),
+                        ),
+                      ),
+                      child: Text(
+                        i10n.playing,
+                        style: TextStyle(
+                          color: colorScheme.onPrimary,
+                          fontSize: 7,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTapDown: (details) => isPressed.value = true,
-                      onTapUp: (details) => isPressed.value = false,
-                      onTapCancel: () => isPressed.value = false,
-                      onTap: () {
-                        isPressed.value = false;
-                        onTap();
-                      },
-                      onDoubleTap: () {
-                        isPressed.value = false;
-                        onTap();
-                      },
+                Row(
+                  children: [
+                    Expanded(
                       child: Row(
                         children: [
                           const SizedBox(width: 25),
@@ -148,19 +148,19 @@ class _PlaylistItem extends HookConsumerWidget {
                         ],
                       ),
                     ),
-                  ),
 
-                  ReorderableDragStartListener(
-                    index: index,
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.drag_handle, size: 16),
+                    ReorderableDragStartListener(
+                      index: index,
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.drag_handle, size: 16),
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 5),
-                ],
-              ),
-            ],
+                    SizedBox(width: 5),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
