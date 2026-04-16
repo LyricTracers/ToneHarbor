@@ -523,74 +523,85 @@ void showCommonDialog({
     barrierColor: Colors.black54,
     transitionDuration: const Duration(milliseconds: 200),
     pageBuilder: (context, animation, secondaryAnimation) {
-      return Center(
-        child: Material(
-          color: Colors.transparent,
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            padding: const EdgeInsets.all(24),
-            constraints: const BoxConstraints(maxWidth: 400),
-            decoration: BoxDecoration(
-              color: colorScheme.brightness == Brightness.dark
-                  ? const Color(0xFF2D2D2D)
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(28),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                  ],
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 24,
+          right: 24,
+          top: 24,
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 400),
+                decoration: BoxDecoration(
+                  color: colorScheme.brightness == Brightness.dark
+                      ? const Color(0xFF2D2D2D)
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(28),
                 ),
-                const SizedBox(height: 16),
-                contentBuilder(context),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    if (cancelText != null)
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(cancelText),
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+                        ],
                       ),
-                    if (thirdButtonText != null)
-                      TextButton(
-                        onPressed: () async {
-                          await onThirdButton?.call(context);
-                          if (context.mounted) {
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: Text(thirdButtonText),
+                      const SizedBox(height: 16),
+                      contentBuilder(context),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          if (cancelText != null)
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(cancelText),
+                            ),
+                          if (thirdButtonText != null)
+                            TextButton(
+                              onPressed: () async {
+                                await onThirdButton?.call(context);
+                                if (context.mounted) {
+                                  Navigator.pop(context);
+                                }
+                              },
+                              child: Text(thirdButtonText),
+                            ),
+                          if (confirmText != null)
+                            TextButton(
+                              onPressed: () async {
+                                await onConfirm?.call(context);
+                                if (context.mounted) {
+                                  Navigator.pop(context);
+                                }
+                              },
+                              child: Text(
+                                confirmText,
+                                style: confirmTextColor != null
+                                    ? TextStyle(color: confirmTextColor)
+                                    : null,
+                              ),
+                            ),
+                        ],
                       ),
-                    if (confirmText != null)
-                      TextButton(
-                        onPressed: () async {
-                          await onConfirm?.call(context);
-                          if (context.mounted) {
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: Text(
-                          confirmText,
-                          style: confirmTextColor != null
-                              ? TextStyle(color: confirmTextColor)
-                              : null,
-                        ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
-              ],
+              ),
             ),
           ),
         ),
