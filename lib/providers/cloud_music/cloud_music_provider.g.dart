@@ -786,7 +786,7 @@ final class CloudLikelistStateProvider
         argument: null,
         retry: null,
         name: r'cloudLikelistStateProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -800,7 +800,7 @@ final class CloudLikelistStateProvider
 }
 
 String _$cloudLikelistStateHash() =>
-    r'798c6d7135e7309f9849ff9e83e3c75cd8175d6f';
+    r'd77b995b166479c22223bc501f15fe6d70024654';
 
 abstract class _$CloudLikelistState
     extends $AsyncNotifier<ToneHarborTrackObjectList> {
@@ -841,7 +841,7 @@ final class CloudDailyRecommendProvider
         argument: null,
         retry: null,
         name: r'cloudDailyRecommendProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -855,7 +855,7 @@ final class CloudDailyRecommendProvider
 }
 
 String _$cloudDailyRecommendHash() =>
-    r'1f89a680806427cdf14d32b0306960d21960d01f';
+    r'083ee303cd2ed0dee1555494dcd67602af7e7e18';
 
 abstract class _$CloudDailyRecommend
     extends $AsyncNotifier<ToneHarborTrackObjectList> {
@@ -881,5 +881,106 @@ abstract class _$CloudDailyRecommend
               Object?
             >;
     element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(CloudToplist)
+final cloudToplistProvider = CloudToplistFamily._();
+
+final class CloudToplistProvider
+    extends $AsyncNotifierProvider<CloudToplist, CloudMusicPlaylistDataList> {
+  CloudToplistProvider._({
+    required CloudToplistFamily super.from,
+    required Duration? super.argument,
+  }) : super(
+         retry: null,
+         name: r'cloudToplistProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudToplistHash();
+
+  @override
+  String toString() {
+    return r'cloudToplistProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  CloudToplist create() => CloudToplist();
+
+  @override
+  bool operator ==(Object other) {
+    return other is CloudToplistProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$cloudToplistHash() => r'043b43e4b5026db1b85d88813270125a1bf2baac';
+
+final class CloudToplistFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          CloudToplist,
+          AsyncValue<CloudMusicPlaylistDataList>,
+          CloudMusicPlaylistDataList,
+          FutureOr<CloudMusicPlaylistDataList>,
+          Duration?
+        > {
+  CloudToplistFamily._()
+    : super(
+        retry: null,
+        name: r'cloudToplistProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CloudToplistProvider call({
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) => CloudToplistProvider._(argument: cacheDuration, from: this);
+
+  @override
+  String toString() => r'cloudToplistProvider';
+}
+
+abstract class _$CloudToplist
+    extends $AsyncNotifier<CloudMusicPlaylistDataList> {
+  late final _$args = ref.$arg as Duration?;
+  Duration? get cacheDuration => _$args;
+
+  FutureOr<CloudMusicPlaylistDataList> build({
+    Duration? cacheDuration = const Duration(minutes: 60),
+  });
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<CloudMusicPlaylistDataList>,
+              CloudMusicPlaylistDataList
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<CloudMusicPlaylistDataList>,
+                CloudMusicPlaylistDataList
+              >,
+              AsyncValue<CloudMusicPlaylistDataList>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, () => build(cacheDuration: _$args));
   }
 }

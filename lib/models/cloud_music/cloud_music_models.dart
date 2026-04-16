@@ -248,18 +248,6 @@ sealed class CloudMusicTrackIdData with _$CloudMusicTrackIdData {
       _$CloudMusicTrackIdDataFromJson(json);
 }
 
-// @freezed
-// sealed class CloudMusicSongDetailResponse with _$CloudMusicSongDetailResponse {
-//   const CloudMusicSongDetailResponse._();
-//   const factory CloudMusicSongDetailResponse({
-//     required List<CloudMusicSongData> songs,
-//     List<CloudMusicPrivilegeData>? privileges,
-//   }) = _CloudMusicSongDetailResponse;
-
-//   factory CloudMusicSongDetailResponse.fromJson(Map<String, dynamic> json) =>
-//       _$CloudMusicSongDetailResponseFromJson(json);
-// }
-
 // id 歌曲 ID 用于匹配歌曲和权限
 // fee 费用标志 1 =VIP专享, 4 =付费专辑, 0 =免费
 //payed 是否已付费 0 =未付费, 1 =已付费

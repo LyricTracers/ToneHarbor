@@ -953,5 +953,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get artist_profile => '歌手详情';
 
   @override
+  String get ranking => '排行榜';
+
+  @override
   String get invalid_cookie_format => 'Cookie 格式无效，必须包含 MUSIC_U';
 }

@@ -360,6 +360,55 @@ class RecommendPage extends HookConsumerWidget {
                             ),
                       ),
                       SizedBox(height: 15),
+
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          top: 16,
+                          bottom: 8,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              i10n.ranking,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                context.pushWrapper(
+                                  "/cloud-playlist-catlist",
+                                  extra: CloudPlaylistStaticData
+                                      .staticCategories[2],
+                                );
+                              },
+                              child: Text(
+                                i10n.more,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: colorScheme.tertiary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(
+                        height: 2,
+                        indent: 16,
+                        endIndent: 16,
+                        color: colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
+                      SizedBox(height: 15),
+                      CloudPlaylistsCat(
+                        baseProvider: cloudToplistProvider(),
+                        visibleRows: size.mdAndUp ? 1 : 2,
+                      ),
+                      SizedBox(height: 15),
                     ],
                   ],
                 ),

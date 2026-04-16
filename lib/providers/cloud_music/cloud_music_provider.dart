@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
-import 'package:toneharbor/models/database/database.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/albums.dart';
 import 'package:toneharbor/services/cloud_music/artists.dart';
@@ -347,12 +346,12 @@ Future<CloudMusicAlbumDetailData?> getCloudAlbumDetail(
   }
 }
 
-@keepAlive
+@riverpod
 class CloudLikelistState extends _$CloudLikelistState
     with ExtraProvider<ToneHarborTrackObjectList> {
   @override
   Future<ToneHarborTrackObjectList> build() async {
-    logger.i('CloudLikelistState build');
+    ref.keepAliveFor(Duration(minutes: 5));
     return await cloudLikeList(ref);
   }
 
@@ -396,13 +395,34 @@ class CloudLikelistState extends _$CloudLikelistState
   }) async {}
 }
 
-@keepAlive
+@riverpod
 class CloudDailyRecommend extends _$CloudDailyRecommend
     with ExtraProvider<ToneHarborTrackObjectList> {
   @override
   Future<ToneHarborTrackObjectList> build() async {
-    ref.keepAliveFor(Duration(minutes: 1));
+    ref.keepAliveFor(Duration(minutes: 5));
     return await getDailyRecommend(ref);
+  }
+
+  @override
+  Future<void> loadMore() async {}
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {}
+}
+
+@riverpod
+class CloudToplist extends _$CloudToplist
+    with ExtraProvider<CloudMusicPlaylistDataList> {
+  @override
+  Future<CloudMusicPlaylistDataList> build({
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) async {
+    ref.keepAliveFor(Duration(minutes: 5));
+    return await getToplist(ref, cacheDuration: cacheDuration);
   }
 
   @override

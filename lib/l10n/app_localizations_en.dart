@@ -981,6 +981,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get artist_profile => 'Artist Profile';
 
   @override
+  String get ranking => 'Ranking';
+
+  @override
   String get invalid_cookie_format =>
       'Invalid Cookie format, must contain MUSIC_U';
 }

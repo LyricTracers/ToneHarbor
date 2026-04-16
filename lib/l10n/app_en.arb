@@ -321,5 +321,6 @@
   "sim_artist": "Similar Artists",
   "track_count": " Songs",
   "artist_profile": "Artist Profile",
+  "ranking": "Ranking",
   "invalid_cookie_format": "Invalid Cookie format, must contain MUSIC_U"
 }

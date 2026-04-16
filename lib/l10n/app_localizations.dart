@@ -1982,6 +1982,12 @@ abstract class AppLocalizations {
   /// **'Artist Profile'**
   String get artist_profile;
 
+  /// No description provided for @ranking.
+  ///
+  /// In en, this message translates to:
+  /// **'Ranking'**
+  String get ranking;
+
   /// No description provided for @invalid_cookie_format.
   ///
   /// In en, this message translates to:
