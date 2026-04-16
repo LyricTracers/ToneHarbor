@@ -359,7 +359,6 @@ class RecommendPage extends HookConsumerWidget {
                               itemWidth: 180,
                             ),
                       ),
-                      SizedBox(height: 15),
 
                       Padding(
                         padding: const EdgeInsets.only(
