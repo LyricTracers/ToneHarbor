@@ -102,7 +102,8 @@ sealed class CloudMusicAlbumData with _$CloudMusicAlbumData {
 
   String get cover {
     if (picUrl != null && picUrl!.isNotEmpty) return picUrl!;
-    return blurPicUrl ?? '';
+    if (blurPicUrl != null && blurPicUrl!.isNotEmpty) return blurPicUrl!;
+    return artist?.cover ?? '';
   }
 
   String coverUrl({int size = 200}) {
@@ -140,10 +141,10 @@ sealed class CloudMusicArtistData with _$CloudMusicArtistData {
   factory CloudMusicArtistData.fromJson(Map<String, dynamic> json) =>
       _$CloudMusicArtistDataFromJson(json);
 
+  String get cover =>
+      picUrl != null && picUrl!.isNotEmpty ? picUrl! : img1v1Url ?? '';
   String coverUrl({int size = 200}) {
-    final img = picUrl != null && picUrl!.isNotEmpty
-        ? picUrl!
-        : img1v1Url ?? '';
+    final img = cover;
     if (img1v1Url != null && img1v1Url!.isNotEmpty) {
       final img1v1ID = img.split('/').last;
       if (img1v1ID == '5639395138885805.jpg') {

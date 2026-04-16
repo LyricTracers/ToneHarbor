@@ -1,79 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:toneharbor/models/audio_station/artist.dart';
+import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/responsive.dart';
+import 'package:toneharbor/widgets/components/cloud_common_artists.dart';
+import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
+
 import 'package:toneharbor/widgets/widgets.dart';
-
-class _LayoutConfig {
-  const _LayoutConfig({
-    required this.height,
-    required this.itemWidth,
-    required this.itemSpacing,
-    required this.horizontalPadding,
-  });
-
-  final double height;
-  final double itemWidth;
-  final double itemSpacing;
-  final double horizontalPadding;
-
-  static const _LayoutConfig defaultConfig = _LayoutConfig(
-    height: 160,
-    itemWidth: 100,
-    itemSpacing: 16,
-    horizontalPadding: 16,
-  );
-  _LayoutConfig withMultiplier(double multiplier) {
-    return _LayoutConfig(
-      height: height * multiplier,
-      itemWidth: itemWidth * multiplier,
-      itemSpacing: itemSpacing * multiplier,
-      horizontalPadding: horizontalPadding * multiplier,
-    );
-  }
-}
 
 class ArtistItem extends StatelessWidget {
   const ArtistItem({
     super.key,
-    required this.artist,
+    this.artist,
+    this.cloudArtist,
     required this.colorScheme,
+    required this.aritstLayoutConfig,
   });
 
-  final Artist artist;
+  final Artist? artist;
+  final CloudMusicArtistData? cloudArtist;
   final ColorScheme colorScheme;
+  final ArtistLayoutConfig aritstLayoutConfig;
 
   @override
   Widget build(BuildContext context) {
-    var artistName = artist.name == null ? 'Unknown Artist' : artist.name!;
-    if (artistName.isEmpty) {
-      artistName = "Unknown Artist";
+    if (artist == null && cloudArtist == null) {
+      return Container();
+    }
+    String artistName;
+    if (artist != null) {
+      artistName = artist!.name == null ? 'Unknown Artist' : artist!.name!;
+      if (artistName.isEmpty) {
+        artistName = "Unknown Artist";
+      }
+    } else {
+      artistName = cloudArtist!.name;
     }
 
     return InkWell(
       onTap: () {
-        context.pushWrapper(
-          '/albums/${Uri.encodeComponent(artistName)}',
-          extra: albumsProvider(
-            artist: artistName == 'Unknown Artist' ? '' : artistName,
-          ),
-        );
+        if (artist != null) {
+          context.pushWrapper(
+            '/albums/${Uri.encodeComponent(artistName)}',
+            extra: albumsProvider(
+              artist: artistName == 'Unknown Artist' ? '' : artistName,
+            ),
+          );
+        } else {
+          context.pushWrapper("/cloud-artist-detail", extra: cloudArtist!);
+        }
       },
       borderRadius: BorderRadius.circular(12),
       child: SizedBox(
-        width: 100,
+        width: aritstLayoutConfig.itemWidth,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             AspectRatio(
               aspectRatio: 1.0,
-              child: SongCoverImage(
-                songId: "",
-                albumName: "",
-                artistName: artistName,
-                colorScheme: colorScheme,
-                config: SongCoverImageConfig(size: 100, isCircular: true),
-              ),
+              child: artist != null
+                  ? SongCoverImage(
+                      songId: "",
+                      albumName: "",
+                      artistName: artistName,
+                      colorScheme: colorScheme,
+                      config: SongCoverImageConfig(
+                        size: aritstLayoutConfig.itemWidth,
+                        isCircular: true,
+                      ),
+                    )
+                  : CloudMusicCoverImage(
+                      imageUrl: cloudArtist!.coverUrl(),
+                      colorScheme: colorScheme,
+                      config: CloudMusicCoverImageConfig(
+                        size: aritstLayoutConfig.itemWidth,
+                        isCircular: true,
+                      ),
+                    ),
             ),
             const SizedBox(height: 8),
             Padding(
@@ -84,7 +87,7 @@ class ArtistItem extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: aritstLayoutConfig.fontSize,
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
@@ -96,27 +99,44 @@ class ArtistItem extends StatelessWidget {
   }
 }
 
-class AritistHorizontalList extends StatelessWidget {
-  const AritistHorizontalList({super.key, required this.artists});
+class ArtistHorizontalList extends StatelessWidget {
+  const ArtistHorizontalList({super.key, this.artists, this.cloudArtists});
 
-  final List<Artist> artists;
+  final List<Artist>? artists;
+  final List<CloudMusicArtistData>? cloudArtists;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final size = MediaQuery.of(context).size;
-    final config = _LayoutConfig.defaultConfig.withMultiplier(size.multiplier2);
+    final config = ArtistLayoutConfig.defaultConfig.withMultiplier(
+      size.multiplier2,
+    );
+    var artistLength = artists?.length ?? 0;
+    var cloudLength = cloudArtists?.length ?? 0;
+
     return SizedBox(
       height: config.height,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: config.horizontalPadding),
-        itemCount: artists.length,
+        itemCount: artistLength + cloudLength,
         itemBuilder: (context, index) {
-          final artist = artists[index];
+          Artist? artist;
+          CloudMusicArtistData? cloudArtist;
+          if (index < cloudLength) {
+            cloudArtist = cloudArtists![index];
+          } else {
+            artist = artists![index - cloudLength];
+          }
           return Padding(
             padding: EdgeInsets.only(right: config.itemSpacing),
-            child: ArtistItem(artist: artist, colorScheme: colorScheme),
+            child: ArtistItem(
+              artist: artist,
+              cloudArtist: cloudArtist,
+              colorScheme: colorScheme,
+              aritstLayoutConfig: config,
+            ),
           );
         },
       ),

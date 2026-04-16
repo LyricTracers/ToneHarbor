@@ -6,8 +6,8 @@ import 'package:toneharbor/providers/cloud_music/cloud_music_provider.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
 
-class CloudMusicArtistLayoutConfig {
-  const CloudMusicArtistLayoutConfig({
+class ArtistLayoutConfig {
+  const ArtistLayoutConfig({
     required this.height,
     required this.itemWidth,
     required this.itemSpacing,
@@ -21,17 +21,16 @@ class CloudMusicArtistLayoutConfig {
   final double horizontalPadding;
   final double fontSize;
 
-  static const CloudMusicArtistLayoutConfig defaultConfig =
-      CloudMusicArtistLayoutConfig(
-        height: 160,
-        itemWidth: 100,
-        itemSpacing: 16,
-        horizontalPadding: 16,
-        fontSize: 13,
-      );
+  static const ArtistLayoutConfig defaultConfig = ArtistLayoutConfig(
+    height: 160,
+    itemWidth: 100,
+    itemSpacing: 16,
+    horizontalPadding: 16,
+    fontSize: 13,
+  );
 
-  CloudMusicArtistLayoutConfig withMultiplier(double multiplier) {
-    return CloudMusicArtistLayoutConfig(
+  ArtistLayoutConfig withMultiplier(double multiplier) {
+    return ArtistLayoutConfig(
       height: height * multiplier,
       itemWidth: itemWidth * multiplier,
       itemSpacing: itemSpacing * multiplier,
@@ -40,14 +39,14 @@ class CloudMusicArtistLayoutConfig {
     );
   }
 
-  CloudMusicArtistLayoutConfig copyWith({
+  ArtistLayoutConfig copyWith({
     double? height,
     double? itemWidth,
     double? itemSpacing,
     double? horizontalPadding,
     double? fontSize,
   }) {
-    return CloudMusicArtistLayoutConfig(
+    return ArtistLayoutConfig(
       height: height ?? this.height,
       itemWidth: itemWidth ?? this.itemWidth,
       itemSpacing: itemSpacing ?? this.itemSpacing,
@@ -67,7 +66,7 @@ class CloudMusicArtistItem extends StatelessWidget {
 
   final CloudMusicArtistData artist;
   final ColorScheme colorScheme;
-  final CloudMusicArtistLayoutConfig cloudLayoutConfig;
+  final ArtistLayoutConfig cloudLayoutConfig;
 
   @override
   Widget build(BuildContext context) {
@@ -123,12 +122,12 @@ class CloudMusicArtistHorizontalList extends ConsumerWidget {
     super.key,
     this.limit = 10,
     this.onArtistTap,
-    this.cloudLayoutConfig = CloudMusicArtistLayoutConfig.defaultConfig,
+    this.cloudLayoutConfig = ArtistLayoutConfig.defaultConfig,
   });
 
   final int limit;
   final void Function(CloudMusicArtistData artist)? onArtistTap;
-  final CloudMusicArtistLayoutConfig cloudLayoutConfig;
+  final ArtistLayoutConfig cloudLayoutConfig;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -154,7 +153,7 @@ class CloudMusicArtistHorizontalList extends ConsumerWidget {
     BuildContext context,
     List<CloudMusicArtistData> artists,
     ColorScheme colorScheme,
-    CloudMusicArtistLayoutConfig config,
+    ArtistLayoutConfig config,
   ) {
     return SizedBox(
       height: config.height,
@@ -179,7 +178,7 @@ class CloudMusicArtistHorizontalList extends ConsumerWidget {
 
   Widget _buildShimmerList(
     ColorScheme colorScheme,
-    CloudMusicArtistLayoutConfig config,
+    ArtistLayoutConfig config,
     int count,
   ) {
     return SizedBox(
@@ -210,7 +209,7 @@ class CloudMusicArtistItemShimmer extends StatelessWidget {
   });
 
   final ColorScheme colorScheme;
-  final CloudMusicArtistLayoutConfig cloudLayoutConfig;
+  final ArtistLayoutConfig cloudLayoutConfig;
 
   @override
   Widget build(BuildContext context) {
@@ -260,7 +259,7 @@ class CloudMusicArtistHorizontalListView extends StatelessWidget {
 
   final List<CloudMusicArtistData>? artists;
   final ColorScheme colorScheme;
-  final CloudMusicArtistLayoutConfig config;
+  final ArtistLayoutConfig config;
   final bool isLoading;
   final int shimmerCount;
   final void Function(CloudMusicArtistData artist)? onArtistTap;
@@ -298,7 +297,7 @@ class CloudMusicArtistHorizontalListView extends StatelessWidget {
 
   Widget _buildShimmerList(
     ColorScheme colorScheme,
-    CloudMusicArtistLayoutConfig config,
+    ArtistLayoutConfig config,
     int count,
   ) {
     return SizedBox(

@@ -324,8 +324,7 @@ class RecommendPage extends HookConsumerWidget {
                       SizedBox(height: 15),
                       CloudMusicArtistHorizontalList(
                         limit: 10,
-                        cloudLayoutConfig: CloudMusicArtistLayoutConfig
-                            .defaultConfig
+                        cloudLayoutConfig: ArtistLayoutConfig.defaultConfig
                             .copyWith(
                               height: 220,
                               fontSize: 14,

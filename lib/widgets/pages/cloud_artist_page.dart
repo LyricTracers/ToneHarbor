@@ -1060,7 +1060,7 @@ class CloudArtistPage extends HookConsumerWidget {
   ) {
     final similarArtistsFlag = artistDetail.similarArtistsFlag ?? 0;
     final similarArtists = artistDetail.similarArtists ?? [];
-    final config = CloudMusicArtistLayoutConfig.defaultConfig
+    final config = ArtistLayoutConfig.defaultConfig
         .copyWith(height: 220, itemWidth: 180, itemSpacing: 20)
         .withMultiplier(size.multiplier);
 

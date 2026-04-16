@@ -3,10 +3,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_station/album.dart';
+import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/responsive.dart';
+import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class _LayoutConfig {
@@ -61,9 +63,14 @@ class _LayoutConfig {
 }
 
 class AlbumHorizontalList extends StatelessWidget {
-  const AlbumHorizontalList({super.key, required this.albums});
+  const AlbumHorizontalList({
+    super.key,
+    required this.albums,
+    this.cloudAlbums,
+  });
 
   final List<AlbumItem> albums;
+  final List<CloudMusicAlbumData>? cloudAlbums;
 
   @override
   Widget build(BuildContext context) {
@@ -72,20 +79,30 @@ class AlbumHorizontalList extends StatelessWidget {
     final config = _LayoutConfig.defaultConfig.multiply(
       multiplier: size.multiplier2,
     );
+    final cloudLength = cloudAlbums?.length ?? 0;
+    final albumLength = albums.length;
+    final itemCount = albumLength + cloudLength;
+
     return SizedBox(
       height: config.height,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: config.horizontalPadding),
-        itemCount: albums.length,
+        itemCount: itemCount,
         itemBuilder: (context, index) {
-          final album = albums[index];
+          final album = index < cloudLength
+              ? null
+              : albums[index - cloudLength];
+          final cloudMusicAlbumData = index < cloudLength
+              ? cloudAlbums![index]
+              : null;
           return Padding(
             padding: EdgeInsets.only(right: config.itemSpacing),
             child: _AlbumItem(
               album: album,
               colorScheme: colorScheme,
               config: config,
+              cloudMusicAlbumData: cloudMusicAlbumData,
             ),
           );
         },
@@ -182,25 +199,37 @@ class CommonAlbums extends ConsumerWidget {
 
 class _AlbumItem extends StatelessWidget {
   const _AlbumItem({
-    required this.album,
+    this.album,
     required this.colorScheme,
     required this.config,
+    this.cloudMusicAlbumData,
   });
 
-  final AlbumItem album;
+  final AlbumItem? album;
+  final CloudMusicAlbumData? cloudMusicAlbumData;
   final ColorScheme colorScheme;
   final _LayoutConfig config;
 
   @override
   Widget build(BuildContext context) {
-    final albumName = (album.name?.isNotEmpty == true)
-        ? album.name!
-        : 'Unknown Album';
-    final artistName = (album.displayArtist?.isNotEmpty == true)
-        ? album.displayArtist!
-        : (album.artist?.isNotEmpty == true)
-        ? album.artist!
-        : 'Unknown Artist';
+    if (album == null && cloudMusicAlbumData == null) {
+      return Container();
+    }
+    String albumName;
+    String artistName;
+    if (cloudMusicAlbumData != null) {
+      albumName = cloudMusicAlbumData!.name;
+      artistName = cloudMusicAlbumData!.artistName;
+    } else {
+      albumName = (album!.name?.isNotEmpty == true)
+          ? album!.name!
+          : 'Unknown Album';
+      artistName = (album!.displayArtist?.isNotEmpty == true)
+          ? album!.displayArtist!
+          : (album!.artist?.isNotEmpty == true)
+          ? album!.artist!
+          : 'Unknown Artist';
+    }
 
     return InkWell(
       onTap: () {
@@ -209,32 +238,50 @@ class _AlbumItem extends StatelessWidget {
         var tempArtistName = artistName;
         if (albumName == "Unknown Album") tempAlbumName = "";
         if (artistName == "Unknown Artist") tempArtistName = "";
-        context.pushWrapper(
-          "/songs/${Uri.encodeComponent(albumName)}",
-          extra: (
-            albumSongsProvider(
-              album: tempAlbumName,
-              albumArtist: tempArtistName,
+
+        if (album != null) {
+          context.pushWrapper(
+            "/songs/${Uri.encodeComponent(albumName)}",
+            extra: (
+              albumSongsProvider(
+                album: tempAlbumName,
+                albumArtist: tempArtistName,
+              ),
+              -1,
+              SongsPageSortAction.titleName,
             ),
-            -1,
-            SongsPageSortAction.titleName,
-          ),
-        );
+          );
+        } else {
+          context.pushWrapper(
+            "/cloud-album-detail",
+            extra: cloudMusicAlbumData!,
+          );
+        }
       },
       borderRadius: BorderRadius.circular(config.coverBorderRadius),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SongCoverImage(
-            songId: "",
-            albumName: albumName,
-            artistName: artistName,
-            colorScheme: colorScheme,
-            config: SongCoverImageConfig(
-              size: config.coverSize,
-              borderRadius: config.coverBorderRadius,
+          if (album != null)
+            SongCoverImage(
+              songId: "",
+              albumName: albumName,
+              artistName: artistName,
+              colorScheme: colorScheme,
+              config: SongCoverImageConfig(
+                size: config.coverSize,
+                borderRadius: config.coverBorderRadius,
+              ),
             ),
-          ),
+          if (cloudMusicAlbumData != null)
+            CloudMusicCoverImage(
+              imageUrl: cloudMusicAlbumData!.coverUrl(),
+              colorScheme: colorScheme,
+              config: CloudMusicCoverImageConfig(
+                size: config.coverSize,
+                borderRadius: config.coverBorderRadius,
+              ),
+            ),
           SizedBox(height: config.textSpacing),
           _AlbumText(
             text: albumName,

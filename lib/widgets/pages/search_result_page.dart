@@ -103,7 +103,10 @@ class SearchResultPage extends HookConsumerWidget {
                   ),
                 ),
               ),
-              if (searchResult.searchArtistFlag == 1)
+              if ((searchResult.searchArtistFlag == 1 ||
+                      searchResult.searchCloudFlag == 1) &&
+                  (searchResult.artists?.data?.artists?.isEmpty ?? true) &&
+                  (searchResult.cloudArtistsList?.isEmpty ?? true))
                 SliverToBoxAdapter(
                   child: CommonShimmerLoader.artistHorizontalList(
                     colorScheme: colorScheme,
@@ -111,14 +114,12 @@ class SearchResultPage extends HookConsumerWidget {
                     itemCount: 10,
                   ),
                 ),
-              if (searchResult.searchArtistFlag == 0 &&
-                  searchResult.artists != null &&
-                  searchResult.artists!.data != null &&
-                  searchResult.artists!.data!.artists != null &&
-                  searchResult.artists!.data!.artists!.isNotEmpty)
+              if ((searchResult.artists?.data?.artists?.isNotEmpty ?? false) ||
+                  (searchResult.cloudArtistsList?.isNotEmpty ?? false))
                 SliverToBoxAdapter(
-                  child: AritistHorizontalList(
-                    artists: searchResult.artists!.data!.artists!,
+                  child: ArtistHorizontalList(
+                    artists: searchResult.artists?.data?.artists,
+                    cloudArtists: searchResult.cloudArtistsList,
                   ),
                 ),
               SliverPadding(
@@ -134,7 +135,10 @@ class SearchResultPage extends HookConsumerWidget {
                   ),
                 ),
               ),
-              if (searchResult.searchAlbumFlag == 1)
+              if ((searchResult.searchAlbumFlag == 1 ||
+                      searchResult.searchCloudFlag == 1) &&
+                  (searchResult.albums?.data?.albums?.isEmpty ?? true) &&
+                  (searchResult.cloudAlbumsList?.isEmpty ?? true))
                 SliverToBoxAdapter(
                   child: CommonShimmerLoader.albumHorizontalList(
                     colorScheme: colorScheme,
@@ -142,14 +146,12 @@ class SearchResultPage extends HookConsumerWidget {
                     itemCount: 10,
                   ),
                 ),
-              if (searchResult.searchAlbumFlag == 0 &&
-                  searchResult.albums != null &&
-                  searchResult.albums!.data != null &&
-                  searchResult.albums!.data!.albums != null &&
-                  searchResult.albums!.data!.albums!.isNotEmpty)
+              if ((searchResult.albums?.data?.albums?.isNotEmpty ?? false) ||
+                  (searchResult.cloudAlbumsList?.isNotEmpty ?? false))
                 SliverToBoxAdapter(
                   child: AlbumHorizontalList(
-                    albums: searchResult.albums!.data?.albums ?? [],
+                    albums: searchResult.albums?.data?.albums ?? [],
+                    cloudAlbums: searchResult.cloudAlbumsList,
                   ),
                 ),
 

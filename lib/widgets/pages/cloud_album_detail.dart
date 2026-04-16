@@ -308,14 +308,22 @@ class CloudAlbumDetailPage extends HookConsumerWidget {
 
     final coverImage = useMemoized(
       () => CloudMusicCoverImage(
-        imageUrl: albumData.coverUrl(size: 300),
+        imageUrl:
+            albumDetail.value?.album.coverUrl(size: 300) ??
+            albumData.coverUrl(size: 300),
         colorScheme: colorScheme,
         config: CloudMusicCoverImageConfig(
           size: maxCoverSize,
           borderRadius: 8 * multiplier,
         ),
       ),
-      [albumData.coverUrl(size: 300), colorScheme, maxCoverSize, multiplier],
+      [
+        albumData.coverUrl(size: 300),
+        albumDetail.value?.album.coverUrl(size: 300),
+        colorScheme,
+        maxCoverSize,
+        multiplier,
+      ],
     );
 
     final fromColor = Colors.transparent;
