@@ -135,6 +135,8 @@ class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
           leading: Radio<String>(value: url, activeColor: colorScheme.primary),
           title: Text(
             url,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 14 * multiplier,
               color: colorScheme.onSurface,
