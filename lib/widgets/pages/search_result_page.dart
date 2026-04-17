@@ -124,7 +124,7 @@ class SearchResultPage extends HookConsumerWidget {
             padding: EdgeInsets.all(size.smAndUp ? 16 : 8),
 
             child: SizedBox(
-              height: 36 * size.multiplier2,
+              height: 48 * size.multiplier2,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: EdgeInsets.zero,
@@ -147,7 +147,7 @@ class SearchResultPage extends HookConsumerWidget {
           Padding(
             padding: EdgeInsets.all(size.smAndUp ? 16 : 8),
             child: SizedBox(
-              height: 36 * size.multiplier2,
+              height: 48 * size.multiplier2,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: EdgeInsets.zero,

@@ -148,6 +148,9 @@ class SearchHistoryTextField extends HookConsumerWidget {
                 onSubmitSearch?.call(value);
               },
               decoration: decoration?.copyWith(
+                contentPadding:
+                    decoration?.contentPadding ??
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                 suffixIcon: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
