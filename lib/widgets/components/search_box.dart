@@ -123,6 +123,7 @@ class SearchHistoryTextField extends HookConsumerWidget {
           ),
           builder: (context, _, child) {
             return TextField(
+              style: listTextStyle,
               controller: controller,
               focusNode: focusNode,
               onTap: () {

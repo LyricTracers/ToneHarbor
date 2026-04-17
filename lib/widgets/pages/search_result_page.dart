@@ -88,7 +88,7 @@ class SearchResultPage extends HookConsumerWidget {
                     ),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 12,
-                      vertical: 8,
+                      vertical: 4,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -119,87 +119,78 @@ class SearchResultPage extends HookConsumerWidget {
               ),
           ],
         ),
+        if (searchResultHot.isLoading)
+          Padding(
+            padding: EdgeInsets.all(size.smAndUp ? 16 : 8),
+
+            child: SizedBox(
+              height: 36 * size.multiplier2,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.zero,
+                itemCount: 6,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: EdgeInsets.only(right: 8 * size.multiplier2),
+                    child: CommonShimmerLoader.chipLoader(
+                      colorScheme: colorScheme,
+                      width: 80 + (index % 3) * 20,
+                      height: 28 * size.multiplier2,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+
+        if (searchResultHot.value != null && searchResultHot.value!.isNotEmpty)
+          Padding(
+            padding: EdgeInsets.all(size.smAndUp ? 16 : 8),
+            child: SizedBox(
+              height: 36 * size.multiplier2,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.zero,
+                itemCount: searchResultHot.value!.length,
+                itemBuilder: (context, index) {
+                  final hotKeyword = searchResultHot.value![index];
+                  final isSelected = hotKeyword == queryState.value;
+                  return Padding(
+                    padding: EdgeInsets.only(right: 8 * size.multiplier2),
+                    child: RawChip(
+                      label: Text(hotKeyword),
+                      labelStyle: TextStyle(
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        fontSize: 14 * size.multiplier2,
+                      ),
+                      labelPadding: EdgeInsets.symmetric(
+                        horizontal: 12 * size.multiplier2,
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 4),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        side: isSelected
+                            ? BorderSide(color: colorScheme.primary, width: 1.2)
+                            : BorderSide(
+                                color: colorScheme.outline,
+                                width: 0.8,
+                              ),
+                      ),
+                      onSelected: (selected) {
+                        queryState.value = hotKeyword;
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+
         Expanded(
           child: CustomScrollView(
             slivers: [
-              if (searchResultHot.isLoading)
-                SliverPadding(
-                  padding: EdgeInsets.all(size.smAndUp ? 16 : 8),
-                  sliver: SliverToBoxAdapter(
-                    child: SizedBox(
-                      height: 36 * size.multiplier2,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.zero,
-                        itemCount: 6,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: EdgeInsets.only(
-                              right: 8 * size.multiplier2,
-                            ),
-                            child: CommonShimmerLoader.chipLoader(
-                              colorScheme: colorScheme,
-                              width: 80 + (index % 3) * 20,
-                              height: 28 * size.multiplier2,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-              if (searchResultHot.value != null &&
-                  searchResultHot.value!.isNotEmpty)
-                SliverPadding(
-                  padding: EdgeInsets.all(size.smAndUp ? 16 : 8),
-                  sliver: SliverToBoxAdapter(
-                    child: SizedBox(
-                      height: 36 * size.multiplier2,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.zero,
-                        itemCount: searchResultHot.value!.length,
-                        itemBuilder: (context, index) {
-                          final hotKeyword = searchResultHot.value![index];
-                          final isSelected = hotKeyword == queryState.value;
-                          return Padding(
-                            padding: EdgeInsets.only(
-                              right: 8 * size.multiplier2,
-                            ),
-                            child: RawChip(
-                              label: Text(hotKeyword),
-                              labelStyle: TextStyle(
-                                fontWeight: isSelected
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                                fontSize: 14 * size.multiplier2,
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 12 * size.multiplier2,
-                                vertical: 4,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                side: isSelected
-                                    ? BorderSide(
-                                        color: colorScheme.primary,
-                                        width: 1.2,
-                                      )
-                                    : BorderSide(
-                                        color: colorScheme.outline,
-                                        width: 0.8,
-                                      ),
-                              ),
-                              onSelected: (selected) {
-                                queryState.value = hotKeyword;
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ),
               SliverPadding(
                 padding: EdgeInsets.all(20 * multiplier),
                 sliver: SliverToBoxAdapter(

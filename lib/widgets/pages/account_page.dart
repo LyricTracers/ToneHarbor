@@ -44,6 +44,8 @@ class AccountPage extends HookConsumerWidget with BuildItem {
       onTap: onTap,
       title: Text(
         title,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
         style: TextStyle(
           fontSize: 16 * multiplier,
           fontWeight: FontWeight.bold,
