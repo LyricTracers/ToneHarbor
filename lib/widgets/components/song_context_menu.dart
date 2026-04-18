@@ -97,9 +97,7 @@ class SongContextMenu {
     } else {
       entries.addAll([
         MenuItem(
-          label: Text(
-            isFavorite ? l10n.no_favorite_playlist : l10n.favorite_playlist,
-          ),
+          label: Text(isFavorite ? l10n.no_favorite_playlist : l10n.favorite),
           icon: Icon(
             isFavorite ? Icons.favorite_border_rounded : Icons.favorite_rounded,
           ),
