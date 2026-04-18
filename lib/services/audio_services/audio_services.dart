@@ -78,11 +78,15 @@ class AudioServices with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     switch (state) {
       case AppLifecycleState.detached:
         deactivateSession();
-        audioPlayer.pause();
+        try {
+          await audioPlayer.dispose();
+        } catch (e) {
+          logger.e('Error during player dispose on app exit: $e');
+        }
         break;
       default:
         break;

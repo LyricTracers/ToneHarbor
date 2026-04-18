@@ -113,7 +113,6 @@ class MyApp extends HookConsumerWidget {
           windowManager.removeListener(_DesktopListener(ref));
           trayManager.removeListener(_DesktopListener(ref));
         }
-        audioPlayer.dispose();
         ref.read(audioPlayerStreamListenersProvider).dispose();
       };
     }, []);
@@ -1058,8 +1057,4 @@ class _DesktopListener implements WindowListener, MusicPlayerListener {
   void onMusicPlayerQuit() {
     windowManager.destroy();
   }
-}
-
-usicPlayerQuit() {
-  windowManager.destroy();
 }
