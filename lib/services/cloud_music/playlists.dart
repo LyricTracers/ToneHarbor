@@ -7,6 +7,7 @@ import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
+import 'package:toneharbor/services/cloud_music/user.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
 Future<List<CloudMusicPlaylistData>> dailyRecommendPlaylist(
@@ -440,6 +441,14 @@ Future<CloudMusicPlaylistDataList> getPlaylistCatlist(
 }) async {
   if (cat == "排行榜") {
     return await getToplist(ref, cacheDuration: cacheDuration);
+  }
+  if (cat == "个人") {
+    return await getUserPlaylist(
+      ref,
+      limit: limit,
+      offset: offset,
+      cacheDuration: cacheDuration,
+    );
   }
   final l10n = ref.read(l10nProvider);
   final cacheKey = 'cloud_playlistCat:$cat$limit$offset';

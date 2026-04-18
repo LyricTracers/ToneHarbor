@@ -55,23 +55,32 @@ class CloudPlaylistCategoryListPage extends HookConsumerWidget {
     final size = MediaQuery.of(context).size;
     final tempIndex = baseCategories.indexOf(category);
     final selectedIndex = useState(tempIndex == -1 ? 0 : tempIndex);
-    final totalCategories = categories.length + baseCategories.length;
+    final useInfo = ref.watch(cloudUserInfoProvider);
+
+    int baseCategoryCount = baseCategories.length;
+    if (useInfo.value == null) {
+      baseCategoryCount = baseCategories.length - 1;
+    } else {
+      baseCategoryCount = baseCategories.length;
+    }
+    final totalCategories = categories.length + baseCategoryCount;
+
     useEffect(() {
       if (totalCategories <= selectedIndex.value) {
         selectedIndex.value = 0;
       }
-      currentCategory.value = selectedIndex.value < baseCategories.length
+      currentCategory.value = selectedIndex.value < baseCategoryCount
           ? baseCategories[selectedIndex.value].name
-          : categories[selectedIndex.value - baseCategories.length];
+          : categories[selectedIndex.value - baseCategoryCount];
       return null;
     }, [categories.length, selectedIndex.value]);
 
     final categoryChips = List.generate(totalCategories, (index) {
       final isSelected = index == selectedIndex.value;
-      final isBaseCategory = index < baseCategories.length;
+      final isBaseCategory = index < baseCategoryCount;
       final categoryName = isBaseCategory
           ? baseCategories[index].name
-          : categories[index - baseCategories.length];
+          : categories[index - baseCategoryCount];
 
       return RawChip(
         label: Text(categoryName),

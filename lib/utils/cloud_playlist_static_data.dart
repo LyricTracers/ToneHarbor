@@ -18,6 +18,7 @@ class CloudPlaylistStaticData {
     CloudPlaylistCategory(name: '精品歌单', category: -2, enabled: true),
     CloudPlaylistCategory(name: '排行榜', category: -3, enabled: true),
     CloudPlaylistCategory(name: '官方', category: -4, enabled: true),
+    CloudPlaylistCategory(name: '个人', category: -5, enabled: true),
   ];
 
   static const Map<int, String> categoryGroups = {
