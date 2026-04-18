@@ -181,8 +181,10 @@ class CloudPlaylistsCat<T extends ExtraProvider<CloudMusicPlaylistDataList>>
               return _PlaylistItem(
                 playlist: playlist,
                 colorScheme: colorScheme,
-                onTap: () =>
-                    context.pushWrapper("/cloud-detail", extra: playlist),
+                onTap: () => context.pushWrapper(
+                  "/cloud-detail/${playlist.id}",
+                  extra: playlist,
+                ),
                 multiplier: multiplier,
               );
             },

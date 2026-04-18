@@ -476,7 +476,22 @@ class $FavoritePlaylistStateTableTable extends FavoritePlaylistStateTable
     requiredDuringInsert: true,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, playlistId, title];
+  late final GeneratedColumnWithTypeConverter<
+    CloudMusicPlaylistDetailData?,
+    String
+  >
+  cloudData =
+      GeneratedColumn<String>(
+        'cloud_data',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<CloudMusicPlaylistDetailData?>(
+        $FavoritePlaylistStateTableTable.$convertercloudDatan,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [id, playlistId, title, cloudData];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -532,6 +547,12 @@ class $FavoritePlaylistStateTableTable extends FavoritePlaylistStateTable
         DriftSqlType.string,
         data['${effectivePrefix}title'],
       )!,
+      cloudData: $FavoritePlaylistStateTableTable.$convertercloudDatan.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}cloud_data'],
+        ),
+      ),
     );
   }
 
@@ -539,6 +560,11 @@ class $FavoritePlaylistStateTableTable extends FavoritePlaylistStateTable
   $FavoritePlaylistStateTableTable createAlias(String alias) {
     return $FavoritePlaylistStateTableTable(attachedDatabase, alias);
   }
+
+  static TypeConverter<CloudMusicPlaylistDetailData, String>
+  $convertercloudData = const CloudMusicPlaylistDetailDataConverter();
+  static TypeConverter<CloudMusicPlaylistDetailData?, String?>
+  $convertercloudDatan = NullAwareTypeConverter.wrap($convertercloudData);
 }
 
 class FavoritePlaylistStateTableData extends DataClass
@@ -546,10 +572,12 @@ class FavoritePlaylistStateTableData extends DataClass
   final int id;
   final String playlistId;
   final String title;
+  final CloudMusicPlaylistDetailData? cloudData;
   const FavoritePlaylistStateTableData({
     required this.id,
     required this.playlistId,
     required this.title,
+    this.cloudData,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -557,6 +585,11 @@ class FavoritePlaylistStateTableData extends DataClass
     map['id'] = Variable<int>(id);
     map['playlist_id'] = Variable<String>(playlistId);
     map['title'] = Variable<String>(title);
+    if (!nullToAbsent || cloudData != null) {
+      map['cloud_data'] = Variable<String>(
+        $FavoritePlaylistStateTableTable.$convertercloudDatan.toSql(cloudData),
+      );
+    }
     return map;
   }
 
@@ -565,6 +598,9 @@ class FavoritePlaylistStateTableData extends DataClass
       id: Value(id),
       playlistId: Value(playlistId),
       title: Value(title),
+      cloudData: cloudData == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cloudData),
     );
   }
 
@@ -577,6 +613,9 @@ class FavoritePlaylistStateTableData extends DataClass
       id: serializer.fromJson<int>(json['id']),
       playlistId: serializer.fromJson<String>(json['playlistId']),
       title: serializer.fromJson<String>(json['title']),
+      cloudData: serializer.fromJson<CloudMusicPlaylistDetailData?>(
+        json['cloudData'],
+      ),
     );
   }
   @override
@@ -586,6 +625,7 @@ class FavoritePlaylistStateTableData extends DataClass
       'id': serializer.toJson<int>(id),
       'playlistId': serializer.toJson<String>(playlistId),
       'title': serializer.toJson<String>(title),
+      'cloudData': serializer.toJson<CloudMusicPlaylistDetailData?>(cloudData),
     };
   }
 
@@ -593,10 +633,12 @@ class FavoritePlaylistStateTableData extends DataClass
     int? id,
     String? playlistId,
     String? title,
+    Value<CloudMusicPlaylistDetailData?> cloudData = const Value.absent(),
   }) => FavoritePlaylistStateTableData(
     id: id ?? this.id,
     playlistId: playlistId ?? this.playlistId,
     title: title ?? this.title,
+    cloudData: cloudData.present ? cloudData.value : this.cloudData,
   );
   FavoritePlaylistStateTableData copyWithCompanion(
     FavoritePlaylistStateTableCompanion data,
@@ -607,6 +649,7 @@ class FavoritePlaylistStateTableData extends DataClass
           ? data.playlistId.value
           : this.playlistId,
       title: data.title.present ? data.title.value : this.title,
+      cloudData: data.cloudData.present ? data.cloudData.value : this.cloudData,
     );
   }
 
@@ -615,20 +658,22 @@ class FavoritePlaylistStateTableData extends DataClass
     return (StringBuffer('FavoritePlaylistStateTableData(')
           ..write('id: $id, ')
           ..write('playlistId: $playlistId, ')
-          ..write('title: $title')
+          ..write('title: $title, ')
+          ..write('cloudData: $cloudData')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, playlistId, title);
+  int get hashCode => Object.hash(id, playlistId, title, cloudData);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is FavoritePlaylistStateTableData &&
           other.id == this.id &&
           other.playlistId == this.playlistId &&
-          other.title == this.title);
+          other.title == this.title &&
+          other.cloudData == this.cloudData);
 }
 
 class FavoritePlaylistStateTableCompanion
@@ -636,26 +681,31 @@ class FavoritePlaylistStateTableCompanion
   final Value<int> id;
   final Value<String> playlistId;
   final Value<String> title;
+  final Value<CloudMusicPlaylistDetailData?> cloudData;
   const FavoritePlaylistStateTableCompanion({
     this.id = const Value.absent(),
     this.playlistId = const Value.absent(),
     this.title = const Value.absent(),
+    this.cloudData = const Value.absent(),
   });
   FavoritePlaylistStateTableCompanion.insert({
     this.id = const Value.absent(),
     required String playlistId,
     required String title,
+    this.cloudData = const Value.absent(),
   }) : playlistId = Value(playlistId),
        title = Value(title);
   static Insertable<FavoritePlaylistStateTableData> custom({
     Expression<int>? id,
     Expression<String>? playlistId,
     Expression<String>? title,
+    Expression<String>? cloudData,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (playlistId != null) 'playlist_id': playlistId,
       if (title != null) 'title': title,
+      if (cloudData != null) 'cloud_data': cloudData,
     });
   }
 
@@ -663,11 +713,13 @@ class FavoritePlaylistStateTableCompanion
     Value<int>? id,
     Value<String>? playlistId,
     Value<String>? title,
+    Value<CloudMusicPlaylistDetailData?>? cloudData,
   }) {
     return FavoritePlaylistStateTableCompanion(
       id: id ?? this.id,
       playlistId: playlistId ?? this.playlistId,
       title: title ?? this.title,
+      cloudData: cloudData ?? this.cloudData,
     );
   }
 
@@ -683,6 +735,13 @@ class FavoritePlaylistStateTableCompanion
     if (title.present) {
       map['title'] = Variable<String>(title.value);
     }
+    if (cloudData.present) {
+      map['cloud_data'] = Variable<String>(
+        $FavoritePlaylistStateTableTable.$convertercloudDatan.toSql(
+          cloudData.value,
+        ),
+      );
+    }
     return map;
   }
 
@@ -691,7 +750,8 @@ class FavoritePlaylistStateTableCompanion
     return (StringBuffer('FavoritePlaylistStateTableCompanion(')
           ..write('id: $id, ')
           ..write('playlistId: $playlistId, ')
-          ..write('title: $title')
+          ..write('title: $title, ')
+          ..write('cloudData: $cloudData')
           ..write(')'))
         .toString();
   }
@@ -2760,12 +2820,14 @@ typedef $$FavoritePlaylistStateTableTableCreateCompanionBuilder =
       Value<int> id,
       required String playlistId,
       required String title,
+      Value<CloudMusicPlaylistDetailData?> cloudData,
     });
 typedef $$FavoritePlaylistStateTableTableUpdateCompanionBuilder =
     FavoritePlaylistStateTableCompanion Function({
       Value<int> id,
       Value<String> playlistId,
       Value<String> title,
+      Value<CloudMusicPlaylistDetailData?> cloudData,
     });
 
 class $$FavoritePlaylistStateTableTableFilterComposer
@@ -2790,6 +2852,16 @@ class $$FavoritePlaylistStateTableTableFilterComposer
   ColumnFilters<String> get title => $composableBuilder(
     column: $table.title,
     builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<
+    CloudMusicPlaylistDetailData?,
+    CloudMusicPlaylistDetailData,
+    String
+  >
+  get cloudData => $composableBuilder(
+    column: $table.cloudData,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 }
 
@@ -2816,6 +2888,11 @@ class $$FavoritePlaylistStateTableTableOrderingComposer
     column: $table.title,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get cloudData => $composableBuilder(
+    column: $table.cloudData,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$FavoritePlaylistStateTableTableAnnotationComposer
@@ -2837,6 +2914,10 @@ class $$FavoritePlaylistStateTableTableAnnotationComposer
 
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<CloudMusicPlaylistDetailData?, String>
+  get cloudData =>
+      $composableBuilder(column: $table.cloudData, builder: (column) => column);
 }
 
 class $$FavoritePlaylistStateTableTableTableManager
@@ -2888,20 +2969,26 @@ class $$FavoritePlaylistStateTableTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<String> playlistId = const Value.absent(),
                 Value<String> title = const Value.absent(),
+                Value<CloudMusicPlaylistDetailData?> cloudData =
+                    const Value.absent(),
               }) => FavoritePlaylistStateTableCompanion(
                 id: id,
                 playlistId: playlistId,
                 title: title,
+                cloudData: cloudData,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 required String playlistId,
                 required String title,
+                Value<CloudMusicPlaylistDetailData?> cloudData =
+                    const Value.absent(),
               }) => FavoritePlaylistStateTableCompanion.insert(
                 id: id,
                 playlistId: playlistId,
                 title: title,
+                cloudData: cloudData,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

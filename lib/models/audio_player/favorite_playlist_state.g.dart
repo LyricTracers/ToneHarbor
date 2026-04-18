@@ -23,6 +23,11 @@ _FavoritePlaylistItem _$FavoritePlaylistItemFromJson(
 ) => _FavoritePlaylistItem(
   playlistId: json['playlistId'] as String,
   title: json['title'] as String,
+  cloudData: json['cloudData'] == null
+      ? null
+      : CloudMusicPlaylistDetailData.fromJson(
+          json['cloudData'] as Map<String, dynamic>,
+        ),
 );
 
 Map<String, dynamic> _$FavoritePlaylistItemToJson(
@@ -30,4 +35,5 @@ Map<String, dynamic> _$FavoritePlaylistItemToJson(
 ) => <String, dynamic>{
   'playlistId': instance.playlistId,
   'title': instance.title,
+  'cloudData': instance.cloudData,
 };

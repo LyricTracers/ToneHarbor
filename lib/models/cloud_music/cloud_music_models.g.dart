@@ -84,6 +84,7 @@ _CloudMusicPlaylistData _$CloudMusicPlaylistDataFromJson(
   copywriter: json['copywriter'] as String?,
   privacy: (json['privacy'] as num?)?.toInt(),
   totalDuration: (json['totalDuration'] as num?)?.toDouble(),
+  subscribed: json['subscribed'] as bool?,
 );
 
 Map<String, dynamic> _$CloudMusicPlaylistDataToJson(
@@ -103,6 +104,7 @@ Map<String, dynamic> _$CloudMusicPlaylistDataToJson(
   'copywriter': instance.copywriter,
   'privacy': instance.privacy,
   'totalDuration': instance.totalDuration,
+  'subscribed': instance.subscribed,
 };
 
 _CloudMusicAlbumData _$CloudMusicAlbumDataFromJson(Map<String, dynamic> json) =>

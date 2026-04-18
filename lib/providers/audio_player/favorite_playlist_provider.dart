@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/favorite_playlist_state.dart';
+import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/models/database/database.dart';
 import 'package:toneharbor/providers/database/database.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -27,20 +28,29 @@ class FavoritePlaylistStateNotifier extends _$FavoritePlaylistStateNotifier {
           (item) => FavoritePlaylistItem(
             playlistId: item.playlistId,
             title: item.title,
+            cloudData: item.cloudData,
           ),
         )
         .toList();
     state = state.copyWith(playlists: playlists);
   }
 
-  Future<void> addFavoritePlaylist(String playlistId, String title) async {
+  Future<void> addFavoritePlaylist(
+    String playlistId,
+    String title, {
+    CloudMusicPlaylistDetailData? cloudData,
+  }) async {
     if (isFavoritePlaylist(playlistId)) {
       return;
     }
 
     state = state.copyWith(
       playlists: [
-        FavoritePlaylistItem(playlistId: playlistId, title: title),
+        FavoritePlaylistItem(
+          playlistId: playlistId,
+          title: title,
+          cloudData: cloudData,
+        ),
         ...state.playlists,
       ],
     );
@@ -53,6 +63,7 @@ class FavoritePlaylistStateNotifier extends _$FavoritePlaylistStateNotifier {
           FavoritePlaylistStateTableCompanion.insert(
             playlistId: playlistId,
             title: title,
+            cloudData: Value(cloudData),
           ),
         );
   }
@@ -77,5 +88,12 @@ class FavoritePlaylistStateNotifier extends _$FavoritePlaylistStateNotifier {
 
   bool isFavoritePlaylist(String playlistId) {
     return state.containsPlaylistId(playlistId);
+  }
+
+  bool isCloudPlaylist(String playlistId) {
+    return state.playlists
+            .firstWhere((item) => item.playlistId == playlistId)
+            .cloudData !=
+        null;
   }
 }

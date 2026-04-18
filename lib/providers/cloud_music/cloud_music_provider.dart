@@ -213,7 +213,6 @@ class CloudMusicPlaylistCatlist extends _$CloudMusicPlaylistCatlist
 
   @override
   Future<void> loadMore() async {
-    logger.i('loadMore');
     final currentData = state.value;
     if (currentData == null) {
       return;

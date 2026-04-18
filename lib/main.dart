@@ -431,7 +431,7 @@ class MyApp extends HookConsumerWidget {
                 },
               ),
               GoRoute(
-                path: '/cloud-detail',
+                path: '/cloud-detail/:id',
                 pageBuilder: (context, state) {
                   return buildPage(
                     key: state.pageKey,
@@ -787,7 +787,7 @@ class MyApp extends HookConsumerWidget {
             ),
           ),
           GoRoute(
-            path: '/mobile/cloud-detail',
+            path: '/mobile/cloud-detail/:id',
             parentNavigatorKey: rootNavigatorKey,
             pageBuilder: (context, state) {
               return buildPage(

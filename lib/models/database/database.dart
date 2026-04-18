@@ -10,6 +10,7 @@ import 'package:sqlite3/sqlite3.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 import 'package:drift/native.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
+import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/audio_player/download_manager.dart';
 part 'database.g.dart';
 
@@ -22,6 +23,7 @@ part 'tables/most_play_state.dart';
 part 'typeconverters/string_list.dart';
 part 'typeconverters/tone_harbor_object_list.dart';
 part 'typeconverters/tone_harbor_object.dart';
+part 'typeconverters/cloud_music_playlist_detail_data.dart';
 
 @DriftDatabase(
   tables: [
@@ -35,7 +37,7 @@ part 'typeconverters/tone_harbor_object.dart';
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration {
@@ -63,6 +65,12 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 7) {
           await m.addColumn(downloadTaskState, downloadTaskState.externalUri);
+        }
+        if (from < 8) {
+          await m.addColumn(
+            favoritePlaylistStateTable,
+            favoritePlaylistStateTable.cloudData,
+          );
         }
       },
     );

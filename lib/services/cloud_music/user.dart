@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
@@ -114,6 +116,7 @@ Future<CloudMusicPlaylistDataList> getUserPlaylist(
         if (resultList.isEmpty) {
           return CloudMusicPlaylistDataList(playlists: [], total: 0);
         }
+        logger.i('json: $json');
         return CloudMusicPlaylistDataList(
           playlists: resultList
               .map((item) => CloudMusicPlaylistData.fromJson(item))

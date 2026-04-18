@@ -464,7 +464,7 @@ final class CloudMusicPlaylistCatlistProvider
 }
 
 String _$cloudMusicPlaylistCatlistHash() =>
-    r'05ba20abc55e1e31cb561c0e13c40f89ec19c92b';
+    r'6bbd8e6080d51492194017a8bb49c203a02e2fe3';
 
 final class CloudMusicPlaylistCatlistFamily extends $Family
     with
@@ -925,7 +925,7 @@ final class CloudToplistProvider
   }
 }
 
-String _$cloudToplistHash() => r'043b43e4b5026db1b85d88813270125a1bf2baac';
+String _$cloudToplistHash() => r'ad346997c23cdeebb1a3e6409101532ca306ff0e';
 
 final class CloudToplistFamily extends $Family
     with

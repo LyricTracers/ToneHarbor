@@ -265,7 +265,11 @@ class HomeLayout extends BaseBgLayout {
                             children: favoritePlaylist.playlists.map((item) {
                               final path =
                                   "/songs/${Uri.encodeComponent(item.title)}";
-                              final isSelected = path == currentPath;
+                              final cloudPath =
+                                  "/cloud-detail/${item.cloudData?.id}";
+                              final isSelected =
+                                  path == currentPath ||
+                                  cloudPath == currentPath;
                               return GestureDetector(
                                 behavior: HitTestBehavior.translucent,
                                 onSecondaryTapDown: (detail) async {
@@ -327,16 +331,23 @@ class HomeLayout extends BaseBgLayout {
                                   Icons.file_present,
                                   item.title,
                                   () {
-                                    context.pushWrapper(
-                                      path,
-                                      extra: (
-                                        playlistDetailProvider(
-                                          id: item.playlistId,
+                                    if (item.cloudData != null) {
+                                      context.pushWrapper(
+                                        "/cloud-detail/${item.cloudData?.id}",
+                                        extra: item.cloudData?.toPlaylistData(),
+                                      );
+                                    } else {
+                                      context.pushWrapper(
+                                        path,
+                                        extra: (
+                                          playlistDetailProvider(
+                                            id: item.playlistId,
+                                          ),
+                                          -1,
+                                          SongsPageSortAction.none,
                                         ),
-                                        -1,
-                                        SongsPageSortAction.none,
-                                      ),
-                                    );
+                                      );
+                                    }
                                   },
                                   paddingContent:
                                       const EdgeInsetsGeometry.symmetric(

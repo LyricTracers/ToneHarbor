@@ -46,7 +46,7 @@ final class FavoritePlaylistStateNotifierProvider
 }
 
 String _$favoritePlaylistStateNotifierHash() =>
-    r'a4e499f189bb30eb7c638b9991ff4725bd9e8ff2';
+    r'f3ca4e18da020b21e83e02e6bc0cc39794625542';
 
 abstract class _$FavoritePlaylistStateNotifier
     extends $Notifier<FavoritePlaylistState> {

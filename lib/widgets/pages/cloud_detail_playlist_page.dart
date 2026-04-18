@@ -29,6 +29,7 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
   final Color headerBackgroundColor;
   final CloudMusicPlaylistDetailData? detail;
   final SongSelectionState songSelectionState;
+  final ValueNotifier<bool> isFavoriteState;
 
   CloudDetailPlaylistHeaderDelegate({
     required this.ref,
@@ -44,6 +45,7 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
     required this.headerBackgroundColor,
     required this.detail,
     required this.songSelectionState,
+    required this.isFavoriteState,
   });
 
   @override
@@ -60,8 +62,7 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
       updateTime != oldDelegate.updateTime ||
       description != oldDelegate.description ||
       creator != oldDelegate.creator ||
-      headerBackgroundColor != oldDelegate.headerBackgroundColor ||
-      songSelectionState != oldDelegate.songSelectionState;
+      headerBackgroundColor != oldDelegate.headerBackgroundColor;
 
   @override
   Widget build(
@@ -79,10 +80,59 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
           _buildBackButton(),
           if (detail?.tracks != null &&
               detail?.tracks!.isNotEmpty == true &&
-              !songSelectionState.selectionType)
+              !songSelectionState.selectionType) ...[
+            _buildFavoriteButton(context, colorScheme),
             _buildSelectedButton(),
+          ],
           _buildContent(progress),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFavoriteButton(BuildContext context, ColorScheme colorScheme) {
+    final h = minExtent;
+    final w = 56 * multiplier;
+
+    return Positioned(
+      top: 0,
+      right: w,
+      height: h,
+      child: SafeArea(
+        bottom: false,
+        child: SizedBox(
+          width: w,
+          height: h,
+          child: ValueListenableBuilder<bool>(
+            valueListenable: isFavoriteState,
+            builder: (context, isFavorite, child) {
+              return IconButton(
+                onPressed: () async {
+                  if (isFavorite) {
+                    await ref
+                        .read(favoritePlaylistStateProvider.notifier)
+                        .removeFavoritePlaylist(detail!.id.toString());
+                  } else {
+                    await ref
+                        .read(favoritePlaylistStateProvider.notifier)
+                        .addFavoritePlaylist(
+                          detail!.id.toString(),
+                          title,
+                          cloudData: detail!,
+                        );
+                  }
+
+                  isFavoriteState.value = !isFavorite;
+                },
+                icon: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border_outlined,
+                  size: 24 * multiplier,
+                ),
+                tooltip: l10n.favorite,
+              );
+            },
+          ),
+        ),
       ),
     );
   }
@@ -399,6 +449,11 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
     final statusBarColor = statusBarProgress >= 1.0
         ? colorScheme.surfaceContainerHighest
         : Color.lerp(fromColor, toColor, statusBarProgress)!;
+    final isFavoriteState = useState(
+      ref
+          .read(favoritePlaylistStateProvider.notifier)
+          .isFavoritePlaylist(playlist.id.toString()),
+    );
     return Stack(
       children: [
         Positioned(
@@ -443,6 +498,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
                     headerBackgroundColor: statusBarColor,
                     detail: detail.value,
                     songSelectionState: songSelectionState,
+                    isFavoriteState: isFavoriteState,
                   ),
                 ),
                 detail.when(

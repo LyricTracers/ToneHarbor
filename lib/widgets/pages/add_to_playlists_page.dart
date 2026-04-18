@@ -8,9 +8,15 @@ import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/audio_equalizer_loader.dart';
 
 class AddToPlaylistsPage extends HookConsumerWidget {
-  const AddToPlaylistsPage(this.songIds, {super.key});
+  const AddToPlaylistsPage(
+    this.songIds, {
+    super.key,
+    this.cloudPlaylist = false,
+  });
 
   final String songIds;
+
+  final bool cloudPlaylist;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

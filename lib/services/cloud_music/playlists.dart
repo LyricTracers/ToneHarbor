@@ -238,9 +238,6 @@ Future<List<CloudMusicSongData>> getTrackDetail(
         statusCode: response.statusCode,
       );
     }
-    if (ids.length == 30) {
-      logger.i("getTrackDetail, ids: ${response.body}");
-    }
 
     late final Map<String, dynamic> jsonBody;
     try {
@@ -442,7 +439,7 @@ Future<CloudMusicPlaylistDataList> getPlaylistCatlist(
   if (cat == "排行榜") {
     return await getToplist(ref, cacheDuration: cacheDuration);
   }
-  if (cat == "个人") {
+  if (cat == "用户歌单") {
     return await getUserPlaylist(
       ref,
       limit: limit,

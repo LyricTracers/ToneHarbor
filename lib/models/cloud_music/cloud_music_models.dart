@@ -60,6 +60,7 @@ sealed class CloudMusicPlaylistData with _$CloudMusicPlaylistData {
     String? copywriter,
     int? privacy,
     double? totalDuration,
+    bool? subscribed,
   }) = _CloudMusicPlaylistData;
 
   factory CloudMusicPlaylistData.fromJson(Map<String, dynamic> json) =>
@@ -232,6 +233,19 @@ sealed class CloudMusicPlaylistDetailData with _$CloudMusicPlaylistDetailData {
 
   factory CloudMusicPlaylistDetailData.fromJson(Map<String, dynamic> json) =>
       _$CloudMusicPlaylistDetailDataFromJson(json);
+
+  CloudMusicPlaylistData toPlaylistData() => CloudMusicPlaylistData(
+    id: id,
+    name: name,
+    picUrl: coverImgUrl,
+    coverImgUrl: coverImgUrl,
+    description: description,
+    trackCount: trackCount,
+    creator: creator,
+    createTime: createTime,
+    privacy: privacy,
+    subscribed: subscribed,
+  );
 }
 
 @freezed

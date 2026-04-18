@@ -278,7 +278,7 @@ as List<FavoritePlaylistItem>,
 /// @nodoc
 mixin _$FavoritePlaylistItem {
 
- String get playlistId; String get title;
+ String get playlistId; String get title; CloudMusicPlaylistDetailData? get cloudData;
 /// Create a copy of FavoritePlaylistItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -291,16 +291,16 @@ $FavoritePlaylistItemCopyWith<FavoritePlaylistItem> get copyWith => _$FavoritePl
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FavoritePlaylistItem&&(identical(other.playlistId, playlistId) || other.playlistId == playlistId)&&(identical(other.title, title) || other.title == title));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FavoritePlaylistItem&&(identical(other.playlistId, playlistId) || other.playlistId == playlistId)&&(identical(other.title, title) || other.title == title)&&(identical(other.cloudData, cloudData) || other.cloudData == cloudData));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,playlistId,title);
+int get hashCode => Object.hash(runtimeType,playlistId,title,cloudData);
 
 @override
 String toString() {
-  return 'FavoritePlaylistItem(playlistId: $playlistId, title: $title)';
+  return 'FavoritePlaylistItem(playlistId: $playlistId, title: $title, cloudData: $cloudData)';
 }
 
 
@@ -311,11 +311,11 @@ abstract mixin class $FavoritePlaylistItemCopyWith<$Res>  {
   factory $FavoritePlaylistItemCopyWith(FavoritePlaylistItem value, $Res Function(FavoritePlaylistItem) _then) = _$FavoritePlaylistItemCopyWithImpl;
 @useResult
 $Res call({
- String playlistId, String title
+ String playlistId, String title, CloudMusicPlaylistDetailData? cloudData
 });
 
 
-
+$CloudMusicPlaylistDetailDataCopyWith<$Res>? get cloudData;
 
 }
 /// @nodoc
@@ -328,14 +328,27 @@ class _$FavoritePlaylistItemCopyWithImpl<$Res>
 
 /// Create a copy of FavoritePlaylistItem
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? playlistId = null,Object? title = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? playlistId = null,Object? title = null,Object? cloudData = freezed,}) {
   return _then(_self.copyWith(
 playlistId: null == playlistId ? _self.playlistId : playlistId // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,
+as String,cloudData: freezed == cloudData ? _self.cloudData : cloudData // ignore: cast_nullable_to_non_nullable
+as CloudMusicPlaylistDetailData?,
   ));
 }
+/// Create a copy of FavoritePlaylistItem
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CloudMusicPlaylistDetailDataCopyWith<$Res>? get cloudData {
+    if (_self.cloudData == null) {
+    return null;
+  }
 
+  return $CloudMusicPlaylistDetailDataCopyWith<$Res>(_self.cloudData!, (value) {
+    return _then(_self.copyWith(cloudData: value));
+  });
+}
 }
 
 
@@ -414,10 +427,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String playlistId,  String title)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String playlistId,  String title,  CloudMusicPlaylistDetailData? cloudData)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FavoritePlaylistItem() when $default != null:
-return $default(_that.playlistId,_that.title);case _:
+return $default(_that.playlistId,_that.title,_that.cloudData);case _:
   return orElse();
 
 }
@@ -435,10 +448,10 @@ return $default(_that.playlistId,_that.title);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String playlistId,  String title)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String playlistId,  String title,  CloudMusicPlaylistDetailData? cloudData)  $default,) {final _that = this;
 switch (_that) {
 case _FavoritePlaylistItem():
-return $default(_that.playlistId,_that.title);}
+return $default(_that.playlistId,_that.title,_that.cloudData);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -452,10 +465,10 @@ return $default(_that.playlistId,_that.title);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String playlistId,  String title)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String playlistId,  String title,  CloudMusicPlaylistDetailData? cloudData)?  $default,) {final _that = this;
 switch (_that) {
 case _FavoritePlaylistItem() when $default != null:
-return $default(_that.playlistId,_that.title);case _:
+return $default(_that.playlistId,_that.title,_that.cloudData);case _:
   return null;
 
 }
@@ -467,11 +480,12 @@ return $default(_that.playlistId,_that.title);case _:
 @JsonSerializable()
 
 class _FavoritePlaylistItem implements FavoritePlaylistItem {
-  const _FavoritePlaylistItem({required this.playlistId, required this.title});
+  const _FavoritePlaylistItem({required this.playlistId, required this.title, this.cloudData});
   factory _FavoritePlaylistItem.fromJson(Map<String, dynamic> json) => _$FavoritePlaylistItemFromJson(json);
 
 @override final  String playlistId;
 @override final  String title;
+@override final  CloudMusicPlaylistDetailData? cloudData;
 
 /// Create a copy of FavoritePlaylistItem
 /// with the given fields replaced by the non-null parameter values.
@@ -486,16 +500,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FavoritePlaylistItem&&(identical(other.playlistId, playlistId) || other.playlistId == playlistId)&&(identical(other.title, title) || other.title == title));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FavoritePlaylistItem&&(identical(other.playlistId, playlistId) || other.playlistId == playlistId)&&(identical(other.title, title) || other.title == title)&&(identical(other.cloudData, cloudData) || other.cloudData == cloudData));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,playlistId,title);
+int get hashCode => Object.hash(runtimeType,playlistId,title,cloudData);
 
 @override
 String toString() {
-  return 'FavoritePlaylistItem(playlistId: $playlistId, title: $title)';
+  return 'FavoritePlaylistItem(playlistId: $playlistId, title: $title, cloudData: $cloudData)';
 }
 
 
@@ -506,11 +520,11 @@ abstract mixin class _$FavoritePlaylistItemCopyWith<$Res> implements $FavoritePl
   factory _$FavoritePlaylistItemCopyWith(_FavoritePlaylistItem value, $Res Function(_FavoritePlaylistItem) _then) = __$FavoritePlaylistItemCopyWithImpl;
 @override @useResult
 $Res call({
- String playlistId, String title
+ String playlistId, String title, CloudMusicPlaylistDetailData? cloudData
 });
 
 
-
+@override $CloudMusicPlaylistDetailDataCopyWith<$Res>? get cloudData;
 
 }
 /// @nodoc
@@ -523,15 +537,28 @@ class __$FavoritePlaylistItemCopyWithImpl<$Res>
 
 /// Create a copy of FavoritePlaylistItem
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? playlistId = null,Object? title = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? playlistId = null,Object? title = null,Object? cloudData = freezed,}) {
   return _then(_FavoritePlaylistItem(
 playlistId: null == playlistId ? _self.playlistId : playlistId // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,
+as String,cloudData: freezed == cloudData ? _self.cloudData : cloudData // ignore: cast_nullable_to_non_nullable
+as CloudMusicPlaylistDetailData?,
   ));
 }
 
+/// Create a copy of FavoritePlaylistItem
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CloudMusicPlaylistDetailDataCopyWith<$Res>? get cloudData {
+    if (_self.cloudData == null) {
+    return null;
+  }
 
+  return $CloudMusicPlaylistDetailDataCopyWith<$Res>(_self.cloudData!, (value) {
+    return _then(_self.copyWith(cloudData: value));
+  });
+}
 }
 
 // dart format on
