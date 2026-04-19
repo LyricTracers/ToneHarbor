@@ -13,6 +13,7 @@ import "package:toneharbor/utils/base_funs.dart";
 import "package:toneharbor/utils/responsive.dart";
 import "package:toneharbor/widgets/components/cloud_music_cover_image.dart";
 import "package:toneharbor/widgets/components/track_cover_image.dart";
+import "package:toneharbor/widgets/pages/cloud_add_to_playlists_page.dart";
 import "package:toneharbor/widgets/widgets.dart";
 
 mixin PlayingDetailMix {
@@ -55,6 +56,7 @@ mixin PlayingDetailMix {
     final isLocal = activeTrack.isLocal;
     final size24 = 24 * size.multiplier2;
     final size32 = 32 * size.multiplier2;
+    final useInfo = ref.watch(cloudUserInfoProvider);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -66,28 +68,35 @@ mixin PlayingDetailMix {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                if (activeTrack is! ToneHarborTrackObjectCloudMusic)
-                  IconButton(
-                    tooltip: l10n.song_playlist,
-                    onPressed: isLocal
-                        ? null
-                        : () {
-                            if (size.mdAndUp) {
-                              showSlidePanel(
-                                context: ref.context,
-                                builder: (context) =>
-                                    AddToPlaylistsPage(activeTrack.id),
-                              );
-                            } else {
-                              showModalBottomSheetWidget(
-                                ref.context,
-                                colorScheme,
-                                (context) => AddToPlaylistsPage(activeTrack.id),
-                              );
-                            }
-                          },
-                    icon: Icon(Icons.playlist_add_rounded, size: size24),
-                  ),
+                IconButton(
+                  tooltip: l10n.song_playlist,
+                  onPressed:
+                      isLocal ||
+                          (activeTrack is ToneHarborTrackObjectCloudMusic &&
+                              useInfo.value == null)
+                      ? null
+                      : () {
+                          if (size.mdAndUp) {
+                            showSlidePanel(
+                              context: ref.context,
+                              builder: (context) =>
+                                  activeTrack is ToneHarborTrackObjectCloudMusic
+                                  ? CloudAddToPlaylistsPage(activeTrack.id)
+                                  : AddToPlaylistsPage(activeTrack.id),
+                            );
+                          } else {
+                            showModalBottomSheetWidget(
+                              ref.context,
+                              colorScheme,
+                              (context) =>
+                                  activeTrack is ToneHarborTrackObjectCloudMusic
+                                  ? CloudAddToPlaylistsPage(activeTrack.id)
+                                  : AddToPlaylistsPage(activeTrack.id),
+                            );
+                          }
+                        },
+                  icon: Icon(Icons.playlist_add_rounded, size: size24),
+                ),
                 if (defaultTargetPlatform == TargetPlatform.iOS)
                   SizedBox(
                     width: size32,

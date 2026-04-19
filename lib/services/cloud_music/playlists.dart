@@ -619,3 +619,65 @@ Future<ToneHarborTrackObjectList> getDailyRecommend(
   }
   return ToneHarborTrackObjectList.data(songs: trackObjects);
 }
+
+Future<bool> updateTrackSongs(
+  WidgetRef ref,
+  int playlistId,
+  String trackIds,
+  bool isAdd,
+) async {
+  final useInfo = ref.watch(cloudUserInfoProvider);
+  if (useInfo.value == null) {
+    logger.e('用户信息为空');
+    return false;
+  }
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+  if (apiState.defaultUrl.isEmpty) {
+    logger.e('API URL为空');
+    return false;
+  }
+  final l10n = ref.read(l10nProvider);
+  try {
+    final query = <String, String>{
+      'pid': playlistId.toString(),
+      'tracks': trackIds,
+      'op': isAdd ? 'add' : 'del',
+      'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final cookieParams = CloudMusicAuth.getApiCookieParams();
+    if (cookieParams.isNotEmpty) {
+      query.addAll(cookieParams);
+    }
+
+    final response = await httpClientWrapper.get(
+      '${apiState.defaultUrl}/playlist/tracks',
+      query: query,
+    );
+    if (response.statusCode != 200) {
+      logger.e('请求失败，状态码：${response.statusCode}');
+      throw CloudMusicException(
+        message: l10n.error_network_error,
+        statusCode: response.statusCode,
+      );
+    }
+    late final Map<String, dynamic> jsonBody;
+    try {
+      jsonBody = parseJsonResponse(response.body);
+    } catch (e) {
+      logger.e('解析响应失败: $e');
+      throw CloudMusicException(message: l10n.error_response_parse_failed);
+    }
+    if (jsonBody['status'] != 200 && jsonBody['body'] == null ||
+        jsonBody['body']?['code'] != 200) {
+      throw CloudMusicException(
+        message: jsonBody['body']?['message'] ?? l10n.error_network_error,
+        statusCode: jsonBody['body']?['code'],
+      );
+    }
+    return true;
+  } catch (e) {
+    logger.e('更新播放列表失败失败: $e');
+    rethrow;
+  }
+}

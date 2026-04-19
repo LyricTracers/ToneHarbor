@@ -7,6 +7,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/pages/add_to_playlists_page.dart';
+import 'package:toneharbor/widgets/pages/cloud_add_to_playlists_page.dart';
 
 class SongContextMenu {
   static List<ContextMenuEntry> build(
@@ -161,24 +162,30 @@ class SongContextMenu {
                 ref.read(requestFlagProvider.notifier).setRequestFlag(false);
               },
             ),
-            if (item is! ToneHarborTrackObjectCloudMusic)
-              MenuItem(
-                label: Text(l10n.song_playlist),
-                onSelected: (value) {
-                  if (size.mdAndUp) {
-                    showSlidePanel(
-                      context: ref.context,
-                      builder: (context) => AddToPlaylistsPage(itemId),
-                    );
-                  } else {
-                    showModalBottomSheetWidget(
-                      ref.context,
-                      colorScheme,
-                      (context) => AddToPlaylistsPage(itemId),
-                    );
-                  }
-                },
-              ),
+
+            MenuItem(
+              label: Text(l10n.song_playlist),
+              onSelected: (value) {
+                if (size.mdAndUp) {
+                  showSlidePanel(
+                    context: ref.context,
+                    builder: (context) {
+                      return item is ToneHarborTrackObjectCloudMusic
+                          ? CloudAddToPlaylistsPage(itemId)
+                          : AddToPlaylistsPage(itemId);
+                    },
+                  );
+                } else {
+                  showModalBottomSheetWidget(ref.context, colorScheme, (
+                    context,
+                  ) {
+                    return item is ToneHarborTrackObjectCloudMusic
+                        ? CloudAddToPlaylistsPage(itemId)
+                        : AddToPlaylistsPage(itemId);
+                  });
+                }
+              },
+            ),
           ],
         ),
         if (playlistId.isNotEmpty && index != -1)

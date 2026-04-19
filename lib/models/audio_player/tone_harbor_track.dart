@@ -210,6 +210,20 @@ extension ToneHarborTrackObjectExtension on ToneHarborTrackObject {
   bool get isLocal => this is ToneHarborTrackObjectMultLocal;
   bool get isCloudMusic => this is ToneHarborTrackObjectCloudMusic;
 
+  CloudMusicAlbumData? get al {
+    if (this is ToneHarborTrackObjectCloudMusic) {
+      return (this as ToneHarborTrackObjectCloudMusic).al;
+    }
+    return null;
+  }
+
+  List<CloudMusicArtistData>? get ar {
+    if (this is ToneHarborTrackObjectCloudMusic) {
+      return (this as ToneHarborTrackObjectCloudMusic).ar;
+    }
+    return null;
+  }
+
   List<AudioQuality> get availableQualities {
     if (this is ToneHarborTrackObjectMultLocal) {
       return (this as ToneHarborTrackObjectMultLocal).availableQualities;

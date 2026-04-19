@@ -95,13 +95,14 @@ Future<CloudMusicPlaylistDataList> getUserPlaylist(
   Duration? cacheDuration = const Duration(minutes: 60),
 }) async {
   final useInfo = ref.watch(cloudUserInfoProvider);
-  if (useInfo.value == null) {
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+
+  if (useInfo.value == null || apiState.defaultUrl.isEmpty) {
     return CloudMusicPlaylistDataList(playlists: [], total: 0);
   }
   final l10n = ref.read(l10nProvider);
-  final apiState = ref.read(cloudMusicApiUrlsProvider);
   final uid = useInfo.value!.userId;
-  final cacheKey = 'cloud_userPlaylist_$uid';
+  final cacheKey = 'cloud_userPlaylist_${uid}_${limit}_$offset';
   final groupKey = 'cloud_userPlaylist';
 
   if (cacheDuration != null) {
@@ -116,12 +117,12 @@ Future<CloudMusicPlaylistDataList> getUserPlaylist(
         if (resultList.isEmpty) {
           return CloudMusicPlaylistDataList(playlists: [], total: 0);
         }
-        logger.i('json: $json');
+        final hasMore = json['hasMore'] as bool? ?? false;
         return CloudMusicPlaylistDataList(
           playlists: resultList
               .map((item) => CloudMusicPlaylistData.fromJson(item))
               .toList(),
-          total: resultList.length,
+          total: !hasMore ? resultList.length : 9999,
         );
       },
     );
@@ -176,11 +177,12 @@ Future<CloudMusicPlaylistDataList> getUserPlaylist(
     }
 
     final resultList = jsonBody['playlist'] as List? ?? [];
+    final hasMore = jsonBody['hasMore'] as bool? ?? false;
     final playlistDataList = CloudMusicPlaylistDataList(
       playlists: resultList
           .map((item) => CloudMusicPlaylistData.fromJson(item))
           .toList(),
-      total: resultList.length,
+      total: !hasMore ? resultList.length : 9999,
     );
 
     if (cacheDuration != null && playlistDataList.playlists.isNotEmpty) {

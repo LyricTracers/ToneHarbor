@@ -250,6 +250,59 @@ class CommonShimmerLoader {
     );
   }
 
+  static Widget playlistItemList({
+    required ColorScheme colorScheme,
+    required Size size,
+    int itemCount = 8,
+    bool hasCover = false,
+  }) {
+    return Shimmer.fromColors(
+      baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      highlightColor: colorScheme.surface.withValues(alpha: 1.0),
+      child: ListView.builder(
+        itemCount: itemCount,
+        itemBuilder: (context, index) {
+          return Container(
+            height: 48,
+            padding: const EdgeInsets.only(left: 10, right: 10),
+            child: Row(
+              children: [
+                if (hasCover)
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  )
+                else
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                  ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Container(
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   static Widget storageList({
     required ColorScheme colorScheme,
     required Size size,

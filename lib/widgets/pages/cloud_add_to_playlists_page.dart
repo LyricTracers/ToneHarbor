@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/services/cloud_music/playlists.dart';
 import 'package:toneharbor/utils/base_funs.dart';
-import 'package:toneharbor/utils/excetions.dart';
+import 'package:toneharbor/utils/cloud_playlist_static_data.dart';
 import 'package:toneharbor/utils/responsive.dart';
+import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
 import 'package:toneharbor/widgets/components/common_shimmer_loader.dart';
 
-class AddToPlaylistsPage extends HookConsumerWidget {
-  const AddToPlaylistsPage(this.songIds, {super.key});
+class CloudAddToPlaylistsPage extends HookConsumerWidget {
+  const CloudAddToPlaylistsPage(this.songIds, {super.key});
 
   final String songIds;
 
@@ -20,14 +23,17 @@ class AddToPlaylistsPage extends HookConsumerWidget {
     var width = size.width;
 
     final scrollController = useScrollController();
-    final nameController = useTextEditingController();
 
-    final playlistsState = ref.watch(playlistResponseProvider());
-    final playlists = playlistsState.value?.data?.playlists ?? [];
-    final total = playlistsState.value?.data?.total ?? 0;
+    final category = CloudPlaylistStaticData.staticCategories[4];
+    final playlistsState = ref.watch(
+      cloudMusicPlaylistCatlistProvider(cat: category.name),
+    );
+    final playlists = playlistsState.value?.playlists ?? [];
+    final total = playlistsState.value?.total ?? 0;
     final hasMore = playlists.length < total;
     final isLoadingMore = useState(false);
     final favoritePlaylistsState = ref.watch(favoritePlaylistStateProvider);
+
     useEffect(() {
       void onScroll() {
         if (!scrollController.hasClients) return;
@@ -35,45 +41,27 @@ class AddToPlaylistsPage extends HookConsumerWidget {
         final maxScroll = scrollController.position.maxScrollExtent;
         final currentScroll = scrollController.offset;
 
-        final state = ref.read(playlistResponseProvider());
-        final currentPlaylists = state.value?.data?.playlists ?? [];
-        final currentTotal = state.value?.data?.total ?? 0;
+        final state = ref.read(
+          cloudMusicPlaylistCatlistProvider(cat: category.name),
+        );
+        final currentPlaylists = state.value?.playlists ?? [];
+        final currentTotal = state.value?.total ?? 0;
         final currentHasMore = currentPlaylists.length < currentTotal;
 
         if (currentScroll >= maxScroll * 0.8 &&
             currentHasMore &&
             !isLoadingMore.value) {
-          loadMore(ref: ref, isLoadingMore: isLoadingMore);
+          loadMore(
+            ref: ref,
+            isLoadingMore: isLoadingMore,
+            category: category.name,
+          );
         }
       }
 
       scrollController.addListener(onScroll);
       return () => scrollController.removeListener(onScroll);
     }, [scrollController]);
-
-    var skipDuplicate = useState(true);
-    void callBackAddPlaylists(String name) async {
-      try {
-        ref.read(requestFlagProvider.notifier).setRequestFlag(true);
-        var result = await ref
-            .read(playlistStateProvider.notifier)
-            .createPlaylist(name: name);
-        if (result.success) {
-          await clearCacheByGroupKey(groupKey: "playlist");
-          ref.invalidate(playlistResponseProvider);
-        }
-      } catch (e) {
-        if (context.mounted) {
-          if (e is AudioStationException) {
-            showSnackBar(e.message, context, colorScheme.secondary);
-          } else {
-            showSnackBar(e.toString(), context, colorScheme.secondary);
-          }
-        }
-      } finally {
-        ref.read(requestFlagProvider.notifier).setRequestFlag(false);
-      }
-    }
 
     var targetWidth = 0.0;
     if (size.xlAndUp) {
@@ -85,6 +73,7 @@ class AddToPlaylistsPage extends HookConsumerWidget {
     } else {
       targetWidth = double.infinity;
     }
+
     return Stack(
       children: [
         Container(
@@ -106,13 +95,13 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                 actions: [
                   IconButton(
                     onPressed: () async {
-                      showCreatePlaylistDialog(
-                        context,
-                        ref,
-                        nameController,
-                        colorScheme,
-                        callBackAddPlaylists,
-                      );
+                      // showCreatePlaylistDialog(
+                      //   context,
+                      //   ref,
+                      //   nameController,
+                      //   colorScheme,
+                      //   callBackAddPlaylists,
+                      // );
                     },
                     icon: Icon(
                       Icons.create_rounded,
@@ -124,7 +113,6 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                 centerTitle: false,
                 backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
               ),
-
               Expanded(
                 child: playlistsState.when(
                   data: (data) {
@@ -152,54 +140,24 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                         }
 
                         final playlist = playlists[index];
-                        final isFavorite = favoritePlaylistsState
-                            .containsPlaylistId(playlists[index].id);
-                        var personalState =
-                            playlists[index].library == "personal";
+
                         return RepaintBoundary(
                           child: Stack(
                             children: [
-                              if (isFavorite)
-                                Positioned(
-                                  top: 0,
-                                  left: 0,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 6,
-                                      vertical: 2,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: colorScheme.primary,
-                                      borderRadius: const BorderRadius.only(
-                                        bottomRight: Radius.circular(8),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      l10n.favorite,
-                                      style: TextStyle(
-                                        color: colorScheme.onPrimary,
-                                        fontSize: 8,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
                               ListTile(
-                                minTileHeight: 36,
+                                minTileHeight: 48 * size.multiplier2,
                                 contentPadding: const EdgeInsets.only(
                                   left: 10,
                                   right: 10,
                                 ),
                                 horizontalTitleGap: 10,
-                                leading: IconButton(
-                                  icon: Icon(
-                                    personalState
-                                        ? Icons.folder_open_rounded
-                                        : Icons.folder_shared_rounded,
-                                    size: 18,
+                                leading: CloudMusicCoverImage(
+                                  imageUrl: playlist.cover,
+                                  colorScheme: colorScheme,
+                                  config: CloudMusicCoverImageConfig(
+                                    size: 36 * size.multiplier2,
+                                    borderRadius: 4,
                                   ),
-                                  onPressed: () {},
-                                  tooltip: '${index + 1}',
                                 ),
                                 title: Text(
                                   playlist.name,
@@ -215,18 +173,21 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                                       .read(requestFlagProvider.notifier)
                                       .setRequestFlag(true);
                                   try {
-                                    var result = await ref
-                                        .read(playlistStateProvider.notifier)
-                                        .addSongToPlaylist(
-                                          id: playlist.id,
-                                          songId: songIds,
-                                          skipDuplicate: skipDuplicate.value,
-                                        );
-                                    if (result.success) {
-                                      await clearCacheByGroupKey(
-                                        groupKey: "playlist",
+                                    var result = await updateTrackSongs(
+                                      ref,
+                                      playlist.id,
+                                      songIds,
+                                      true,
+                                    );
+                                    if (result) {
+                                      await audioStationRequestCache.delete(
+                                        'cloud_playlistDetail:${playlist.id}',
                                       );
-                                      ref.invalidate(playlistDetailProvider);
+                                      ref.invalidate(
+                                        cloudMusicPlaylistDetailProvider(
+                                          playlist.id,
+                                        ),
+                                      );
                                       ref.invalidate(songSelectionProvider);
                                       if (context.mounted) {
                                         showSnackBar(
@@ -267,16 +228,9 @@ class AddToPlaylistsPage extends HookConsumerWidget {
                   loading: () => CommonShimmerLoader.playlistItemList(
                     colorScheme: colorScheme,
                     size: size,
+                    hasCover: true,
                   ),
                 ),
-              ),
-              SizedBox(height: 10),
-              FilterChip(
-                selected: skipDuplicate.value,
-                label: Text("Skip Duplicate"),
-                onSelected: (v) {
-                  skipDuplicate.value = v;
-                },
               ),
               SizedBox(height: 10),
             ],
@@ -289,10 +243,13 @@ class AddToPlaylistsPage extends HookConsumerWidget {
   static Future<void> loadMore({
     required WidgetRef ref,
     required ValueNotifier<bool> isLoadingMore,
+    required String category,
   }) async {
     isLoadingMore.value = true;
     try {
-      await ref.read(playlistResponseProvider().notifier).loadMore();
+      await ref
+          .read(cloudMusicPlaylistCatlistProvider(cat: category).notifier)
+          .loadMore();
     } finally {
       isLoadingMore.value = false;
     }

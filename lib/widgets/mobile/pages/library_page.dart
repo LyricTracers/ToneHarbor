@@ -380,15 +380,22 @@ class LibraryPage extends HookConsumerWidget with BuildItem {
                 },
                 onTap: () {
                   final item = favoritePlaylists[index];
-                  final path = "/songs/${Uri.encodeComponent(item.title)}";
-                  ref.context.pushWrapper(
-                    path,
-                    extra: (
-                      playlistDetailProvider(id: item.playlistId),
-                      -1,
-                      SongsPageSortAction.none,
-                    ),
-                  );
+                  if (item.cloudData != null) {
+                    ref.context.pushWrapper(
+                      "/cloud-detail/${item.cloudData?.id}",
+                      extra: item.cloudData?.toPlaylistData(),
+                    );
+                  } else {
+                    final path = "/songs/${Uri.encodeComponent(item.title)}";
+                    ref.context.pushWrapper(
+                      path,
+                      extra: (
+                        playlistDetailProvider(id: item.playlistId),
+                        -1,
+                        SongsPageSortAction.none,
+                      ),
+                    );
+                  }
                 },
                 child: ListTile(
                   leading: Icon(Icons.file_present_rounded, size: 18),

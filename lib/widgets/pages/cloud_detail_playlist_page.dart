@@ -3,12 +3,14 @@ import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
+import 'package:toneharbor/services/cloud_music/playlists.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
@@ -62,7 +64,8 @@ class CloudDetailPlaylistHeaderDelegate extends SliverPersistentHeaderDelegate {
       updateTime != oldDelegate.updateTime ||
       description != oldDelegate.description ||
       creator != oldDelegate.creator ||
-      headerBackgroundColor != oldDelegate.headerBackgroundColor;
+      headerBackgroundColor != oldDelegate.headerBackgroundColor ||
+      detail != oldDelegate.detail;
 
   @override
   Widget build(
@@ -760,6 +763,7 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
     SongSelectionState songSelectionState,
   ) {
     final tracks = data?.tracks ?? [];
+    final creator = data?.creator;
 
     return SliverList(
       delegate: SliverChildBuilderDelegate((context, index) {
@@ -782,6 +786,8 @@ class CloudDetailPlaylistPage extends HookConsumerWidget {
         final track = tracks[index];
         return RepaintBoundary(
           child: _TrackListItem(
+            pid: data!.id,
+            creator: creator,
             track: track,
             index: index + 1,
             colorScheme: colorScheme,
@@ -929,8 +935,12 @@ class _TrackListItem extends HookConsumerWidget {
   final Size size;
   final SongSelectionState songSelectionState;
   final Function(int) onTap;
+  final CloudMusicUserData? creator;
+  final int pid;
 
   const _TrackListItem({
+    required this.pid,
+    this.creator,
     required this.track,
     required this.index,
     required this.colorScheme,
@@ -944,6 +954,7 @@ class _TrackListItem extends HookConsumerWidget {
     final multiplier = size.multiplier2;
     final itemHeight = 66.0 * multiplier;
     var localSelected = useState(false);
+    var useInfo = ref.watch(cloudUserInfoProvider);
 
     useEffect(() {
       localSelected.value = ref
@@ -987,17 +998,42 @@ class _TrackListItem extends HookConsumerWidget {
           onTap(idx);
         }
       },
-      contextMenuEntries: track.al != null && track.al!.name.isNotEmpty
-          ? <ContextMenuEntry>[
-              MenuItem(
-                label: Text(track.al!.name),
-                icon: const Icon(Icons.album_rounded, size: 18),
-                onSelected: (value) {
-                  context.pushWrapper("/cloud-album-detail", extra: track.al);
-                },
-              ),
-            ]
-          : null,
+      contextMenuEntries: <ContextMenuEntry>[
+        if (track.al != null && track.al!.name.isNotEmpty) ...[
+          MenuItem(
+            label: Text(track.al!.name),
+            icon: const Icon(Icons.album_rounded, size: 18),
+            onSelected: (value) {
+              context.pushWrapper("/cloud-album-detail", extra: track.al);
+            },
+          ),
+        ],
+        if (creator != null && creator!.userId == useInfo.value?.userId) ...[
+          MenuItem(
+            label: Text(ref.read(l10nProvider).delete),
+            icon: const Icon(Icons.delete_rounded, size: 18),
+            onSelected: (value) async {
+              ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+              try {
+                var result = await updateTrackSongs(ref, pid, track.id, false);
+                if (result) {
+                  await audioStationRequestCache.delete(
+                    'cloud_playlistDetail:$pid',
+                  );
+                  ref.invalidate(cloudMusicPlaylistDetailProvider(pid));
+                  ref.invalidate(songSelectionProvider);
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  showSnackBarError(e, context, colorScheme.secondary);
+                }
+              } finally {
+                ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+              }
+            },
+          ),
+        ],
+      ],
       enableSelection: songSelectionState.selectionType,
       showAlbumName: true,
       leading: CloudMusicCoverImage(

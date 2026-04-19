@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
@@ -304,22 +305,6 @@ class _PlaylistItem extends StatelessWidget {
                   alignment: Alignment.center,
                 ),
               ),
-
-              // if (playlist.copywriter != null &&
-              //     playlist.copywriter!.isNotEmpty)
-              //   Padding(
-              //     padding: const EdgeInsets.symmetric(horizontal: 2),
-              //     child: Text(
-              //       playlist.copywriter!,
-              //       maxLines: 1,
-              //       overflow: TextOverflow.ellipsis,
-              //       textAlign: TextAlign.center,
-              //       style: TextStyle(
-              //         fontSize: 10,
-              //         color: colorScheme.onSurfaceVariant,
-              //       ),
-              //     ),
-              //   ),
             ],
           );
         },

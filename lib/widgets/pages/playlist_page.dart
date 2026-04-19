@@ -41,7 +41,7 @@ class _PlaylistItem extends HookConsumerWidget {
         children: [
           SlidableAction(
             icon: Icons.delete,
-            backgroundColor: colorScheme.primaryContainer,
+            backgroundColor: colorScheme.errorContainer,
             onPressed: (contex) => onDeleteTap(),
           ),
           SlidableAction(
@@ -53,6 +53,20 @@ class _PlaylistItem extends HookConsumerWidget {
             backgroundColor: colorScheme.tertiaryContainer,
             icon: Icons.copy_rounded,
           ),
+          if (track is ToneHarborTrackObjectCloudMusic && track.al != null) ...[
+            ...[
+              SlidableAction(
+                icon: Icons.album_rounded,
+                backgroundColor: colorScheme.primaryContainer,
+                onPressed: (context) {
+                  ref.context.pushWrapper(
+                    "/cloud-album-detail",
+                    extra: track.al,
+                  );
+                },
+              ),
+            ],
+          ],
         ],
       ),
       child: MouseRegion(
@@ -228,14 +242,15 @@ class PlaylistPage extends HookConsumerWidget {
       child: Column(
         children: [
           AppBar(
-            toolbarHeight: kToolbarHeight * size.multiplier3,
+            titleSpacing: 0,
+            toolbarHeight: kToolbarHeight * size.multiplier3 * 0.8,
             title: Text(
               i10n.playlist_text.replaceFirst(
                 '%s',
                 '${playlist.tracks.length}',
               ),
               style: TextStyle(
-                fontSize: 16 * size.multiplier2,
+                fontSize: 14 * size.multiplier2,
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onSurfaceVariant,
               ),
