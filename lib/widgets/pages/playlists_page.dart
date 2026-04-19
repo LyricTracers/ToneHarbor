@@ -214,7 +214,8 @@ class PlaylistsPage<T extends ExtraProvider<PlaylistListResponse>>
                         showSearch.value = true;
                         searchController.clear();
                       },
-                      icon: const Icon(Icons.search, size: 18),
+                      icon: const Icon(Icons.filter_list_rounded, size: 18),
+                      tooltip: l10n.filter,
                     ),
               if (size.lgAndUp)
                 IconButton(

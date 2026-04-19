@@ -247,6 +247,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchHint => 'Search songs, artists, albums...';
 
   @override
+  String get filter_hint => 'Filter songs, artists, albums...';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
   String get searchHistoryLabel => 'Search History';
 
   @override

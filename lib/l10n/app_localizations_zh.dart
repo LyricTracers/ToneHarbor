@@ -234,6 +234,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get searchHint => '搜索歌曲、艺术家、专辑...';
 
   @override
+  String get filter_hint => '过滤歌曲、艺术家、专辑...';
+
+  @override
+  String get filter => '过滤';
+
+  @override
   String get searchHistoryLabel => '搜索历史';
 
   @override

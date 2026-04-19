@@ -548,6 +548,18 @@ abstract class AppLocalizations {
   /// **'Search songs, artists, albums...'**
   String get searchHint;
 
+  /// No description provided for @filter_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter songs, artists, albums...'**
+  String get filter_hint;
+
+  /// No description provided for @filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filter;
+
   /// No description provided for @searchHistoryLabel.
   ///
   /// In en, this message translates to:

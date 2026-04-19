@@ -75,6 +75,8 @@
   "has_copy": "已复制:",
   "search": "搜索",
   "searchHint": "搜索歌曲、艺术家、专辑...",
+  "filter_hint": "过滤歌曲、艺术家、专辑...",
+  "filter": "过滤",
   "searchHistoryLabel": "搜索历史",
   "clearHistory": "清空",
   "noSearchHistory": "暂无搜索历史",

@@ -28,9 +28,9 @@ class CommonSearchField extends HookConsumerWidget {
         controller: searchController,
         autofocus: autofocus,
         decoration: InputDecoration(
-          hintText: l10n.searchHint,
+          hintText: l10n.filter_hint,
           hintStyle: const TextStyle(fontSize: 14),
-          prefixIcon: const Icon(Icons.search, size: 18),
+          prefixIcon: const Icon(Icons.filter_list_rounded, size: 18),
           suffixIcon: showClearButton
               ? IconButton(
                   icon: const Icon(Icons.clear, size: 14),

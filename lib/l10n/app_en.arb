@@ -75,6 +75,8 @@
   "has_copy": "Copied:",
   "search": "Search",
   "searchHint": "Search songs, artists, albums...",
+  "filter_hint": "Filter songs, artists, albums...",
+  "filter": "Filter",
   "searchHistoryLabel": "Search History",
   "clearHistory": "Clear",
   "noSearchHistory": "No search history",
