@@ -91,6 +91,8 @@ class MixSearch extends _$MixSearch {
           songs: ToneHarborTrackObjectList.data(songs: newSongs),
           searchSongFlag: 0,
         );
+      } else {
+        state = state.copyWith(searchSongFlag: 0);
       }
     } catch (e) {
       logger.e('搜索歌曲失败: $e');
