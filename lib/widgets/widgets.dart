@@ -39,3 +39,4 @@ export 'pages/search_result_page.dart';
 export 'pages/setting_page.dart';
 export 'pages/songs_page.dart';
 export 'pages/storage_manage_page.dart';
+export 'pages/log_page.dart';

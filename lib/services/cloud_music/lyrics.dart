@@ -10,13 +10,16 @@ Future<Lyrics?> getNetLyrics({
   required String id,
   Duration? cacheDuration,
 }) async {
-  final cacheKey = 'getLyrics:$id';
+  final cacheKey = 'getCloudLyrics:$id';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<CloudMusicLyricData>(
       cacheKey: cacheKey,
       group: 'lyrics',
-      fromJson: (json) => CloudMusicLyricData.fromJson(json),
+      fromJson: (json) {
+        logger.i('从缓存中获取歌词，响应体：$json');
+        return CloudMusicLyricData.fromJson(json);
+      },
     );
     if (cached != null && cached.code == 200) {
       return Lyrics.fromNeteaseResponse(cached.toJson());
@@ -32,6 +35,7 @@ Future<Lyrics?> getNetLyrics({
       query: {'id': id},
       cancelToken: ref.cancelToken(),
     );
+    logger.i('请求歌词，响应体：${response.body}');
     if (response.statusCode != 200) {
       logger.e('请求失败，状态码：${response.statusCode}');
       return null;

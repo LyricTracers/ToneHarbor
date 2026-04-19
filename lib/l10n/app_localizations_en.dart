@@ -695,6 +695,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ai_translate_settings => 'AI Translate Settings';
 
   @override
+  String get log_viewer => 'Log Viewer';
+
+  @override
+  String get clear_log => 'Clear Log';
+
+  @override
+  String get no_logs => 'No logs';
+
+  @override
+  String get auto_scroll => 'Auto Scroll';
+
+  @override
+  String get stop_auto_scroll => 'Stop Auto Scroll';
+
+  @override
+  String get start_auto_scroll => 'Start Auto Scroll';
+
+  @override
+  String get load_log_failed => 'Failed to load log';
+
+  @override
   String get platform => 'Platform';
 
   @override

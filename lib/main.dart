@@ -481,6 +481,11 @@ class MyApp extends HookConsumerWidget {
                 ),
               ),
               GoRoute(
+                path: '/log',
+                pageBuilder: (context, state) =>
+                    buildPage(key: state.pageKey, child: LogPage()),
+              ),
+              GoRoute(
                 path: '/account',
                 pageBuilder: (context, state) =>
                     buildPage(key: state.pageKey, child: AccountPage()),
@@ -776,6 +781,14 @@ class MyApp extends HookConsumerWidget {
             pageBuilder: (context, state) => buildPage(
               key: state.pageKey,
               child: MobileFullLayout(child: AITranslateSettingPage()),
+            ),
+          ),
+          GoRoute(
+            path: '/mobile/log',
+            parentNavigatorKey: rootNavigatorKey,
+            pageBuilder: (context, state) => buildPage(
+              key: state.pageKey,
+              child: MobileFullLayout(child: LogPage()),
             ),
           ),
           GoRoute(

@@ -1436,6 +1436,48 @@ abstract class AppLocalizations {
   /// **'AI Translate Settings'**
   String get ai_translate_settings;
 
+  /// No description provided for @log_viewer.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Viewer'**
+  String get log_viewer;
+
+  /// No description provided for @clear_log.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Log'**
+  String get clear_log;
+
+  /// No description provided for @no_logs.
+  ///
+  /// In en, this message translates to:
+  /// **'No logs'**
+  String get no_logs;
+
+  /// No description provided for @auto_scroll.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto Scroll'**
+  String get auto_scroll;
+
+  /// No description provided for @stop_auto_scroll.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop Auto Scroll'**
+  String get stop_auto_scroll;
+
+  /// No description provided for @start_auto_scroll.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Auto Scroll'**
+  String get start_auto_scroll;
+
+  /// No description provided for @load_log_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load log'**
+  String get load_log_failed;
+
   /// No description provided for @platform.
   ///
   /// In en, this message translates to:

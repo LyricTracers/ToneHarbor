@@ -93,6 +93,24 @@ class SettingPage extends HookConsumerWidget with BuildItem {
           trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
           onTap: () => context.pushWrapper('/cloud-api'),
         ),
+        Divider(
+          height: 1,
+          color: colorScheme.outline.withValues(alpha: 0.2),
+          indent: 15,
+          endIndent: 15,
+        ),
+        ListTile(
+          title: Text(
+            l10n.log_viewer,
+            style: TextStyle(
+              fontSize: 15 * multiplier,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          trailing: Icon(Icons.arrow_forward_ios_rounded, size: 18),
+          onTap: () => context.pushWrapper('/log'),
+        ),
       ],
     );
   }

@@ -13,6 +13,7 @@ import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_common_artists.dart';
 import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
 import 'package:toneharbor/widgets/components/smart_marquee.dart';
+import 'package:toneharbor/widgets/pages/cloud_add_to_playlists_page.dart';
 
 class CloudArtistHeaderDelegate extends SliverPersistentHeaderDelegate {
   final WidgetRef ref;
@@ -892,6 +893,29 @@ class CloudArtistPage extends HookConsumerWidget {
                             .setRequestFlag(false);
                       },
                     ),
+                    if (isLoggedIn) ...[
+                      MenuItem(
+                        label: Text(l10n.song_playlist),
+                        onSelected: (value) {
+                          if (size.mdAndUp) {
+                            showSlidePanel(
+                              context: ref.context,
+                              builder: (context) {
+                                return CloudAddToPlaylistsPage(song.id);
+                              },
+                            );
+                          } else {
+                            showModalBottomSheetWidget(
+                              ref.context,
+                              colorScheme,
+                              (context) {
+                                return CloudAddToPlaylistsPage(song.id);
+                              },
+                            );
+                          }
+                        },
+                      ),
+                    ],
                   ],
                 ),
               ],

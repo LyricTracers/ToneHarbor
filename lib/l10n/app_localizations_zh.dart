@@ -678,6 +678,27 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ai_translate_settings => 'AI 翻译设置';
 
   @override
+  String get log_viewer => '日志查看器';
+
+  @override
+  String get clear_log => '清空日志';
+
+  @override
+  String get no_logs => '暂无日志';
+
+  @override
+  String get auto_scroll => '自动滚动';
+
+  @override
+  String get stop_auto_scroll => '停止自动滚动';
+
+  @override
+  String get start_auto_scroll => '开启自动滚动';
+
+  @override
+  String get load_log_failed => '加载日志失败';
+
+  @override
   String get platform => '平台';
 
   @override

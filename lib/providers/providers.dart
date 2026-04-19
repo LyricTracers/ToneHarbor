@@ -23,5 +23,6 @@ export 'translate/translate_provider.dart';
 export 'common/common_provider.dart';
 export 'common/storage_provider.dart';
 export 'common/theme_data_provider.dart';
+export 'common/log_provider.dart';
 export 'database/database.dart';
 export 'cloud_music/cloud_music_provider.dart';
