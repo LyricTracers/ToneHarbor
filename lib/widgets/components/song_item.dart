@@ -6,7 +6,9 @@ import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/song_selection_state.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
+import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/utils/base_funs.dart';
 
 class SongItem extends HookConsumerWidget {
   final int index;
@@ -46,6 +48,35 @@ class SongItem extends HookConsumerWidget {
     var localSelected = useState(false);
     var isPressed = useState(false);
 
+    bool isPlayable = true;
+    String? notPlayableReason;
+
+    if (song.isCloudMusic) {
+      final cloudSong = song as ToneHarborTrackObjectCloudMusic;
+      final isLoggedIn = ref.watch(cloudMusicAuthStateProvider);
+      final userVipType = ref.watch(
+        cloudUserInfoProvider.select((value) => value.value?.vipType ?? 0),
+      );
+      final cloudSongData = CloudMusicSongData(
+        songId: int.tryParse(cloudSong.id) ?? 0,
+        name: cloudSong.title,
+        ar: cloudSong.ar,
+        al: cloudSong.al,
+        dt: cloudSong.duration.inMilliseconds,
+        fee: cloudSong.fee,
+        noCopyrightRcmd: cloudSong.noCopyrightRcmd,
+        privilege: cloudSong.privilege,
+      );
+      final result = isCloudTrackPlayable(
+        cloudSongData,
+        l10n,
+        isLoggedIn: isLoggedIn,
+        userVipType: userVipType,
+      );
+      isPlayable = result.playable;
+      notPlayableReason = result.reason;
+    }
+
     useEffect(() {
       localSelected.value = ref
           .read(songSelectionProvider.notifier)
@@ -78,7 +109,7 @@ class SongItem extends HookConsumerWidget {
       onExit: (event) => isHovered.value = false,
       child: Stack(
         children: [
-          if (isFavorite)
+          if (!isPlayable && notPlayableReason != null)
             Positioned(
               top: 0,
               left: 0,
@@ -94,7 +125,7 @@ class SongItem extends HookConsumerWidget {
                   ),
                 ),
                 child: Text(
-                  l10n.favorite,
+                  notPlayableReason,
                   style: TextStyle(
                     color: colorScheme.onPrimary,
                     fontSize: 8 * multiplier,
@@ -111,7 +142,7 @@ class SongItem extends HookConsumerWidget {
                 : Colors.transparent,
             child: InkWell(
               onDoubleTap: () {
-                if (!selectionState.selectionType) {
+                if (!selectionState.selectionType && isPlayable) {
                   isPressed.value = false;
                   onTap();
                 }
@@ -150,7 +181,9 @@ class SongItem extends HookConsumerWidget {
                             '${index + 1}',
                             style: TextStyle(
                               fontSize: 14 * multiplier,
-                              color: colorScheme.primary,
+                              color: isPlayable
+                                  ? colorScheme.primary
+                                  : Colors.grey,
                             ),
                           ),
                     SizedBox(width: 15 * multiplier),
@@ -160,44 +193,72 @@ class SongItem extends HookConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            song.title,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: TextStyle(
-                              fontSize: 16 * multiplier,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  song.title,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                    fontSize: 16 * multiplier,
+                                    fontWeight: FontWeight.bold,
+                                    color: isPlayable
+                                        ? colorScheme.onSurface
+                                        : Colors.grey,
+                                  ),
+                                ),
+                              ),
+                              if (isFavorite)
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: 4 * multiplier,
+                                  ),
+                                  child: Icon(
+                                    Icons.favorite_rounded,
+                                    size: 14 * multiplier,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                            ],
                           ),
                           SizedBox(height: 4 * multiplier),
                           Row(
                             children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 4 * multiplier,
-                                  vertical: 2 * multiplier,
-                                ),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: colorScheme.onSurfaceVariant,
+                              if (bitrate > 0)
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 4 * multiplier,
+                                    vertical: 2 * multiplier,
                                   ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  '$container ${bitrate}k',
-                                  style: TextStyle(
-                                    fontSize: 9 * multiplier,
-                                    color: colorScheme.onSurfaceVariant,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: isPlayable
+                                          ? colorScheme.onSurfaceVariant
+                                          : Colors.grey,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    '$container ${bitrate}k',
+                                    style: TextStyle(
+                                      fontSize: 9 * multiplier,
+                                      color: isPlayable
+                                          ? colorScheme.onSurfaceVariant
+                                          : Colors.grey,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(width: 15 * multiplier),
+                              if (bitrate > 0) SizedBox(width: 15 * multiplier),
                               Expanded(
                                 child: Text(
                                   '$artist-$album',
                                   style: TextStyle(
                                     fontSize: 12 * multiplier,
-                                    color: colorScheme.onSurfaceVariant,
+                                    color: isPlayable
+                                        ? colorScheme.onSurfaceVariant
+                                        : Colors.grey,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,

@@ -3,6 +3,7 @@ import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
+import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/responsive.dart';
@@ -22,9 +23,35 @@ class SongContextMenu {
     final itemId = item.id;
     final itemTitle = item.title;
     bool isFavorite;
+    bool isPlayable = true;
+    String? notPlayableReason;
+
     if (item is ToneHarborTrackObjectCloudMusic) {
       final cloudLike = ref.watch(cloudLikelistStateProvider);
       isFavorite = cloudLike.value?.contains(itemId) ?? false;
+
+      final isLoggedIn = ref.read(cloudMusicAuthStateProvider);
+      final userVipType = ref.read(
+        cloudUserInfoProvider.select((value) => value.value?.vipType ?? 0),
+      );
+      final cloudSongData = CloudMusicSongData(
+        songId: int.tryParse(itemId) ?? 0,
+        name: itemTitle,
+        ar: item.ar,
+        al: item.al,
+        dt: item.duration.inMilliseconds,
+        fee: item.fee,
+        noCopyrightRcmd: item.noCopyrightRcmd,
+        privilege: item.privilege,
+      );
+      final result = isCloudTrackPlayable(
+        cloudSongData,
+        l10n,
+        isLoggedIn: isLoggedIn,
+        userVipType: userVipType,
+      );
+      isPlayable = result.playable;
+      notPlayableReason = result.reason;
     } else {
       final songRating = ref.read(songRatingProvider);
       isFavorite = songRating.contains(itemId);
@@ -96,98 +123,115 @@ class SongContextMenu {
         );
       }
     } else {
-      entries.addAll([
-        MenuItem(
-          label: Text(isFavorite ? l10n.no_favorite_playlist : l10n.favorite),
-          icon: Icon(
-            isFavorite ? Icons.favorite_border_rounded : Icons.favorite_rounded,
-          ),
-          onSelected: (value) async {
-            try {
-              ref.read(requestFlagProvider.notifier).setRequestFlag(true);
-              if (item is ToneHarborTrackObjectCloudMusic) {
-                await ref
-                    .read(cloudLikelistStateProvider.notifier)
-                    .updateLike(item);
-              } else {
-                final response = await ref
-                    .read(songRatingProvider.notifier)
-                    .setRating(id: itemId, rating: isFavorite ? 0 : 5);
-                if (response.success) {
-                  ref
-                      .read(favoriteSongsProvider(limit: 50).notifier)
-                      .invalidateCache();
-                  ref.invalidate(favoriteSongsProvider);
-                }
-              }
-            } catch (e) {
-              if (ref.context.mounted) {
-                showSnackBarError(e, ref.context, colorScheme.secondary);
-              }
-            } finally {
-              ref.read(requestFlagProvider.notifier).setRequestFlag(false);
-            }
-          },
-        ),
-        MenuItem(
-          label: Text(l10n.download),
-          icon: Icon(Icons.download_rounded),
-          onSelected: (value) async {
-            ref.read(requestFlagProvider.notifier).setRequestFlag(true);
-            await ref.read(downloadManagerProvider.notifier).addToQueue(item);
-            ref.read(requestFlagProvider.notifier).setRequestFlag(false);
-          },
-        ),
-        MenuItem.submenu(
-          label: Text(l10n.add_to),
-          icon: const Icon(Icons.add_box_rounded),
-          items: [
-            MenuItem(
-              label: Text(l10n.next_song),
-              onSelected: (value) async {
-                ref.read(requestFlagProvider.notifier).setRequestFlag(true);
-                await ref
-                    .read(audioPlayerStateProvider.notifier)
-                    .addTrackAtFirst(item, allowDuplicates: true);
-                ref.read(requestFlagProvider.notifier).setRequestFlag(false);
-              },
-            ),
-            MenuItem(
-              label: Text(l10n.play_queue),
-              onSelected: (value) async {
-                ref.read(requestFlagProvider.notifier).setRequestFlag(true);
-                await ref
-                    .read(audioPlayerStateProvider.notifier)
-                    .addTrack(item);
-                ref.read(requestFlagProvider.notifier).setRequestFlag(false);
-              },
-            ),
+      final playableEntries = <ContextMenuEntry>[];
 
-            MenuItem(
-              label: Text(l10n.song_playlist),
-              onSelected: (value) {
-                if (size.mdAndUp) {
-                  showSlidePanel(
-                    context: ref.context,
-                    builder: (context) {
+      if (isPlayable || item is! ToneHarborTrackObjectCloudMusic) {
+        playableEntries.addAll([
+          MenuItem(
+            label: Text(isFavorite ? l10n.no_favorite_playlist : l10n.favorite),
+            icon: Icon(
+              isFavorite
+                  ? Icons.favorite_border_rounded
+                  : Icons.favorite_rounded,
+            ),
+            onSelected: (value) async {
+              try {
+                ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+                if (item is ToneHarborTrackObjectCloudMusic) {
+                  await ref
+                      .read(cloudLikelistStateProvider.notifier)
+                      .updateLike(item);
+                } else {
+                  final response = await ref
+                      .read(songRatingProvider.notifier)
+                      .setRating(id: itemId, rating: isFavorite ? 0 : 5);
+                  if (response.success) {
+                    ref
+                        .read(favoriteSongsProvider(limit: 50).notifier)
+                        .invalidateCache();
+                    ref.invalidate(favoriteSongsProvider);
+                  }
+                }
+              } catch (e) {
+                if (ref.context.mounted) {
+                  showSnackBarError(e, ref.context, colorScheme.secondary);
+                }
+              } finally {
+                ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+              }
+            },
+          ),
+          MenuItem(
+            label: Text(l10n.download),
+            icon: Icon(Icons.download_rounded),
+            onSelected: (value) async {
+              ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+              await ref.read(downloadManagerProvider.notifier).addToQueue(item);
+              ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+            },
+          ),
+          MenuItem.submenu(
+            label: Text(l10n.add_to),
+            icon: const Icon(Icons.add_box_rounded),
+            items: [
+              MenuItem(
+                label: Text(l10n.next_song),
+                onSelected: (value) async {
+                  ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+                  await ref
+                      .read(audioPlayerStateProvider.notifier)
+                      .addTrackAtFirst(item, allowDuplicates: true);
+                  ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+                },
+              ),
+              MenuItem(
+                label: Text(l10n.play_queue),
+                onSelected: (value) async {
+                  ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+                  await ref
+                      .read(audioPlayerStateProvider.notifier)
+                      .addTrack(item);
+                  ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+                },
+              ),
+
+              MenuItem(
+                label: Text(l10n.song_playlist),
+                onSelected: (value) {
+                  if (size.mdAndUp) {
+                    showSlidePanel(
+                      context: ref.context,
+                      builder: (context) {
+                        return item is ToneHarborTrackObjectCloudMusic
+                            ? CloudAddToPlaylistsPage(itemId)
+                            : AddToPlaylistsPage(itemId);
+                      },
+                    );
+                  } else {
+                    showModalBottomSheetWidget(ref.context, colorScheme, (
+                      context,
+                    ) {
                       return item is ToneHarborTrackObjectCloudMusic
                           ? CloudAddToPlaylistsPage(itemId)
                           : AddToPlaylistsPage(itemId);
-                    },
-                  );
-                } else {
-                  showModalBottomSheetWidget(ref.context, colorScheme, (
-                    context,
-                  ) {
-                    return item is ToneHarborTrackObjectCloudMusic
-                        ? CloudAddToPlaylistsPage(itemId)
-                        : AddToPlaylistsPage(itemId);
-                  });
-                }
-              },
-            ),
-          ],
-        ),
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
+        ]);
+      } else {
+        playableEntries.add(
+          MenuItem(
+            label: Text(notPlayableReason ?? l10n.paid_album),
+            icon: Icon(Icons.block_rounded),
+            enabled: false,
+          ),
+        );
+      }
+
+      playableEntries.add(
         MenuItem.submenu(
           label: Text(l10n.search),
           icon: const Icon(Icons.search_rounded),
@@ -252,8 +296,12 @@ class SongContextMenu {
             ),
           ],
         ),
+      );
 
-        if (playlistId.isNotEmpty && index != -1)
+      entries.addAll(playableEntries);
+
+      if (playlistId.isNotEmpty && index != -1) {
+        entries.add(
           MenuItem(
             label: Text(l10n.remove_from_playlist),
             icon: Icon(Icons.playlist_remove_rounded),
@@ -285,10 +333,14 @@ class SongContextMenu {
               }
             },
           ),
-        if (item is ToneHarborTrackObjectCloudMusic) ...[
-          MenuDivider(),
-          if (item.ar != null && item.ar!.isNotEmpty) ...[
-            if (item.ar!.length == 1) ...[
+        );
+      }
+
+      if (item is ToneHarborTrackObjectCloudMusic) {
+        entries.add(MenuDivider());
+        if (item.ar != null && item.ar!.isNotEmpty) {
+          if (item.ar!.length == 1) {
+            entries.add(
               MenuItem(
                 label: Text(item.ar![0].name),
                 icon: const Icon(Icons.person_rounded),
@@ -299,8 +351,10 @@ class SongContextMenu {
                   );
                 },
               ),
-            ],
-            if (item.ar!.length > 1) ...[
+            );
+          }
+          if (item.ar!.length > 1) {
+            entries.add(
               MenuItem.submenu(
                 label: Text(l10n.artist_profile),
                 icon: const Icon(Icons.person_rounded),
@@ -319,10 +373,12 @@ class SongContextMenu {
                   ),
                 ],
               ),
-            ],
-          ],
+            );
+          }
+        }
 
-          if (item.al != null && item.al!.name.isNotEmpty)
+        if (item.al != null && item.al!.name.isNotEmpty) {
+          entries.add(
             MenuItem(
               label: Text(item.al!.name),
               icon: const Icon(Icons.album_rounded, size: 18),
@@ -330,8 +386,9 @@ class SongContextMenu {
                 ref.context.pushWrapper("/cloud-album-detail", extra: item.al);
               },
             ),
-        ],
-      ]);
+          );
+        }
+      }
     }
 
     return entries;
