@@ -681,3 +681,64 @@ Future<bool> updateTrackSongs(
     rethrow;
   }
 }
+
+Future<bool> createCloudPlaylist(
+  WidgetRef ref,
+  String name, {
+  String type = "NORMAL",
+}) async {
+  final useInfo = ref.watch(cloudUserInfoProvider);
+
+  if (useInfo.value == null) {
+    logger.e('用户信息为空');
+    return false;
+  }
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+  if (apiState.defaultUrl.isEmpty) {
+    logger.e('API URL为空');
+    return false;
+  }
+  final l10n = ref.read(l10nProvider);
+  try {
+    final query = <String, String>{
+      'name': Uri.encodeComponent(name),
+      'type': type,
+    };
+
+    final cookieParams = CloudMusicAuth.getApiCookieParams();
+    if (cookieParams.isNotEmpty) {
+      query.addAll(cookieParams);
+    }
+
+    final response = await httpClientWrapper.get(
+      '${apiState.defaultUrl}/playlist/create',
+      query: query,
+    );
+    logger.i("创建播放列表请求: ${response.body}");
+    if (response.statusCode != 200) {
+      logger.e('请求失败，状态码：${response.statusCode}');
+      throw CloudMusicException(
+        message: l10n.error_network_error,
+        statusCode: response.statusCode,
+      );
+    }
+    logger.i('创建播放列表响应: ${response.body}');
+    late final Map<String, dynamic> jsonBody;
+    try {
+      jsonBody = parseJsonResponse(response.body);
+    } catch (e) {
+      logger.e('解析响应失败: $e');
+      throw CloudMusicException(message: l10n.error_response_parse_failed);
+    }
+    if (jsonBody['code'] != 200) {
+      throw CloudMusicException(
+        message: jsonBody['message'] ?? l10n.error_network_error,
+        statusCode: jsonBody['code'],
+      );
+    }
+    return true;
+  } catch (e) {
+    logger.e('创建播放列表失败失败: $e');
+    rethrow;
+  }
+}

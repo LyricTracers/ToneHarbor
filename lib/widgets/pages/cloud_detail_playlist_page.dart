@@ -1010,7 +1010,7 @@ class _TrackListItem extends HookConsumerWidget {
         ],
         if (creator != null && creator!.userId == useInfo.value?.userId) ...[
           MenuItem(
-            label: Text(ref.read(l10nProvider).delete),
+            label: Text(ref.read(l10nProvider).delete_from_playlist),
             icon: const Icon(Icons.delete_rounded, size: 18),
             onSelected: (value) async {
               ref.read(requestFlagProvider.notifier).setRequestFlag(true);

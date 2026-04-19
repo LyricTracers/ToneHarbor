@@ -188,6 +188,71 @@ class SongContextMenu {
             ),
           ],
         ),
+        MenuItem.submenu(
+          label: Text(l10n.search),
+          icon: const Icon(Icons.search_rounded),
+          items: [
+            MenuItem(
+              label: Text(l10n.search_song),
+              onSelected: (value) async {
+                ref.context.pushWrapper(
+                  "/search/${Uri.encodeComponent(item.title)}",
+                );
+              },
+            ),
+            if (item.isCloudMusic &&
+                item.ar != null &&
+                item.ar!.isNotEmpty) ...[
+              if (item.ar!.length == 1) ...[
+                MenuItem(
+                  label: Text(l10n.search_artist),
+                  onSelected: (value) async {
+                    ref.context.pushWrapper(
+                      "/search/${Uri.encodeComponent(item.artist)}",
+                    );
+                  },
+                ),
+              ],
+              if (item.ar!.length > 1) ...[
+                MenuItem<void>.submenu(
+                  label: Text(l10n.search_artist),
+                  items: item.ar!
+                      .map(
+                        (e) => MenuItem<void>(
+                          label: Text(e.name),
+                          onSelected: (value) async {
+                            ref.context.pushWrapper(
+                              "/search/${Uri.encodeComponent(e.name)}",
+                            );
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
+              ],
+            ],
+
+            if (!item.isCloudMusic) ...[
+              MenuItem(
+                label: Text(l10n.search_artist),
+                onSelected: (value) async {
+                  ref.context.pushWrapper(
+                    "/search/${Uri.encodeComponent(item.artist)}",
+                  );
+                },
+              ),
+            ],
+            MenuItem(
+              label: Text(l10n.search_album),
+              onSelected: (value) async {
+                ref.context.pushWrapper(
+                  "/search/${Uri.encodeComponent(item.album)}",
+                );
+              },
+            ),
+          ],
+        ),
+
         if (playlistId.isNotEmpty && index != -1)
           MenuItem(
             label: Text(l10n.remove_from_playlist),

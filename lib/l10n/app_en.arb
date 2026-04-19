@@ -255,7 +255,7 @@
   "airplay_devices": "AirPlay Devices",
   "airplay_tap_to_connect": "Tap to connect to AirPlay devices",
   "airplay_not_supported": "AirPlay is only available on iOS and macOS",
-  "cloud_music_api": "Cloud Music API",
+  "cloud_music_api": "Cloud Music",
   "api_url": "API URL",
   "api_url_list": "API URL List",
   "home_page_settings": "Home Page Settings",
@@ -264,6 +264,9 @@
   "add_api_url": "Add API URL",
   "default_url": "Default",
   "delete": "Delete",
+  "search_song": "Search Song",
+  "search_artist": "Search Artist",
+  "search_album": "Search Album",
   "use_cloud_music_as_home": "Use as Home Page",
   "use_cloud_music_as_home_desc": "Replace the default home page with cloud music recommendations",
   "cloud_music_api_hint": "Enter the Cloud Music API server URL. Example: https://api.example.com",
@@ -322,5 +325,6 @@
   "track_count": " Songs",
   "artist_profile": "Artist Profile",
   "ranking": "Ranking",
+  "delete_from_playlist": "Remove from playlist",
   "invalid_cookie_format": "Invalid Cookie format, must contain MUSIC_U"
 }

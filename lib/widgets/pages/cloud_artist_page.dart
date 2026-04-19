@@ -837,60 +837,116 @@ class CloudArtistPage extends HookConsumerWidget {
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(8 * multiplier),
       child: ContextMenuRegion(
-        enableDefaultGestures: isPlayable.playable,
+        enableDefaultGestures: true,
         contextMenu: ContextMenu(
           entriesBuilder: () {
             return <ContextMenuEntry>[
               MenuHeader(text: song.name),
               MenuDivider(),
-              MenuItem(
-                label: Text(l10n.download),
-                icon: Icon(Icons.download_rounded),
-                onSelected: (value) async {
-                  ref.read(requestFlagProvider.notifier).setRequestFlag(true);
-                  await ref
-                      .read(downloadManagerProvider.notifier)
-                      .addToQueue(song.asTrack());
-                  ref.read(requestFlagProvider.notifier).setRequestFlag(false);
-                },
-              ),
+              if (isPlayable.playable) ...[
+                MenuItem(
+                  label: Text(l10n.download),
+                  icon: Icon(Icons.download_rounded),
+                  onSelected: (value) async {
+                    ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+                    await ref
+                        .read(downloadManagerProvider.notifier)
+                        .addToQueue(song.asTrack());
+                    ref
+                        .read(requestFlagProvider.notifier)
+                        .setRequestFlag(false);
+                  },
+                ),
+                MenuItem.submenu(
+                  label: Text(l10n.add_to),
+                  icon: const Icon(Icons.add_box_rounded),
+                  items: [
+                    MenuItem(
+                      label: Text(l10n.next_song),
+                      onSelected: (value) async {
+                        ref
+                            .read(requestFlagProvider.notifier)
+                            .setRequestFlag(true);
+                        await ref
+                            .read(audioPlayerStateProvider.notifier)
+                            .addTrackAtFirst(
+                              song.asTrack(),
+                              allowDuplicates: true,
+                            );
+                        ref
+                            .read(requestFlagProvider.notifier)
+                            .setRequestFlag(false);
+                      },
+                    ),
+                    MenuItem(
+                      label: Text(l10n.play_queue),
+                      onSelected: (value) async {
+                        ref
+                            .read(requestFlagProvider.notifier)
+                            .setRequestFlag(true);
+                        await ref
+                            .read(audioPlayerStateProvider.notifier)
+                            .addTrack(song.asTrack());
+                        ref
+                            .read(requestFlagProvider.notifier)
+                            .setRequestFlag(false);
+                      },
+                    ),
+                  ],
+                ),
+              ],
               MenuItem.submenu(
-                label: Text(l10n.add_to),
-                icon: const Icon(Icons.add_box_rounded),
+                label: Text(l10n.search),
+                icon: const Icon(Icons.search_rounded),
                 items: [
                   MenuItem(
-                    label: Text(l10n.next_song),
+                    label: Text(l10n.search_song),
                     onSelected: (value) async {
-                      ref
-                          .read(requestFlagProvider.notifier)
-                          .setRequestFlag(true);
-                      await ref
-                          .read(audioPlayerStateProvider.notifier)
-                          .addTrackAtFirst(
-                            song.asTrack(),
-                            allowDuplicates: true,
+                      ref.context.pushWrapper(
+                        "/search/${Uri.encodeComponent(song.name)}",
+                      );
+                    },
+                  ),
+                  if (song.ar != null && song.ar!.isNotEmpty) ...[
+                    if (song.ar!.length == 1)
+                      MenuItem(
+                        label: Text(l10n.search_artist),
+                        onSelected: (value) async {
+                          ref.context.pushWrapper(
+                            "/search/${Uri.encodeComponent(song.ar![0].name)}",
                           );
-                      ref
-                          .read(requestFlagProvider.notifier)
-                          .setRequestFlag(false);
-                    },
-                  ),
-                  MenuItem(
-                    label: Text(l10n.play_queue),
-                    onSelected: (value) async {
-                      ref
-                          .read(requestFlagProvider.notifier)
-                          .setRequestFlag(true);
-                      await ref
-                          .read(audioPlayerStateProvider.notifier)
-                          .addTrack(song.asTrack());
-                      ref
-                          .read(requestFlagProvider.notifier)
-                          .setRequestFlag(false);
-                    },
-                  ),
+                        },
+                      ),
+                    if (song.ar!.length > 1)
+                      MenuItem<void>.submenu(
+                        label: Text(l10n.search_artist),
+                        items: song.ar!
+                            .map(
+                              (e) => MenuItem<void>(
+                                label: Text(e.name),
+                                onSelected: (value) async {
+                                  ref.context.pushWrapper(
+                                    "/search/${Uri.encodeComponent(e.name)}",
+                                  );
+                                },
+                              ),
+                            )
+                            .toList(),
+                      ),
+                  ],
+
+                  if (song.al != null)
+                    MenuItem(
+                      label: Text(l10n.search_album),
+                      onSelected: (value) async {
+                        ref.context.pushWrapper(
+                          "/search/${Uri.encodeComponent(song.al!.name)}",
+                        );
+                      },
+                    ),
                 ],
               ),
+
               MenuDivider(),
               if (song.ar!.length > 1) ...[
                 MenuItem.submenu(

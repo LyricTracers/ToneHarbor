@@ -32,8 +32,7 @@ class CloudAddToPlaylistsPage extends HookConsumerWidget {
     final total = playlistsState.value?.total ?? 0;
     final hasMore = playlists.length < total;
     final isLoadingMore = useState(false);
-    final favoritePlaylistsState = ref.watch(favoritePlaylistStateProvider);
-
+    final nameController = useTextEditingController();
     useEffect(() {
       void onScroll() {
         if (!scrollController.hasClients) return;
@@ -73,6 +72,22 @@ class CloudAddToPlaylistsPage extends HookConsumerWidget {
     } else {
       targetWidth = double.infinity;
     }
+    void callBackAddPlaylists(String name) async {
+      try {
+        ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+        var result = await createCloudPlaylist(ref, name);
+        if (result) {
+          await clearCacheByGroupKey(groupKey: "cloud_userPlaylist");
+          ref.invalidate(cloudMusicPlaylistCatlistProvider(cat: category.name));
+        }
+      } catch (e) {
+        if (context.mounted) {
+          showSnackBarError(e, context, colorScheme.secondary);
+        }
+      } finally {
+        ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+      }
+    }
 
     return Stack(
       children: [
@@ -92,24 +107,24 @@ class CloudAddToPlaylistsPage extends HookConsumerWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                actions: [
-                  IconButton(
-                    onPressed: () async {
-                      // showCreatePlaylistDialog(
-                      //   context,
-                      //   ref,
-                      //   nameController,
-                      //   colorScheme,
-                      //   callBackAddPlaylists,
-                      // );
-                    },
-                    icon: Icon(
-                      Icons.create_rounded,
-                      size: 18 * size.multiplier2,
-                    ),
-                    tooltip: l10n.create_playlist,
-                  ),
-                ],
+                // actions: [
+                //   IconButton(
+                //     onPressed: () async {
+                //       showCreatePlaylistDialog(
+                //         context,
+                //         ref,
+                //         nameController,
+                //         colorScheme,
+                //         callBackAddPlaylists,
+                //       );
+                //     },
+                //     icon: Icon(
+                //       Icons.create_rounded,
+                //       size: 18 * size.multiplier2,
+                //     ),
+                //     tooltip: l10n.create_playlist,
+                //   ),
+                // ],
                 centerTitle: false,
                 backgroundColor: colorScheme.tertiary.withValues(alpha: 0.1),
               ),

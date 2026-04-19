@@ -791,7 +791,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'AirPlay is only available on iOS and macOS';
 
   @override
-  String get cloud_music_api => 'Cloud Music API';
+  String get cloud_music_api => 'Cloud Music';
 
   @override
   String get api_url => 'API URL';
@@ -810,6 +810,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get default_url => 'Default';
+
+  @override
+  String get search_song => 'Search Song';
+
+  @override
+  String get search_artist => 'Search Artist';
+
+  @override
+  String get search_album => 'Search Album';
 
   @override
   String get use_cloud_music_as_home => 'Use as Home Page';
@@ -982,6 +991,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ranking => 'Ranking';
+
+  @override
+  String get delete_from_playlist => 'Remove from playlist';
 
   @override
   String get invalid_cookie_format =>

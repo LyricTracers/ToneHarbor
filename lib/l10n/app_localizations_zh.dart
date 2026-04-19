@@ -771,7 +771,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get airplay_not_supported => 'AirPlay 仅支持 iOS 和 macOS 平台';
 
   @override
-  String get cloud_music_api => '云音乐Api';
+  String get cloud_music_api => '云音乐';
 
   @override
   String get api_url => 'API 地址';
@@ -790,6 +790,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get default_url => '默认';
+
+  @override
+  String get search_song => '搜索歌曲';
+
+  @override
+  String get search_artist => '搜索艺术家';
+
+  @override
+  String get search_album => '搜索专辑';
 
   @override
   String get use_cloud_music_as_home => '作为首页推荐';
@@ -954,6 +963,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get ranking => '排行榜';
+
+  @override
+  String get delete_from_playlist => '从歌单删除';
 
   @override
   String get invalid_cookie_format => 'Cookie 格式无效，必须包含 MUSIC_U';

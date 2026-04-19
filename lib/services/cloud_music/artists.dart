@@ -250,6 +250,11 @@ Future<List<CloudMusicArtistData>> similarArtists(
   final cacheKey = 'cloud_similarArtists:$artistId';
   final groupKey = 'cloud_similarArtists';
   final apiState = ref.read(cloudMusicApiUrlsProvider);
+  final useInfo = ref.watch(cloudUserInfoProvider);
+
+  if (useInfo.value == null || apiState.defaultUrl.isEmpty) {
+    return [];
+  }
   if (cacheDuration != null) {
     final cached = await getFromCache<List<CloudMusicArtistData>>(
       cacheKey: cacheKey,
@@ -287,7 +292,7 @@ Future<List<CloudMusicArtistData>> similarArtists(
   );
 
   if (response.statusCode != 200) {
-    logger.e('请求失败，状态码：${response.statusCode}');
+    logger.e('请求失败，响应体：${response.body}');
     throw CloudMusicException(
       message: l10n.error_network_error,
       statusCode: response.statusCode,

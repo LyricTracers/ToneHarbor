@@ -1625,7 +1625,7 @@ abstract class AppLocalizations {
   /// No description provided for @cloud_music_api.
   ///
   /// In en, this message translates to:
-  /// **'Cloud Music API'**
+  /// **'Cloud Music'**
   String get cloud_music_api;
 
   /// No description provided for @api_url.
@@ -1663,6 +1663,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Default'**
   String get default_url;
+
+  /// No description provided for @search_song.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Song'**
+  String get search_song;
+
+  /// No description provided for @search_artist.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Artist'**
+  String get search_artist;
+
+  /// No description provided for @search_album.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Album'**
+  String get search_album;
 
   /// No description provided for @use_cloud_music_as_home.
   ///
@@ -1987,6 +2005,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ranking'**
   String get ranking;
+
+  /// No description provided for @delete_from_playlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from playlist'**
+  String get delete_from_playlist;
 
   /// No description provided for @invalid_cookie_format.
   ///
