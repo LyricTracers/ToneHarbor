@@ -83,7 +83,15 @@ class MixSearch extends _$MixSearch {
   Future<void> searchSongs(String query) async {
     try {
       final songs = await ref.watch(searchSongsProvider(title: query).future);
-      state = state.copyWith(songs: songs, searchSongFlag: 0);
+      if (songs.songs.isNotEmpty) {
+        final currentSongs = state.songs?.songs ?? [];
+        final newSongs = List<ToneHarborTrackObject>.from(currentSongs);
+        newSongs.addAll(songs.songs);
+        state = state.copyWith(
+          songs: ToneHarborTrackObjectList.data(songs: newSongs),
+          searchSongFlag: 0,
+        );
+      }
     } catch (e) {
       logger.e('搜索歌曲失败: $e');
       state = state.copyWith(searchSongFlag: 0);
@@ -121,7 +129,6 @@ class MixSearch extends _$MixSearch {
         query: query,
         cacheDuration: const Duration(days: 30),
       );
-
       if (cloudSongs.songs != null && cloudSongs.songs!.isNotEmpty) {
         final currentSongs = state.songs?.songs ?? [];
         final newSongs = List<ToneHarborTrackObject>.from(currentSongs);

@@ -68,7 +68,6 @@ Future<CloudSearchData> searchSuggest(
   }
 
   var searchData = CloudSearchData.fromJson(jsonBody['result']);
-
   if (searchData.songs != null && searchData.songs!.isNotEmpty) {
     try {
       final tracks = await getTrackDetail(
@@ -78,7 +77,6 @@ Future<CloudSearchData> searchSuggest(
       searchData = searchData.copyWith(songs: tracks);
     } catch (e) {
       logger.e('获取歌曲详情失败: $e');
-      searchData = searchData.copyWith(songs: []);
     }
   }
 
