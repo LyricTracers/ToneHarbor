@@ -1087,6 +1087,39 @@ class DownloadManager extends _$DownloadManager {
             totalSize = int.parse(match.group(1)!);
             _updateTask(task.track, totalSizeBytes: totalSize);
           }
+        } else {
+          final contentLength = response.headers
+              .where((h) => h.$1.toLowerCase() == 'content-length')
+              .firstOrNull;
+          if (contentLength != null) {
+            totalSize = int.tryParse(contentLength.$2);
+            if (totalSize != null) {
+              _updateTask(task.track, totalSizeBytes: totalSize);
+            }
+          }
+        }
+
+        if (totalSize == null) {
+          try {
+            final headResponse = await downloadHttpClientWrapper.head(
+              streamUrl,
+              headers: rhttp.HttpHeaders.rawMap(authHeaders ?? {}),
+            );
+            final headContentLength = headResponse.headers
+                .where((h) => h.$1.toLowerCase() == 'content-length')
+                .firstOrNull;
+            if (headContentLength != null) {
+              totalSize = int.tryParse(headContentLength.$2);
+              if (totalSize != null) {
+                _updateTask(task.track, totalSizeBytes: totalSize);
+                logger.i(
+                  '[DownloadManager] HEAD request got content-length: $totalSize',
+                );
+              }
+            }
+          } catch (e) {
+            logger.w('[DownloadManager] HEAD request failed: $e');
+          }
         }
 
         var downloadedBytes = existingBytes;

@@ -81,7 +81,8 @@ class PlaybackRoutes {
       response.statusCode,
       headers: {
         'content-type': headers['content-type'] ?? fallbackMimeType,
-        'content-length': headers['content-length'] ?? '',
+        if (headers['content-length'] != null)
+          'content-length': headers['content-length']!,
         'accept-ranges': 'bytes',
         if (headers['content-range'] != null)
           'content-range': headers['content-range']!,
@@ -132,7 +133,8 @@ class PlaybackRoutes {
       headers: {
         'content-type':
             headers['content-type'] ?? _getMimeType(actualContainer),
-        'content-length': headers['content-length'] ?? '',
+        if (headers['content-length'] != null)
+          'content-length': headers['content-length']!,
         'accept-ranges': 'bytes',
         if (headers['content-range'] != null)
           'content-range': headers['content-range']!,
@@ -372,6 +374,30 @@ class PlaybackRoutes {
       } catch (_) {}
     } else if (headers['content-length'] != null) {
       totalSize = int.tryParse(headers['content-length']!);
+    }
+
+    if (totalSize == null) {
+      try {
+        final headResponse = await downloadHttpClientWrapper.head(
+          songUrlData.url,
+        );
+        final headHeaders = <String, String>{};
+        for (final header in headResponse.headers) {
+          headHeaders[header.$1.toLowerCase()] = header.$2;
+        }
+        if (headHeaders['content-length'] != null) {
+          totalSize = int.tryParse(headHeaders['content-length']!);
+          logger.i(
+            '[PlaybackRoutes] HEAD request got content-length: $totalSize',
+          );
+        }
+      } catch (e) {
+        logger.w('[PlaybackRoutes] HEAD request failed: $e');
+      }
+    }
+
+    if (totalSize != null && headers['content-length'] == null) {
+      headers['content-length'] = '$totalSize';
     }
 
     final partialCacheFile = File(
@@ -870,6 +896,31 @@ class PlaybackRoutes {
       totalSize = headers['content-length'] != null
           ? int.tryParse(headers['content-length']!)
           : null;
+    }
+
+    if (totalSize == null) {
+      try {
+        final headResponse = await downloadHttpClientWrapper.head(
+          streamUrl,
+          headers: rhttp.HttpHeaders.rawMap(authHeaders),
+        );
+        final headHeaders = <String, String>{};
+        for (final header in headResponse.headers) {
+          headHeaders[header.$1.toLowerCase()] = header.$2;
+        }
+        if (headHeaders['content-length'] != null) {
+          totalSize = int.tryParse(headHeaders['content-length']!);
+          logger.i(
+            '[PlaybackRoutes] HEAD request got content-length: $totalSize',
+          );
+        }
+      } catch (e) {
+        logger.w('[PlaybackRoutes] HEAD request failed: $e');
+      }
+    }
+
+    if (totalSize != null && headers['content-length'] == null) {
+      headers['content-length'] = '$totalSize';
     }
 
     return _cacheStreamResponse(
