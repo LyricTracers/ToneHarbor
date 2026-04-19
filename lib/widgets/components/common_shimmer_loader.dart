@@ -8,7 +8,8 @@ class CommonShimmerLoader {
     required Size size,
     int itemCount = 6,
   }) {
-    final itemHeight = 66.0 * size.multiplier2;
+    final multiplier = size.multiplier2;
+    final itemHeight = 66.0 * multiplier;
 
     return Shimmer.fromColors(
       baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
@@ -19,23 +20,23 @@ class CommonShimmerLoader {
           return Container(
             height: itemHeight,
             padding: EdgeInsets.only(
-              left: 15 * size.multiplier,
-              right: 20 * size.multiplier,
-              top: 4 * size.multiplier,
-              bottom: 4 * size.multiplier,
+              left: 15 * multiplier,
+              right: 20 * multiplier,
+              top: 4 * multiplier,
+              bottom: 4 * multiplier,
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  width: 24 * size.multiplier2,
-                  height: 24 * size.multiplier2,
+                  width: 14 * multiplier,
+                  height: 14 * multiplier,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
-                SizedBox(width: 15 * size.multiplier),
+                SizedBox(width: 15 * multiplier),
                 Expanded(
                   flex: 1,
                   child: Column(
@@ -43,32 +44,30 @@ class CommonShimmerLoader {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        height: 16 * size.multiplier2,
+                        height: 16 * multiplier,
                         width: size.width * 0.5,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
-                      SizedBox(height: 4 * size.multiplier),
+                      SizedBox(height: 4 * multiplier),
                       Row(
                         children: [
                           Container(
-                            width: 60 * size.multiplier2,
-                            height: 14 * size.multiplier2,
+                            width: 60 * multiplier,
+                            height: 14 * multiplier,
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          SizedBox(width: 15 * size.multiplier),
+                          SizedBox(width: 15 * multiplier),
                           Expanded(
                             child: Padding(
-                              padding: EdgeInsets.only(
-                                right: 15 * size.multiplier,
-                              ),
+                              padding: EdgeInsets.only(right: 15 * multiplier),
                               child: Container(
-                                height: 14 * size.multiplier2,
+                                height: 14 * multiplier,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(4),
@@ -200,8 +199,9 @@ class CommonShimmerLoader {
   static Widget playlistList({
     required ColorScheme colorScheme,
     required Size size,
-    int itemCount = 6,
+    int itemCount = 20,
   }) {
+    final multiplier = size.multiplier3;
     return Shimmer.fromColors(
       baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
       highlightColor: colorScheme.surface.withValues(alpha: 1.0),
@@ -210,32 +210,33 @@ class CommonShimmerLoader {
         itemBuilder: (context, index) {
           return Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: 20 * size.multiplier,
-              vertical: 4 * size.multiplier,
+              horizontal: 20 * multiplier,
+              vertical: 4 * multiplier,
             ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  width: 16 * size.multiplier2,
-                  height: 16 * size.multiplier2,
+                  width: 14 * multiplier,
+                  height: 14 * multiplier,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
-                SizedBox(width: 15 * size.multiplier),
+                SizedBox(width: 15 * multiplier),
                 Container(
-                  width: 20 * size.multiplier2,
-                  height: 20 * size.multiplier2,
+                  width: 20 * multiplier,
+                  height: 20 * multiplier,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
-                SizedBox(width: 10 * size.multiplier),
+                SizedBox(width: 10 * multiplier),
                 Expanded(
                   child: Container(
-                    height: 16 * size.multiplier2,
+                    height: 16 * multiplier,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(4),
