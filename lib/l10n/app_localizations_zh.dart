@@ -995,5 +995,53 @@ class AppLocalizationsZh extends AppLocalizations {
   String get delete_from_playlist => '从歌单删除';
 
   @override
+  String get new_album => '新专速递';
+
+  @override
   String get invalid_cookie_format => 'Cookie 格式无效，必须包含 MUSIC_U';
+
+  @override
+  String get preferences_settings => '偏好设置';
+
+  @override
+  String get music_language_preference => '音乐语种偏好';
+
+  @override
+  String get music_language_preference_desc => '设置推荐和搜索结果的音乐语种';
+
+  @override
+  String get cloud_music_quality => '音质设置';
+
+  @override
+  String get cloud_music_quality_desc => '设置云音乐歌曲的音质';
+
+  @override
+  String get quality_standard => '标准品质';
+
+  @override
+  String get quality_higher => '较高品质';
+
+  @override
+  String get quality_exhigh => '极高品质';
+
+  @override
+  String get quality_lossless => '无损品质';
+
+  @override
+  String get quality_hires => 'Hi-Res品质';
+
+  @override
+  String get language_all => '全部';
+
+  @override
+  String get language_chinese => '华语';
+
+  @override
+  String get language_euro => '欧美';
+
+  @override
+  String get language_japanese => '日语';
+
+  @override
+  String get language_korean => '韩语';
 }

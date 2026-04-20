@@ -631,6 +631,59 @@ abstract class _$CloudMusicLanguage extends $Notifier<CloudMusicLanguageType> {
   }
 }
 
+@ProviderFor(CloudMusicQualitySetting)
+final cloudMusicQualitySettingProvider = CloudMusicQualitySettingProvider._();
+
+final class CloudMusicQualitySettingProvider
+    extends $NotifierProvider<CloudMusicQualitySetting, CloudMusicQuality> {
+  CloudMusicQualitySettingProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'cloudMusicQualitySettingProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudMusicQualitySettingHash();
+
+  @$internal
+  @override
+  CloudMusicQualitySetting create() => CloudMusicQualitySetting();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CloudMusicQuality value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CloudMusicQuality>(value),
+    );
+  }
+}
+
+String _$cloudMusicQualitySettingHash() =>
+    r'5ffc637dc8752ddb6cb8e6baff538c423b05aa61';
+
+abstract class _$CloudMusicQualitySetting extends $Notifier<CloudMusicQuality> {
+  CloudMusicQuality build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<CloudMusicQuality, CloudMusicQuality>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<CloudMusicQuality, CloudMusicQuality>,
+              CloudMusicQuality,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(CloudMusicAuthState)
 final cloudMusicAuthStateProvider = CloudMusicAuthStateProvider._();
 

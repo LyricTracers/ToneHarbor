@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
+import 'package:toneharbor/services/cloud_music/song_url.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/pages/build_item.dart';
@@ -43,8 +44,8 @@ class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
               ref,
               l10n,
               colorScheme,
-              l10n.home_page_settings,
-              _buildUseAsHomeSwitch(ref, l10n, colorScheme, multiplier),
+              l10n.cloud_music_login,
+              _buildLoginSection(ref, l10n, colorScheme, multiplier),
               multiplier,
             ),
             const SizedBox(height: 16),
@@ -52,8 +53,8 @@ class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
               ref,
               l10n,
               colorScheme,
-              l10n.cloud_music_login,
-              _buildLoginSection(ref, l10n, colorScheme, multiplier),
+              l10n.preferences_settings,
+              _buildPreferencesSection(ref, l10n, colorScheme, multiplier),
               multiplier,
             ),
           ],
@@ -283,6 +284,209 @@ class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
     if (!uri.hasScheme || uri.host.isEmpty) return false;
     if (uri.scheme != 'http' && uri.scheme != 'https') return false;
     return true;
+  }
+
+  Widget _buildLanguageSection(
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+    double multiplier,
+  ) {
+    final languageType = ref.watch(cloudMusicLanguageProvider);
+    final languageName = _getLanguageDisplayName(languageType, l10n);
+
+    return Column(
+      children: [
+        ListTile(
+          title: Text(
+            languageName,
+            style: TextStyle(
+              fontSize: 15 * multiplier,
+              fontWeight: FontWeight.w500,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          subtitle: Text(
+            l10n.music_language_preference_desc,
+            style: TextStyle(
+              fontSize: 12 * multiplier,
+              color: colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+          ),
+          trailing: Icon(Icons.arrow_forward_ios, size: 16 * multiplier),
+          onTap: () => _showLanguageSelector(ref, l10n, colorScheme),
+        ),
+      ],
+    );
+  }
+
+  String _getLanguageDisplayName(
+    CloudMusicLanguageType type,
+    AppLocalizations l10n,
+  ) {
+    switch (type) {
+      case CloudMusicLanguageType.unKnow:
+        return l10n.language_all;
+      case CloudMusicLanguageType.zh:
+        return l10n.language_chinese;
+      case CloudMusicLanguageType.en:
+        return l10n.language_euro;
+      case CloudMusicLanguageType.jp:
+        return l10n.language_japanese;
+      case CloudMusicLanguageType.kr:
+        return l10n.language_korean;
+    }
+  }
+
+  void _showLanguageSelector(
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+  ) {
+    final currentLanguage = ref.watch(cloudMusicLanguageProvider);
+    final languageOptions = [
+      (type: CloudMusicLanguageType.unKnow, name: l10n.language_all),
+      (type: CloudMusicLanguageType.zh, name: l10n.language_chinese),
+      (type: CloudMusicLanguageType.en, name: l10n.language_euro),
+      (type: CloudMusicLanguageType.jp, name: l10n.language_japanese),
+      (type: CloudMusicLanguageType.kr, name: l10n.language_korean),
+    ];
+
+    showCommonDialog(
+      context: ref.context,
+      colorScheme: colorScheme,
+      title: l10n.music_language_preference,
+      contentBuilder: (innerContext) {
+        return RadioGroup<CloudMusicLanguageType>(
+          groupValue: currentLanguage,
+          onChanged: (value) {
+            if (value != null) {
+              ref.read(cloudMusicLanguageProvider.notifier).set(value);
+              Navigator.pop(innerContext);
+            }
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: languageOptions.map((option) {
+              return RadioListTile<CloudMusicLanguageType>(
+                value: option.type,
+                title: Text(option.name),
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildQualitySection(
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+    double multiplier,
+  ) {
+    final quality = ref.watch(cloudMusicQualitySettingProvider);
+    final qualityName = _getQualityDisplayName(quality, l10n);
+
+    return Column(
+      children: [
+        ListTile(
+          title: Text(
+            qualityName,
+            style: TextStyle(
+              fontSize: 15 * multiplier,
+              fontWeight: FontWeight.w500,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          subtitle: Text(
+            l10n.cloud_music_quality_desc,
+            style: TextStyle(
+              fontSize: 12 * multiplier,
+              color: colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+          ),
+          trailing: Icon(Icons.arrow_forward_ios, size: 16 * multiplier),
+          onTap: () => _showQualitySelector(ref, l10n, colorScheme),
+        ),
+      ],
+    );
+  }
+
+  String _getQualityDisplayName(
+    CloudMusicQuality quality,
+    AppLocalizations l10n,
+  ) {
+    switch (quality) {
+      case CloudMusicQuality.standard:
+        return l10n.quality_standard;
+      case CloudMusicQuality.higher:
+        return l10n.quality_higher;
+      case CloudMusicQuality.exhigh:
+        return l10n.quality_exhigh;
+      case CloudMusicQuality.lossless:
+        return l10n.quality_lossless;
+      case CloudMusicQuality.hires:
+        return l10n.quality_hires;
+    }
+  }
+
+  void _showQualitySelector(
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+  ) {
+    final currentQuality = ref.watch(cloudMusicQualitySettingProvider);
+    final qualityOptions = [
+      (quality: CloudMusicQuality.standard, name: l10n.quality_standard),
+      (quality: CloudMusicQuality.higher, name: l10n.quality_higher),
+      (quality: CloudMusicQuality.exhigh, name: l10n.quality_exhigh),
+      (quality: CloudMusicQuality.lossless, name: l10n.quality_lossless),
+      (quality: CloudMusicQuality.hires, name: l10n.quality_hires),
+    ];
+
+    showCommonDialog(
+      context: ref.context,
+      colorScheme: colorScheme,
+      title: l10n.cloud_music_quality,
+      contentBuilder: (innerContext) {
+        return RadioGroup<CloudMusicQuality>(
+          groupValue: currentQuality,
+          onChanged: (value) {
+            if (value != null) {
+              ref.read(cloudMusicQualitySettingProvider.notifier).set(value);
+              Navigator.pop(innerContext);
+            }
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: qualityOptions.map((option) {
+              return RadioListTile<CloudMusicQuality>(
+                value: option.quality,
+                title: Text(option.name),
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPreferencesSection(
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+    double multiplier,
+  ) {
+    return Column(
+      children: [
+        _buildUseAsHomeSwitch(ref, l10n, colorScheme, multiplier),
+        Divider(height: 1, color: colorScheme.onSurface.withValues(alpha: 0.1)),
+        _buildLanguageSection(ref, l10n, colorScheme, multiplier),
+        Divider(height: 1, color: colorScheme.onSurface.withValues(alpha: 0.1)),
+        _buildQualitySection(ref, l10n, colorScheme, multiplier),
+      ],
+    );
   }
 
   Widget _buildLoginSection(

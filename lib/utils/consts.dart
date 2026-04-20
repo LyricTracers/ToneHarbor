@@ -32,6 +32,7 @@ const String cloudMusicApiUrlsKey = 'cloud_music_api_urls';
 const String cloudMusicApiDefaultUrlKey = 'cloud_music_api_default_url';
 const String useCloudMusicApiAsHomeKey = 'use_cloud_music_api_as_home';
 const String cloudMusicLanguageKey = 'cloud_music_language';
+const String cloudMusicQualityKey = 'cloud_music_quality';
 const String cloudMusicCookiesKey = 'cloud_music_cookies';
 const String cloudMusicCategoryKey = 'cloud_music_category_list';
 

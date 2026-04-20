@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
+import 'package:toneharbor/services/cloud_music/song_url.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
@@ -317,6 +318,19 @@ class CloudMusicLanguage extends _$CloudMusicLanguage {
   Future<void> set(CloudMusicLanguageType value) async {
     state = value;
     await SharedPreferencesUtils.setCloudMusicLanguage(value.value);
+  }
+}
+
+@riverpod
+class CloudMusicQualitySetting extends _$CloudMusicQualitySetting {
+  @override
+  CloudMusicQuality build() {
+    return SharedPreferencesUtils.getCloudMusicQuality();
+  }
+
+  Future<void> set(CloudMusicQuality value) async {
+    state = value;
+    await SharedPreferencesUtils.setCloudMusicQuality(value);
   }
 }
 

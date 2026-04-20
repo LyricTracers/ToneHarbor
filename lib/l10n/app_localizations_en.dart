@@ -1023,6 +1023,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String get delete_from_playlist => 'Remove from playlist';
 
   @override
+  String get new_album => 'New Album Express';
+
+  @override
   String get invalid_cookie_format =>
       'Invalid Cookie format, must contain MUSIC_U';
+
+  @override
+  String get preferences_settings => 'Preferences';
+
+  @override
+  String get music_language_preference => 'Music Language Preference';
+
+  @override
+  String get music_language_preference_desc =>
+      'Set music language for recommendations and search results';
+
+  @override
+  String get cloud_music_quality => 'Audio Quality';
+
+  @override
+  String get cloud_music_quality_desc =>
+      'Set audio quality for cloud music songs';
+
+  @override
+  String get quality_standard => 'Standard Quality';
+
+  @override
+  String get quality_higher => 'Higher Quality';
+
+  @override
+  String get quality_exhigh => 'Extreme Quality';
+
+  @override
+  String get quality_lossless => 'Lossless Quality';
+
+  @override
+  String get quality_hires => 'Hi-Res Quality';
+
+  @override
+  String get language_all => 'All';
+
+  @override
+  String get language_chinese => 'Chinese';
+
+  @override
+  String get language_euro => 'Western';
+
+  @override
+  String get language_japanese => 'Japanese';
+
+  @override
+  String get language_korean => 'Korean';
 }

@@ -2066,11 +2066,107 @@ abstract class AppLocalizations {
   /// **'Remove from playlist'**
   String get delete_from_playlist;
 
+  /// No description provided for @new_album.
+  ///
+  /// In en, this message translates to:
+  /// **'New Album Express'**
+  String get new_album;
+
   /// No description provided for @invalid_cookie_format.
   ///
   /// In en, this message translates to:
   /// **'Invalid Cookie format, must contain MUSIC_U'**
   String get invalid_cookie_format;
+
+  /// No description provided for @preferences_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get preferences_settings;
+
+  /// No description provided for @music_language_preference.
+  ///
+  /// In en, this message translates to:
+  /// **'Music Language Preference'**
+  String get music_language_preference;
+
+  /// No description provided for @music_language_preference_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Set music language for recommendations and search results'**
+  String get music_language_preference_desc;
+
+  /// No description provided for @cloud_music_quality.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Quality'**
+  String get cloud_music_quality;
+
+  /// No description provided for @cloud_music_quality_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Set audio quality for cloud music songs'**
+  String get cloud_music_quality_desc;
+
+  /// No description provided for @quality_standard.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard Quality'**
+  String get quality_standard;
+
+  /// No description provided for @quality_higher.
+  ///
+  /// In en, this message translates to:
+  /// **'Higher Quality'**
+  String get quality_higher;
+
+  /// No description provided for @quality_exhigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Extreme Quality'**
+  String get quality_exhigh;
+
+  /// No description provided for @quality_lossless.
+  ///
+  /// In en, this message translates to:
+  /// **'Lossless Quality'**
+  String get quality_lossless;
+
+  /// No description provided for @quality_hires.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi-Res Quality'**
+  String get quality_hires;
+
+  /// No description provided for @language_all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get language_all;
+
+  /// No description provided for @language_chinese.
+  ///
+  /// In en, this message translates to:
+  /// **'Chinese'**
+  String get language_chinese;
+
+  /// No description provided for @language_euro.
+  ///
+  /// In en, this message translates to:
+  /// **'Western'**
+  String get language_euro;
+
+  /// No description provided for @language_japanese.
+  ///
+  /// In en, this message translates to:
+  /// **'Japanese'**
+  String get language_japanese;
+
+  /// No description provided for @language_korean.
+  ///
+  /// In en, this message translates to:
+  /// **'Korean'**
+  String get language_korean;
 }
 
 class _AppLocalizationsDelegate

@@ -335,5 +335,21 @@
   "artist_profile": "Artist Profile",
   "ranking": "Ranking",
   "delete_from_playlist": "Remove from playlist",
-  "invalid_cookie_format": "Invalid Cookie format, must contain MUSIC_U"
+  "new_album": "New Album Express",
+  "invalid_cookie_format": "Invalid Cookie format, must contain MUSIC_U",
+  "preferences_settings": "Preferences",
+  "music_language_preference": "Music Language Preference",
+  "music_language_preference_desc": "Set music language for recommendations and search results",
+  "cloud_music_quality": "Audio Quality",
+  "cloud_music_quality_desc": "Set audio quality for cloud music songs",
+  "quality_standard": "Standard Quality",
+  "quality_higher": "Higher Quality",
+  "quality_exhigh": "Extreme Quality",
+  "quality_lossless": "Lossless Quality",
+  "quality_hires": "Hi-Res Quality",
+  "language_all": "All",
+  "language_chinese": "Chinese",
+  "language_euro": "Western",
+  "language_japanese": "Japanese",
+  "language_korean": "Korean"
 }

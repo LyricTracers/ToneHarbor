@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/cloud_music_auth.dart';
+import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 
 part 'song_url.g.dart';
@@ -16,6 +17,13 @@ enum CloudMusicQuality {
   const CloudMusicQuality(this.level, this.bitrate);
   final String level;
   final int bitrate;
+
+  static CloudMusicQuality fromIndex(int index) {
+    if (index >= 0 && index < values.length) {
+      return values[index];
+    }
+    return exhigh;
+  }
 }
 
 class CloudMusicSongUrlData {
@@ -54,10 +62,12 @@ class CloudMusicSongUrlData {
 Future<CloudMusicSongUrlData?> getSongUrl(
   Ref ref, {
   required int songId,
-  CloudMusicQuality quality = CloudMusicQuality.exhigh,
+  CloudMusicQuality? quality,
   bool unblock = false,
   bool skipFreeTrial = true,
 }) async {
+  final effectiveQuality =
+      quality ?? SharedPreferencesUtils.getCloudMusicQuality();
   final apiState = ref.read(cloudMusicApiUrlsProvider);
   if (apiState.defaultUrl.isEmpty) {
     logger.w('[CloudMusicSongUrl] API URL is empty');
@@ -80,7 +90,7 @@ Future<CloudMusicSongUrlData?> getSongUrl(
 
   final query = <String, String>{
     'id': songId.toString(),
-    'level': quality.level,
+    'level': effectiveQuality.level,
   };
 
   final cookieParams = CloudMusicAuth.getApiCookieParams();
@@ -106,7 +116,12 @@ Future<CloudMusicSongUrlData?> getSongUrl(
       logger.w('[CloudMusicSongUrl] API returned error: ${json['code']}');
       if (!unblock) {
         logger.i('[CloudMusicSongUrl] API error, trying unblock');
-        return getSongUrl(ref, songId: songId, quality: quality, unblock: true);
+        return getSongUrl(
+          ref,
+          songId: songId,
+          quality: effectiveQuality,
+          unblock: true,
+        );
       }
       return null;
     }
@@ -116,7 +131,12 @@ Future<CloudMusicSongUrlData?> getSongUrl(
       logger.w('[CloudMusicSongUrl] No data returned');
       if (!unblock) {
         logger.i('[CloudMusicSongUrl] No data, trying unblock');
-        return getSongUrl(ref, songId: songId, quality: quality, unblock: true);
+        return getSongUrl(
+          ref,
+          songId: songId,
+          quality: effectiveQuality,
+          unblock: true,
+        );
       }
       return null;
     }
@@ -127,7 +147,12 @@ Future<CloudMusicSongUrlData?> getSongUrl(
     if (url == null || url.isEmpty) {
       if (!unblock) {
         logger.i('[CloudMusicSongUrl] URL is empty, trying unblock');
-        return getSongUrl(ref, songId: songId, quality: quality, unblock: true);
+        return getSongUrl(
+          ref,
+          songId: songId,
+          quality: effectiveQuality,
+          unblock: true,
+        );
       }
       logger.w('[CloudMusicSongUrl] URL is empty after unblock');
       return null;
@@ -140,12 +165,17 @@ Future<CloudMusicSongUrlData?> getSongUrl(
       logger.w('[CloudMusicSongUrl] Song is free trial only, skipping');
       if (!unblock) {
         logger.i('[CloudMusicSongUrl] Free trial, trying unblock');
-        return getSongUrl(ref, songId: songId, quality: quality, unblock: true);
+        return getSongUrl(
+          ref,
+          songId: songId,
+          quality: effectiveQuality,
+          unblock: true,
+        );
       }
       return null;
     }
 
-    final bitrate = songData['br'] as int? ?? quality.bitrate;
+    final bitrate = songData['br'] as int? ?? effectiveQuality.bitrate;
 
     String? extension;
     final encodeType = songData['type'] as String?;
@@ -172,7 +202,12 @@ Future<CloudMusicSongUrlData?> getSongUrl(
     );
     if (!unblock) {
       logger.i('[CloudMusicSongUrl] Error occurred, trying unblock');
-      return getSongUrl(ref, songId: songId, quality: quality, unblock: true);
+      return getSongUrl(
+        ref,
+        songId: songId,
+        quality: effectiveQuality,
+        unblock: true,
+      );
     }
     return null;
   }

@@ -208,17 +208,34 @@ abstract class SharedPreferencesUtils {
   }
 
   static bool getUseCloudMusicApiAsHome() =>
-      sharedPreferences.getBool(useCloudMusicApiAsHomeKey) ?? false;
+      sharedPreferences.getBool(useCloudMusicApiAsHomeKey) ?? true;
 
   static Future<void> setUseCloudMusicApiAsHome(bool value) async {
     await sharedPreferences.setBool(useCloudMusicApiAsHomeKey, value);
   }
 
   static int getCloudMusicLanguage() =>
-      sharedPreferences.getInt(cloudMusicLanguageKey) ?? 0;
+      sharedPreferences.getInt(cloudMusicLanguageKey) ?? 1;
 
   static Future<void> setCloudMusicLanguage(int value) async {
     await sharedPreferences.setInt(cloudMusicLanguageKey, value);
+  }
+
+  static String getCloudMusicLanguageName(int index) {
+    const languages = ['全部', '华语', '欧美', '日语', '韩语'];
+    if (index >= 0 && index < languages.length) {
+      return languages[index];
+    }
+    return '华语';
+  }
+
+  static CloudMusicQuality getCloudMusicQuality() {
+    final savedValue = sharedPreferences.getInt(cloudMusicQualityKey);
+    return CloudMusicQuality.fromIndex(savedValue ?? 2);
+  }
+
+  static Future<void> setCloudMusicQuality(CloudMusicQuality quality) async {
+    await sharedPreferences.setInt(cloudMusicQualityKey, quality.index);
   }
 
   static String? getCloudMusicCookies() =>
