@@ -412,3 +412,14 @@ Map<String, dynamic> _$CloudSearchDataToJson(_CloudSearchData instance) =>
       'artists': instance.artists,
       'albums': instance.albums,
     };
+
+_CloudAlbumListData _$CloudAlbumListDataFromJson(Map<String, dynamic> json) =>
+    _CloudAlbumListData(
+      albums: (json['albums'] as List<dynamic>?)
+          ?.map((e) => CloudMusicAlbumData.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      total: (json['total'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$CloudAlbumListDataToJson(_CloudAlbumListData instance) =>
+    <String, dynamic>{'albums': instance.albums, 'total': instance.total};

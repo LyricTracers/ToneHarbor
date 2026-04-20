@@ -61,15 +61,16 @@ enum Language {
 }
 
 enum CloudMusicLanguageType {
-  unKnow(0, '无偏好'),
-  zh(1, '华语'),
-  en(2, '欧美'),
-  kr(3, '韩语'),
-  jp(4, '日语');
+  unKnow(0, '无偏好', 'ALL'),
+  zh(1, '华语', 'ZH'),
+  en(2, '欧美', 'EA'),
+  kr(3, '韩语', 'KR'),
+  jp(4, '日语', 'JP');
 
   final int value;
   final String displayName;
-  const CloudMusicLanguageType(this.value, this.displayName);
+  final String area;
+  const CloudMusicLanguageType(this.value, this.displayName, this.area);
 }
 
 @riverpod

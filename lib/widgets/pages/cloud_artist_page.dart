@@ -12,6 +12,7 @@ import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_common_artists.dart';
 import 'package:toneharbor/widgets/components/cloud_music_cover_image.dart';
+import 'package:toneharbor/widgets/components/cloud_albums_cat.dart';
 import 'package:toneharbor/widgets/components/smart_marquee.dart';
 import 'package:toneharbor/widgets/pages/cloud_add_to_playlists_page.dart';
 
@@ -530,12 +531,11 @@ class CloudArtistPage extends HookConsumerWidget {
           return Padding(
             padding: EdgeInsets.only(right: 15 * multiplier),
             child: RepaintBoundary(
-              child: _buildAlbumItem(
-                context,
-                album,
-                colorScheme,
-                multiplier,
-                () {
+              child: CloudMusicAlbumItem(
+                album: album,
+                colorScheme: colorScheme,
+                multiplier: multiplier,
+                onTap: () {
                   context.pushWrapper("/cloud-album-detail", extra: album);
                 },
               ),
@@ -576,113 +576,8 @@ class CloudArtistPage extends HookConsumerWidget {
           childAspectRatio: 0.75,
         ),
         delegate: SliverChildBuilderDelegate((context, index) {
-          return _buildAlbumItemShimmer(context, colorScheme);
+          return CloudMusicAlbumItemShimmer(colorScheme: colorScheme);
         }, childCount: itemCount),
-      ),
-    );
-  }
-
-  Widget _buildAlbumItem(
-    BuildContext context,
-    CloudMusicAlbumData album,
-    ColorScheme colorScheme,
-    double multiplier,
-    VoidCallback onTap,
-  ) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final coverSize = constraints.maxWidth;
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: AspectRatio(
-                  aspectRatio: 1.0,
-                  child: CloudMusicCoverImage(
-                    imageUrl: album.picUrl ?? '',
-                    colorScheme: colorScheme,
-                    config: CloudMusicCoverImageConfig(
-                      size: coverSize,
-                      borderRadius: 12,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 6),
-              SmartMarquee(
-                text: album.name,
-                style: TextStyle(
-                  fontSize: 16 * multiplier,
-                  fontWeight: FontWeight.normal,
-                ),
-                pauseOnHover: true,
-                pauseAfterRound: const Duration(seconds: 5),
-                alignment: Alignment.center,
-              ),
-
-              const SizedBox(height: 2),
-              Text(
-                formatTime(album.publishTime),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14 * multiplier,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildAlbumItemShimmer(BuildContext context, ColorScheme colorScheme) {
-    return Shimmer.fromColors(
-      baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-      highlightColor: colorScheme.surface.withValues(alpha: 1.0),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final coverSize = constraints.maxWidth;
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: AspectRatio(
-                  aspectRatio: 1.0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 6),
-              Container(
-                width: coverSize * 0.8,
-                height: 12,
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Container(
-                width: coverSize * 0.5,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-            ],
-          );
-        },
       ),
     );
   }

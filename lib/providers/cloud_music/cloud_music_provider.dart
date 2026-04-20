@@ -501,3 +501,68 @@ class CloudMusicArtistAllSongs extends _$CloudMusicArtistAllSongs
     required String sortDirection,
   }) async {}
 }
+
+@riverpod
+class CloudMusicAlbumNew extends _$CloudMusicAlbumNew
+    with ExtraProvider<CloudAlbumListData> {
+  @override
+  Future<CloudAlbumListData> build({
+    int limit = 30,
+    int offset = 0,
+    required String area,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) async {
+    ref.keepAliveFor(Duration(minutes: 1));
+    return await cloudAlbumNew(
+      ref,
+      area: area,
+      limit: limit,
+      offset: offset,
+      cacheDuration: cacheDuration,
+    );
+  }
+
+  @override
+  Future<void> loadMore() async {
+    if (state.value == null) return;
+    final currentData = state.value;
+    if (currentData == null || currentData.albums == null) {
+      return;
+    }
+
+    final currentTotal = currentData.total ?? 0;
+    final currentAlbums = currentData.albums!;
+
+    if (currentAlbums.length >= currentTotal) return;
+
+    final oldState = state.value;
+    try {
+      final newState = await cloudAlbumNew(
+        ref,
+        area: area,
+        limit: limit,
+        offset: currentAlbums.length,
+        cacheDuration: cacheDuration,
+      );
+
+      if (newState.albums == null) {
+        return;
+      }
+      final newAlbums = newState.albums!;
+      final mergedAlbums = [...currentAlbums, ...newAlbums];
+
+      state = AsyncData(
+        newState.copyWith(albums: mergedAlbums, total: currentTotal),
+      );
+    } catch (e) {
+      logger.e('加载更多albums失败: $e');
+      state = AsyncData(oldState!);
+    }
+  }
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {}
+}

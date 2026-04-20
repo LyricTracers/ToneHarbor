@@ -19,6 +19,8 @@ export 'components/song_cover_image.dart';
 export 'components/song_item.dart';
 export 'components/sub_song_selection_bottom.dart';
 export 'components/sub_song_selection_top.dart';
+export 'components/cloud_playlists_cat.dart';
+export 'components/cloud_albums_cat.dart';
 export 'pages/account_page.dart';
 export 'pages/add_to_playlists_page.dart';
 export 'pages/ai_translate_setting_page.dart';

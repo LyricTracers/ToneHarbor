@@ -1142,3 +1142,125 @@ abstract class _$CloudMusicArtistAllSongs
     );
   }
 }
+
+@ProviderFor(CloudMusicAlbumNew)
+final cloudMusicAlbumNewProvider = CloudMusicAlbumNewFamily._();
+
+final class CloudMusicAlbumNewProvider
+    extends $AsyncNotifierProvider<CloudMusicAlbumNew, CloudAlbumListData> {
+  CloudMusicAlbumNewProvider._({
+    required CloudMusicAlbumNewFamily super.from,
+    required ({int limit, int offset, String area, Duration? cacheDuration})
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'cloudMusicAlbumNewProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudMusicAlbumNewHash();
+
+  @override
+  String toString() {
+    return r'cloudMusicAlbumNewProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  CloudMusicAlbumNew create() => CloudMusicAlbumNew();
+
+  @override
+  bool operator ==(Object other) {
+    return other is CloudMusicAlbumNewProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$cloudMusicAlbumNewHash() =>
+    r'10bd97a262dabda6f9d554145b0feb6ed3bc3149';
+
+final class CloudMusicAlbumNewFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          CloudMusicAlbumNew,
+          AsyncValue<CloudAlbumListData>,
+          CloudAlbumListData,
+          FutureOr<CloudAlbumListData>,
+          ({int limit, int offset, String area, Duration? cacheDuration})
+        > {
+  CloudMusicAlbumNewFamily._()
+    : super(
+        retry: null,
+        name: r'cloudMusicAlbumNewProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CloudMusicAlbumNewProvider call({
+    int limit = 30,
+    int offset = 0,
+    required String area,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) => CloudMusicAlbumNewProvider._(
+    argument: (
+      limit: limit,
+      offset: offset,
+      area: area,
+      cacheDuration: cacheDuration,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'cloudMusicAlbumNewProvider';
+}
+
+abstract class _$CloudMusicAlbumNew extends $AsyncNotifier<CloudAlbumListData> {
+  late final _$args =
+      ref.$arg
+          as ({int limit, int offset, String area, Duration? cacheDuration});
+  int get limit => _$args.limit;
+  int get offset => _$args.offset;
+  String get area => _$args.area;
+  Duration? get cacheDuration => _$args.cacheDuration;
+
+  FutureOr<CloudAlbumListData> build({
+    int limit = 30,
+    int offset = 0,
+    required String area,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  });
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<AsyncValue<CloudAlbumListData>, CloudAlbumListData>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<CloudAlbumListData>, CloudAlbumListData>,
+              AsyncValue<CloudAlbumListData>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(
+      ref,
+      () => build(
+        limit: _$args.limit,
+        offset: _$args.offset,
+        area: _$args.area,
+        cacheDuration: _$args.cacheDuration,
+      ),
+    );
+  }
+}

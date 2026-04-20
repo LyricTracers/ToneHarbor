@@ -4327,4 +4327,272 @@ as List<CloudMusicAlbumData>?,
 
 }
 
+
+/// @nodoc
+mixin _$CloudAlbumListData {
+
+ List<CloudMusicAlbumData>? get albums; int? get total;
+/// Create a copy of CloudAlbumListData
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CloudAlbumListDataCopyWith<CloudAlbumListData> get copyWith => _$CloudAlbumListDataCopyWithImpl<CloudAlbumListData>(this as CloudAlbumListData, _$identity);
+
+  /// Serializes this CloudAlbumListData to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CloudAlbumListData&&const DeepCollectionEquality().equals(other.albums, albums)&&(identical(other.total, total) || other.total == total));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(albums),total);
+
+@override
+String toString() {
+  return 'CloudAlbumListData(albums: $albums, total: $total)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CloudAlbumListDataCopyWith<$Res>  {
+  factory $CloudAlbumListDataCopyWith(CloudAlbumListData value, $Res Function(CloudAlbumListData) _then) = _$CloudAlbumListDataCopyWithImpl;
+@useResult
+$Res call({
+ List<CloudMusicAlbumData>? albums, int? total
+});
+
+
+
+
+}
+/// @nodoc
+class _$CloudAlbumListDataCopyWithImpl<$Res>
+    implements $CloudAlbumListDataCopyWith<$Res> {
+  _$CloudAlbumListDataCopyWithImpl(this._self, this._then);
+
+  final CloudAlbumListData _self;
+  final $Res Function(CloudAlbumListData) _then;
+
+/// Create a copy of CloudAlbumListData
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? albums = freezed,Object? total = freezed,}) {
+  return _then(_self.copyWith(
+albums: freezed == albums ? _self.albums : albums // ignore: cast_nullable_to_non_nullable
+as List<CloudMusicAlbumData>?,total: freezed == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
+as int?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [CloudAlbumListData].
+extension CloudAlbumListDataPatterns on CloudAlbumListData {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CloudAlbumListData value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _CloudAlbumListData() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CloudAlbumListData value)  $default,){
+final _that = this;
+switch (_that) {
+case _CloudAlbumListData():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CloudAlbumListData value)?  $default,){
+final _that = this;
+switch (_that) {
+case _CloudAlbumListData() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<CloudMusicAlbumData>? albums,  int? total)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _CloudAlbumListData() when $default != null:
+return $default(_that.albums,_that.total);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<CloudMusicAlbumData>? albums,  int? total)  $default,) {final _that = this;
+switch (_that) {
+case _CloudAlbumListData():
+return $default(_that.albums,_that.total);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<CloudMusicAlbumData>? albums,  int? total)?  $default,) {final _that = this;
+switch (_that) {
+case _CloudAlbumListData() when $default != null:
+return $default(_that.albums,_that.total);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _CloudAlbumListData extends CloudAlbumListData {
+  const _CloudAlbumListData({final  List<CloudMusicAlbumData>? albums, this.total}): _albums = albums,super._();
+  factory _CloudAlbumListData.fromJson(Map<String, dynamic> json) => _$CloudAlbumListDataFromJson(json);
+
+ final  List<CloudMusicAlbumData>? _albums;
+@override List<CloudMusicAlbumData>? get albums {
+  final value = _albums;
+  if (value == null) return null;
+  if (_albums is EqualUnmodifiableListView) return _albums;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+@override final  int? total;
+
+/// Create a copy of CloudAlbumListData
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CloudAlbumListDataCopyWith<_CloudAlbumListData> get copyWith => __$CloudAlbumListDataCopyWithImpl<_CloudAlbumListData>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$CloudAlbumListDataToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CloudAlbumListData&&const DeepCollectionEquality().equals(other._albums, _albums)&&(identical(other.total, total) || other.total == total));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_albums),total);
+
+@override
+String toString() {
+  return 'CloudAlbumListData(albums: $albums, total: $total)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CloudAlbumListDataCopyWith<$Res> implements $CloudAlbumListDataCopyWith<$Res> {
+  factory _$CloudAlbumListDataCopyWith(_CloudAlbumListData value, $Res Function(_CloudAlbumListData) _then) = __$CloudAlbumListDataCopyWithImpl;
+@override @useResult
+$Res call({
+ List<CloudMusicAlbumData>? albums, int? total
+});
+
+
+
+
+}
+/// @nodoc
+class __$CloudAlbumListDataCopyWithImpl<$Res>
+    implements _$CloudAlbumListDataCopyWith<$Res> {
+  __$CloudAlbumListDataCopyWithImpl(this._self, this._then);
+
+  final _CloudAlbumListData _self;
+  final $Res Function(_CloudAlbumListData) _then;
+
+/// Create a copy of CloudAlbumListData
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? albums = freezed,Object? total = freezed,}) {
+  return _then(_CloudAlbumListData(
+albums: freezed == albums ? _self._albums : albums // ignore: cast_nullable_to_non_nullable
+as List<CloudMusicAlbumData>?,total: freezed == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
+as int?,
+  ));
+}
+
+
+}
+
 // dart format on

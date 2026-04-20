@@ -20,6 +20,7 @@ import 'package:toneharbor/widgets/layouts/local_songs_layout.dart';
 import 'package:toneharbor/widgets/mobile/layouts/mobile_full_layout.dart';
 import 'package:toneharbor/widgets/mobile/layouts/mobile_home_layout.dart';
 import 'package:toneharbor/widgets/pages/cloud_album_detail.dart';
+import 'package:toneharbor/widgets/pages/cloud_album_list_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_api_setting_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_artist_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_detail_playlist_page.dart';
@@ -557,6 +558,24 @@ class MyApp extends HookConsumerWidget {
                   );
                 },
               ),
+              GoRoute(
+                path: '/cloud-album-cat/:title',
+                pageBuilder: (context, state) {
+                  final baseProvider =
+                      state.extra
+                          as $AsyncNotifierProvider<
+                            ExtraProvider<CloudAlbumListData>,
+                            CloudAlbumListData
+                          >;
+                  return buildPage(
+                    key: state.pageKey,
+                    child: CloudAlbumListPage(
+                      baseProvider: baseProvider,
+                      title: state.pathParameters['title'] ?? 'Albums',
+                    ),
+                  );
+                },
+              ),
             ],
           ),
           // ================================
@@ -922,6 +941,24 @@ class MyApp extends HookConsumerWidget {
                     isLocal: false,
                     isCloud: true,
                   ),
+                ),
+              );
+            },
+          ),
+
+          GoRoute(
+            path: '/mobile/cloud-album-cat',
+            pageBuilder: (context, state) {
+              final baseProvider =
+                  state.extra
+                      as $AsyncNotifierProvider<
+                        ExtraProvider<CloudAlbumListData>,
+                        CloudAlbumListData
+                      >;
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(
+                  child: CloudAlbumsCat(baseProvider: baseProvider),
                 ),
               );
             },

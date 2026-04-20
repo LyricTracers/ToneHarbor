@@ -862,9 +862,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get recommend_playlist => '推荐歌单';
 
   @override
-  String get new_albums => '新专辑';
-
-  @override
   String get top_lists => '排行榜';
 
   @override

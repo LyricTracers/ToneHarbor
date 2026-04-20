@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/services/cloud_music/albums.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/cloud_playlist_static_data.dart';
 import 'package:toneharbor/utils/responsive.dart';
@@ -348,6 +349,60 @@ class RecommendPage extends HookConsumerWidget {
                             ),
                       ),
 
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          top: 16,
+                          bottom: 8,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              i10n.new_album,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                context.pushWrapper(
+                                  "/cloud-album-cat/${Uri.encodeComponent(i10n.new_album)}",
+                                  extra: cloudMusicAlbumNewProvider(
+                                    limit: 30,
+                                    area: ref
+                                        .watch(cloudMusicLanguageProvider)
+                                        .area,
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                i10n.more,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: colorScheme.tertiary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(
+                        height: 2,
+                        indent: 16,
+                        endIndent: 16,
+                        color: colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
+                      SizedBox(height: 15),
+                      CloudAlbumsCat(
+                        baseProvider: cloudMusicAlbumNewProvider(
+                          limit: 30,
+                          area: ref.watch(cloudMusicLanguageProvider).area,
+                        ),
+                        visibleRows: 2,
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(
                           left: 16,

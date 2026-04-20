@@ -369,3 +369,14 @@ sealed class CloudSearchData with _$CloudSearchData {
   factory CloudSearchData.fromJson(Map<String, dynamic> json) =>
       _$CloudSearchDataFromJson(json);
 }
+
+@freezed
+sealed class CloudAlbumListData with _$CloudAlbumListData {
+  const CloudAlbumListData._();
+  const factory CloudAlbumListData({
+    List<CloudMusicAlbumData>? albums,
+    int? total,
+  }) = _CloudAlbumListData;
+  factory CloudAlbumListData.fromJson(Map<String, dynamic> json) =>
+      _$CloudAlbumListDataFromJson(json);
+}

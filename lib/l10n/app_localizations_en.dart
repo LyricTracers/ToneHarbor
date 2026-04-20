@@ -883,9 +883,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recommend_playlist => 'Recommended Playlists';
 
   @override
-  String get new_albums => 'New Albums';
-
-  @override
   String get top_lists => 'Top Lists';
 
   @override

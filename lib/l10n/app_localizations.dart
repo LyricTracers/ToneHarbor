@@ -1802,12 +1802,6 @@ abstract class AppLocalizations {
   /// **'Recommended Playlists'**
   String get recommend_playlist;
 
-  /// No description provided for @new_albums.
-  ///
-  /// In en, this message translates to:
-  /// **'New Albums'**
-  String get new_albums;
-
   /// No description provided for @top_lists.
   ///
   /// In en, this message translates to:
