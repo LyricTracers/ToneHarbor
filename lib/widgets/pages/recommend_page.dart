@@ -58,8 +58,7 @@ class RecommendPage extends HookConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (!useCloudMusic ||
-                        (useCloudMusic && useInfo.value != null)) ...[
+                    if (!useCloudMusic) ...[
                       Padding(
                         padding: const EdgeInsets.only(
                           left: 16,
@@ -111,9 +110,6 @@ class RecommendPage extends HookConsumerWidget {
                         endIndent: 16,
                         color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
-                    ],
-
-                    if (!useCloudMusic) ...[
                       SizedBox(height: 8),
                       CommonSongs(
                         songs: ref.watch(favoriteSongsProvider(limit: 50)),
@@ -237,13 +233,6 @@ class RecommendPage extends HookConsumerWidget {
                     ],
                     if (useCloudMusic) ...[
                       if (useInfo.value != null) ...[
-                        SizedBox(height: 8),
-                        CommonSongs(
-                          songs: ref.watch(cloudLikelistStateProvider),
-                          onErrorTap: () {},
-                          limit: 20,
-                        ),
-                        SizedBox(height: 8),
                         Padding(
                           padding: const EdgeInsets.only(
                             left: 16,
