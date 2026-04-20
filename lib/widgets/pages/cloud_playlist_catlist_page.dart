@@ -145,7 +145,10 @@ class CloudPlaylistCategoryListPage extends HookConsumerWidget {
       children: [
         _buildAppBar(ref, colorScheme, size, currentCategory.value),
         Padding(
-          padding: EdgeInsets.all(size.smAndUp ? 24 : 16),
+          padding: EdgeInsets.symmetric(
+            horizontal: size.smAndUp ? 16 : 8,
+            vertical: size.smAndUp ? 8 : 4,
+          ),
           child: Row(
             children: [
               Expanded(

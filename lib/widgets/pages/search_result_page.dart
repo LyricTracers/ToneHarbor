@@ -145,7 +145,10 @@ class SearchResultPage extends HookConsumerWidget {
 
         if (searchResultHot.value != null && searchResultHot.value!.isNotEmpty)
           Padding(
-            padding: EdgeInsets.all(size.smAndUp ? 16 : 8),
+            padding: EdgeInsets.symmetric(
+              horizontal: size.smAndUp ? 16 : 8,
+              vertical: size.smAndUp ? 8 : 4,
+            ),
             child: SizedBox(
               height: 48 * size.multiplier2,
               child: ListView.builder(
