@@ -401,7 +401,7 @@ class RecommendPage extends HookConsumerWidget {
                           limit: 30,
                           area: ref.watch(cloudMusicLanguageProvider).area,
                         ),
-                        visibleRows: 2,
+                        visibleRows: size.mdAndUp ? 1 : 2,
                       ),
                       Padding(
                         padding: const EdgeInsets.only(

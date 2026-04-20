@@ -60,17 +60,41 @@ enum Language {
   }
 }
 
+enum CloudMusicArtistType {
+  male(1, '男歌手'),
+  female(2, '女歌手'),
+  combine(3, '乐队/组合');
+
+  final int value;
+  final String displayName;
+  const CloudMusicArtistType(this.value, this.displayName);
+}
+
 enum CloudMusicLanguageType {
-  unKnow(0, '无偏好', 'ALL'),
-  zh(1, '华语', 'ZH'),
-  en(2, '欧美', 'EA'),
-  kr(3, '韩语', 'KR'),
-  jp(4, '日语', 'JP');
+  zh(0, '华语', 'ZH'),
+  en(1, '欧美', 'EA'),
+  kr(2, '韩语', 'KR'),
+  jp(3, '日语', 'JP'),
+  unKnow(4, '其他', 'ALL');
 
   final int value;
   final String displayName;
   final String area;
   const CloudMusicLanguageType(this.value, this.displayName, this.area);
+  int get areaIndex {
+    switch (this) {
+      case CloudMusicLanguageType.zh:
+        return 7;
+      case CloudMusicLanguageType.en:
+        return 96;
+      case CloudMusicLanguageType.kr:
+        return 16;
+      case CloudMusicLanguageType.jp:
+        return 8;
+      case CloudMusicLanguageType.unKnow:
+        return 0;
+    }
+  }
 }
 
 @riverpod

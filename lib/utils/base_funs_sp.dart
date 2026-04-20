@@ -215,18 +215,10 @@ abstract class SharedPreferencesUtils {
   }
 
   static int getCloudMusicLanguage() =>
-      sharedPreferences.getInt(cloudMusicLanguageKey) ?? 1;
+      sharedPreferences.getInt(cloudMusicLanguageKey) ?? 0;
 
   static Future<void> setCloudMusicLanguage(int value) async {
     await sharedPreferences.setInt(cloudMusicLanguageKey, value);
-  }
-
-  static String getCloudMusicLanguageName(int index) {
-    const languages = ['全部', '华语', '欧美', '日语', '韩语'];
-    if (index >= 0 && index < languages.length) {
-      return languages[index];
-    }
-    return '华语';
   }
 
   static CloudMusicQuality getCloudMusicQuality() {
