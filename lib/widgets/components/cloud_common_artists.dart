@@ -71,10 +71,6 @@ class CloudMusicArtistItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var artistName = artist.name;
-    if (artistName.isEmpty) {
-      artistName = "Unknown Artist";
-    }
-
     return InkWell(
       onTap: () {
         context.pushWrapper("/cloud-artist-detail", extra: artist);

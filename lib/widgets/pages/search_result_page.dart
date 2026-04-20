@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_utils.dart';
@@ -85,6 +86,7 @@ class SearchResultPage extends HookConsumerWidget {
                       icon: Icon(Icons.clear, size: 14),
                       onPressed: () {
                         queryState.value = '';
+                        logger.i("clear search query");
                       },
                     ),
                     contentPadding: const EdgeInsets.symmetric(

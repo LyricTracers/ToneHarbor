@@ -7,6 +7,7 @@ import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/base_utils.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_common_artists.dart';
+import 'package:toneharbor/widgets/components/common_artist_grid.dart';
 import 'package:toneharbor/widgets/components/common_shimmer_loader.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
@@ -178,8 +179,6 @@ class CloudArtistsListPage extends HookConsumerWidget {
     final selectedLetterIndex = useState(0);
     final selectedLanguage = useState(ref.read(cloudMusicLanguageProvider));
     final selectedArtistType = useState(CloudMusicArtistType.male);
-    final isLoadingMore = useState(false);
-    final scrollController = useScrollController();
 
     final letterChips = List.generate(27, (index) {
       final isSelected = index == selectedLetterIndex.value;
@@ -245,62 +244,6 @@ class CloudArtistsListPage extends HookConsumerWidget {
 
     final displayHasMore = searchQuery.isEmpty && hasMore;
 
-    useEffect(
-      () {
-        void onScroll() {
-          if (!scrollController.hasClients) return;
-
-          final maxScroll = scrollController.position.maxScrollExtent;
-          final currentScroll = scrollController.offset;
-
-          final state = ref.read(
-            cloudMusicArtistGroupListProvider(
-              area: selectedLanguage.value.areaIndex,
-              type: selectedArtistType.value.value,
-              limit: 50,
-              offset: 0,
-              initial: (selectedLetterIndex.value == 0)
-                  ? ''
-                  : String.fromCharCode(64 + selectedLetterIndex.value),
-            ),
-          );
-          final currentHasMore = state.value?.more ?? false;
-
-          if (currentScroll >= maxScroll * 0.8 &&
-              currentHasMore &&
-              !isLoadingMore.value) {
-            isLoadingMore.value = true;
-            ref
-                .read(
-                  cloudMusicArtistGroupListProvider(
-                    area: selectedLanguage.value.areaIndex,
-                    type: selectedArtistType.value.value,
-                    limit: 50,
-                    offset: 0,
-                    initial: (selectedLetterIndex.value == 0)
-                        ? ''
-                        : String.fromCharCode(64 + selectedLetterIndex.value),
-                  ).notifier,
-                )
-                .loadMore()
-                .then((_) {
-                  isLoadingMore.value = false;
-                });
-          }
-        }
-
-        scrollController.addListener(onScroll);
-        return () => scrollController.removeListener(onScroll);
-      },
-      [
-        scrollController,
-        displayHasMore,
-        selectedLanguage.value,
-        selectedArtistType.value,
-        selectedLetterIndex.value,
-      ],
-    );
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -329,73 +272,36 @@ class CloudArtistsListPage extends HookConsumerWidget {
         Expanded(
           child: artistGroupList.when(
             data: (data) {
-              if (filteredItems.isEmpty) {
-                return SizedBox.shrink();
-              }
-
-              return Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: size.smAndUp ? 16 : 8,
-                  vertical: size.smAndUp ? 8 : 4,
+              return CommonArtistGrid(
+                baseProvider: cloudMusicArtistGroupListProvider(
+                  area: selectedLanguage.value.areaIndex,
+                  type: selectedArtistType.value.value,
+                  limit: 50,
+                  offset: 0,
+                  initial: (selectedLetterIndex.value == 0)
+                      ? ''
+                      : String.fromCharCode(64 + selectedLetterIndex.value),
                 ),
-                child: CustomScrollView(
-                  controller: scrollController,
-                  slivers: [
-                    SliverGrid(
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 180,
-                        mainAxisSpacing: 24,
-                        crossAxisSpacing: 24,
-                        childAspectRatio: 0.75,
-                      ),
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          if (index == filteredItems.length) {
-                            return Padding(
-                              padding: EdgeInsets.all(size.smAndUp ? 16 : 12),
-                              child: Center(child: CircularProgressIndicator()),
-                            );
-                          }
-                          final artist = filteredItems[index];
-                          return CloudMusicArtistItem(
-                            artist: artist,
-                            colorScheme: colorScheme,
-                            cloudLayoutConfig: ArtistLayoutConfig.defaultConfig
-                                .copyWith(
-                                  height: 220,
-                                  fontSize: 14,
-                                  horizontalPadding: 24,
-                                  itemSpacing: 24,
-                                  itemWidth: 180,
-                                ),
-                          );
-                        },
-                        childCount: hasMore
-                            ? filteredItems.length + 1
-                            : filteredItems.length,
-                      ),
-                    ),
-                    if (!hasMore)
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 20 * size.multiplier,
-                          ),
-                          child: Center(
-                            child: Text(
-                              l10n.reach_end,
-                              style: TextStyle(
-                                fontSize: 12 * size.multiplier,
-                                color: colorScheme.onSurface.withValues(
-                                  alpha: 0.5,
-                                ),
-                              ),
-                            ),
-                          ),
+                items: filteredItems,
+                hasMore: displayHasMore,
+                itemBuilder: (context, artist, index) {
+                  return CloudMusicArtistItem(
+                    artist: artist,
+                    colorScheme: colorScheme,
+                    cloudLayoutConfig: ArtistLayoutConfig.defaultConfig
+                        .copyWith(
+                          height: 220,
+                          fontSize: 14,
+                          horizontalPadding: 24,
+                          itemSpacing: 24,
+                          itemWidth: 180,
                         ),
-                      ),
-                  ],
-                ),
+                  );
+                },
+                maxCrossAxisExtent: 180,
+                mainAxisSpacing: 24,
+                crossAxisSpacing: 24,
+                childAspectRatio: 0.75,
               );
             },
             loading: () => CommonShimmerLoader.artistGrid(
