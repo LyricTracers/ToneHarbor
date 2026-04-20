@@ -353,5 +353,6 @@
   "group_artists": "Singer Classification",
   "language_korean": "Korean",
   "artist_type": "Artist Type",
+  "more_search": "Search More",
   "default_label": "Default"
 }

@@ -2174,6 +2174,12 @@ abstract class AppLocalizations {
   /// **'Artist Type'**
   String get artist_type;
 
+  /// No description provided for @more_search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search More'**
+  String get more_search;
+
   /// No description provided for @default_label.
   ///
   /// In en, this message translates to:

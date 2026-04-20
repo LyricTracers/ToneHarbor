@@ -57,6 +57,7 @@ class SearchResultPage extends HookConsumerWidget {
     final size = MediaQuery.of(context).size;
     final multiplier = size.multiplier2;
     final toolbarHeight = kToolbarHeight * size.multiplier3;
+    final useCloudMusic = ref.watch(shouldUseCloudMusicHomeProvider);
     return Column(
       children: [
         AppBar(
@@ -108,7 +109,21 @@ class SearchResultPage extends HookConsumerWidget {
                 ),
               ),
             ),
-            SizedBox(width: 16 * multiplier),
+
+            if (useCloudMusic) ...[
+              SizedBox(width: 8 * multiplier),
+              IconButton(
+                onPressed: () {
+                  if (queryState.value.isEmpty) return;
+                  context.pushWrapper(
+                    "/cloud-search/${Uri.encodeComponent(queryState.value)}",
+                  );
+                },
+                icon: const Icon(Icons.saved_search_rounded, size: 18),
+                tooltip: l10n.more_search,
+              ),
+              SizedBox(width: 8 * multiplier),
+            ],
             if (size.lgAndUp)
               IconButton(
                 onPressed: () {
@@ -119,6 +134,7 @@ class SearchResultPage extends HookConsumerWidget {
               ),
           ],
         ),
+
         if (searchResultHot.isLoading)
           Padding(
             padding: EdgeInsets.all(size.smAndUp ? 16 : 8),

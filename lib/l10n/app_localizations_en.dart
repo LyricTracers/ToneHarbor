@@ -1080,5 +1080,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get artist_type => 'Artist Type';
 
   @override
+  String get more_search => 'Search More';
+
+  @override
   String get default_label => 'Default';
 }
