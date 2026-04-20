@@ -421,3 +421,95 @@ Future<bool> cloudLikeTrack(String trackId, bool isLike, Ref ref) async {
   }
   return true;
 }
+
+Future<CloudArtistListData> cloudArtistListData(
+  Ref ref, {
+  required int type,
+  required int area,
+  int limit = 50,
+  int offset = 0,
+  String initial = '',
+  Duration? cacheDuration = const Duration(minutes: 60),
+}) async {
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+
+  if (apiState.defaultUrl.isEmpty) {
+    return CloudArtistListData();
+  }
+  final l10n = ref.read(l10nProvider);
+
+  final cacheKey = 'cloud_artistListData:$type:$area:$limit:$offset:$initial';
+  final groupKey = 'cloud_artistListData';
+  if (cacheDuration != null) {
+    final cached = await getFromCache<CloudArtistListData>(
+      cacheKey: cacheKey,
+      group: groupKey,
+      fromJson: (json) {
+        if (json['code'] != 200) {
+          return CloudArtistListData();
+        }
+        return CloudArtistListData.fromJson(json);
+      },
+    );
+    if (cached != null &&
+        cached.artists != null &&
+        cached.artists!.isNotEmpty) {
+      return cached;
+    }
+  }
+
+  final query = <String, String>{
+    'randomCNIP': 'true',
+    'type': type.toString(),
+    'area': area.toString(),
+    'limit': limit.toString(),
+    'offset': offset.toString(),
+  };
+  if (initial.isNotEmpty) {
+    query['initial'] = initial;
+  }
+
+  final cookieParams = CloudMusicAuth.getApiCookieParams();
+  if (cookieParams.isNotEmpty) {
+    query.addAll(cookieParams);
+  }
+
+  final response = await httpClientWrapper.post(
+    '${apiState.defaultUrl}/artist/list',
+    query: query,
+    cancelToken: ref.cancelToken(),
+  );
+
+  if (response.statusCode != 200) {
+    logger.e('请求失败，响应体：${response.body}');
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: response.statusCode,
+    );
+  }
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw CloudMusicException(message: l10n.error_response_parse_failed);
+  }
+  if (jsonBody['code'] != 200) {
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: jsonBody['code'],
+    );
+  }
+  final artists = CloudArtistListData.fromJson(jsonBody);
+  if (cacheDuration != null &&
+      artists.artists != null &&
+      artists.artists!.isNotEmpty) {
+    await saveToCache(
+      cacheKey: cacheKey,
+      jsonBody: jsonBody,
+      cacheDuration: cacheDuration,
+      group: groupKey,
+    );
+  }
+  return artists;
+}

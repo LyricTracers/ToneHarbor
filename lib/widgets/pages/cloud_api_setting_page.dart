@@ -293,28 +293,20 @@ class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
     double multiplier,
   ) {
     final languageType = ref.watch(cloudMusicLanguageProvider);
-    final languageName = _getLanguageDisplayName(languageType, l10n);
-
     return Column(
       children: [
-        ListTile(
-          title: Text(
-            languageName,
-            style: TextStyle(
-              fontSize: 15 * multiplier,
-              fontWeight: FontWeight.w500,
-              color: colorScheme.onSurface,
-            ),
-          ),
-          subtitle: Text(
-            l10n.music_language_preference_desc,
-            style: TextStyle(
-              fontSize: 12 * multiplier,
-              color: colorScheme.onSurface.withValues(alpha: 0.6),
-            ),
-          ),
-          trailing: Icon(Icons.arrow_forward_ios, size: 16 * multiplier),
-          onTap: () => _showLanguageSelector(ref, l10n, colorScheme),
+        buildDropdownTile<CloudMusicLanguageType>(
+          title: _getLanguageDisplayName(languageType, l10n),
+          items: CloudMusicLanguageType.values,
+          value: languageType,
+          colorScheme: colorScheme,
+          onChanged: (value) {
+            if (value != null) {
+              ref.read(cloudMusicLanguageProvider.notifier).set(value);
+            }
+          },
+          multiplier: multiplier,
+          labelBuilder: (lang) => _getLanguageDisplayName(lang, l10n),
         ),
       ],
     );
@@ -338,47 +330,6 @@ class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
     }
   }
 
-  void _showLanguageSelector(
-    WidgetRef ref,
-    AppLocalizations l10n,
-    ColorScheme colorScheme,
-  ) {
-    final currentLanguage = ref.watch(cloudMusicLanguageProvider);
-    final languageOptions = [
-      (type: CloudMusicLanguageType.unKnow, name: l10n.language_all),
-      (type: CloudMusicLanguageType.zh, name: l10n.language_chinese),
-      (type: CloudMusicLanguageType.en, name: l10n.language_euro),
-      (type: CloudMusicLanguageType.jp, name: l10n.language_japanese),
-      (type: CloudMusicLanguageType.kr, name: l10n.language_korean),
-    ];
-
-    showCommonDialog(
-      context: ref.context,
-      colorScheme: colorScheme,
-      title: l10n.music_language_preference,
-      contentBuilder: (innerContext) {
-        return RadioGroup<CloudMusicLanguageType>(
-          groupValue: currentLanguage,
-          onChanged: (value) {
-            if (value != null) {
-              ref.read(cloudMusicLanguageProvider.notifier).set(value);
-              Navigator.pop(innerContext);
-            }
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: languageOptions.map((option) {
-              return RadioListTile<CloudMusicLanguageType>(
-                value: option.type,
-                title: Text(option.name),
-              );
-            }).toList(),
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildQualitySection(
     WidgetRef ref,
     AppLocalizations l10n,
@@ -386,28 +337,20 @@ class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
     double multiplier,
   ) {
     final quality = ref.watch(cloudMusicQualitySettingProvider);
-    final qualityName = _getQualityDisplayName(quality, l10n);
-
     return Column(
       children: [
-        ListTile(
-          title: Text(
-            qualityName,
-            style: TextStyle(
-              fontSize: 15 * multiplier,
-              fontWeight: FontWeight.w500,
-              color: colorScheme.onSurface,
-            ),
-          ),
-          subtitle: Text(
-            l10n.cloud_music_quality_desc,
-            style: TextStyle(
-              fontSize: 12 * multiplier,
-              color: colorScheme.onSurface.withValues(alpha: 0.6),
-            ),
-          ),
-          trailing: Icon(Icons.arrow_forward_ios, size: 16 * multiplier),
-          onTap: () => _showQualitySelector(ref, l10n, colorScheme),
+        buildDropdownTile<CloudMusicQuality>(
+          title: _getQualityDisplayName(quality, l10n),
+          items: CloudMusicQuality.values,
+          value: quality,
+          colorScheme: colorScheme,
+          onChanged: (value) {
+            if (value != null) {
+              ref.read(cloudMusicQualitySettingProvider.notifier).set(value);
+            }
+          },
+          multiplier: multiplier,
+          labelBuilder: (q) => _getQualityDisplayName(q, l10n),
         ),
       ],
     );
@@ -429,47 +372,6 @@ class CloudApiSettingPage extends HookConsumerWidget with BuildItem {
       case CloudMusicQuality.hires:
         return l10n.quality_hires;
     }
-  }
-
-  void _showQualitySelector(
-    WidgetRef ref,
-    AppLocalizations l10n,
-    ColorScheme colorScheme,
-  ) {
-    final currentQuality = ref.watch(cloudMusicQualitySettingProvider);
-    final qualityOptions = [
-      (quality: CloudMusicQuality.standard, name: l10n.quality_standard),
-      (quality: CloudMusicQuality.higher, name: l10n.quality_higher),
-      (quality: CloudMusicQuality.exhigh, name: l10n.quality_exhigh),
-      (quality: CloudMusicQuality.lossless, name: l10n.quality_lossless),
-      (quality: CloudMusicQuality.hires, name: l10n.quality_hires),
-    ];
-
-    showCommonDialog(
-      context: ref.context,
-      colorScheme: colorScheme,
-      title: l10n.cloud_music_quality,
-      contentBuilder: (innerContext) {
-        return RadioGroup<CloudMusicQuality>(
-          groupValue: currentQuality,
-          onChanged: (value) {
-            if (value != null) {
-              ref.read(cloudMusicQualitySettingProvider.notifier).set(value);
-              Navigator.pop(innerContext);
-            }
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: qualityOptions.map((option) {
-              return RadioListTile<CloudMusicQuality>(
-                value: option.quality,
-                title: Text(option.name),
-              );
-            }).toList(),
-          ),
-        );
-      },
-    );
   }
 
   Widget _buildPreferencesSection(

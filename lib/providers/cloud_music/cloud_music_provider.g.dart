@@ -1264,3 +1264,159 @@ abstract class _$CloudMusicAlbumNew extends $AsyncNotifier<CloudAlbumListData> {
     );
   }
 }
+
+@ProviderFor(CloudMusicArtistGroupList)
+final cloudMusicArtistGroupListProvider = CloudMusicArtistGroupListFamily._();
+
+final class CloudMusicArtistGroupListProvider
+    extends
+        $AsyncNotifierProvider<CloudMusicArtistGroupList, CloudArtistListData> {
+  CloudMusicArtistGroupListProvider._({
+    required CloudMusicArtistGroupListFamily super.from,
+    required ({
+      int limit,
+      int offset,
+      String initial,
+      Duration? cacheDuration,
+      int area,
+      int type,
+    })
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'cloudMusicArtistGroupListProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudMusicArtistGroupListHash();
+
+  @override
+  String toString() {
+    return r'cloudMusicArtistGroupListProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  CloudMusicArtistGroupList create() => CloudMusicArtistGroupList();
+
+  @override
+  bool operator ==(Object other) {
+    return other is CloudMusicArtistGroupListProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$cloudMusicArtistGroupListHash() =>
+    r'00e88d601699ecfc96f74b3a777cbc68868fabc8';
+
+final class CloudMusicArtistGroupListFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          CloudMusicArtistGroupList,
+          AsyncValue<CloudArtistListData>,
+          CloudArtistListData,
+          FutureOr<CloudArtistListData>,
+          ({
+            int limit,
+            int offset,
+            String initial,
+            Duration? cacheDuration,
+            int area,
+            int type,
+          })
+        > {
+  CloudMusicArtistGroupListFamily._()
+    : super(
+        retry: null,
+        name: r'cloudMusicArtistGroupListProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CloudMusicArtistGroupListProvider call({
+    int limit = 50,
+    int offset = 0,
+    String initial = '',
+    Duration? cacheDuration = const Duration(minutes: 60),
+    required int area,
+    required int type,
+  }) => CloudMusicArtistGroupListProvider._(
+    argument: (
+      limit: limit,
+      offset: offset,
+      initial: initial,
+      cacheDuration: cacheDuration,
+      area: area,
+      type: type,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'cloudMusicArtistGroupListProvider';
+}
+
+abstract class _$CloudMusicArtistGroupList
+    extends $AsyncNotifier<CloudArtistListData> {
+  late final _$args =
+      ref.$arg
+          as ({
+            int limit,
+            int offset,
+            String initial,
+            Duration? cacheDuration,
+            int area,
+            int type,
+          });
+  int get limit => _$args.limit;
+  int get offset => _$args.offset;
+  String get initial => _$args.initial;
+  Duration? get cacheDuration => _$args.cacheDuration;
+  int get area => _$args.area;
+  int get type => _$args.type;
+
+  FutureOr<CloudArtistListData> build({
+    int limit = 50,
+    int offset = 0,
+    String initial = '',
+    Duration? cacheDuration = const Duration(minutes: 60),
+    required int area,
+    required int type,
+  });
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<AsyncValue<CloudArtistListData>, CloudArtistListData>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<CloudArtistListData>, CloudArtistListData>,
+              AsyncValue<CloudArtistListData>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(
+      ref,
+      () => build(
+        limit: _$args.limit,
+        offset: _$args.offset,
+        initial: _$args.initial,
+        cacheDuration: _$args.cacheDuration,
+        area: _$args.area,
+        type: _$args.type,
+      ),
+    );
+  }
+}

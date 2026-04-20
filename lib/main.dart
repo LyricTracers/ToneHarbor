@@ -23,6 +23,7 @@ import 'package:toneharbor/widgets/pages/cloud_album_detail.dart';
 import 'package:toneharbor/widgets/pages/cloud_album_list_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_api_setting_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_artist_page.dart';
+import 'package:toneharbor/widgets/pages/cloud_artists_list_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_detail_playlist_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_music_login_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_playlist_catlist_page.dart';
@@ -576,6 +577,15 @@ class MyApp extends HookConsumerWidget {
                   );
                 },
               ),
+              GoRoute(
+                path: '/cloud-artist-list',
+                pageBuilder: (context, state) {
+                  return buildPage(
+                    key: state.pageKey,
+                    child: CloudArtistsListPage(),
+                  );
+                },
+              ),
             ],
           ),
           // ================================
@@ -947,7 +957,7 @@ class MyApp extends HookConsumerWidget {
           ),
 
           GoRoute(
-            path: '/mobile/cloud-album-cat',
+            path: '/mobile/cloud-album-cat/:title',
             pageBuilder: (context, state) {
               final baseProvider =
                   state.extra
@@ -958,8 +968,21 @@ class MyApp extends HookConsumerWidget {
               return buildPage(
                 key: state.pageKey,
                 child: MobileFullLayout(
-                  child: CloudAlbumsCat(baseProvider: baseProvider),
+                  child: CloudAlbumListPage(
+                    baseProvider: baseProvider,
+                    title: state.pathParameters['title'] ?? 'Albums',
+                  ),
                 ),
+              );
+            },
+          ),
+
+          GoRoute(
+            path: '/mobile/cloud-artist-list',
+            pageBuilder: (context, state) {
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(child: CloudArtistsListPage()),
               );
             },
           ),

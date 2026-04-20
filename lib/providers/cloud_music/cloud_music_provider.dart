@@ -566,3 +566,73 @@ class CloudMusicAlbumNew extends _$CloudMusicAlbumNew
     required String sortDirection,
   }) async {}
 }
+
+@riverpod
+class CloudMusicArtistGroupList extends _$CloudMusicArtistGroupList
+    with ExtraProvider<CloudArtistListData> {
+  @override
+  Future<CloudArtistListData> build({
+    int limit = 50,
+    int offset = 0,
+    String initial = '',
+    Duration? cacheDuration = const Duration(minutes: 60),
+    required int area,
+    required int type,
+  }) async {
+    ref.keepAliveFor(Duration(minutes: 1));
+    return await cloudArtistListData(
+      ref,
+      type: type,
+      area: area,
+      limit: limit,
+      offset: offset,
+      initial: initial,
+      cacheDuration: cacheDuration,
+    );
+  }
+
+  @override
+  Future<void> loadMore() async {
+    logger.i('加载更多artists');
+
+    if (state.value == null) return;
+    final currentData = state.value;
+    if (currentData == null || currentData.artists == null) {
+      return;
+    }
+
+    if (currentData.more == false) return;
+    final currentArtists = currentData.artists!;
+
+    final oldState = state.value;
+    try {
+      final newState = await cloudArtistListData(
+        ref,
+        type: type,
+        area: area,
+        limit: limit,
+        offset: currentArtists.length,
+        cacheDuration: cacheDuration,
+      );
+
+      if (newState.artists == null) {
+        return;
+      }
+      final newArtists = newState.artists!;
+      final mergedArtists = [...currentArtists, ...newArtists];
+
+      state = AsyncData(
+        newState.copyWith(artists: mergedArtists, more: newState.more),
+      );
+    } catch (e) {
+      logger.e('加载更多artists失败: $e');
+      state = AsyncData(oldState!);
+    }
+  }
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {}
+}

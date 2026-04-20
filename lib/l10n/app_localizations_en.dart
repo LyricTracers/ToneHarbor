@@ -1071,5 +1071,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get language_japanese => 'Japanese';
 
   @override
+  String get group_artists => 'Singer Classification';
+
+  @override
   String get language_korean => 'Korean';
+
+  @override
+  String get artist_type => 'Artist Type';
+
+  @override
+  String get default_label => 'Default';
 }

@@ -349,5 +349,8 @@
   "language_chinese": "华语",
   "language_euro": "欧美",
   "language_japanese": "日语",
-  "language_korean": "韩语"
+  "group_artists": "歌手分类",
+  "language_korean": "韩语",
+  "artist_type": "歌手类型",
+  "default_label": "默认"
 }

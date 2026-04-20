@@ -350,5 +350,8 @@
   "language_chinese": "Chinese",
   "language_euro": "Western",
   "language_japanese": "Japanese",
-  "language_korean": "Korean"
+  "group_artists": "Singer Classification",
+  "language_korean": "Korean",
+  "artist_type": "Artist Type",
+  "default_label": "Default"
 }

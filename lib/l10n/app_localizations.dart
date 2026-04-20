@@ -2156,11 +2156,29 @@ abstract class AppLocalizations {
   /// **'Japanese'**
   String get language_japanese;
 
+  /// No description provided for @group_artists.
+  ///
+  /// In en, this message translates to:
+  /// **'Singer Classification'**
+  String get group_artists;
+
   /// No description provided for @language_korean.
   ///
   /// In en, this message translates to:
   /// **'Korean'**
   String get language_korean;
+
+  /// No description provided for @artist_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Artist Type'**
+  String get artist_type;
+
+  /// No description provided for @default_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get default_label;
 }
 
 class _AppLocalizationsDelegate

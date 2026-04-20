@@ -151,6 +151,10 @@ class CommonShimmerLoader {
     required ColorScheme colorScheme,
     required Size size,
     int itemCount = 50,
+    double maxCrossAxisExtent = 150,
+    double mainAxisSpacing = 16,
+    double crossAxisSpacing = 16,
+    double childAspectRatio = 0.75,
   }) {
     return Shimmer.fromColors(
       baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
@@ -159,11 +163,11 @@ class CommonShimmerLoader {
         padding: const EdgeInsets.all(16),
         child: GridView.builder(
           itemCount: itemCount,
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 150,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
-            childAspectRatio: 0.75,
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: maxCrossAxisExtent,
+            mainAxisSpacing: mainAxisSpacing,
+            crossAxisSpacing: crossAxisSpacing,
+            childAspectRatio: childAspectRatio,
           ),
           itemBuilder: (context, index) {
             return Column(

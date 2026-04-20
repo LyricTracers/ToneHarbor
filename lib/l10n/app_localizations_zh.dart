@@ -1040,5 +1040,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get language_japanese => '日语';
 
   @override
+  String get group_artists => '歌手分类';
+
+  @override
   String get language_korean => '韩语';
+
+  @override
+  String get artist_type => '歌手类型';
+
+  @override
+  String get default_label => '默认';
 }

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/providers/providers.dart';
-import 'package:toneharbor/services/cloud_music/albums.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/cloud_playlist_static_data.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/cloud_common_artists.dart';
-import 'package:toneharbor/widgets/components/cloud_playlists_cat.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class RecommendPage extends HookConsumerWidget {
@@ -327,9 +325,23 @@ class RecommendPage extends HookConsumerWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
+
+                            TextButton(
+                              onPressed: () {
+                                context.pushWrapper("/cloud-artist-list");
+                              },
+                              child: Text(
+                                i10n.more,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: colorScheme.tertiary,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
+
                       Divider(
                         height: 2,
                         indent: 16,
