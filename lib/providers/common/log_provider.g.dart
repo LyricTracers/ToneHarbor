@@ -33,7 +33,7 @@ final class LogNotifierProvider
   LogNotifier create() => LogNotifier();
 }
 
-String _$logNotifierHash() => r'82ca2044223477452d7daf10498daa50e2cdcc59';
+String _$logNotifierHash() => r'8ad3c695d7df550b180ad82c33e6d8c5779c8692';
 
 abstract class _$LogNotifier extends $AsyncNotifier<List<LogEntry>> {
   FutureOr<List<LogEntry>> build();

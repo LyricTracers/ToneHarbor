@@ -26,6 +26,7 @@ class CloudArtistHeaderDelegate extends SliverPersistentHeaderDelegate {
   final BuildContext context;
   final Color headerBackgroundColor;
   final Widget? coverImage;
+  final String id;
 
   CloudArtistHeaderDelegate({
     required this.ref,
@@ -38,6 +39,7 @@ class CloudArtistHeaderDelegate extends SliverPersistentHeaderDelegate {
     required this.context,
     required this.headerBackgroundColor,
     this.coverImage,
+    required this.id,
   });
 
   @override
@@ -69,7 +71,42 @@ class CloudArtistHeaderDelegate extends SliverPersistentHeaderDelegate {
     return Material(
       color: headerBackgroundColor,
       elevation: 0,
-      child: Stack(children: [_buildBackButton(), _buildContent(progress)]),
+      child: Stack(
+        children: [
+          _buildBackButton(),
+          _buildAllSongButton(),
+          _buildContent(progress),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAllSongButton() {
+    final h = minExtent;
+    return Positioned(
+      top: 0,
+      right: 0,
+      height: h,
+      child: SafeArea(
+        bottom: false,
+        child: SizedBox(
+          width: 56 * multiplier,
+          height: h,
+          child: IconButton(
+            onPressed: () {
+              context.pushWrapper(
+                "/cloud-artist-all-songs/${Uri.encodeComponent(title)}",
+                extra: id,
+              );
+            },
+            icon: Icon(
+              Icons.library_music_rounded,
+              color: colorScheme.onSurface,
+              size: 24 * multiplier,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -344,6 +381,7 @@ class CloudArtistPage extends HookConsumerWidget {
                     context: context,
                     headerBackgroundColor: statusBarColor,
                     coverImage: coverImage,
+                    id: artistDetail.artist.id.toString(),
                   ),
                 ),
                 SliverToBoxAdapter(

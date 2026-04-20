@@ -433,3 +433,71 @@ class CloudToplist extends _$CloudToplist
     required String sortDirection,
   }) async {}
 }
+
+@riverpod
+class CloudMusicArtistAllSongs extends _$CloudMusicArtistAllSongs
+    with ExtraProvider<ToneHarborTrackObjectList> {
+  @override
+  Future<ToneHarborTrackObjectList> build({
+    required String artistId,
+    int limit = 50,
+    int offset = 0,
+    String order = 'hot', //hot ,time 按照热门或者时间排序
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) async {
+    ref.keepAliveFor(Duration(minutes: 1));
+    return await getArtistAllSongs(
+      ref,
+      artistId: artistId,
+      limit: limit,
+      offset: offset,
+      order: order,
+      cacheDuration: cacheDuration,
+    );
+  }
+
+  @override
+  Future<void> loadMore() async {
+    if (state.value == null) return;
+    final currentData = state.value;
+    if (currentData == null || currentData is! ToneHarborTrackObjectListData) {
+      return;
+    }
+
+    final currentTotal = currentData.total ?? 0;
+    final currentSongs = currentData.songs;
+
+    if (currentSongs.length >= currentTotal) return;
+
+    final oldState = state.value;
+    try {
+      final newState = await getArtistAllSongs(
+        ref,
+        artistId: artistId,
+        limit: limit,
+        offset: currentSongs.length,
+        order: order,
+        cacheDuration: cacheDuration,
+      );
+
+      if (newState is! ToneHarborTrackObjectListData) {
+        return;
+      }
+      final newSongs = newState.songs;
+      final mergedSongs = [...currentSongs, ...newSongs];
+
+      state = AsyncData(
+        newState.copyWith(songs: mergedSongs, total: currentTotal),
+      );
+    } catch (e) {
+      logger.e('加载更多songs失败: $e');
+      state = AsyncData(oldState!);
+    }
+  }
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {}
+}

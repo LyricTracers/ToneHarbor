@@ -984,3 +984,161 @@ abstract class _$CloudToplist
     element.handleCreate(ref, () => build(cacheDuration: _$args));
   }
 }
+
+@ProviderFor(CloudMusicArtistAllSongs)
+final cloudMusicArtistAllSongsProvider = CloudMusicArtistAllSongsFamily._();
+
+final class CloudMusicArtistAllSongsProvider
+    extends
+        $AsyncNotifierProvider<
+          CloudMusicArtistAllSongs,
+          ToneHarborTrackObjectList
+        > {
+  CloudMusicArtistAllSongsProvider._({
+    required CloudMusicArtistAllSongsFamily super.from,
+    required ({
+      String artistId,
+      int limit,
+      int offset,
+      String order,
+      Duration? cacheDuration,
+    })
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'cloudMusicArtistAllSongsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudMusicArtistAllSongsHash();
+
+  @override
+  String toString() {
+    return r'cloudMusicArtistAllSongsProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  CloudMusicArtistAllSongs create() => CloudMusicArtistAllSongs();
+
+  @override
+  bool operator ==(Object other) {
+    return other is CloudMusicArtistAllSongsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$cloudMusicArtistAllSongsHash() =>
+    r'5a26a9563725c0f731c761d50e00de9e98917b0b';
+
+final class CloudMusicArtistAllSongsFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          CloudMusicArtistAllSongs,
+          AsyncValue<ToneHarborTrackObjectList>,
+          ToneHarborTrackObjectList,
+          FutureOr<ToneHarborTrackObjectList>,
+          ({
+            String artistId,
+            int limit,
+            int offset,
+            String order,
+            Duration? cacheDuration,
+          })
+        > {
+  CloudMusicArtistAllSongsFamily._()
+    : super(
+        retry: null,
+        name: r'cloudMusicArtistAllSongsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CloudMusicArtistAllSongsProvider call({
+    required String artistId,
+    int limit = 50,
+    int offset = 0,
+    String order = 'hot',
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) => CloudMusicArtistAllSongsProvider._(
+    argument: (
+      artistId: artistId,
+      limit: limit,
+      offset: offset,
+      order: order,
+      cacheDuration: cacheDuration,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'cloudMusicArtistAllSongsProvider';
+}
+
+abstract class _$CloudMusicArtistAllSongs
+    extends $AsyncNotifier<ToneHarborTrackObjectList> {
+  late final _$args =
+      ref.$arg
+          as ({
+            String artistId,
+            int limit,
+            int offset,
+            String order,
+            Duration? cacheDuration,
+          });
+  String get artistId => _$args.artistId;
+  int get limit => _$args.limit;
+  int get offset => _$args.offset;
+  String get order => _$args.order; //hot ,time 按照热门或者时间排序
+  Duration? get cacheDuration => _$args.cacheDuration;
+
+  FutureOr<ToneHarborTrackObjectList> build({
+    required String artistId,
+    int limit = 50,
+    int offset = 0,
+    String order = 'hot',
+    Duration? cacheDuration = const Duration(minutes: 60),
+  });
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<ToneHarborTrackObjectList>,
+              ToneHarborTrackObjectList
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<ToneHarborTrackObjectList>,
+                ToneHarborTrackObjectList
+              >,
+              AsyncValue<ToneHarborTrackObjectList>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(
+      ref,
+      () => build(
+        artistId: _$args.artistId,
+        limit: _$args.limit,
+        offset: _$args.offset,
+        order: _$args.order,
+        cacheDuration: _$args.cacheDuration,
+      ),
+    );
+  }
+}

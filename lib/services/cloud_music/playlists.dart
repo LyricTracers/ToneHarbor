@@ -742,3 +742,117 @@ Future<bool> createCloudPlaylist(
     rethrow;
   }
 }
+
+Future<ToneHarborTrackObjectList> getArtistAllSongs(
+  Ref ref, {
+  required String artistId,
+  int limit = 50,
+  int offset = 0,
+  String order = 'hot', //hot ,time 按照热门或者时间排序
+  Duration? cacheDuration = const Duration(minutes: 60),
+}) async {
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+  if (apiState.defaultUrl.isEmpty) {
+    logger.e('API URL为空');
+    return ToneHarborTrackObjectListEmpty();
+  }
+  final l10n = ref.read(l10nProvider);
+  final cacheKey = 'cloud_artistAllSongs:$artistId$limit$offset$order';
+  final groupKey = 'cloud_artistAllSongs';
+  if (cacheDuration != null) {
+    final cached = await getFromCache<ToneHarborTrackObjectList>(
+      cacheKey: cacheKey,
+      group: groupKey,
+      fromJson: (json) {
+        if (json['code'] != 200) {
+          return ToneHarborTrackObjectListEmpty();
+        }
+        final songs = json['songs'] as List? ?? [];
+        final songObjects = songs
+            .map(
+              (track) =>
+                  CloudMusicSongData.fromJson(track as Map<String, dynamic>),
+            )
+            .toList();
+        final trackObjects = songObjects
+            .map((track) => track.asTrack())
+            .toList();
+        return ToneHarborTrackObjectList.data(
+          songs: trackObjects,
+          total: json['total'] as int? ?? songObjects.length,
+          offset: offset,
+        );
+      },
+    );
+    if (cached != null && cached.songs.isNotEmpty) {
+      logger.i(
+        'getArtistAllSongs, artistId: $artistId, limit: $limit, offset: $offset, order: $order, total: ${cached.total}, tracks.length: ${cached.songs.length}',
+      );
+      return cached;
+    }
+  }
+
+  final query = <String, String>{
+    'id': artistId,
+    'limit': limit.toString(),
+    'offset': offset.toString(),
+    'order': order,
+    'randomCNIP': 'true',
+  };
+
+  final cookieParams = CloudMusicAuth.getApiCookieParams();
+  if (cookieParams.isNotEmpty) {
+    query.addAll(cookieParams);
+  }
+
+  final response = await httpClientWrapper.get(
+    '${apiState.defaultUrl}/artist/songs',
+    query: query,
+    cancelToken: ref.cancelToken(),
+  );
+  if (response.statusCode != 200) {
+    logger.e('请求失败，状态码：${response.statusCode}');
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: response.statusCode,
+    );
+  }
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw CloudMusicException(message: l10n.error_response_parse_failed);
+  }
+  if (jsonBody['code'] != 200) {
+    logger.e('获取歌手所有歌曲失败，响应体：${response.body}');
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: jsonBody['code'],
+    );
+  }
+  final songs = jsonBody['songs'] as List? ?? [];
+  final songObjects = songs
+      .map(
+        (track) => CloudMusicSongData.fromJson(track as Map<String, dynamic>),
+      )
+      .toList();
+  final trackObjects = songObjects.map((track) => track.asTrack()).toList();
+  final resultData = ToneHarborTrackObjectList.data(
+    songs: trackObjects,
+    total: jsonBody['total'] as int? ?? songObjects.length,
+    offset: offset,
+  );
+  if (cacheDuration != null && resultData.songs.isNotEmpty) {
+    await saveToCache(
+      cacheKey: cacheKey,
+      jsonBody: jsonBody,
+      cacheDuration: cacheDuration,
+      group: groupKey,
+    );
+  }
+  logger.i(
+    'getArtistAllSongs, artistId: $artistId, limit: $limit, offset: $offset, order: $order, total: ${resultData.total}, tracks.length: ${resultData.songs.length}',
+  );
+  return resultData;
+}

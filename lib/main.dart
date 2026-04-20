@@ -538,6 +538,25 @@ class MyApp extends HookConsumerWidget {
                   );
                 },
               ),
+              GoRoute(
+                path: '/cloud-artist-all-songs/:title',
+                pageBuilder: (context, state) {
+                  final artistId = state.extra as String;
+                  return buildPage(
+                    key: state.pageKey,
+                    child: SongsPage(
+                      title: state.pathParameters['title'] ?? 'Artist Songs',
+                      baseProvider: cloudMusicArtistAllSongsProvider(
+                        artistId: artistId,
+                      ),
+                      limitTotal: -1,
+                      sortAction: SongsPageSortAction.none,
+                      isLocal: false,
+                      isCloud: true,
+                    ),
+                  );
+                },
+              ),
             ],
           ),
           // ================================
@@ -877,6 +896,27 @@ class MyApp extends HookConsumerWidget {
                   child: SongsPage(
                     title: state.pathParameters['title'] ?? 'Playlist Songs',
                     baseProvider: cloudLikelistStateProvider,
+                    limitTotal: -1,
+                    sortAction: SongsPageSortAction.none,
+                    isLocal: false,
+                    isCloud: true,
+                  ),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/mobile/cloud-artist-all-songs/:title',
+            pageBuilder: (context, state) {
+              final artistId = state.extra as String;
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(
+                  child: SongsPage(
+                    title: state.pathParameters['title'] ?? 'Artist Songs',
+                    baseProvider: cloudMusicArtistAllSongsProvider(
+                      artistId: artistId,
+                    ),
                     limitTotal: -1,
                     sortAction: SongsPageSortAction.none,
                     isLocal: false,
