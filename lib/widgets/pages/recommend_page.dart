@@ -45,6 +45,12 @@ class RecommendPage extends HookConsumerWidget {
     final size = MediaQuery.of(context).size;
     final useCloudMusic = ref.watch(shouldUseCloudMusicHomeProvider);
     final useInfo = ref.watch(cloudUserInfoProvider);
+    final recommendArtistsAsync = ref.watch(
+      recommendTopArtistProvider(
+        limit: 10,
+        cacheDuration: const Duration(minutes: 60),
+      ),
+    );
     return Column(
       children: [
         if (size.lgAndUp) buildAppBar(context, ref, colorScheme),
@@ -349,16 +355,20 @@ class RecommendPage extends HookConsumerWidget {
                         color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                       SizedBox(height: 15),
-                      CloudMusicArtistHorizontalList(
-                        limit: 10,
-                        cloudLayoutConfig: ArtistLayoutConfig.defaultConfig
+                      CloudMusicArtistHorizontalListView(
+                        artists: recommendArtistsAsync.value,
+                        colorScheme: colorScheme,
+                        config: ArtistLayoutConfig.defaultConfig
                             .copyWith(
                               height: 220,
                               fontSize: 14,
                               horizontalPadding: 24,
                               itemSpacing: 24,
                               itemWidth: 180,
-                            ),
+                            )
+                            .withMultiplier(size.multiplier),
+                        isLoading: recommendArtistsAsync.isLoading,
+                        shimmerCount: 10,
                       ),
 
                       Padding(
