@@ -316,19 +316,38 @@ class SongsPage<T extends ExtraProvider<ToneHarborTrackObjectList>>
               }
               return ListView.builder(
                 controller: scrollController,
-                itemCount: filteredItems.length + (displayHasMore ? 1 : 0),
+                itemCount: filteredItems.length + 1,
                 itemBuilder: (context, index) {
                   if (index == filteredItems.length) {
-                    return const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Center(
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                    if (displayHasMore) {
+                      return const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    } else {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 20 * size.multiplier,
+                        ),
+                        child: Center(
+                          child: Text(
+                            l10n.reach_end,
+                            style: TextStyle(
+                              fontSize: 12 * size.multiplier,
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
                   }
                   var item = filteredItems[index];
                   return RepaintBoundary(
