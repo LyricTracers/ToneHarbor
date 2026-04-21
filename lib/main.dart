@@ -134,10 +134,18 @@ class MyApp extends HookConsumerWidget {
           .listen((connected) async {
             await audioPlayerSubscription?.cancel();
             if (audioPlayer.currentIndex >= 0) {
+              final currentPlaylist = audioPlayer.playlist;
+              final currentMedia =
+                  currentPlaylist.medias[currentPlaylist.index];
+              final currentTrack = ToneHarborTrackObject.fromJson(
+                currentMedia.extras ?? {},
+              );
+              final isLocalTrack = currentTrack.isLocal;
+
               if (connected && audioPlayer.isPaused && pausedByStream) {
                 await audioPlayer.resume();
                 pausedByStream = false;
-              } else if (!connected && audioPlayer.isPlaying) {
+              } else if (!connected && audioPlayer.isPlaying && !isLocalTrack) {
                 if ((audioPlayer.bufferedPosition -
                         const Duration(seconds: 1)) <=
                     audioPlayer.position) {
