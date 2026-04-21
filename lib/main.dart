@@ -1010,7 +1010,7 @@ class MyApp extends HookConsumerWidget {
           ),
 
           GoRoute(
-            path: '/mobile/cloud-artist-list',
+            path: '/mobile/cloud-all-artist-list',
             pageBuilder: (context, state) {
               return buildPage(
                 key: state.pageKey,
