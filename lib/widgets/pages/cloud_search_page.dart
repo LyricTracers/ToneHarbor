@@ -109,7 +109,7 @@ class CloudSearchPage extends HookConsumerWidget {
                         TextButton(
                           onPressed: () {
                             context.pushWrapper(
-                              "/cloud-artist-list/${Uri.encodeComponent('${l10n.search}${queryState.value}')}",
+                              "/cloud-artist-list/${Uri.encodeComponent('${l10n.search}:${queryState.value}')}",
                               extra: cloudMusicSearchArtistsProvider(
                                 query: queryState.value,
                               ),
@@ -162,7 +162,7 @@ class CloudSearchPage extends HookConsumerWidget {
                       TextButton(
                         onPressed: () {
                           context.pushWrapper(
-                            "/cloud-album-cat/${Uri.encodeComponent('${l10n.search}${queryState.value}')}",
+                            "/cloud-album-cat/${Uri.encodeComponent('${l10n.search}:${queryState.value}')}",
                             extra: cloudMusicSearchAlbumsProvider(
                               query: queryState.value,
                             ),
@@ -207,7 +207,7 @@ class CloudSearchPage extends HookConsumerWidget {
                         TextButton(
                           onPressed: () {
                             context.pushWrapper(
-                              "/cloud-songs-list/${Uri.encodeComponent('${l10n.search}${queryState.value}')}",
+                              "/cloud-songs-list/${Uri.encodeComponent('${l10n.search}:${queryState.value}')}",
                               extra: cloudMusicSearchSongsProvider(
                                 query: queryState.value,
                               ),
@@ -255,7 +255,7 @@ class CloudSearchPage extends HookConsumerWidget {
                       TextButton(
                         onPressed: () {
                           context.pushWrapper(
-                            "/cloud-playlist-list/${Uri.encodeComponent('${l10n.search}${queryState.value}')}",
+                            "/cloud-playlist-list/${Uri.encodeComponent('${l10n.search}:${queryState.value}')}",
                             extra: cloudMusicSearchPlaylistsProvider(
                               query: queryState.value,
                             ),
