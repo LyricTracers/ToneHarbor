@@ -2180,6 +2180,12 @@ abstract class AppLocalizations {
   /// **'Search More'**
   String get more_search;
 
+  /// No description provided for @expand.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand'**
+  String get expand;
+
   /// No description provided for @default_label.
   ///
   /// In en, this message translates to:

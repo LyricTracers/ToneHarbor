@@ -4,6 +4,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
+import 'package:toneharbor/widgets/components/cloud_common_artists.dart';
+import 'package:toneharbor/widgets/components/cloud_common_songs.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
 class CloudSearchPage extends HookConsumerWidget {
@@ -17,6 +19,13 @@ class CloudSearchPage extends HookConsumerWidget {
     final size = MediaQuery.of(context).size;
     final multiplier = size.multiplier2;
     final toolbarHeight = kToolbarHeight * size.multiplier3;
+    final searchArtistsAsync = ref.watch(
+      cloudMusicSearchArtistsProvider(query: queryState.value),
+    );
+    final searchSongsAsync = ref.watch(
+      cloudMusicSearchSongsProvider(query: queryState.value),
+    );
+
     return Column(
       children: [
         AppBar(
@@ -77,6 +86,200 @@ class CloudSearchPage extends HookConsumerWidget {
                 tooltip: l10n.settings,
               ),
           ],
+        ),
+
+        Expanded(
+          child: CustomScrollView(
+            slivers: [
+              SliverPadding(
+                padding: EdgeInsets.all(20 * multiplier),
+                sliver: SliverToBoxAdapter(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.artist,
+                        style: TextStyle(
+                          color: colorScheme.secondary,
+                          fontSize: 18 * multiplier,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (searchArtistsAsync.value != null &&
+                          searchArtistsAsync.value!.hasMore == true)
+                        TextButton(
+                          onPressed: () {
+                            // context.pushWrapper("/cloud-artist-list");
+                          },
+                          child: Text(
+                            l10n.more,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: colorScheme.tertiary,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: CloudMusicArtistHorizontalListView(
+                  artists: searchArtistsAsync.value?.artists ?? [],
+                  colorScheme: colorScheme,
+                  config: ArtistLayoutConfig.defaultConfig
+                      .copyWith(
+                        height: 180,
+                        fontSize: 14,
+                        horizontalPadding: 24,
+                        itemSpacing: 24,
+                        itemWidth: 120,
+                      )
+                      .withMultiplier(size.multiplier),
+                  isLoading: searchArtistsAsync.isLoading,
+                  shimmerCount: 10,
+                ),
+              ),
+
+              SliverPadding(
+                padding: EdgeInsets.all(20 * multiplier),
+                sliver: SliverToBoxAdapter(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.albums,
+                        style: TextStyle(
+                          color: colorScheme.secondary,
+                          fontSize: 18 * multiplier,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // context.pushWrapper("/cloud-artist-list");
+                        },
+                        child: Text(
+                          l10n.more,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: colorScheme.tertiary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: CloudAlbumsCat(
+                  baseProvider: cloudMusicSearchAlbumsProvider(
+                    query: queryState.value,
+                  ),
+                  visibleRows: 2,
+                ),
+              ),
+
+              SliverPadding(
+                padding: EdgeInsets.all(20 * multiplier),
+                sliver: SliverToBoxAdapter(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.all_music,
+                        style: TextStyle(
+                          color: colorScheme.secondary,
+                          fontSize: 18 * multiplier,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (searchSongsAsync.value != null &&
+                          searchSongsAsync.value!.hasMore == true)
+                        TextButton(
+                          onPressed: () {
+                            // context.pushWrapper("/cloud-artist-list");
+                          },
+                          child: Text(
+                            l10n.more,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: colorScheme.tertiary,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              SliverPadding(
+                padding: EdgeInsets.symmetric(horizontal: 15 * multiplier),
+                sliver: SliverToBoxAdapter(
+                  child: CloudMusicSongsHorizontalListView(
+                    songs: searchSongsAsync.value?.songs ?? [],
+                    songsFlag: searchSongsAsync.isLoading ? 1 : 0,
+                    colorScheme: colorScheme,
+                    size: size,
+                    l10n: l10n,
+                  ),
+                ),
+              ),
+
+              SliverPadding(
+                padding: EdgeInsets.all(20 * multiplier),
+                sliver: SliverToBoxAdapter(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.playlists,
+                        style: TextStyle(
+                          color: colorScheme.secondary,
+                          fontSize: 18 * multiplier,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // context.pushWrapper("/cloud-artist-list");
+                        },
+                        child: Text(
+                          l10n.more,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: colorScheme.tertiary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: CloudPlaylistsCat(
+                  baseProvider: cloudMusicSearchPlaylistsProvider(
+                    query: queryState.value,
+                  ),
+                  visibleRows: 2,
+                ),
+              ),
+
+              SliverToBoxAdapter(child: SizedBox(height: 20 * multiplier)),
+              SliverToBoxAdapter(
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    l10n.reach_end,
+                    style: TextStyle(
+                      fontSize: 12 * size.multiplier,
+                      color: colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(child: SizedBox(height: 20 * multiplier)),
+            ],
+          ),
         ),
       ],
     );

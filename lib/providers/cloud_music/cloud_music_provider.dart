@@ -7,6 +7,7 @@ import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/cloud_music/albums.dart';
 import 'package:toneharbor/services/cloud_music/artists.dart';
 import 'package:toneharbor/services/cloud_music/playlists.dart';
+import 'package:toneharbor/services/cloud_music/search.dart';
 import 'package:toneharbor/services/cloud_music/user.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 
@@ -218,7 +219,7 @@ class CloudMusicPlaylistCatlist extends _$CloudMusicPlaylistCatlist
       return;
     }
 
-    final currentTotal = currentData.total;
+    final currentTotal = currentData.total ?? 0;
     final currentPlaylists = currentData.playlists;
 
     if (currentPlaylists.length >= currentTotal) return;
@@ -593,8 +594,6 @@ class CloudMusicArtistGroupList extends _$CloudMusicArtistGroupList
 
   @override
   Future<void> loadMore() async {
-    logger.i('加载更多artists');
-
     if (state.value == null) return;
     final currentData = state.value;
     if (currentData == null || currentData.artists == null) {
@@ -626,6 +625,276 @@ class CloudMusicArtistGroupList extends _$CloudMusicArtistGroupList
       );
     } catch (e) {
       logger.e('加载更多artists失败: $e');
+      state = AsyncData(oldState!);
+    }
+  }
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {}
+}
+
+@riverpod
+class CloudMusicSearchSongs extends _$CloudMusicSearchSongs
+    with ExtraProvider<CloudSongsListData> {
+  @override
+  Future<CloudSongsListData> build({
+    int limit = 30,
+    int offset = 0,
+    required String query,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) async {
+    ref.keepAliveFor(Duration(minutes: 1));
+    return await cloudSearchSongs(
+      ref,
+      query: query,
+      limit: limit,
+      offset: offset,
+      cacheDuration: cacheDuration,
+    );
+  }
+
+  @override
+  Future<void> loadMore() async {
+    if (state.value == null) return;
+    final currentData = state.value;
+    if (currentData == null || currentData.songs == null) {
+      return;
+    }
+
+    if (currentData.hasMore == false) return;
+    final currentSongs = currentData.songs!;
+
+    final oldState = state.value;
+    try {
+      final newState = await cloudSearchSongs(
+        ref,
+        query: query,
+        limit: limit,
+        offset: currentSongs.length,
+        cacheDuration: cacheDuration,
+      );
+
+      if (newState.songs == null || newState.songs!.isEmpty) {
+        return;
+      }
+      final newSongs = newState.songs!;
+      final mergedSongs = [...currentSongs, ...newSongs];
+
+      state = AsyncData(
+        newState.copyWith(
+          songs: mergedSongs,
+          hasMore: newState.hasMore,
+          songCount: newState.songCount,
+        ),
+      );
+    } catch (e) {
+      logger.e('加载更多songs失败: $e');
+      state = AsyncData(oldState!);
+    }
+  }
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {}
+}
+
+@riverpod
+class CloudMusicSearchArtists extends _$CloudMusicSearchArtists
+    with ExtraProvider<CloudArtistListData> {
+  @override
+  Future<CloudArtistListData> build({
+    int limit = 30,
+    int offset = 0,
+    required String query,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) async {
+    ref.keepAliveFor(Duration(minutes: 1));
+    return await cloudSearchArtists(
+      ref,
+      query: query,
+      limit: limit,
+      offset: offset,
+      cacheDuration: cacheDuration,
+    );
+  }
+
+  @override
+  Future<void> loadMore() async {
+    if (state.value == null) return;
+    final currentData = state.value;
+    if (currentData == null || currentData.artists == null) {
+      return;
+    }
+
+    if (currentData.more == false) return;
+    final currentArtists = currentData.artists!;
+
+    final oldState = state.value;
+    try {
+      final newState = await cloudSearchArtists(
+        ref,
+        query: query,
+        limit: limit,
+        offset: currentArtists.length,
+        cacheDuration: cacheDuration,
+      );
+
+      if (newState.artists == null || newState.artists!.isEmpty) {
+        return;
+      }
+      final newArtists = newState.artists!;
+      final mergedArtists = [...currentArtists, ...newArtists];
+
+      state = AsyncData(
+        newState.copyWith(
+          artists: mergedArtists,
+          more: newState.more,
+          hasMore: newState.hasMore,
+          artistCount: newState.artistCount,
+        ),
+      );
+    } catch (e) {
+      logger.e('加载更多artists失败: $e');
+      state = AsyncData(oldState!);
+    }
+  }
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {}
+}
+
+@riverpod
+class CloudMusicSearchAlbums extends _$CloudMusicSearchAlbums
+    with ExtraProvider<CloudAlbumListData> {
+  @override
+  Future<CloudAlbumListData> build({
+    int limit = 30,
+    int offset = 0,
+    required String query,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) async {
+    ref.keepAliveFor(Duration(minutes: 1));
+    return await cloudSearchAlbums(
+      ref,
+      query: query,
+      limit: limit,
+      offset: offset,
+      cacheDuration: cacheDuration,
+    );
+  }
+
+  @override
+  Future<void> loadMore() async {
+    if (state.value == null) return;
+    final currentData = state.value;
+    if (currentData == null || currentData.albums == null) {
+      return;
+    }
+    final count = currentData.albumCount ?? 0;
+    final currentAlbums = currentData.albums!;
+
+    if (count <= currentAlbums.length) return;
+
+    final oldState = state.value;
+    try {
+      final newState = await cloudSearchAlbums(
+        ref,
+        query: query,
+        limit: limit,
+        offset: currentAlbums.length,
+        cacheDuration: cacheDuration,
+      );
+
+      if (newState.albums == null || newState.albums!.isEmpty) {
+        return;
+      }
+      final newAlbums = newState.albums!;
+      final mergedAlbums = [...currentAlbums, ...newAlbums];
+
+      state = AsyncData(
+        newState.copyWith(
+          albums: mergedAlbums,
+          albumCount: newState.albumCount,
+        ),
+      );
+    } catch (e) {
+      logger.e('加载更多albums失败: $e');
+      state = AsyncData(oldState!);
+    }
+  }
+
+  @override
+  Future<void> setSort({
+    required String sortBy,
+    required String sortDirection,
+  }) async {}
+}
+
+@riverpod
+class CloudMusicSearchPlaylists extends _$CloudMusicSearchPlaylists
+    with ExtraProvider<CloudMusicPlaylistDataList> {
+  @override
+  Future<CloudMusicPlaylistDataList> build({
+    int limit = 30,
+    int offset = 0,
+    required String query,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) async {
+    ref.keepAliveFor(Duration(minutes: 1));
+    return await cloudSearchPlaylists(
+      ref,
+      query: query,
+      limit: limit,
+      offset: offset,
+      cacheDuration: cacheDuration,
+    );
+  }
+
+  @override
+  Future<void> loadMore() async {
+    if (state.value == null) return;
+    final currentData = state.value;
+    if (currentData == null || currentData.playlists.isEmpty == false) {
+      return;
+    }
+    final count = currentData.playlistCount ?? currentData.total ?? 0;
+    final currentPlaylists = currentData.playlists;
+
+    if (count <= currentPlaylists.length) return;
+
+    final oldState = state.value;
+    try {
+      final newState = await cloudSearchPlaylists(
+        ref,
+        query: query,
+        limit: limit,
+        offset: currentPlaylists.length,
+        cacheDuration: cacheDuration,
+      );
+
+      if (newState.playlists.isEmpty) {
+        return;
+      }
+      final newPlaylists = newState.playlists;
+      final mergedPlaylists = [...currentPlaylists, ...newPlaylists];
+
+      state = AsyncData(
+        newState.copyWith(
+          playlists: mergedPlaylists,
+          playlistCount: newState.playlistCount,
+          total: newState.playlistCount,
+        ),
+      );
+    } catch (e) {
+      logger.e('加载更多playlists失败: $e');
       state = AsyncData(oldState!);
     }
   }

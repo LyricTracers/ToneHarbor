@@ -1052,5 +1052,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get more_search => '搜索更多';
 
   @override
+  String get expand => '展开';
+
+  @override
   String get default_label => '默认';
 }

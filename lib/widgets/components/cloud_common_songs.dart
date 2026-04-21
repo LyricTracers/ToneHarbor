@@ -89,7 +89,7 @@ class CloudMusicSongsHorizontalListView extends HookConsumerWidget {
             child: InkWell(
               onTap: () => expanded.value = !expanded.value,
               child: Text(
-                expanded.value ? l10n.collapse : l10n.more,
+                expanded.value ? l10n.collapse : l10n.expand,
                 style: TextStyle(
                   fontSize: 14 * size.multiplier,
                   color: colorScheme.primary,

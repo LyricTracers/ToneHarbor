@@ -126,7 +126,7 @@ class CloudPlaylistsCat<T extends ExtraProvider<CloudMusicPlaylistDataList>>
     AppLocalizations l10n,
   ) {
     final playlists = playlistsList.playlists;
-    final total = playlistsList.total;
+    final total = playlistsList.total ?? playlistsList.playlistCount ?? 0;
 
     final hasMore = visibleRows == -1 && playlists.length < total;
 

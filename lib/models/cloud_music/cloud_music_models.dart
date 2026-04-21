@@ -36,7 +36,9 @@ sealed class CloudMusicPlaylistDataList with _$CloudMusicPlaylistDataList {
   const CloudMusicPlaylistDataList._();
   const factory CloudMusicPlaylistDataList({
     required List<CloudMusicPlaylistData> playlists,
-    required int total,
+    int? total,
+    int? playlistCount,
+    bool? hasMore,
   }) = _CloudMusicPlaylistDataList;
   factory CloudMusicPlaylistDataList.fromJson(Map<String, dynamic> json) =>
       _$CloudMusicPlaylistDataListFromJson(json);
@@ -376,6 +378,7 @@ sealed class CloudAlbumListData with _$CloudAlbumListData {
   const factory CloudAlbumListData({
     List<CloudMusicAlbumData>? albums,
     int? total,
+    int? albumCount,
   }) = _CloudAlbumListData;
   factory CloudAlbumListData.fromJson(Map<String, dynamic> json) =>
       _$CloudAlbumListDataFromJson(json);
@@ -387,7 +390,21 @@ sealed class CloudArtistListData with _$CloudArtistListData {
   const factory CloudArtistListData({
     List<CloudMusicArtistData>? artists,
     bool? more,
+    int? artistCount,
+    bool? hasMore,
   }) = _CloudArtistListData;
   factory CloudArtistListData.fromJson(Map<String, dynamic> json) =>
       _$CloudArtistListDataFromJson(json);
+}
+
+@freezed
+sealed class CloudSongsListData with _$CloudSongsListData {
+  const CloudSongsListData._();
+  const factory CloudSongsListData({
+    List<CloudMusicSongData>? songs,
+    bool? hasMore,
+    int? songCount,
+  }) = _CloudSongsListData;
+  factory CloudSongsListData.fromJson(Map<String, dynamic> json) =>
+      _$CloudSongsListDataFromJson(json);
 }

@@ -55,7 +55,9 @@ _CloudMusicPlaylistDataList _$CloudMusicPlaylistDataListFromJson(
   playlists: (json['playlists'] as List<dynamic>)
       .map((e) => CloudMusicPlaylistData.fromJson(e as Map<String, dynamic>))
       .toList(),
-  total: (json['total'] as num).toInt(),
+  total: (json['total'] as num?)?.toInt(),
+  playlistCount: (json['playlistCount'] as num?)?.toInt(),
+  hasMore: json['hasMore'] as bool?,
 );
 
 Map<String, dynamic> _$CloudMusicPlaylistDataListToJson(
@@ -63,6 +65,8 @@ Map<String, dynamic> _$CloudMusicPlaylistDataListToJson(
 ) => <String, dynamic>{
   'playlists': instance.playlists,
   'total': instance.total,
+  'playlistCount': instance.playlistCount,
+  'hasMore': instance.hasMore,
 };
 
 _CloudMusicPlaylistData _$CloudMusicPlaylistDataFromJson(
@@ -419,10 +423,15 @@ _CloudAlbumListData _$CloudAlbumListDataFromJson(Map<String, dynamic> json) =>
           ?.map((e) => CloudMusicAlbumData.fromJson(e as Map<String, dynamic>))
           .toList(),
       total: (json['total'] as num?)?.toInt(),
+      albumCount: (json['albumCount'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$CloudAlbumListDataToJson(_CloudAlbumListData instance) =>
-    <String, dynamic>{'albums': instance.albums, 'total': instance.total};
+    <String, dynamic>{
+      'albums': instance.albums,
+      'total': instance.total,
+      'albumCount': instance.albumCount,
+    };
 
 _CloudArtistListData _$CloudArtistListDataFromJson(Map<String, dynamic> json) =>
     _CloudArtistListData(
@@ -430,8 +439,31 @@ _CloudArtistListData _$CloudArtistListDataFromJson(Map<String, dynamic> json) =>
           ?.map((e) => CloudMusicArtistData.fromJson(e as Map<String, dynamic>))
           .toList(),
       more: json['more'] as bool?,
+      artistCount: (json['artistCount'] as num?)?.toInt(),
+      hasMore: json['hasMore'] as bool?,
     );
 
 Map<String, dynamic> _$CloudArtistListDataToJson(
   _CloudArtistListData instance,
-) => <String, dynamic>{'artists': instance.artists, 'more': instance.more};
+) => <String, dynamic>{
+  'artists': instance.artists,
+  'more': instance.more,
+  'artistCount': instance.artistCount,
+  'hasMore': instance.hasMore,
+};
+
+_CloudSongsListData _$CloudSongsListDataFromJson(Map<String, dynamic> json) =>
+    _CloudSongsListData(
+      songs: (json['songs'] as List<dynamic>?)
+          ?.map((e) => CloudMusicSongData.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      hasMore: json['hasMore'] as bool?,
+      songCount: (json['songCount'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$CloudSongsListDataToJson(_CloudSongsListData instance) =>
+    <String, dynamic>{
+      'songs': instance.songs,
+      'hasMore': instance.hasMore,
+      'songCount': instance.songCount,
+    };

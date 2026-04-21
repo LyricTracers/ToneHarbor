@@ -1083,5 +1083,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get more_search => 'Search More';
 
   @override
+  String get expand => 'Expand';
+
+  @override
   String get default_label => 'Default';
 }

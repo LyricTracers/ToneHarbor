@@ -166,3 +166,330 @@ Future<List<String>?> searchHot(
   }
   return result;
 }
+
+Future<CloudSongsListData> cloudSearchSongs(
+  Ref ref, {
+  required String query,
+  int limit = 30,
+  int offset = 0,
+  Duration? cacheDuration = const Duration(days: 30),
+}) async {
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+  if (apiState.defaultUrl.isEmpty) {
+    return CloudSongsListData();
+  }
+  final l10n = ref.read(l10nProvider);
+  final cacheKey = 'cloud_search_songs:$query:$limit:$offset';
+  final groupKey = 'cloud_search';
+  if (cacheDuration != null) {
+    final cached = await getFromCache<CloudSongsListData>(
+      cacheKey: cacheKey,
+      group: groupKey,
+      fromJson: (json) {
+        return CloudSongsListData.fromJson(json);
+      },
+    );
+
+    if (cached != null && (cached.songs != null && cached.songs!.isNotEmpty)) {
+      return cached;
+    }
+  }
+  final queryParams = <String, String>{
+    'randomCNIP': 'true',
+    'keywords': query,
+    'limit': limit.toString(),
+    'offset': offset.toString(),
+    'type': '1',
+  };
+  final cookieParams = CloudMusicAuth.getApiCookieParams();
+  if (cookieParams.isNotEmpty) {
+    queryParams.addAll(cookieParams);
+  }
+  final response = await httpClientWrapper.get(
+    '${apiState.defaultUrl}/search',
+    query: queryParams,
+    cancelToken: ref.cancelToken(),
+  );
+  if (response.statusCode != 200) {
+    logger.e('请求失败，状态码：${response.statusCode}');
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: response.statusCode,
+    );
+  }
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw CloudMusicException(message: l10n.error_response_parse_failed);
+  }
+  if (jsonBody['code'] != 200) {
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: jsonBody['code'],
+    );
+  }
+
+  var searchData = CloudSongsListData.fromJson(jsonBody['result']);
+  if (searchData.songs != null && searchData.songs!.isNotEmpty) {
+    try {
+      final tracks = await getTrackDetail(
+        ref,
+        ids: searchData.songs!.map((e) => e.songId).toList(),
+      );
+      searchData = searchData.copyWith(songs: tracks);
+    } catch (e) {
+      logger.e('获取歌曲详情失败: $e');
+    }
+  }
+
+  if (cacheDuration != null &&
+      searchData.songs != null &&
+      searchData.songs!.isNotEmpty) {
+    await saveToCache(
+      cacheKey: cacheKey,
+      jsonBody: searchData.toJson(),
+      cacheDuration: cacheDuration,
+      group: groupKey,
+    );
+  }
+  return searchData;
+}
+
+Future<CloudAlbumListData> cloudSearchAlbums(
+  Ref ref, {
+  required String query,
+  int limit = 30,
+  int offset = 0,
+  Duration? cacheDuration = const Duration(days: 30),
+}) async {
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+  if (apiState.defaultUrl.isEmpty) {
+    return CloudAlbumListData();
+  }
+  final l10n = ref.read(l10nProvider);
+  final cacheKey = 'cloud_search_albums:$query:$limit:$offset';
+  final groupKey = 'cloud_search';
+  if (cacheDuration != null) {
+    final cached = await getFromCache<CloudAlbumListData>(
+      cacheKey: cacheKey,
+      group: groupKey,
+      fromJson: (json) {
+        return CloudAlbumListData.fromJson(json);
+      },
+    );
+
+    if (cached != null &&
+        (cached.albums != null && cached.albums!.isNotEmpty)) {
+      return cached.copyWith(total: cached.albumCount);
+    }
+  }
+  final queryParams = <String, String>{
+    'randomCNIP': 'true',
+    'keywords': query,
+    'limit': limit.toString(),
+    'offset': offset.toString(),
+    'type': '10',
+  };
+  final cookieParams = CloudMusicAuth.getApiCookieParams();
+  if (cookieParams.isNotEmpty) {
+    queryParams.addAll(cookieParams);
+  }
+  final response = await httpClientWrapper.get(
+    '${apiState.defaultUrl}/search',
+    query: queryParams,
+    cancelToken: ref.cancelToken(),
+  );
+  if (response.statusCode != 200) {
+    logger.e('请求失败，状态码：${response.statusCode}');
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: response.statusCode,
+    );
+  }
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw CloudMusicException(message: l10n.error_response_parse_failed);
+  }
+  if (jsonBody['code'] != 200) {
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: jsonBody['code'],
+    );
+  }
+
+  var searchData = CloudAlbumListData.fromJson(jsonBody['result']);
+
+  if (cacheDuration != null &&
+      searchData.albums != null &&
+      searchData.albums!.isNotEmpty) {
+    await saveToCache(
+      cacheKey: cacheKey,
+      jsonBody: searchData.toJson(),
+      cacheDuration: cacheDuration,
+      group: groupKey,
+    );
+  }
+  return searchData.copyWith(total: searchData.albumCount);
+}
+
+Future<CloudArtistListData> cloudSearchArtists(
+  Ref ref, {
+  required String query,
+  int limit = 30,
+  int offset = 0,
+  Duration? cacheDuration = const Duration(days: 30),
+}) async {
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+  if (apiState.defaultUrl.isEmpty) {
+    return CloudArtistListData();
+  }
+  final l10n = ref.read(l10nProvider);
+  final cacheKey = 'cloud_search_artists:$query:$limit:$offset';
+  final groupKey = 'cloud_search';
+  if (cacheDuration != null) {
+    final cached = await getFromCache<CloudArtistListData>(
+      cacheKey: cacheKey,
+      group: groupKey,
+      fromJson: (json) {
+        return CloudArtistListData.fromJson(json);
+      },
+    );
+
+    if (cached != null &&
+        (cached.artists != null && cached.artists!.isNotEmpty)) {
+      return cached.copyWith(more: cached.hasMore);
+    }
+  }
+  final queryParams = <String, String>{
+    'randomCNIP': 'true',
+    'keywords': query,
+    'limit': limit.toString(),
+    'offset': offset.toString(),
+    'type': '100',
+  };
+  final cookieParams = CloudMusicAuth.getApiCookieParams();
+  if (cookieParams.isNotEmpty) {
+    queryParams.addAll(cookieParams);
+  }
+  final response = await httpClientWrapper.get(
+    '${apiState.defaultUrl}/search',
+    query: queryParams,
+    cancelToken: ref.cancelToken(),
+  );
+  if (response.statusCode != 200) {
+    logger.e('请求失败，状态码：${response.statusCode}');
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: response.statusCode,
+    );
+  }
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw CloudMusicException(message: l10n.error_response_parse_failed);
+  }
+  if (jsonBody['code'] != 200) {
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: jsonBody['code'],
+    );
+  }
+
+  var searchData = CloudArtistListData.fromJson(jsonBody['result']);
+
+  if (cacheDuration != null &&
+      searchData.artists != null &&
+      searchData.artists!.isNotEmpty) {
+    await saveToCache(
+      cacheKey: cacheKey,
+      jsonBody: searchData.toJson(),
+      cacheDuration: cacheDuration,
+      group: groupKey,
+    );
+  }
+  return searchData.copyWith(more: searchData.hasMore);
+}
+
+Future<CloudMusicPlaylistDataList> cloudSearchPlaylists(
+  Ref ref, {
+  required String query,
+  int limit = 30,
+  int offset = 0,
+  Duration? cacheDuration = const Duration(days: 30),
+}) async {
+  final apiState = ref.read(cloudMusicApiUrlsProvider);
+  if (apiState.defaultUrl.isEmpty) {
+    return CloudMusicPlaylistDataList(playlists: []);
+  }
+  final l10n = ref.read(l10nProvider);
+  final cacheKey = 'cloud_search_playlists:$query:$limit:$offset';
+  final groupKey = 'cloud_search';
+  if (cacheDuration != null) {
+    final cached = await getFromCache<CloudMusicPlaylistDataList>(
+      cacheKey: cacheKey,
+      group: groupKey,
+      fromJson: (json) {
+        return CloudMusicPlaylistDataList.fromJson(json);
+      },
+    );
+
+    if (cached != null && (cached.playlists.isNotEmpty)) {
+      return cached.copyWith(total: cached.playlistCount);
+    }
+  }
+  final queryParams = <String, String>{
+    'randomCNIP': 'true',
+    'keywords': query,
+    'limit': limit.toString(),
+    'offset': offset.toString(),
+    'type': '1000',
+  };
+  final cookieParams = CloudMusicAuth.getApiCookieParams();
+  if (cookieParams.isNotEmpty) {
+    queryParams.addAll(cookieParams);
+  }
+  final response = await httpClientWrapper.get(
+    '${apiState.defaultUrl}/search',
+    query: queryParams,
+    cancelToken: ref.cancelToken(),
+  );
+  if (response.statusCode != 200) {
+    logger.e('请求失败，状态码：${response.statusCode}');
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: response.statusCode,
+    );
+  }
+  late final Map<String, dynamic> jsonBody;
+  try {
+    jsonBody = parseJsonResponse(response.body);
+  } catch (e) {
+    logger.e('解析响应失败: $e');
+    throw CloudMusicException(message: l10n.error_response_parse_failed);
+  }
+  if (jsonBody['code'] != 200) {
+    throw CloudMusicException(
+      message: l10n.error_network_error,
+      statusCode: jsonBody['code'],
+    );
+  }
+
+  var searchData = CloudMusicPlaylistDataList.fromJson(jsonBody['result']);
+
+  if (cacheDuration != null && searchData.playlists.isNotEmpty) {
+    await saveToCache(
+      cacheKey: cacheKey,
+      jsonBody: searchData.toJson(),
+      cacheDuration: cacheDuration,
+      group: groupKey,
+    );
+  }
+  return searchData.copyWith(total: searchData.playlistCount);
+}

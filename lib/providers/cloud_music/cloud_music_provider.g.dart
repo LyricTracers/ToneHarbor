@@ -464,7 +464,7 @@ final class CloudMusicPlaylistCatlistProvider
 }
 
 String _$cloudMusicPlaylistCatlistHash() =>
-    r'6bbd8e6080d51492194017a8bb49c203a02e2fe3';
+    r'688d3618bcb891b5587fa68e46c589945a729069';
 
 final class CloudMusicPlaylistCatlistFamily extends $Family
     with
@@ -1317,7 +1317,7 @@ final class CloudMusicArtistGroupListProvider
 }
 
 String _$cloudMusicArtistGroupListHash() =>
-    r'00e88d601699ecfc96f74b3a777cbc68868fabc8';
+    r'18cb40f9187a34fda77d6f2fa0893b5f3ad0c99a';
 
 final class CloudMusicArtistGroupListFamily extends $Family
     with
@@ -1416,6 +1416,513 @@ abstract class _$CloudMusicArtistGroupList
         cacheDuration: _$args.cacheDuration,
         area: _$args.area,
         type: _$args.type,
+      ),
+    );
+  }
+}
+
+@ProviderFor(CloudMusicSearchSongs)
+final cloudMusicSearchSongsProvider = CloudMusicSearchSongsFamily._();
+
+final class CloudMusicSearchSongsProvider
+    extends $AsyncNotifierProvider<CloudMusicSearchSongs, CloudSongsListData> {
+  CloudMusicSearchSongsProvider._({
+    required CloudMusicSearchSongsFamily super.from,
+    required ({int limit, int offset, String query, Duration? cacheDuration})
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'cloudMusicSearchSongsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudMusicSearchSongsHash();
+
+  @override
+  String toString() {
+    return r'cloudMusicSearchSongsProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  CloudMusicSearchSongs create() => CloudMusicSearchSongs();
+
+  @override
+  bool operator ==(Object other) {
+    return other is CloudMusicSearchSongsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$cloudMusicSearchSongsHash() =>
+    r'286327332f0204fd299f766b010c4d6626ca155a';
+
+final class CloudMusicSearchSongsFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          CloudMusicSearchSongs,
+          AsyncValue<CloudSongsListData>,
+          CloudSongsListData,
+          FutureOr<CloudSongsListData>,
+          ({int limit, int offset, String query, Duration? cacheDuration})
+        > {
+  CloudMusicSearchSongsFamily._()
+    : super(
+        retry: null,
+        name: r'cloudMusicSearchSongsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CloudMusicSearchSongsProvider call({
+    int limit = 30,
+    int offset = 0,
+    required String query,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) => CloudMusicSearchSongsProvider._(
+    argument: (
+      limit: limit,
+      offset: offset,
+      query: query,
+      cacheDuration: cacheDuration,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'cloudMusicSearchSongsProvider';
+}
+
+abstract class _$CloudMusicSearchSongs
+    extends $AsyncNotifier<CloudSongsListData> {
+  late final _$args =
+      ref.$arg
+          as ({int limit, int offset, String query, Duration? cacheDuration});
+  int get limit => _$args.limit;
+  int get offset => _$args.offset;
+  String get query => _$args.query;
+  Duration? get cacheDuration => _$args.cacheDuration;
+
+  FutureOr<CloudSongsListData> build({
+    int limit = 30,
+    int offset = 0,
+    required String query,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  });
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<AsyncValue<CloudSongsListData>, CloudSongsListData>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<CloudSongsListData>, CloudSongsListData>,
+              AsyncValue<CloudSongsListData>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(
+      ref,
+      () => build(
+        limit: _$args.limit,
+        offset: _$args.offset,
+        query: _$args.query,
+        cacheDuration: _$args.cacheDuration,
+      ),
+    );
+  }
+}
+
+@ProviderFor(CloudMusicSearchArtists)
+final cloudMusicSearchArtistsProvider = CloudMusicSearchArtistsFamily._();
+
+final class CloudMusicSearchArtistsProvider
+    extends
+        $AsyncNotifierProvider<CloudMusicSearchArtists, CloudArtistListData> {
+  CloudMusicSearchArtistsProvider._({
+    required CloudMusicSearchArtistsFamily super.from,
+    required ({int limit, int offset, String query, Duration? cacheDuration})
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'cloudMusicSearchArtistsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudMusicSearchArtistsHash();
+
+  @override
+  String toString() {
+    return r'cloudMusicSearchArtistsProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  CloudMusicSearchArtists create() => CloudMusicSearchArtists();
+
+  @override
+  bool operator ==(Object other) {
+    return other is CloudMusicSearchArtistsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$cloudMusicSearchArtistsHash() =>
+    r'12c41efc134ac89444d386156c087e24c40b5eaf';
+
+final class CloudMusicSearchArtistsFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          CloudMusicSearchArtists,
+          AsyncValue<CloudArtistListData>,
+          CloudArtistListData,
+          FutureOr<CloudArtistListData>,
+          ({int limit, int offset, String query, Duration? cacheDuration})
+        > {
+  CloudMusicSearchArtistsFamily._()
+    : super(
+        retry: null,
+        name: r'cloudMusicSearchArtistsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CloudMusicSearchArtistsProvider call({
+    int limit = 30,
+    int offset = 0,
+    required String query,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) => CloudMusicSearchArtistsProvider._(
+    argument: (
+      limit: limit,
+      offset: offset,
+      query: query,
+      cacheDuration: cacheDuration,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'cloudMusicSearchArtistsProvider';
+}
+
+abstract class _$CloudMusicSearchArtists
+    extends $AsyncNotifier<CloudArtistListData> {
+  late final _$args =
+      ref.$arg
+          as ({int limit, int offset, String query, Duration? cacheDuration});
+  int get limit => _$args.limit;
+  int get offset => _$args.offset;
+  String get query => _$args.query;
+  Duration? get cacheDuration => _$args.cacheDuration;
+
+  FutureOr<CloudArtistListData> build({
+    int limit = 30,
+    int offset = 0,
+    required String query,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  });
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<AsyncValue<CloudArtistListData>, CloudArtistListData>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<CloudArtistListData>, CloudArtistListData>,
+              AsyncValue<CloudArtistListData>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(
+      ref,
+      () => build(
+        limit: _$args.limit,
+        offset: _$args.offset,
+        query: _$args.query,
+        cacheDuration: _$args.cacheDuration,
+      ),
+    );
+  }
+}
+
+@ProviderFor(CloudMusicSearchAlbums)
+final cloudMusicSearchAlbumsProvider = CloudMusicSearchAlbumsFamily._();
+
+final class CloudMusicSearchAlbumsProvider
+    extends $AsyncNotifierProvider<CloudMusicSearchAlbums, CloudAlbumListData> {
+  CloudMusicSearchAlbumsProvider._({
+    required CloudMusicSearchAlbumsFamily super.from,
+    required ({int limit, int offset, String query, Duration? cacheDuration})
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'cloudMusicSearchAlbumsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudMusicSearchAlbumsHash();
+
+  @override
+  String toString() {
+    return r'cloudMusicSearchAlbumsProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  CloudMusicSearchAlbums create() => CloudMusicSearchAlbums();
+
+  @override
+  bool operator ==(Object other) {
+    return other is CloudMusicSearchAlbumsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$cloudMusicSearchAlbumsHash() =>
+    r'282165972152e7f8153335079b62ddac461acf03';
+
+final class CloudMusicSearchAlbumsFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          CloudMusicSearchAlbums,
+          AsyncValue<CloudAlbumListData>,
+          CloudAlbumListData,
+          FutureOr<CloudAlbumListData>,
+          ({int limit, int offset, String query, Duration? cacheDuration})
+        > {
+  CloudMusicSearchAlbumsFamily._()
+    : super(
+        retry: null,
+        name: r'cloudMusicSearchAlbumsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CloudMusicSearchAlbumsProvider call({
+    int limit = 30,
+    int offset = 0,
+    required String query,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) => CloudMusicSearchAlbumsProvider._(
+    argument: (
+      limit: limit,
+      offset: offset,
+      query: query,
+      cacheDuration: cacheDuration,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'cloudMusicSearchAlbumsProvider';
+}
+
+abstract class _$CloudMusicSearchAlbums
+    extends $AsyncNotifier<CloudAlbumListData> {
+  late final _$args =
+      ref.$arg
+          as ({int limit, int offset, String query, Duration? cacheDuration});
+  int get limit => _$args.limit;
+  int get offset => _$args.offset;
+  String get query => _$args.query;
+  Duration? get cacheDuration => _$args.cacheDuration;
+
+  FutureOr<CloudAlbumListData> build({
+    int limit = 30,
+    int offset = 0,
+    required String query,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  });
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<AsyncValue<CloudAlbumListData>, CloudAlbumListData>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<CloudAlbumListData>, CloudAlbumListData>,
+              AsyncValue<CloudAlbumListData>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(
+      ref,
+      () => build(
+        limit: _$args.limit,
+        offset: _$args.offset,
+        query: _$args.query,
+        cacheDuration: _$args.cacheDuration,
+      ),
+    );
+  }
+}
+
+@ProviderFor(CloudMusicSearchPlaylists)
+final cloudMusicSearchPlaylistsProvider = CloudMusicSearchPlaylistsFamily._();
+
+final class CloudMusicSearchPlaylistsProvider
+    extends
+        $AsyncNotifierProvider<
+          CloudMusicSearchPlaylists,
+          CloudMusicPlaylistDataList
+        > {
+  CloudMusicSearchPlaylistsProvider._({
+    required CloudMusicSearchPlaylistsFamily super.from,
+    required ({int limit, int offset, String query, Duration? cacheDuration})
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'cloudMusicSearchPlaylistsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$cloudMusicSearchPlaylistsHash();
+
+  @override
+  String toString() {
+    return r'cloudMusicSearchPlaylistsProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  CloudMusicSearchPlaylists create() => CloudMusicSearchPlaylists();
+
+  @override
+  bool operator ==(Object other) {
+    return other is CloudMusicSearchPlaylistsProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$cloudMusicSearchPlaylistsHash() =>
+    r'e5c4f6d3b2ec1ac6f1856c9afc3d8ded95aa8ed2';
+
+final class CloudMusicSearchPlaylistsFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          CloudMusicSearchPlaylists,
+          AsyncValue<CloudMusicPlaylistDataList>,
+          CloudMusicPlaylistDataList,
+          FutureOr<CloudMusicPlaylistDataList>,
+          ({int limit, int offset, String query, Duration? cacheDuration})
+        > {
+  CloudMusicSearchPlaylistsFamily._()
+    : super(
+        retry: null,
+        name: r'cloudMusicSearchPlaylistsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CloudMusicSearchPlaylistsProvider call({
+    int limit = 30,
+    int offset = 0,
+    required String query,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  }) => CloudMusicSearchPlaylistsProvider._(
+    argument: (
+      limit: limit,
+      offset: offset,
+      query: query,
+      cacheDuration: cacheDuration,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'cloudMusicSearchPlaylistsProvider';
+}
+
+abstract class _$CloudMusicSearchPlaylists
+    extends $AsyncNotifier<CloudMusicPlaylistDataList> {
+  late final _$args =
+      ref.$arg
+          as ({int limit, int offset, String query, Duration? cacheDuration});
+  int get limit => _$args.limit;
+  int get offset => _$args.offset;
+  String get query => _$args.query;
+  Duration? get cacheDuration => _$args.cacheDuration;
+
+  FutureOr<CloudMusicPlaylistDataList> build({
+    int limit = 30,
+    int offset = 0,
+    required String query,
+    Duration? cacheDuration = const Duration(minutes: 60),
+  });
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<CloudMusicPlaylistDataList>,
+              CloudMusicPlaylistDataList
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<CloudMusicPlaylistDataList>,
+                CloudMusicPlaylistDataList
+              >,
+              AsyncValue<CloudMusicPlaylistDataList>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(
+      ref,
+      () => build(
+        limit: _$args.limit,
+        offset: _$args.offset,
+        query: _$args.query,
+        cacheDuration: _$args.cacheDuration,
       ),
     );
   }
