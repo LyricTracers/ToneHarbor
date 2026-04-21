@@ -850,3 +850,87 @@ class CommonShimmerLoader {
     );
   }
 }
+
+class TrackListShimmerLoading extends StatelessWidget {
+  const TrackListShimmerLoading({
+    super.key,
+    required this.colorScheme,
+    required this.size,
+  });
+
+  final ColorScheme colorScheme;
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    final multiplier = size.multiplier;
+    final itemHeight = 66.0 * multiplier;
+
+    return SliverList(
+      delegate: SliverChildBuilderDelegate((context, index) {
+        return Shimmer.fromColors(
+          baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          highlightColor: colorScheme.surface.withValues(alpha: 1.0),
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 15 * multiplier,
+              right: 20 * multiplier,
+              top: 4 * multiplier,
+              bottom: 4 * multiplier,
+            ),
+            child: SizedBox(
+              height: itemHeight,
+              child: Row(
+                children: [
+                  Container(
+                    width: 20,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  SizedBox(width: 20 * multiplier),
+                  Container(
+                    width: itemHeight * 0.8,
+                    height: itemHeight * 0.8,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  SizedBox(width: 15 * multiplier),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          height: 16 * multiplier,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        SizedBox(height: 6 * multiplier),
+                        Container(
+                          width: 100 * multiplier,
+                          height: 12 * multiplier,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }, childCount: 20),
+    );
+  }
+}

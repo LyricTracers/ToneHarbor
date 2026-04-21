@@ -23,11 +23,12 @@ import 'package:toneharbor/widgets/pages/cloud_album_detail.dart';
 import 'package:toneharbor/widgets/pages/cloud_album_list_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_api_setting_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_artist_page.dart';
-import 'package:toneharbor/widgets/pages/cloud_artists_list_page.dart';
+import 'package:toneharbor/widgets/pages/cloud_all_artists_list_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_detail_playlist_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_music_login_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_playlist_catlist_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_search_page.dart';
+import 'package:toneharbor/widgets/pages/cloud_songs_list_page.dart';
 import 'package:toneharbor/widgets/pages/gesture_only_cupertino_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -561,6 +562,24 @@ class MyApp extends HookConsumerWidget {
                 },
               ),
               GoRoute(
+                path: '/cloud-songs-list/:title',
+                pageBuilder: (context, state) {
+                  final provider =
+                      state.extra
+                          as $AsyncNotifierProvider<
+                            ExtraProvider<CloudSongsListData>,
+                            CloudSongsListData
+                          >;
+                  return buildPage(
+                    key: state.pageKey,
+                    child: CloudSongsListPage(
+                      baseProvider: provider,
+                      title: state.pathParameters['title'] ?? 'All Songs',
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
                 path: '/cloud-album-cat/:title',
                 pageBuilder: (context, state) {
                   final baseProvider =
@@ -579,11 +598,11 @@ class MyApp extends HookConsumerWidget {
                 },
               ),
               GoRoute(
-                path: '/cloud-artist-list',
+                path: '/cloud-all-artist-list',
                 pageBuilder: (context, state) {
                   return buildPage(
                     key: state.pageKey,
-                    child: CloudArtistsListPage(),
+                    child: CloudAllArtistsListPage(),
                   );
                 },
               ),
@@ -995,7 +1014,7 @@ class MyApp extends HookConsumerWidget {
             pageBuilder: (context, state) {
               return buildPage(
                 key: state.pageKey,
-                child: MobileFullLayout(child: CloudArtistsListPage()),
+                child: MobileFullLayout(child: CloudAllArtistsListPage()),
               );
             },
           ),
@@ -1007,6 +1026,26 @@ class MyApp extends HookConsumerWidget {
                 child: MobileFullLayout(
                   child: CloudSearchPage(
                     query: state.pathParameters['query'] ?? '',
+                  ),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/mobile/cloud-songs-list/:title',
+            pageBuilder: (context, state) {
+              final provider =
+                  state.extra
+                      as $AsyncNotifierProvider<
+                        ExtraProvider<CloudSongsListData>,
+                        CloudSongsListData
+                      >;
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(
+                  child: CloudSongsListPage(
+                    baseProvider: provider,
+                    title: state.pathParameters['title'] ?? 'All Songs',
                   ),
                 ),
               );

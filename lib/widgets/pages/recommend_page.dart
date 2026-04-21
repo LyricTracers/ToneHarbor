@@ -334,7 +334,7 @@ class RecommendPage extends HookConsumerWidget {
 
                             TextButton(
                               onPressed: () {
-                                context.pushWrapper("/cloud-artist-list");
+                                context.pushWrapper("/cloud-all-artist-list");
                               },
                               child: Text(
                                 i10n.more,

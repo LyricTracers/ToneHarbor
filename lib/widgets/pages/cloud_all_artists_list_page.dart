@@ -11,8 +11,8 @@ import 'package:toneharbor/widgets/components/common_artist_grid.dart';
 import 'package:toneharbor/widgets/components/common_shimmer_loader.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 
-class CloudArtistsListPage extends HookConsumerWidget {
-  const CloudArtistsListPage({super.key});
+class CloudAllArtistsListPage extends HookConsumerWidget {
+  const CloudAllArtistsListPage({super.key});
 
   PreferredSizeWidget _buildAppBar(
     WidgetRef ref,
