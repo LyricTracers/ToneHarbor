@@ -59,6 +59,18 @@ extension MediaCoverExtension on Media {
     if (coverUrl != null && coverUrl.isNotEmpty) {
       return coverUrl;
     }
+    final runtimeType = extras?["runtimeType"] as String?;
+    final id = extras?["id"] as String? ?? "";
+    if (runtimeType != null &&
+        runtimeType == "multLocal" &&
+        id.isNotEmpty &&
+        !id.startsWith("music_")) {
+      final externalUri = extras?["externalUri"] as String?;
+      if (externalUri != null && externalUri.isNotEmpty) {
+        return externalUri;
+      }
+    }
+
     return ToneHarborMedia.getLocalCoverUrl(id, album, artist);
   }
 

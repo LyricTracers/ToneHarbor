@@ -367,19 +367,19 @@ class Aria2SettingsPage extends HookConsumerWidget with BuildItem {
     ValueNotifier<bool> obscureText,
     Future<void> Function(String) onSubmitted,
   ) {
-    return ListTile(
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 15 * multiplier,
-          fontWeight: FontWeight.bold,
-          color: colorScheme.onSurface,
-        ),
-      ),
-      subtitle: ValueListenableBuilder<bool>(
-        valueListenable: obscureText,
-        builder: (context, isObscured, child) {
-          return TextField(
+    return ValueListenableBuilder<bool>(
+      valueListenable: obscureText,
+      builder: (context, isObscured, child) {
+        return ListTile(
+          title: Text(
+            title,
+            style: TextStyle(
+              fontSize: 15 * multiplier,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          subtitle: TextField(
             controller: controller,
             focusNode: focusNode,
             obscureText: isObscured,
@@ -392,27 +392,25 @@ class Aria2SettingsPage extends HookConsumerWidget with BuildItem {
               border: InputBorder.none,
               isDense: true,
               contentPadding: EdgeInsets.symmetric(vertical: 4 * multiplier),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  isObscured ? Icons.visibility : Icons.visibility_off,
-                  size: 18 * multiplier,
-                  color: colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-                onPressed: () {
-                  obscureText.value = !obscureText.value;
-                },
-                padding: EdgeInsets.zero,
-                constraints: BoxConstraints(),
-              ),
             ),
             style: TextStyle(
               fontSize: 13 * multiplier,
               color: colorScheme.onSurface.withValues(alpha: 0.8),
             ),
             onSubmitted: onSubmitted,
-          );
-        },
-      ),
+          ),
+          trailing: IconButton(
+            icon: Icon(
+              isObscured ? Icons.visibility : Icons.visibility_off,
+              size: 20 * multiplier,
+              color: colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+            onPressed: () {
+              obscureText.value = !obscureText.value;
+            },
+          ),
+        );
+      },
     );
   }
 
