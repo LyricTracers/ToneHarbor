@@ -68,8 +68,11 @@ class CloudPlaylistsCat<T extends ExtraProvider<CloudMusicPlaylistDataList>>
 
             final currentData = ref.read(baseProvider).value;
             final currentPlaylists = currentData?.playlists ?? [];
-            final currentTotal = currentData?.total ?? 0;
-
+            final currentTotal =
+                currentData?.total ?? currentData?.playlistCount ?? 0;
+            logger.i(
+              "currentTotal: $currentTotal, currentPlaylists.length: ${currentPlaylists.length}",
+            );
             if (currentPlaylists.length < currentTotal) {
               isLoadingMore.value = true;
               ref

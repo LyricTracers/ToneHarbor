@@ -862,14 +862,13 @@ class CloudMusicSearchPlaylists extends _$CloudMusicSearchPlaylists
   Future<void> loadMore() async {
     if (state.value == null) return;
     final currentData = state.value;
-    if (currentData == null || currentData.playlists.isEmpty == false) {
+    if (currentData == null || currentData.playlists.isEmpty) {
       return;
     }
     final count = currentData.playlistCount ?? currentData.total ?? 0;
     final currentPlaylists = currentData.playlists;
 
     if (count <= currentPlaylists.length) return;
-
     final oldState = state.value;
     try {
       final newState = await cloudSearchPlaylists(
@@ -879,7 +878,6 @@ class CloudMusicSearchPlaylists extends _$CloudMusicSearchPlaylists
         offset: currentPlaylists.length,
         cacheDuration: cacheDuration,
       );
-
       if (newState.playlists.isEmpty) {
         return;
       }

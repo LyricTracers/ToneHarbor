@@ -108,7 +108,12 @@ class CloudSearchPage extends HookConsumerWidget {
                       if (searchArtistsAsync.value != null)
                         TextButton(
                           onPressed: () {
-                            // context.pushWrapper("/cloud-artist-list");
+                            context.pushWrapper(
+                              "/cloud-artist-list/${Uri.encodeComponent('${l10n.search}${queryState.value}')}",
+                              extra: cloudMusicSearchArtistsProvider(
+                                query: queryState.value,
+                              ),
+                            );
                           },
                           child: Text(
                             l10n.more,
@@ -249,7 +254,12 @@ class CloudSearchPage extends HookConsumerWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          // context.pushWrapper("/cloud-artist-list");
+                          context.pushWrapper(
+                            "/cloud-playlist-list/${Uri.encodeComponent('${l10n.search}${queryState.value}')}",
+                            extra: cloudMusicSearchPlaylistsProvider(
+                              query: queryState.value,
+                            ),
+                          );
                         },
                         child: Text(
                           l10n.more,

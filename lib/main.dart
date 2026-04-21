@@ -22,11 +22,13 @@ import 'package:toneharbor/widgets/mobile/layouts/mobile_home_layout.dart';
 import 'package:toneharbor/widgets/pages/cloud_album_detail.dart';
 import 'package:toneharbor/widgets/pages/cloud_album_list_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_api_setting_page.dart';
+import 'package:toneharbor/widgets/pages/cloud_artist_list_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_artist_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_all_artists_list_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_detail_playlist_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_music_login_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_playlist_catlist_page.dart';
+import 'package:toneharbor/widgets/pages/cloud_playlist_list_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_search_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_songs_list_page.dart';
 import 'package:toneharbor/widgets/pages/gesture_only_cupertino_page.dart';
@@ -618,6 +620,43 @@ class MyApp extends HookConsumerWidget {
                   );
                 },
               ),
+
+              GoRoute(
+                path: '/cloud-artist-list/:title',
+                pageBuilder: (context, state) {
+                  final provider =
+                      state.extra
+                          as $AsyncNotifierProvider<
+                            ExtraProvider<CloudArtistListData>,
+                            CloudArtistListData
+                          >;
+                  return buildPage(
+                    key: state.pageKey,
+                    child: CloudArtistListPage(
+                      baseProvider: provider,
+                      title: state.pathParameters['title'] ?? 'All Artists',
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/cloud-playlist-list/:title',
+                pageBuilder: (context, state) {
+                  final provider =
+                      state.extra
+                          as $AsyncNotifierProvider<
+                            ExtraProvider<CloudMusicPlaylistDataList>,
+                            CloudMusicPlaylistDataList
+                          >;
+                  return buildPage(
+                    key: state.pageKey,
+                    child: CloudPlaylistListPage(
+                      baseProvider: provider,
+                      title: state.pathParameters['title'] ?? 'All Playlists',
+                    ),
+                  );
+                },
+              ),
             ],
           ),
           // ================================
@@ -1046,6 +1085,47 @@ class MyApp extends HookConsumerWidget {
                   child: CloudSongsListPage(
                     baseProvider: provider,
                     title: state.pathParameters['title'] ?? 'All Songs',
+                  ),
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/mobile/cloud-artist-list/:title',
+            pageBuilder: (context, state) {
+              final provider =
+                  state.extra
+                      as $AsyncNotifierProvider<
+                        ExtraProvider<CloudArtistListData>,
+                        CloudArtistListData
+                      >;
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(
+                  child: CloudArtistListPage(
+                    baseProvider: provider,
+                    title: state.pathParameters['title'] ?? 'All Artists',
+                  ),
+                ),
+              );
+            },
+          ),
+
+          GoRoute(
+            path: '/mobile/cloud-playlist-list/:title',
+            pageBuilder: (context, state) {
+              final provider =
+                  state.extra
+                      as $AsyncNotifierProvider<
+                        ExtraProvider<CloudMusicPlaylistDataList>,
+                        CloudMusicPlaylistDataList
+                      >;
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(
+                  child: CloudPlaylistListPage(
+                    baseProvider: provider,
+                    title: state.pathParameters['title'] ?? 'All Playlists',
                   ),
                 ),
               );
