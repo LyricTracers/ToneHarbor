@@ -157,7 +157,7 @@ class Aria2Client extends _$Aria2Client {
       cloudMusicSongUrlData.url,
       savePath: ref.read(aria2DownloadDirProvider),
       fileName:
-          '${track.artist}_${track.title}.${cloudMusicSongUrlData.fileExtension}',
+          '${track.artist.replaceAll('/', '.')}_${track.title}.${cloudMusicSongUrlData.fileExtension}',
     );
   }
 

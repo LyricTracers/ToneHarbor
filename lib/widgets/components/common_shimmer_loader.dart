@@ -211,6 +211,7 @@ class CommonShimmerLoader {
       highlightColor: colorScheme.surface.withValues(alpha: 1.0),
       child: ListView.builder(
         itemCount: itemCount,
+        itemExtent: 44 * multiplier,
         itemBuilder: (context, index) {
           return Padding(
             padding: EdgeInsets.symmetric(

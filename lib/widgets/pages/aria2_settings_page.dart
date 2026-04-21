@@ -66,6 +66,8 @@ class Aria2SettingsPage extends HookConsumerWidget with BuildItem {
     final secretFocusNode = useFocusNode();
     final downloadDirFocusNode = useFocusNode();
 
+    final obscureSecret = useState(true);
+
     useEffect(() {
       if (hostController.text != host) {
         hostController.text = host;
@@ -198,13 +200,14 @@ class Aria2SettingsPage extends HookConsumerWidget with BuildItem {
           indent: 15,
           endIndent: 15,
         ),
-        _buildTextField(
+        _buildSecretField(
           secretController,
           secretFocusNode,
           'RPC ${l10n.secret}',
           l10n.optional,
           colorScheme,
           multiplier,
+          obscureSecret,
           (value) async {
             await ref
                 .read(aria2SecretProvider.notifier)
@@ -350,6 +353,65 @@ class Aria2SettingsPage extends HookConsumerWidget with BuildItem {
           color: colorScheme.onSurface.withValues(alpha: 0.8),
         ),
         onSubmitted: onSubmitted,
+      ),
+    );
+  }
+
+  Widget _buildSecretField(
+    TextEditingController controller,
+    FocusNode focusNode,
+    String title,
+    String hint,
+    ColorScheme colorScheme,
+    double multiplier,
+    ValueNotifier<bool> obscureText,
+    Future<void> Function(String) onSubmitted,
+  ) {
+    return ListTile(
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 15 * multiplier,
+          fontWeight: FontWeight.bold,
+          color: colorScheme.onSurface,
+        ),
+      ),
+      subtitle: ValueListenableBuilder<bool>(
+        valueListenable: obscureText,
+        builder: (context, isObscured, child) {
+          return TextField(
+            controller: controller,
+            focusNode: focusNode,
+            obscureText: isObscured,
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                fontSize: 12 * multiplier,
+                color: colorScheme.onSurface.withValues(alpha: 0.5),
+              ),
+              border: InputBorder.none,
+              isDense: true,
+              contentPadding: EdgeInsets.symmetric(vertical: 4 * multiplier),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  isObscured ? Icons.visibility : Icons.visibility_off,
+                  size: 18 * multiplier,
+                  color: colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+                onPressed: () {
+                  obscureText.value = !obscureText.value;
+                },
+                padding: EdgeInsets.zero,
+                constraints: BoxConstraints(),
+              ),
+            ),
+            style: TextStyle(
+              fontSize: 13 * multiplier,
+              color: colorScheme.onSurface.withValues(alpha: 0.8),
+            ),
+            onSubmitted: onSubmitted,
+          );
+        },
       ),
     );
   }
