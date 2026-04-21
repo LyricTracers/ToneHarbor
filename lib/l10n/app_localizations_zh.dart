@@ -228,7 +228,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get has_copy => '已复制:';
 
   @override
-  String get search => '搜索';
+  String get search => '搜索: ';
 
   @override
   String get searchHint => '搜索歌曲、艺术家、专辑...';

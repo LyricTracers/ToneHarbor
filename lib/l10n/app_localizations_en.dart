@@ -241,7 +241,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get has_copy => 'Copied:';
 
   @override
-  String get search => 'Search';
+  String get search => 'Search: ';
 
   @override
   String get searchHint => 'Search songs, artists, albums...';

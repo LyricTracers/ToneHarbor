@@ -355,5 +355,6 @@
   "artist_type": "Artist Type",
   "more_search": "Search More",
   "expand": "Expand",
+  "search": "Search: ",
   "default_label": "Default"
 }

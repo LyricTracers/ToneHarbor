@@ -157,7 +157,12 @@ class CloudSearchPage extends HookConsumerWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          // context.pushWrapper("/cloud-artist-list");
+                          context.pushWrapper(
+                            "/cloud-album-cat/${Uri.encodeComponent('${l10n.search}${queryState.value}')}",
+                            extra: cloudMusicSearchAlbumsProvider(
+                              query: queryState.value,
+                            ),
+                          );
                         },
                         child: Text(
                           l10n.more,
