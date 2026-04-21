@@ -355,6 +355,18 @@
   "artist_type": "Artist Type",
   "more_search": "Search More",
   "expand": "Expand",
-  "search": "Search: ",
-  "default_label": "Default"
+  "default_label": "Default",
+  "enable": "Enable",
+  "server_address": "Server Address",
+  "port": "Port",
+  "secret": "Secret",
+  "optional": "Optional",
+  "connection_successful": "Connection Successful",
+  "connection_failed": "Connection Failed",
+  "reset_settings": "Reset Settings",
+  "settings_reset": "Settings Reset",
+  "aria2_download_description": "Distribute download tasks to remote Aria2 server",
+  "aria2_https_description": "Use HTTPS to connect to Aria2 server",
+  "download_dir": "Download Directory",
+  "download_dir_optional": "Leave empty to use Aria2 default directory"
 }

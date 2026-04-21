@@ -124,6 +124,24 @@ class CommonTrackListItem extends HookConsumerWidget {
                         .setRequestFlag(false);
                   },
                 ),
+                MenuItem(
+                  label: Text("Aria2 Download"),
+                  icon: Icon(Icons.cloud_download_rounded),
+                  onSelected: (value) async {
+                    ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+                    final result = await ref
+                        .read(aria2ClientProvider.notifier)
+                        .addDownloadTask(track.asTrack());
+                    ref
+                        .read(requestFlagProvider.notifier)
+                        .setRequestFlag(false);
+
+                    if (!ref.context.mounted) {
+                      return;
+                    }
+                    showSnackBar(result.$2, ref.context, colorScheme.secondary);
+                  },
+                ),
                 MenuItem.submenu(
                   label: Text(l10n.add_to),
                   icon: const Icon(Icons.add_box_rounded),

@@ -228,7 +228,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get has_copy => '已复制:';
 
   @override
-  String get search => '搜索: ';
+  String get search => '搜索';
 
   @override
   String get searchHint => '搜索歌曲、艺术家、专辑...';
@@ -1056,4 +1056,43 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get default_label => '默认';
+
+  @override
+  String get enable => '启用';
+
+  @override
+  String get server_address => '服务器地址';
+
+  @override
+  String get port => '端口';
+
+  @override
+  String get secret => '密钥';
+
+  @override
+  String get optional => '可选';
+
+  @override
+  String get connection_successful => '连接成功';
+
+  @override
+  String get connection_failed => '连接失败';
+
+  @override
+  String get reset_settings => '重置设置';
+
+  @override
+  String get settings_reset => '设置已重置';
+
+  @override
+  String get aria2_download_description => '将下载任务分发到远程 Aria2 服务器';
+
+  @override
+  String get aria2_https_description => '使用 HTTPS 连接到 Aria2 服务器';
+
+  @override
+  String get download_dir => '下载目录';
+
+  @override
+  String get download_dir_optional => '留空使用 Aria2 默认目录';
 }

@@ -539,7 +539,7 @@ abstract class AppLocalizations {
   /// No description provided for @search.
   ///
   /// In en, this message translates to:
-  /// **'Search: '**
+  /// **'Search'**
   String get search;
 
   /// No description provided for @searchHint.
@@ -2191,6 +2191,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Default'**
   String get default_label;
+
+  /// No description provided for @enable.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable'**
+  String get enable;
+
+  /// No description provided for @server_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Server Address'**
+  String get server_address;
+
+  /// No description provided for @port.
+  ///
+  /// In en, this message translates to:
+  /// **'Port'**
+  String get port;
+
+  /// No description provided for @secret.
+  ///
+  /// In en, this message translates to:
+  /// **'Secret'**
+  String get secret;
+
+  /// No description provided for @optional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get optional;
+
+  /// No description provided for @connection_successful.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Successful'**
+  String get connection_successful;
+
+  /// No description provided for @connection_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Failed'**
+  String get connection_failed;
+
+  /// No description provided for @reset_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Settings'**
+  String get reset_settings;
+
+  /// No description provided for @settings_reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings Reset'**
+  String get settings_reset;
+
+  /// No description provided for @aria2_download_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Distribute download tasks to remote Aria2 server'**
+  String get aria2_download_description;
+
+  /// No description provided for @aria2_https_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Use HTTPS to connect to Aria2 server'**
+  String get aria2_https_description;
+
+  /// No description provided for @download_dir.
+  ///
+  /// In en, this message translates to:
+  /// **'Download Directory'**
+  String get download_dir;
+
+  /// No description provided for @download_dir_optional.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to use Aria2 default directory'**
+  String get download_dir_optional;
 }
 
 class _AppLocalizationsDelegate

@@ -241,7 +241,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get has_copy => 'Copied:';
 
   @override
-  String get search => 'Search: ';
+  String get search => 'Search';
 
   @override
   String get searchHint => 'Search songs, artists, albums...';
@@ -1087,4 +1087,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get default_label => 'Default';
+
+  @override
+  String get enable => 'Enable';
+
+  @override
+  String get server_address => 'Server Address';
+
+  @override
+  String get port => 'Port';
+
+  @override
+  String get secret => 'Secret';
+
+  @override
+  String get optional => 'Optional';
+
+  @override
+  String get connection_successful => 'Connection Successful';
+
+  @override
+  String get connection_failed => 'Connection Failed';
+
+  @override
+  String get reset_settings => 'Reset Settings';
+
+  @override
+  String get settings_reset => 'Settings Reset';
+
+  @override
+  String get aria2_download_description =>
+      'Distribute download tasks to remote Aria2 server';
+
+  @override
+  String get aria2_https_description => 'Use HTTPS to connect to Aria2 server';
+
+  @override
+  String get download_dir => 'Download Directory';
+
+  @override
+  String get download_dir_optional =>
+      'Leave empty to use Aria2 default directory';
 }

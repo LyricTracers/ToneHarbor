@@ -248,4 +248,53 @@ abstract class SharedPreferencesUtils {
   static Future<void> setCloudMusicCategory(List<String> categories) async {
     await sharedPreferences.setStringList(cloudMusicCategoryKey, categories);
   }
+
+  static bool getAria2Enabled() =>
+      sharedPreferences.getBool(aria2EnabledKey) ?? false;
+
+  static Future<void> setAria2Enabled(bool value) async {
+    await sharedPreferences.setBool(aria2EnabledKey, value);
+  }
+
+  static String getAria2Host() =>
+      sharedPreferences.getString(aria2HostKey) ?? 'localhost';
+
+  static Future<void> setAria2Host(String value) async {
+    await sharedPreferences.setString(aria2HostKey, value);
+  }
+
+  static int getAria2Port() => sharedPreferences.getInt(aria2PortKey) ?? 6800;
+
+  static Future<void> setAria2Port(int value) async {
+    await sharedPreferences.setInt(aria2PortKey, value);
+  }
+
+  static String? getAria2Secret() =>
+      sharedPreferences.getString(aria2SecretKey);
+
+  static Future<void> setAria2Secret(String? value) async {
+    if (value == null || value.isEmpty) {
+      await sharedPreferences.remove(aria2SecretKey);
+    } else {
+      await sharedPreferences.setString(aria2SecretKey, value);
+    }
+  }
+
+  static bool getAria2UseHttps() =>
+      sharedPreferences.getBool(aria2UseHttpsKey) ?? false;
+
+  static Future<void> setAria2UseHttps(bool value) async {
+    await sharedPreferences.setBool(aria2UseHttpsKey, value);
+  }
+
+  static String? getAria2DownloadDir() =>
+      sharedPreferences.getString(aria2DownloadDirKey);
+
+  static Future<void> setAria2DownloadDir(String? value) async {
+    if (value == null) {
+      await sharedPreferences.remove(aria2DownloadDirKey);
+    } else {
+      await sharedPreferences.setString(aria2DownloadDirKey, value);
+    }
+  }
 }

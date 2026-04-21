@@ -354,6 +354,18 @@
   "artist_type": "歌手类型",
   "more_search": "搜索更多",
   "expand": "展开",
-  "search": "搜索: ",
-  "default_label": "默认"
+  "default_label": "默认",
+  "enable": "启用",
+  "server_address": "服务器地址",
+  "port": "端口",
+  "secret": "密钥",
+  "optional": "可选",
+  "connection_successful": "连接成功",
+  "connection_failed": "连接失败",
+  "reset_settings": "重置设置",
+  "settings_reset": "设置已重置",
+  "aria2_download_description": "将下载任务分发到远程 Aria2 服务器",
+  "aria2_https_description": "使用 HTTPS 连接到 Aria2 服务器",
+  "download_dir": "下载目录",
+  "download_dir_optional": "留空使用 Aria2 默认目录"
 }

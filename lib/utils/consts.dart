@@ -36,6 +36,14 @@ const String cloudMusicQualityKey = 'cloud_music_quality';
 const String cloudMusicCookiesKey = 'cloud_music_cookies';
 const String cloudMusicCategoryKey = 'cloud_music_category_list';
 
+// Aria2 settings
+const String aria2EnabledKey = 'aria2_enabled';
+const String aria2HostKey = 'aria2_host';
+const String aria2PortKey = 'aria2_port';
+const String aria2SecretKey = 'aria2_secret';
+const String aria2UseHttpsKey = 'aria2_use_https';
+const String aria2DownloadDirKey = 'aria2_download_dir';
+
 // pic path
 const String appIcon = 'assets/icons/app_icon.png';
 const String iconPlaceholder = 'assets/icons/icon_placeholder.png';

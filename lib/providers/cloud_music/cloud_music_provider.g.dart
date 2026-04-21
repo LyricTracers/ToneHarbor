@@ -1841,7 +1841,7 @@ final class CloudMusicSearchPlaylistsProvider
 }
 
 String _$cloudMusicSearchPlaylistsHash() =>
-    r'e5c4f6d3b2ec1ac6f1856c9afc3d8ded95aa8ed2';
+    r'1dcb65b4ff2627587e1d6b5e939ee12edb562842';
 
 final class CloudMusicSearchPlaylistsFamily extends $Family
     with

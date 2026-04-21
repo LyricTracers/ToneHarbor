@@ -31,6 +31,7 @@ import 'package:toneharbor/widgets/pages/cloud_playlist_catlist_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_playlist_list_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_search_page.dart';
 import 'package:toneharbor/widgets/pages/cloud_songs_list_page.dart';
+import 'package:toneharbor/widgets/pages/aria2_settings_page.dart';
 import 'package:toneharbor/widgets/pages/gesture_only_cupertino_page.dart';
 import 'package:toneharbor/widgets/widgets.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
@@ -476,6 +477,15 @@ class MyApp extends HookConsumerWidget {
                   return buildPage(
                     key: state.pageKey,
                     child: CloudApiSettingPage(),
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/aria2-settings',
+                pageBuilder: (context, state) {
+                  return buildPage(
+                    key: state.pageKey,
+                    child: const Aria2SettingsPage(),
                   );
                 },
               ),
@@ -1128,6 +1138,15 @@ class MyApp extends HookConsumerWidget {
                     title: state.pathParameters['title'] ?? 'All Playlists',
                   ),
                 ),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/mobile/aria2-settings',
+            pageBuilder: (context, state) {
+              return buildPage(
+                key: state.pageKey,
+                child: MobileFullLayout(child: const Aria2SettingsPage()),
               );
             },
           ),
