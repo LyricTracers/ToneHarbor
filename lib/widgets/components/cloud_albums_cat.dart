@@ -206,7 +206,7 @@ class CloudAlbumsCat<T extends ExtraProvider<CloudAlbumListData>>
                   color: colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 5),
             ],
           );
         },

@@ -211,7 +211,7 @@ class CloudPlaylistsCat<T extends ExtraProvider<CloudMusicPlaylistDataList>>
                   color: colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 5),
             ],
           );
         },
