@@ -519,7 +519,7 @@ class RecommendPage extends HookConsumerWidget {
                         baseProvider: cloudToplistProvider(),
                         visibleRows: size.mdAndUp ? 1 : 2,
                       ),
-                      SizedBox(height: 8),
+                      SizedBox(height: 20),
                     ],
                   ],
                 ),

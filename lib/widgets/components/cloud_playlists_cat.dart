@@ -156,6 +156,7 @@ class CloudPlaylistsCat<T extends ExtraProvider<CloudMusicPlaylistDataList>>
           }
 
           final grid = GridView.builder(
+            padding: EdgeInsets.all(0),
             controller: shouldEnableScroll ? scrollController : null,
             physics: shouldEnableScroll
                 ? const AlwaysScrollableScrollPhysics()
@@ -169,7 +170,7 @@ class CloudPlaylistsCat<T extends ExtraProvider<CloudMusicPlaylistDataList>>
             ),
             itemCount: displayItems.length + (hasMore && isLoadingMore ? 1 : 0),
             itemBuilder: (context, index) {
-              if (index == displayItems.length && visibleRows == -1) {
+              if (index == displayItems.length) {
                 return Padding(
                   padding: EdgeInsets.all(16),
                   child: Center(
