@@ -83,7 +83,7 @@ class RecommendPage extends HookConsumerWidget {
                             ),
                             TextButton(
                               style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
+                                padding: EdgeInsets.all(5),
                                 minimumSize: Size.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
@@ -148,7 +148,7 @@ class RecommendPage extends HookConsumerWidget {
                             ),
                             TextButton(
                               style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
+                                padding: EdgeInsets.all(5),
                                 minimumSize: Size.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
@@ -311,7 +311,7 @@ class RecommendPage extends HookConsumerWidget {
                             ),
                             TextButton(
                               style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
+                                padding: EdgeInsets.all(5),
                                 minimumSize: Size.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
@@ -341,6 +341,8 @@ class RecommendPage extends HookConsumerWidget {
                       ),
                       SizedBox(height: 12),
                       CloudPlaylistsCat(
+                        mainAxisSpacing: size.smAndDown ? 10 : 20,
+                        crossAxisSpacing: size.smAndDown ? 20 : 32,
                         baseProvider: recommendPlaylistsProvider(limit: 12),
                         visibleRows: 2,
                       ),
@@ -365,7 +367,7 @@ class RecommendPage extends HookConsumerWidget {
 
                             TextButton(
                               style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
+                                padding: EdgeInsets.all(5),
                                 minimumSize: Size.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
@@ -426,7 +428,7 @@ class RecommendPage extends HookConsumerWidget {
                             ),
                             TextButton(
                               style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
+                                padding: EdgeInsets.all(5),
                                 minimumSize: Size.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
@@ -460,6 +462,8 @@ class RecommendPage extends HookConsumerWidget {
                       ),
                       SizedBox(height: 12),
                       CloudAlbumsCat(
+                        mainAxisSpacing: size.smAndDown ? 10 : 20,
+                        crossAxisSpacing: size.smAndDown ? 20 : 32,
                         baseProvider: cloudMusicAlbumNewProvider(
                           limit: 30,
                           area: ref.watch(cloudMusicLanguageProvider).area,
@@ -486,7 +490,7 @@ class RecommendPage extends HookConsumerWidget {
                             ),
                             TextButton(
                               style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
+                                padding: EdgeInsets.all(5),
                                 minimumSize: Size.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
@@ -516,6 +520,8 @@ class RecommendPage extends HookConsumerWidget {
                       ),
                       SizedBox(height: 12),
                       CloudPlaylistsCat(
+                        mainAxisSpacing: size.smAndDown ? 10 : 20,
+                        crossAxisSpacing: size.smAndDown ? 20 : 32,
                         baseProvider: cloudToplistProvider(),
                         visibleRows: size.mdAndUp ? 1 : 2,
                       ),
