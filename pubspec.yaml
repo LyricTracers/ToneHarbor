@@ -67,7 +67,7 @@ dependencies:
   file: ^7.0.1
   drift: 2.29.0
   mime: ^2.0.0
-  collection: any
+  collection: 1.19.1
   flutter_broadcasts:
     git:
       url: https://github.com/KRTirtho/flutter_broadcasts.git
