@@ -83,7 +83,7 @@ class RecommendPage extends HookConsumerWidget {
                             ),
                             TextButton(
                               style: TextButton.styleFrom(
-                                padding: EdgeInsets.all(5),
+                                padding: EdgeInsets.all(10),
                                 minimumSize: Size.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
@@ -148,7 +148,7 @@ class RecommendPage extends HookConsumerWidget {
                             ),
                             TextButton(
                               style: TextButton.styleFrom(
-                                padding: EdgeInsets.all(5),
+                                padding: EdgeInsets.all(10),
                                 minimumSize: Size.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
@@ -311,7 +311,7 @@ class RecommendPage extends HookConsumerWidget {
                             ),
                             TextButton(
                               style: TextButton.styleFrom(
-                                padding: EdgeInsets.all(5),
+                                padding: EdgeInsets.all(10),
                                 minimumSize: Size.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
@@ -367,7 +367,7 @@ class RecommendPage extends HookConsumerWidget {
 
                             TextButton(
                               style: TextButton.styleFrom(
-                                padding: EdgeInsets.all(5),
+                                padding: EdgeInsets.all(10),
                                 minimumSize: Size.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
@@ -428,7 +428,7 @@ class RecommendPage extends HookConsumerWidget {
                             ),
                             TextButton(
                               style: TextButton.styleFrom(
-                                padding: EdgeInsets.all(5),
+                                padding: EdgeInsets.all(10),
                                 minimumSize: Size.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
@@ -490,7 +490,7 @@ class RecommendPage extends HookConsumerWidget {
                             ),
                             TextButton(
                               style: TextButton.styleFrom(
-                                padding: EdgeInsets.all(5),
+                                padding: EdgeInsets.all(10),
                                 minimumSize: Size.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
