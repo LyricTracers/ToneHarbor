@@ -582,6 +582,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get storage_cache => '缓存';
 
   @override
+  String get storage_cache_cover => '封面缓存';
+
+  @override
+  String get storage_cache_lyrics => '歌词缓存';
+
+  @override
+  String get storage_cache_api => 'API缓存';
+
+  @override
   String get storage_other => '其他';
 
   @override

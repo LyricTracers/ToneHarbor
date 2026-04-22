@@ -53,6 +53,14 @@ class AppDependencies {
     return _audioStationRequestCache ??= _initAudioStationRequestCache();
   }
 
+  Future<void> clearAudioStationRequestCache() async {
+    await audioStationRequestCache.clear();
+  }
+
+  Future<void> clearLyricCache() async {
+    await lyricCache.clear();
+  }
+
   PersistentApiCache<Map<String, dynamic>> get lyricCache {
     return _lyricCache ??= _initLyricCache();
   }

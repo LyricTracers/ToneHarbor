@@ -11,7 +11,6 @@ import "package:toneharbor/services/audio_player/audio_player.dart";
 import "package:toneharbor/services/translate/translate_service.dart";
 import "package:toneharbor/utils/base_funs.dart";
 import "package:toneharbor/utils/responsive.dart";
-import "package:toneharbor/widgets/components/cloud_music_cover_image.dart";
 import "package:toneharbor/widgets/components/track_cover_image.dart";
 import "package:toneharbor/widgets/pages/cloud_add_to_playlists_page.dart";
 import "package:toneharbor/widgets/widgets.dart";

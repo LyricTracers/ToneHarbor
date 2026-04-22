@@ -1244,6 +1244,24 @@ abstract class AppLocalizations {
   /// **'Cache'**
   String get storage_cache;
 
+  /// No description provided for @storage_cache_cover.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover Cache'**
+  String get storage_cache_cover;
+
+  /// No description provided for @storage_cache_lyrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Lyrics Cache'**
+  String get storage_cache_lyrics;
+
+  /// No description provided for @storage_cache_api.
+  ///
+  /// In en, this message translates to:
+  /// **'API Cache'**
+  String get storage_cache_api;
+
   /// No description provided for @storage_other.
   ///
   /// In en, this message translates to:

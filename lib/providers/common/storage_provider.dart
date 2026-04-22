@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lyricskit/lyricskit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -7,6 +8,7 @@ import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/download.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/utils/api_cache_providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 
 part 'storage_provider.g.dart';
@@ -16,7 +18,9 @@ enum StorageCategory {
   cacheMedium,
   cacheHigh,
   cacheOriginal,
-  cache,
+  cacheCover,
+  cacheLyrics,
+  cacheApi,
   other;
 
   String localizedLabel(AppLocalizations l10n) {
@@ -29,8 +33,12 @@ enum StorageCategory {
         return l10n.quality_high;
       case StorageCategory.cacheOriginal:
         return l10n.quality_original;
-      case StorageCategory.cache:
-        return l10n.storage_cache;
+      case StorageCategory.cacheCover:
+        return l10n.storage_cache_cover;
+      case StorageCategory.cacheLyrics:
+        return l10n.storage_cache_lyrics;
+      case StorageCategory.cacheApi:
+        return l10n.storage_cache_api;
       case StorageCategory.other:
         return l10n.storage_other;
     }
@@ -133,22 +141,41 @@ Future<List<StorageInfo>> _getStorageInfos() async {
 
   final coverPath = await getCoverCacheDir();
   final coverSize = await _getDirectorySize(Directory(coverPath));
-  final lyricsPath = p.join(appDir.path, 'lyrics_cache');
-  final lyricsSize = await _getDirectorySize(Directory(lyricsPath));
-  final apiCachePath = p.join(appDir.path, 'audio_station_api');
-  final apiCacheSize = await _getDirectorySize(Directory(apiCachePath));
-  final cacheSize = coverSize + lyricsSize + apiCacheSize;
-
-  if (cacheSize > 0) {
+  if (coverSize > 0) {
     infos.add(
       StorageInfo(
-        category: StorageCategory.cache,
+        category: StorageCategory.cacheCover,
         path: coverPath,
-        additionalPaths: [lyricsPath, apiCachePath],
-        size: cacheSize,
+        size: coverSize,
       ),
     );
-    knownSize += cacheSize;
+    knownSize += coverSize;
+  }
+
+  final lyricsPath = p.join(appDir.path, 'lyrics_cache');
+  final lyricsSize = await _getDirectorySize(Directory(lyricsPath));
+  if (lyricsSize > 0) {
+    infos.add(
+      StorageInfo(
+        category: StorageCategory.cacheLyrics,
+        path: lyricsPath,
+        size: lyricsSize,
+      ),
+    );
+    knownSize += lyricsSize;
+  }
+
+  final apiCachePath = p.join(appDir.path, 'audio_station_api');
+  final apiCacheSize = await _getDirectorySize(Directory(apiCachePath));
+  if (apiCacheSize > 0) {
+    infos.add(
+      StorageInfo(
+        category: StorageCategory.cacheApi,
+        path: apiCachePath,
+        size: apiCacheSize,
+      ),
+    );
+    knownSize += apiCacheSize;
   }
 
   final totalSize = await _getDirectorySize(appDir);
@@ -175,7 +202,7 @@ Future<List<StorageInfo>> _getStorageInfos() async {
 
 @riverpod
 Future<List<StorageInfo>> storageInfo(Ref ref) async {
-  ref.keepAliveFor(Duration(minutes: 1));
+  ref.keepAliveFor(Duration(minutes: 5));
   return _getStorageInfos();
 }
 
@@ -192,21 +219,26 @@ final clearStorageProvider = Provider((ref) {
           quality,
         );
         break;
-      case StorageCategory.cache:
-      case StorageCategory.other:
-        final allPaths = [info.path, ...info.additionalPaths];
-        for (final path in allPaths) {
-          final dir = Directory(path);
-          if (await dir.exists()) {
-            await dir.delete(recursive: true);
-            await dir.create(recursive: true);
-          }
+      case StorageCategory.cacheCover:
+        final dir = Directory(info.path);
+        if (await dir.exists()) {
+          await dir.delete(recursive: true);
+          await dir.create(recursive: true);
         }
-        await audioStationRequestCache.clearGroup("lyrics");
-        await lyricCache.clear();
-        ref.invalidate(getLyricsProvider);
         ref.invalidate(fetchCoverBytesProvider);
         ref.invalidate(fetchCloudMusicCoverBytesProvider);
+        break;
+      case StorageCategory.cacheLyrics:
+        await clearLyricCache();
+        ref.invalidate(getLyricsProvider);
+        ref.invalidate(currentLyricsProvider);
+        ref.invalidate(combinedSearchProvider);
+        break;
+      case StorageCategory.cacheApi:
+        await clearAudioStationRequestCache();
+        invalidateApiCacheProviders(ref);
+        break;
+      case StorageCategory.other:
         break;
     }
     ref.invalidate(storageInfoProvider);

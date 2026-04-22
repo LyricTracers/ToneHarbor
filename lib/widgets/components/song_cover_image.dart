@@ -43,10 +43,12 @@ class SongCoverImage extends HookConsumerWidget {
       duration: config.rotationDuration,
     );
 
+    final effectiveFuture = pictureFuture ?? Future.value(null);
+    final cachedFuture = useMemoized(() => effectiveFuture, [songId, pictureFuture]);
+    final snapshot = useFuture(cachedFuture);
+
     Picture? resolvedPicture;
     if (pictureFuture != null) {
-      final cachedFuture = useMemoized(() => pictureFuture!, [songId]);
-      final snapshot = useFuture(cachedFuture);
       resolvedPicture = snapshot.data;
     } else {
       resolvedPicture = null;

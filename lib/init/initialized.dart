@@ -28,6 +28,9 @@ final translateHttpClientWrapper = appDependencies.translateHttpClientWrapper;
 final audioStationRequestCache = appDependencies.audioStationRequestCache;
 final lyricCache = appDependencies.lyricCache;
 final placeholderErrorIconString = appDependencies.placeholderErrorIconString;
+final clearAudioStationRequestCache =
+    appDependencies.clearAudioStationRequestCache;
+final clearLyricCache = appDependencies.clearLyricCache;
 
 const keepAlive = Riverpod(keepAlive: true);
 

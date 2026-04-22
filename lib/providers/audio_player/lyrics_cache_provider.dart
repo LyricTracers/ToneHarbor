@@ -53,6 +53,7 @@ Future<Lyrics?> _requestLyrics(
       id: songId,
       cacheDuration: const Duration(days: 7),
     );
+    logger.i('$songId getNetLyrics:：$lyrics');
     if (lyrics != null) {
       await lyricCache.set(songId, lyrics.toJson(), permanent: true);
       return lyrics;

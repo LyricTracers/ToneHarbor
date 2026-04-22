@@ -598,6 +598,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get storage_cache => 'Cache';
 
   @override
+  String get storage_cache_cover => 'Cover Cache';
+
+  @override
+  String get storage_cache_lyrics => 'Lyrics Cache';
+
+  @override
+  String get storage_cache_api => 'API Cache';
+
+  @override
   String get storage_other => 'Other';
 
   @override

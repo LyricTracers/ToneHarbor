@@ -28,7 +28,6 @@ class StorageManagePage extends HookConsumerWidget with BuildItem {
     final colorScheme = getColorSchemeWhenReady(ref);
     final l10n = ref.watch(l10nProvider);
     final size = MediaQuery.of(context).size;
-
     return Column(
       children: [
         buildAppBar(
