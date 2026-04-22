@@ -37,6 +37,14 @@ class StorageManagePage extends HookConsumerWidget with BuildItem {
           colorScheme,
           l10n.storage_management,
           size,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                ref.invalidate(storageInfoProvider);
+              },
+            ),
+          ],
         ),
         Expanded(
           child: storageAsync.when(

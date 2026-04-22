@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
-import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/utils/responsive.dart';
 
 mixin BuildItem {
@@ -11,8 +10,9 @@ mixin BuildItem {
     AppLocalizations l10n,
     ColorScheme colorScheme,
     String title,
-    Size size,
-  ) {
+    Size size, {
+    List<Widget>? actions,
+  }) {
     final toolbarHeight = kToolbarHeight * size.multiplier3;
     return AppBar(
       toolbarHeight: toolbarHeight,
@@ -28,14 +28,7 @@ mixin BuildItem {
           fontWeight: FontWeight.bold,
         ),
       ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.refresh),
-          onPressed: () {
-            ref.invalidate(storageInfoProvider);
-          },
-        ),
-      ],
+      actions: actions,
       centerTitle: false,
     );
   }

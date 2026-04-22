@@ -28,11 +28,18 @@ class ChoosePlaylistCategoryPage extends HookConsumerWidget {
       width: targetWidth,
       color: colorScheme.surfaceContainerHighest,
       height: double.infinity,
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(30),
-          child: Column(children: _buildCategoryGroups(ref, colorScheme, size)),
-        ),
+      child: Column(
+        children: [
+          Container(height: 20, color: colorScheme.surfaceContainerHighest),
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(30),
+              child: Column(
+                children: _buildCategoryGroups(ref, colorScheme, size),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
