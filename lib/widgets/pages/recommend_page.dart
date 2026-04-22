@@ -59,17 +59,17 @@ class RecommendPage extends HookConsumerWidget {
             child: SizedBox(
               width: double.infinity,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.only(right: 16, left: 16, bottom: 4),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (!useCloudMusic) ...[
+                      SizedBox(height: 8),
                       Padding(
                         padding: const EdgeInsets.only(
-                          left: 16,
                           right: 16,
-                          top: 8,
-                          bottom: 8,
+                          left: 16,
+                          bottom: 4,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -82,6 +82,11 @@ class RecommendPage extends HookConsumerWidget {
                               ),
                             ),
                             TextButton(
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
                               onPressed: () {
                                 if (useCloudMusic) {
                                   context.pushWrapper(
@@ -115,7 +120,7 @@ class RecommendPage extends HookConsumerWidget {
                         endIndent: 16,
                         color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
-                      SizedBox(height: 8),
+                      SizedBox(height: 12),
                       CommonSongs(
                         songs: ref.watch(favoriteSongsProvider(limit: 50)),
                         onErrorTap: () {
@@ -123,12 +128,13 @@ class RecommendPage extends HookConsumerWidget {
                         },
                         limit: 20,
                       ),
+
+                      SizedBox(height: 15),
                       Padding(
                         padding: const EdgeInsets.only(
-                          left: 16,
                           right: 16,
-                          top: 16,
-                          bottom: 8,
+                          left: 16,
+                          bottom: 4,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -141,6 +147,11 @@ class RecommendPage extends HookConsumerWidget {
                               ),
                             ),
                             TextButton(
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
                               onPressed: () {
                                 context.pushWrapper(
                                   "/random_songs/${Uri.encodeComponent(i10n.daily_recommend)}",
@@ -163,22 +174,26 @@ class RecommendPage extends HookConsumerWidget {
                         endIndent: 16,
                         color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
-                      SizedBox(height: 8),
+                      SizedBox(height: 12),
                       const RecommendPageDailySongs(),
-                      SizedBox(height: 16),
+
+                      SizedBox(height: 15),
                       Padding(
                         padding: const EdgeInsets.only(
-                          left: 16,
                           right: 16,
-                          top: 8,
-                          bottom: 8,
+                          left: 16,
+                          bottom: 4,
                         ),
-                        child: Text(
-                          i10n.recommend_albums,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        child: Row(
+                          children: [
+                            Text(
+                              i10n.recommend_albums,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       Divider(
@@ -187,7 +202,7 @@ class RecommendPage extends HookConsumerWidget {
                         endIndent: 16,
                         color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
-                      SizedBox(height: 8),
+                      SizedBox(height: 12),
                       CommonAlbums(
                         albums: ref.watch(
                           albumsProvider(
@@ -206,20 +221,24 @@ class RecommendPage extends HookConsumerWidget {
                           );
                         },
                       ),
-                      SizedBox(height: 16),
+
+                      SizedBox(height: 15),
                       Padding(
                         padding: const EdgeInsets.only(
-                          left: 16,
                           right: 16,
-                          top: 8,
-                          bottom: 8,
+                          left: 16,
+                          bottom: 4,
                         ),
-                        child: Text(
-                          i10n.recent_albums,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        child: Row(
+                          children: [
+                            Text(
+                              i10n.recent_albums,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       Divider(
@@ -228,29 +247,34 @@ class RecommendPage extends HookConsumerWidget {
                         endIndent: 16,
                         color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
-                      SizedBox(height: 8),
+                      SizedBox(height: 12),
                       CommonAlbums(
                         albums: ref.watch(recentAlbumsProvider()),
                         onErrorTap: () {
                           ref.invalidate(recentAlbumsProvider());
                         },
                       ),
+                      SizedBox(height: 8),
                     ],
                     if (useCloudMusic) ...[
+                      SizedBox(height: 8),
                       if (useInfo.value != null) ...[
                         Padding(
                           padding: const EdgeInsets.only(
-                            left: 16,
                             right: 16,
-                            top: 8,
-                            bottom: 8,
+                            left: 16,
+                            bottom: 4,
                           ),
-                          child: Text(
-                            i10n.daily_recommend,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          child: Row(
+                            children: [
+                              Text(
+                                i10n.daily_recommend,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         Divider(
@@ -259,20 +283,21 @@ class RecommendPage extends HookConsumerWidget {
                           endIndent: 16,
                           color: colorScheme.onSurface.withValues(alpha: 0.5),
                         ),
-                        SizedBox(height: 8),
+                        SizedBox(height: 12),
                         CommonSongs(
                           songs: ref.watch(cloudDailyRecommendProvider),
                           onErrorTap: () {},
                           limit: 20,
                         ),
+
+                        SizedBox(height: 15),
                       ],
 
                       Padding(
                         padding: const EdgeInsets.only(
-                          left: 16,
                           right: 16,
-                          top: 16,
-                          bottom: 8,
+                          left: 16,
+                          bottom: 4,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -285,6 +310,11 @@ class RecommendPage extends HookConsumerWidget {
                               ),
                             ),
                             TextButton(
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
                               onPressed: () {
                                 context.pushWrapper(
                                   "/cloud-playlist-catlist",
@@ -309,17 +339,18 @@ class RecommendPage extends HookConsumerWidget {
                         endIndent: 16,
                         color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
-                      SizedBox(height: 15),
+                      SizedBox(height: 12),
                       CloudPlaylistsCat(
                         baseProvider: recommendPlaylistsProvider(limit: 12),
                         visibleRows: 2,
                       ),
+
+                      SizedBox(height: 15),
                       Padding(
                         padding: const EdgeInsets.only(
-                          left: 16,
                           right: 16,
-                          top: 16,
-                          bottom: 8,
+                          left: 16,
+                          bottom: 4,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -333,6 +364,11 @@ class RecommendPage extends HookConsumerWidget {
                             ),
 
                             TextButton(
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
                               onPressed: () {
                                 context.pushWrapper("/cloud-all-artist-list");
                               },
@@ -354,7 +390,7 @@ class RecommendPage extends HookConsumerWidget {
                         endIndent: 16,
                         color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
-                      SizedBox(height: 15),
+                      SizedBox(height: 12),
                       CloudMusicArtistHorizontalListView(
                         artists: recommendArtistsAsync.value,
                         colorScheme: colorScheme,
@@ -371,12 +407,12 @@ class RecommendPage extends HookConsumerWidget {
                         shimmerCount: 10,
                       ),
 
+                      SizedBox(height: 15),
                       Padding(
                         padding: const EdgeInsets.only(
-                          left: 16,
                           right: 16,
-                          top: 16,
-                          bottom: 8,
+                          left: 16,
+                          bottom: 4,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -389,6 +425,11 @@ class RecommendPage extends HookConsumerWidget {
                               ),
                             ),
                             TextButton(
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
                               onPressed: () {
                                 context.pushWrapper(
                                   "/cloud-album-cat/${Uri.encodeComponent(i10n.new_album)}",
@@ -417,7 +458,7 @@ class RecommendPage extends HookConsumerWidget {
                         endIndent: 16,
                         color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
-                      SizedBox(height: 15),
+                      SizedBox(height: 12),
                       CloudAlbumsCat(
                         baseProvider: cloudMusicAlbumNewProvider(
                           limit: 30,
@@ -425,12 +466,13 @@ class RecommendPage extends HookConsumerWidget {
                         ),
                         visibleRows: size.mdAndUp ? 1 : 2,
                       ),
+
+                      SizedBox(height: 15),
                       Padding(
                         padding: const EdgeInsets.only(
-                          left: 16,
                           right: 16,
-                          top: 16,
-                          bottom: 8,
+                          left: 16,
+                          bottom: 4,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -443,6 +485,11 @@ class RecommendPage extends HookConsumerWidget {
                               ),
                             ),
                             TextButton(
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
                               onPressed: () {
                                 context.pushWrapper(
                                   "/cloud-playlist-catlist",
@@ -467,12 +514,12 @@ class RecommendPage extends HookConsumerWidget {
                         endIndent: 16,
                         color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
-                      SizedBox(height: 15),
+                      SizedBox(height: 12),
                       CloudPlaylistsCat(
                         baseProvider: cloudToplistProvider(),
                         visibleRows: size.mdAndUp ? 1 : 2,
                       ),
-                      SizedBox(height: 15),
+                      SizedBox(height: 8),
                     ],
                   ],
                 ),

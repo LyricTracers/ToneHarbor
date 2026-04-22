@@ -3,6 +3,7 @@ import "dart:math";
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
+import "package:toneharbor/init/initialized.dart";
 import "package:toneharbor/providers/providers.dart";
 import "package:toneharbor/utils/base_funs.dart";
 import "package:toneharbor/utils/responsive.dart";
@@ -17,29 +18,40 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
     final audioPlayerState = ref.watch(audioPlayerStateProvider);
     final colorScheme = getColorSchemeWhenReady(ref);
     final activeTrack = audioPlayerState.activeTrack;
+    var size = MediaQuery.of(ref.context).size;
 
     if (activeTrack == null) {
-      return Column(
+      return Stack(
         children: [
-          AppBar(
-            backgroundColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            scrolledUnderElevation: 0,
-            centerTitle: false,
-            automaticallyImplyLeading: false,
-            leading: IconButton(
-              onPressed: () {
-                ref.context.popWrap();
-              },
-              icon: Icon(Icons.arrow_back_ios_sharp),
+          if (size.isXs)
+            Positioned(
+              left: 20,
+              top: 0,
+              child: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.keyboard_arrow_down_rounded, size: 24),
+              ),
             ),
-          ),
-          buildErrorView(ref.context, ref, colorScheme, () {}),
+          if (!size.isXs)
+            AppBar(
+              backgroundColor: Colors.transparent,
+              surfaceTintColor: Colors.transparent,
+              scrolledUnderElevation: 0,
+              centerTitle: false,
+              automaticallyImplyLeading: false,
+              leading: IconButton(
+                onPressed: () {
+                  ref.context.popWrap();
+                },
+                icon: Icon(Icons.arrow_back_ios_sharp),
+              ),
+            ),
         ],
       );
     }
     final showTranslated = useState(false);
-    var size = MediaQuery.of(ref.context).size;
     final l10n = ref.watch(l10nProvider);
 
     useEffect(() {

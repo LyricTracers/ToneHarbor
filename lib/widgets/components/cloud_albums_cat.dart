@@ -165,7 +165,7 @@ class CloudAlbumsCat<T extends ExtraProvider<CloudAlbumListData>>
             ),
             itemCount: displayItems.length + (hasMore && isLoadingMore ? 1 : 0),
             itemBuilder: (context, index) {
-              if (index == displayItems.length) {
+              if (index == displayItems.length && visibleRows == -1) {
                 return Padding(
                   padding: EdgeInsets.all(16),
                   child: Center(
