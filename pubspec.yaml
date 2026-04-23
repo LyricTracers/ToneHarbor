@@ -19,18 +19,18 @@ dependencies:
   fl_chart: ^1.2.0
   media_kit:
     git:
-      url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
+      url: https://github.com/LyricTracers/media-kit.git
       ref: main
       path: media_kit
   media_kit_libs_audio: ^1.0.7
   flutter_context_menu: 
     git:
-      url: https://git.nxcloud.club:12750/LyricTracers/flutter_context_menu.git
-      ref: v1.0.0-macos
+      url: https://github.com/LyricTracers/flutter_context_menu.git
+      ref: main
   audio_service: 
     # path: ../audio_service/audio_service
     git:
-      url: https://git.nxcloud.club:12750/agile/audio_service.git
+      url: https://github.com/LyricTracers/audio_service.git
       path: audio_service
       ref: minor
   audio_session: ^0.2.3
@@ -62,7 +62,7 @@ dependencies:
   metadata_god: 
     # path: ../metadata_god
     git:
-      url: https://git.nxcloud.club:12750/LyricTracers/metadata_god.git
+      url: https://github.com/LyricTracers/metadata_god.git
       ref: main
   file: ^7.0.1
   drift: 2.29.0
@@ -70,40 +70,38 @@ dependencies:
   collection: 1.19.1
   flutter_broadcasts:
     git:
-      url: https://git.nxcloud.club:12750/LyricTracers/flutter_broadcasts.git
+      url: https://github.com/LyricTracers/flutter_broadcasts.git
       ref: main
   package_info_plus: ^9.0.0
   archive_gbk:
     git:
-      url: https://git.nxcloud.club:12750/LyricTracers/archive_gbk.git
-      ref: v1.0.0-macos
+      url: https://github.com/LyricTracers/archive_gbk.git
+      ref: main
   lyricskit:
-    # path: ../lyricskit
       git:
-        url: https://git.nxcloud.club:12750/LyricTracers/lyricskit.git
+        url: https://github.com/LyricTracers/lyricskit.git
         ref: main
   tray_manager:
     git:
-      url: https://git.nxcloud.club:12750/LyricTracers/tray_manager.git
-      ref: v1.0.0-macos
+      url: https://github.com/LyricTracers/tray_manager.git
+      ref: main
   window_manager:
     git:
-      url: https://git.nxcloud.club:12750/LyricTracers/window_manager.git
-      ref: v1.0.0-macos 
+      url: https://github.com/LyricTracers/window_manager.git
+      ref: main 
   flutter_native_splash:
-    # path: ../flutter_native_splash
     git:
-      url: https://git.nxcloud.club:12750/LyricTracers/flutter_native_splash.git
+      url: https://github.com/LyricTracers/flutter_native_splash.git
       ref: main
   flutter_lyric:
     git:
-      url: https://git.nxcloud.club:12750/LyricTracers/flutter_lyric.git
-      ref: v1.0.0-macos
+      url: https://github.com/LyricTracers/flutter_lyric.git
+      ref: main
   connectivity_plus: 7.0.0
   flutter_to_airplay:
     git:
-      url: https://git.nxcloud.club:12750/agile/flutter_to_airplay.git
-      ref: master
+      url: https://github.com/LyricTracers/flutter_to_airplay.git
+      ref: main
   flutter_inappwebview: ^6.1.5
 
 dev_dependencies:
@@ -120,30 +118,15 @@ dependency_overrides:
   media_kit_libs_ios_audio:
     # path: ../media-kit/libs/ios/media_kit_libs_ios_audio
     git:
-      url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
+      url: https://github.com/LyricTracers/media-kit.git
       ref: main
       path: libs/ios/media_kit_libs_ios_audio
-  # media_kit_libs_android_audio:
-  #   git:
-  #     url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
-  #     ref: v1.0.0-macos
-  #     path: libs/android/media_kit_libs_android_audio
   media_kit_libs_macos_audio:
     # path: ../media-kit/libs/macos/media_kit_libs_macos_audio
     git:
-      url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
+      url: https://github.com/LyricTracers/media-kit.git
       ref: main
       path: libs/macos/media_kit_libs_macos_audio
-  # media_kit_libs_windows_audio:
-  #   git:
-  #     url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
-  #     ref: v1.0.0-macos
-  #     path: libs/windows/media_kit_libs_windows_audio
-  # media_kit_libs_linux:
-  #   git:
-  #     url: https://git.nxcloud.club:12750/LyricTracers/media-kit.git
-  #     ref: v1.0.0-macos
-  #     path: libs/linux/media_kit_libs_linux
 
 flutter:
   generate: true
