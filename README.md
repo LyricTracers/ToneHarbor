@@ -224,39 +224,35 @@ flutter build ios --release
 
 ## 📸 应用截图
 
-<p align="center">
-  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.12.06@2x.png" width="45%" alt="主界面">
-  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.12.35@2x.png" width="45%" alt="播放详情">
-</p>
+### 桌面端
 
-<p align="center">
-  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.12.51@2x.png" width="45%" alt="歌单列表">
-  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.13.13@2x.png" width="45%" alt="推荐页面">
-</p>
+| 主界面 | 全部歌单 |
+|:---:|:---:|
+| ![主界面](./extra_image/CleanShot%202026-04-23%20at%2008.12.06@2x.png) | ![全部歌单](./extra_image/CleanShot%202026-04-23%20at%2008.12.35@2x.png) |
 
-<p align="center">
-  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.13.36@2x.png" width="45%">
-  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.13.59@2x.png" width="45%">
-</p>
+| 歌单类型 | 推荐页面 |
+|:---:|:---:|
+| ![歌单类型](./extra_image/CleanShot%202026-04-23%20at%2008.12.51@2x.png) | ![歌单详情](./extra_image/CleanShot%202026-04-23%20at%2008.13.13@2x.png) |
 
-<p align="center">
-  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.14.37@2x.png" width="45%">
-  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.14.56@2x.png" width="45%">
-</p>
+| 歌手类别 | 播放界面 |
+|:---:|:---:|
+| ![歌手类别](./extra_image/CleanShot%202026-04-23%20at%2008.13.36@2x.png) | ![播放界面](./extra_image/CleanShot%202026-04-23%20at%2008.13.59@2x.png) |
 
-<p align="center">
-  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.15.26@2x.png" width="45%">
-  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.17.03@2x.png" width="45%">
-</p>
+| 歌词搜索 | 歌手详情 |
+|:---:|:---:|
+| ![歌词搜索](./extra_image/CleanShot%202026-04-23%20at%2008.14.37@2x.png) | ![歌手详情](./extra_image/CleanShot%202026-04-23%20at%2008.14.56@2x.png) |
 
-<p align="center">
-  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.17.52@2x.png" width="45%">
-  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.18.16@2x.png" width="45%">
-</p>
+| 专辑详情 | 搜索界面 |
+|:---:|:---:|
+| ![专辑详情](./extra_image/CleanShot%202026-04-23%20at%2008.15.26@2x.png) | ![搜索界面](./extra_image/CleanShot%202026-04-23%20at%2008.17.03@2x.png) |
 
-<p align="center">
-  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.18.32@2x.png" width="45%">
-</p>
+### 移动端
+| 移动主页 | 移动播放界面 |
+|:---:|:---:|
+| ![移动主页](./extra_image/CleanShot%202026-04-23%20at%2008.17.52@2x.png) | ![移动播放界面](./extra_image/CleanShot%202026-04-23%20at%2008.18.16@2x.png) |
+| 移动端界面 |
+|:---:|
+| ![移动端界面](./extra_image/CleanShot%202026-04-23%20at%2008.18.32@2x.png) |
 
 ## 📄 许可证
 
