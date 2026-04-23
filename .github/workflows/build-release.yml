@@ -134,16 +134,7 @@ jobs:
           echo "FLUTTER_ROOT=$FLUTTER_ROOT"
           echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
 
-          # 安全校验
-          if [ ! -f "$FLUTTER_APPLICATION_PATH/pubspec.yaml" ]; then
-            echo "::error::pubspec.yaml not found"
-            exit 1
-          fi
-
-          LOGFILE="${GITHUB_WORKSPACE}/xcodebuild.log"
-
-          # 直接使用观察到的 xcodebuild 命令，并补充稳定性参数
-          /usr/bin/arch -arm64e xcrun xcodebuild \
+          if ! /usr/bin/arch -arm64e xcrun xcodebuild \
             -configuration Release \
             VERBOSE_SCRIPT_LOGGING=YES \
             -workspace Runner.xcworkspace \
@@ -157,7 +148,17 @@ jobs:
             ARCHS=arm64 \
             ONLY_ACTIVE_ARCH=YES \
             build \
-            2>&1 | tee "$LOGFILE"
+            2>&1 | tee "$LOGFILE"; then
+
+            echo ""
+            echo "❌❌❌ BUILD FAILED ❌❌❌"
+            echo "👉 Last 300 lines of build log:"
+            echo "========================================"
+            tail -n 300 "$LOGFILE"
+            echo "========================================"
+            echo "💡 Full log saved to: $LOGFILE"
+            exit 1
+          fi
 
           sync
           echo "Log saved to $LOGFILE"
