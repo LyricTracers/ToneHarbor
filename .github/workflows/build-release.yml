@@ -115,65 +115,45 @@ jobs:
           echo "=== CocoaPods completed ==="
         timeout-minutes: 60
 
-      - name: Build iOS (with Rust rebuild and inline error log)
+      - name: Build iOS (flutter build with all fixes & inline error log)
         run: |
-          echo "=== Building iOS via xcodebuild (ARM64 runner) ==="
-          cd ios
+          echo "=== Building iOS (ARM64 runner) ==="
 
-          # 清理旧的 Rust 编译缓存
-          rm -rf target/ || true
-          rm -rf Pods/*/target/ || true
-
-          # 强制重新编译所有 Rust pod 为 arm64
-          echo "=== Rebuilding Rust pods for arm64 ==="
-          for rust_dir in Pods/*/rust; do
-            if [ -f "$rust_dir/Cargo.toml" ]; then
-              echo "Building $rust_dir"
-              cd "$rust_dir"
-              cargo build --release --target aarch64-apple-ios
-              cd - > /dev/null
-            fi
-          done
-
-          # 继续之前的清理和钥匙串解锁
+          # 清理旧数据
           rm -rf ~/Library/Developer/Xcode/DerivedData || true
-          rm -rf ../build/ios || true
+          rm -rf build/ios || true
 
+          # 钥匙串解锁（防卡死）
           security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db 2>/dev/null || true
           security set-keychain-settings -t 3600 -l ~/Library/Keychains/login.keychain-db 2>/dev/null || true
 
+          # 环境变量修复 Flutter 3.35.7 ARM64 空指针
           export FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
-          export FLUTTER_APPLICATION_PATH="$(cd .. && pwd)"
+          export FLUTTER_APPLICATION_PATH="$(pwd)"
           echo "FLUTTER_ROOT=$FLUTTER_ROOT"
           echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
 
-          LOGFILE="${RUNNER_WORKSPACE}/xcodebuild.log"
-          if ! /usr/bin/arch -arm64e xcrun xcodebuild \
-            -configuration Release \
-            VERBOSE_SCRIPT_LOGGING=YES \
-            -workspace Runner.xcworkspace \
-            -scheme Runner \
-            BUILD_DIR=../build/ios \
-            -sdk iphoneos \
-            -destination 'generic/platform=iOS' \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_IDENTITY="" \
-            ARCHS=arm64 \
-            ONLY_ACTIVE_ARCH=YES \
-            build \
-            2>&1 | tee "$LOGFILE"; then
+          if [ ! -f "$FLUTTER_APPLICATION_PATH/pubspec.yaml" ]; then
+            echo "::error::pubspec.yaml not found"
+            exit 1
+          fi
 
+          # 日志保存到工作区根目录
+          LOGFILE="${RUNNER_WORKSPACE}/ios_build.log"
+          echo "Log will be saved to: $LOGFILE"
+
+          # 使用 flutter build ios，它会自动调用 Cargokit 等所有前置过程
+          if ! flutter build ios --release --no-codesign -v 2>&1 | tee "$LOGFILE"; then
             echo ""
             echo "❌❌❌ BUILD FAILED ❌❌❌"
             echo "👉 Last 300 lines of build log:"
+            tail -n 300 "$LOGFILE" || echo "(log empty)"
             echo "========================================"
-            tail -n 300 "$LOGFILE"
-            echo "========================================"
-            echo "💡 Full log saved to: $LOGFILE"
             exit 1
           fi
+
           sync
+          echo "Log saved to $LOGFILE"
           echo "=== iOS build completed ==="
         timeout-minutes: 60
 
@@ -184,38 +164,32 @@ jobs:
             echo "Runner.app found at: $APP_PATH"
             echo "Size: $(du -sh "$APP_PATH")"
           else
-            echo "::error::Runner.app not found at $APP_PATH"
-            ls -la build/ios/iphoneos/ 2>/dev/null || echo "iphoneos directory missing"
+            echo "::error::Runner.app not found"
+            ls -la build/ios/iphoneos/ 2>/dev/null || echo "iphoneos missing"
             exit 1
           fi
 
-      - name: Upload xcodebuild log on failure
+      - name: Upload iOS build log on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: xcodebuild-log
-          path: xcodebuild.log
+          name: ios-build-log
+          path: ${{ runner.workspace }}/ios_build.log
           retention-days: 3
 
       - name: Create IPA
         run: |
-          echo "=== Creating IPA ==="
           APP_PATH="build/ios/iphoneos/Runner.app"
-          
           if [ ! -d "$APP_PATH" ]; then
-            echo "::error::Runner.app not found at $APP_PATH"
+            echo "::error::Runner.app not found"
             exit 1
           fi
-          
           mkdir -p Payload
           cp -R "$APP_PATH" Payload/
           zip -r -y Payload.zip Payload/
           mv Payload.zip ToneHarbor.ipa
           rm -rf Payload
-          
           echo "IPA created: $(ls -la ToneHarbor.ipa)"
-          echo "IPA size: $(du -sh ToneHarbor.ipa)"
-          echo "=== IPA creation completed ==="
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
@@ -228,21 +202,17 @@ jobs:
         run: |
           echo "=== Building macOS ==="
           flutter build macos --release -v
-          echo "=== macOS build completed ==="
         timeout-minutes: 30
 
       - name: Create macOS ZIP
         run: |
-          echo "=== Creating macOS ZIP ==="
           APP_PATH=$(find build/macos/Build/Products/Release/ -name "*.app" -type d | head -1)
           if [ -z "$APP_PATH" ]; then
-            echo "::error::No .app found in build/macos/Build/Products/Release/"
+            echo "::error::No .app found"
             exit 1
           fi
           echo "Found app: $APP_PATH"
           zip -r -y ToneHarbor-macOS.zip "$APP_PATH"
-          echo "ZIP created: $(ls -la ToneHarbor-macOS.zip)"
-          echo "=== ZIP creation completed ==="
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
@@ -256,11 +226,8 @@ jobs:
         run: |
           echo "=== DEBUG INFO ON FAILURE ==="
           echo "Last exit code: $?"
-          echo "Directory listing:"
           ls -la
-          echo "Build directory:"
           ls -la build/ 2>/dev/null || echo "No build directory"
-          echo "=== End DEBUG INFO ==="
 
   create-release:
     name: Create Release
@@ -281,12 +248,10 @@ jobs:
           else
             VERSION="${GITHUB_REF#refs/tags/}"
           fi
-          
           if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "::error::Invalid version format. Expected: v1.2.3"
             exit 1
           fi
-          
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Download iOS artifact
@@ -302,10 +267,7 @@ jobs:
           path: ./artifacts
 
       - name: List artifacts
-        run: |
-          echo "=== Downloaded artifacts ==="
-          ls -la ./artifacts
-          echo "=== End artifacts ==="
+        run: ls -la ./artifacts
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
