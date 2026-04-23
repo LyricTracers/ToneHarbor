@@ -257,5 +257,14 @@ MIT License
 
 - [Synology Audio Station API](https://www.synology.com/)
 - [media_kit](https://github.com/media-kit/media-kit)
-- [lyricskit](https://github.com/LyricTracers/lyricskit)
+- [flutter_context_menu](https://github.com/salah-rashad/flutter_context_menu)
+- [audio_service](https://github.com/ryanheise/audio_service/tree/minor/audio_service)
+- [metadata_god](https://github.com/KRTirtho/frb_plugins/tree/main/packages/metadata_god)
+- [flutter_broadcasts](https://github.com/kevlatus/flutter_broadcasts)
+- [archive](https://github.com/brendan-duncan/archive)
+- [tray_manager](https://github.com/leanflutter/tray_manager/)
+- [window_manager](https://github.com/leanflutter/window_manager)
+- [flutter_native_splash](https://github.com/jonbhanson/flutter_native_splash)
+- [flutter_lyric](https://github.com/ozyl/flutter_lyric)
+- [flutter_to_airplay](https://github.com/MrJai/flutter_to_airplay)
 - 所有开源贡献者
