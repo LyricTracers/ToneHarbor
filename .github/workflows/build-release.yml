@@ -37,14 +37,12 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          target: aarch64-apple-ios
+          targets: aarch64-apple-ios
 
       - name: Fix Rust target conflicts
         run: |
           echo "=== Fixing Rust target conflicts ==="
-          # Remove conflicting Rust target if it exists
           rustup target remove aarch64-apple-ios 2>/dev/null || true
-          # Reinstall with stable toolchain
           rustup target add aarch64-apple-ios --toolchain stable
           echo "=== Rust target fixed ==="
 
@@ -117,15 +115,19 @@ jobs:
           echo "=== CocoaPods completed ==="
         timeout-minutes: 60
 
-      - name: Build iOS (ARM64 compatible, with full logging)
+      - name: Build iOS (with Flutter env fix for ARM64)
         run: |
           echo "=== Building iOS via xcodebuild (ARM64 runner) ==="
           cd ios
           
-          # 清理可能由架构不匹配导致的构建缓存残留
+          # 清理旧构建缓存，避免架构冲突
           rm -rf ~/Library/Developer/Xcode/DerivedData
           
-          # 显式调用 xcodebuild，强制输出完整错误，并添加 ARM64 真机构建参数
+          # 设置 Flutter 环境变量，修复 xcode_backend.dart 空指针问题
+          export FLUTTER_ROOT="$HOME/hostedtoolcache/flutter/stable-3.35.7-arm64/flutter"
+          export FLUTTER_APPLICATION_PATH="$(pwd)/.."
+          
+          # 显式调用 xcodebuild，注入环境变量并保持 ARM64 构建参数
           xcodebuild -workspace Runner.xcworkspace \
                      -scheme Runner \
                      -configuration Release \
@@ -136,6 +138,8 @@ jobs:
                      CODE_SIGNING_IDENTITY="" \
                      ARCHS=arm64 \
                      ONLY_ACTIVE_ARCH=YES \
+                     FLUTTER_ROOT="$FLUTTER_ROOT" \
+                     FLUTTER_APPLICATION_PATH="$FLUTTER_APPLICATION_PATH" \
                      build \
                      2>&1 | tee xcodebuild.log
           
