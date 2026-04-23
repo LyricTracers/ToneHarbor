@@ -14,10 +14,15 @@ on:
 env:
   FLUTTER_VERSION: '3.35.7'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build-ios:
-    name: Build iOS IPA
+  build-multi-platform:
+    name: Build iOS IPA and macOS APP
     runs-on: macos-latest
+    timeout-minutes: 120
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,20 +34,32 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
       - name: Get dependencies
         run: flutter pub get
+        timeout-minutes: 15
 
       - name: Install iOS dependencies
         run: cd ios && pod install --repo-update
+        timeout-minutes: 30
 
       - name: Build iOS (no codesign)
         run: flutter build ios --release --no-codesign
+        timeout-minutes: 30
 
       - name: Create IPA
         run: |
           mkdir -p Payload
           mv ./build/ios/iphoneos/Runner.app Payload
-          zip -r -y ToneHarbor.ipa Payload
+          zip -r -y Payload.zip Payload/Runner.app
+          mv Payload.zip ToneHarbor.ipa
           rm -Rf Payload
 
       - name: Upload IPA artifact
@@ -50,47 +67,33 @@ jobs:
         with:
           name: ToneHarbor-iOS
           path: ToneHarbor.ipa
-
-  build-macos:
-    name: Build macOS APP
-    runs-on: macos-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: 'stable'
-          cache: true
-
-      - name: Get dependencies
-        run: flutter pub get
+          retention-days: 7
 
       - name: Build macOS
         run: flutter build macos --release
+        timeout-minutes: 30
 
       - name: Create ZIP archive
-        run: |
-          cd build/macos/Build/Products/Release
-          zip -r -y ../../../../ToneHarbor-macOS.zip "ToneHarbor.app"
+        run: zip -r -y ToneHarbor-macOS.zip build/macos/Build/Products/Release/ToneHarbor.app
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
           name: ToneHarbor-macOS
           path: ToneHarbor-macOS.zip
+          retention-days: 7
 
   create-release:
     name: Create Release
-    needs: [build-ios, build-macos]
+    needs: [build-multi-platform]
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    # 允许以下两种情况触发创建 Release：
+    # 1. 推送标签 (refs/tags/v*)
+    # 2. 手动触发并提供了版本号输入
+    if: |
+      startsWith(github.ref, 'refs/tags/') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.version != '')
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Download iOS artifact
         uses: actions/download-artifact@v4
         with:
@@ -103,14 +106,20 @@ jobs:
           name: ToneHarbor-macOS
           path: ./artifacts
 
-      - name: Get version from tag
+      - name: Determine release version
         id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           name: Release ${{ steps.get_version.outputs.VERSION }}
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
           body: |
             ## ToneHarbor ${{ steps.get_version.outputs.VERSION }}
             
