@@ -8,19 +8,24 @@ on:
     inputs:
       version:
         description: 'Version tag (e.g., v2.3.4)'
-        required: false
+        required: true
         default: ''
 
 env:
   FLUTTER_VERSION: '3.35.7'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build-ios:
-    name: Build iOS IPA
-    runs-on: macos-latest
+  build-multi-platform:
+    name: Build iOS IPA and macOS APP
+    runs-on: macos-15
+    timeout-minutes: 120
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -29,67 +34,124 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Cache CocoaPods
+        uses: actions/cache@v5
+        with:
+          path: ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Print environment info
+        run: |
+          echo "=== Environment Info ==="
+          echo "OS: $(uname -a)"
+          echo "Flutter version: $(flutter --version)"
+          echo "Dart version: $(dart --version)"
+          echo "Working directory: $(pwd)"
+          echo "=== End Environment Info ==="
+
       - name: Get dependencies
-        run: flutter pub get
+        run: |
+          echo "=== Getting Flutter dependencies ==="
+          flutter pub get -v
+          echo "=== Dependencies completed ==="
+        timeout-minutes: 15
 
       - name: Install iOS dependencies
-        run: cd ios && pod install --repo-update
+        run: |
+          echo "=== Installing CocoaPods ==="
+          cd ios 
+          # 删除可能导致冲突的自定义 xcconfig 引用（如果有）
+          sed -i '' '/baseConfigurationReference/d' Runner.xcodeproj/project.pbxproj
+          # 安装 Pod 依赖
+          pod install --verbose
+          echo "=== CocoaPods completed ==="
+        timeout-minutes: 60
 
       - name: Build iOS (no codesign)
-        run: flutter build ios --release --no-codesign
+        run: |
+          echo "=== Building iOS ==="
+          flutter build ios --release --no-codesign -v
+          echo "=== iOS build completed ==="
+        timeout-minutes: 30
 
       - name: Create IPA
         run: |
+          echo "=== Creating IPA ==="
           mkdir -p Payload
           mv ./build/ios/iphoneos/Runner.app Payload
-          zip -r -y ToneHarbor.ipa Payload
+          zip -r -y Payload.zip Payload/Runner.app
+          mv Payload.zip ToneHarbor.ipa
           rm -Rf Payload
+          echo "IPA created: $(ls -la ToneHarbor.ipa)"
+          echo "=== IPA creation completed ==="
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: ToneHarbor-iOS
           path: ToneHarbor.ipa
-
-  build-macos:
-    name: Build macOS APP
-    runs-on: macos-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: 'stable'
-          cache: true
-
-      - name: Get dependencies
-        run: flutter pub get
+          retention-days: 7
 
       - name: Build macOS
-        run: flutter build macos --release
+        run: |
+          echo "=== Building macOS ==="
+          flutter build macos --release -v
+          echo "=== macOS build completed ==="
+        timeout-minutes: 30
 
       - name: Create ZIP archive
         run: |
-          cd build/macos/Build/Products/Release
-          zip -r -y ../../../../ToneHarbor-macOS.zip "ToneHarbor.app"
+          echo "=== Creating macOS ZIP ==="
+          zip -r -y ToneHarbor-macOS.zip build/macos/Build/Products/Release/ToneHarbor.app
+          echo "ZIP created: $(ls -la ToneHarbor-macOS.zip)"
+          echo "=== ZIP creation completed ==="
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
           name: ToneHarbor-macOS
           path: ToneHarbor-macOS.zip
+          retention-days: 7
+
+      - name: Debug info on failure
+        if: failure()
+        run: |
+          echo "=== DEBUG INFO ON FAILURE ==="
+          echo "Last exit code: $?"
+          echo "=== Directory listing ==="
+          ls -la
+          echo "=== Build directory ==="
+          ls -la build/ 2>/dev/null || echo "Build directory not found"
+          echo "=== End DEBUG INFO ==="
 
   create-release:
     name: Create Release
-    needs: [build-ios, build-macos]
+    needs: [build-multi-platform]
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    if: |
+      startsWith(github.ref, 'refs/tags/') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.version != '')
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - name: Determine release version
+        id: get_version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/}"
+          fi
+          
+          if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid version format. Expected: v1.2.3"
+            exit 1
+          fi
+          
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Download iOS artifact
         uses: actions/download-artifact@v4
@@ -103,14 +165,17 @@ jobs:
           name: ToneHarbor-macOS
           path: ./artifacts
 
-      - name: Get version from tag
-        id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      - name: List artifacts
+        run: |
+          echo "=== Downloaded artifacts ==="
+          ls -la ./artifacts
+          echo "=== End artifacts ==="
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           name: Release ${{ steps.get_version.outputs.VERSION }}
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
           body: |
             ## ToneHarbor ${{ steps.get_version.outputs.VERSION }}
             
@@ -119,7 +184,7 @@ jobs:
             - **ToneHarbor-macOS.zip**: macOS 应用程序包
             
             ### 更新内容
-            请查看 [提交记录](https://github.com/${{ github.repository }}/commits/${{ steps.get_version.outputs.VERSION }})
+            请查看 [Release 页面](https://github.com/${{ github.repository }}/releases/tag/${{ steps.get_version.outputs.VERSION }})
           files: |
             artifacts/ToneHarbor.ipa
             artifacts/ToneHarbor-macOS.zip
