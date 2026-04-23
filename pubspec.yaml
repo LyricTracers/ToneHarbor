@@ -102,7 +102,7 @@ dependencies:
   flutter_to_airplay:
     git:
       url: https://github.com/LyricTracers/flutter_to_airplay.git
-      ref: main
+      ref: master
   flutter_inappwebview: ^6.1.5
 
 dev_dependencies:
