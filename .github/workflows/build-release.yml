@@ -121,36 +121,67 @@ jobs:
           echo "=== CocoaPods completed ==="
         timeout-minutes: 60
 
-      # 构建 iOS App，设置动态环境变量修复 ARM64 下空指针异常，并保存详细日志
-      - name: Build iOS (ARM64 runner, with logging)
+      - name: Build iOS (xcodebuild with full logging and ARM64 fix)
         run: |
-          echo "=== Building iOS via flutter build ==="
-          
+          echo "=== Building iOS via xcodebuild (ARM64 runner) ==="
+          cd ios
+
           # 清理旧 DerivedData 避免架构缓存干扰
           rm -rf ~/Library/Developer/Xcode/DerivedData || true
-          
-          # 动态获取 Flutter 根目录（兼容所有版本和安装路径）
+
+          # 动态获取 Flutter 根目录
           FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
           export FLUTTER_ROOT
           echo "FLUTTER_ROOT=$FLUTTER_ROOT"
-          
+
           # 动态获取项目根目录（ios 文件夹的上一级）
-          FLUTTER_APPLICATION_PATH="$(cd ios && pwd)/.."
+          FLUTTER_APPLICATION_PATH="$(cd .. && pwd)"
           export FLUTTER_APPLICATION_PATH
           echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
-          
-          # 执行 Flutter 构建，-v 输出详细日志，并通过 tee 保存到文件
-          flutter build ios --release --no-codesign -v 2>&1 | tee ios_build.log
+
+          # 验证路径正确性
+          if [ ! -f "$FLUTTER_APPLICATION_PATH/pubspec.yaml" ]; then
+            echo "::error::pubspec.yaml not found in $FLUTTER_APPLICATION_PATH"
+            exit 1
+          fi
+
+          # 将日志保存到工作区根目录
+          LOGFILE="${GITHUB_WORKSPACE}/xcodebuild.log"
+          xcodebuild -workspace Runner.xcworkspace \
+                     -scheme Runner \
+                     -configuration Release \
+                     -sdk iphoneos \
+                     -destination 'generic/platform=iOS' \
+                     CODE_SIGNING_ALLOWED=NO \
+                     CODE_SIGNING_REQUIRED=NO \
+                     CODE_SIGNING_IDENTITY="" \
+                     ARCHS=arm64 \
+                     ONLY_ACTIVE_ARCH=YES \
+                     BUILD_DIR=../build/ios \
+                     CONFIGURATION_BUILD_DIR=../build/ios/iphoneos \
+                     build \
+                     2>&1 | tee "$LOGFILE"
+          # 确保日志完全写入磁盘
+          sync
+          echo "Log file saved to $LOGFILE"
           echo "=== iOS build completed ==="
         timeout-minutes: 30
 
-      # 构建失败时上传日志供调试
-      - name: Upload iOS build log on failure
+      - name: Verify log file exists
+        if: always()
+        run: |
+          if [ -f xcodebuild.log ]; then
+            echo "Log file found: xcodebuild.log ($(wc -c < xcodebuild.log) bytes)"
+          else
+            echo "::warning::xcodebuild.log not found in workspace root"
+          fi
+
+      - name: Upload xcodebuild log on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: ios-build-log
-          path: ios_build.log
+          name: xcodebuild-log
+          path: xcodebuild.log
           retention-days: 3
 
       - name: Create IPA
@@ -181,7 +212,13 @@ jobs:
       - name: Create ZIP archive
         run: |
           echo "=== Creating macOS ZIP ==="
-          zip -r -y ToneHarbor-macOS.zip build/macos/Build/Products/Release/ToneHarbor.app
+          APP_PATH=$(find build/macos/Build/Products/Release/ -name "*.app" -type d | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "::error::No .app found in build/macos/Build/Products/Release/"
+            exit 1
+          fi
+          echo "Found app: $APP_PATH"
+          zip -r -y ToneHarbor-macOS.zip "$APP_PATH"
           echo "ZIP created: $(ls -la ToneHarbor-macOS.zip)"
           echo "=== ZIP creation completed ==="
 
