@@ -65,7 +65,7 @@ jobs:
           # 删除可能导致冲突的自定义 xcconfig 引用（如果有）
           sed -i '' '/baseConfigurationReference/d' Runner.xcodeproj/project.pbxproj
           # 安装 Pod 依赖
-          pod install --verbose
+          pod install --repo-update --verbose
           echo "=== CocoaPods completed ==="
         timeout-minutes: 60
 
