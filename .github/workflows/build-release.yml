@@ -206,7 +206,13 @@ jobs:
       - name: Create ZIP archive
         run: |
           echo "=== Creating macOS ZIP ==="
-          zip -r -y ToneHarbor-macOS.zip build/macos/Build/Products/Release/ToneHarbor.app
+          APP_PATH=$(find build/macos/Build/Products/Release/ -name "*.app" -type d | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "::error::No .app found in build/macos/Build/Products/Release/"
+            exit 1
+          fi
+          echo "Found app: $APP_PATH"
+          zip -r -y ToneHarbor-macOS.zip "$APP_PATH"
           echo "ZIP created: $(ls -la ToneHarbor-macOS.zip)"
           echo "=== ZIP creation completed ==="
 
