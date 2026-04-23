@@ -135,12 +135,33 @@ jobs:
           echo "FLUTTER_ROOT=$FLUTTER_ROOT"
           
           # 动态获取项目根目录（ios 文件夹的上一级）
-          FLUTTER_APPLICATION_PATH="$(cd ios && pwd)/.."
+          FLUTTER_APPLICATION_PATH="$(cd .. && pwd)"
           export FLUTTER_APPLICATION_PATH
           echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
+
+          if [ ! -f "$FLUTTER_APPLICATION_PATH/pubspec.yaml" ]; then
+            echo "::error::pubspec.yaml not found in $FLUTTER_APPLICATION_PATH"
+            exit 1
+          fi
           
           # 执行 Flutter 构建，-v 输出详细日志，并通过 tee 保存到文件
-          flutter build ios --release --no-codesign -v 2>&1 | tee ios_build.log
+          xcodebuild -workspace Runner.xcworkspace \
+               -scheme Runner \
+               -configuration Release \
+               -sdk iphoneos \
+               -destination 'generic/platform=iOS' \
+               CODE_SIGNING_ALLOWED=NO \
+               CODE_SIGNING_REQUIRED=NO \
+               CODE_SIGNING_IDENTITY="" \
+               ARCHS=arm64 \
+               ONLY_ACTIVE_ARCH=YES \
+               build \
+               2>&1 | tee xcodebuild.log
+          if [ ! -d "./build/ios/iphoneos/Runner.app" ]; then
+            echo "::error::Runner.app not found in build/ios/iphoneos"
+            exit 1
+          fi
+          
           echo "=== iOS build completed ==="
         timeout-minutes: 30
 
@@ -149,8 +170,8 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: ios-build-log
-          path: ios_build.log
+          name: xcodebuild-log
+          path: ios/xcodebuild.log
           retention-days: 3
 
       - name: Create IPA
