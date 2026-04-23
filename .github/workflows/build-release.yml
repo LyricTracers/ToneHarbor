@@ -61,11 +61,37 @@ jobs:
       - name: Install iOS dependencies
         run: |
           echo "=== Installing CocoaPods ==="
-          cd ios 
-          # 删除可能导致冲突的自定义 xcconfig 引用（如果有）
+          cd ios
+          
+          # 1. 移除 Podfile 中的清华源声明
+          sed -i '' '/mirrors.tuna.tsinghua.edu.cn/d' Podfile
+          
+          # 2. 如果 Podfile 中没有官方源，则在首行添加 CDN 源
+          if ! grep -q "cdn.cocoapods.org" Podfile; then
+            sed -i '' '1s/^/source "https:\/\/cdn.cocoapods.org\/"\n/' Podfile
+          fi
+          
+          # 3. 清理可能导致冲突的 Xcode 项目配置
           sed -i '' '/baseConfigurationReference/d' Runner.xcodeproj/project.pbxproj
-          # 安装 Pod 依赖
-          pod install --repo-update --verbose
+          
+          # 4. 移除全局 CocoaPods 仓库中指向清华源的本地缓存
+          echo "=== Cleaning CocoaPods repo cache ==="
+          pod repo list | grep -B2 "mirrors.tuna.tsinghua.edu.cn" | grep -oE '^[a-zA-Z0-9_-]+' | while read repo_name; do
+            echo "Removing repo: $repo_name"
+            pod repo remove "$repo_name" || true
+          done
+          
+          # 5. 若没有 CDN 的 trunk 仓库，则添加官方 CDN 源
+          if ! pod repo list | grep -q "cdn.cocoapods.org"; then
+            echo "Adding CDN trunk repo..."
+            pod repo add trunk https://cdn.cocoapods.org/ || true
+          fi
+          
+          # 6. 更新 CDN 仓库（必要的首次更新）
+          pod repo update trunk --verbose || true
+          
+          # 7. 执行 pod install（不再使用 --repo-update）
+          pod install --verbose
           echo "=== CocoaPods completed ==="
         timeout-minutes: 60
 
