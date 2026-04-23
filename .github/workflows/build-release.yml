@@ -25,7 +25,7 @@ jobs:
     timeout-minutes: 120
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -35,32 +35,53 @@ jobs:
           cache: true
 
       - name: Cache CocoaPods
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
 
+      - name: Print environment info
+        run: |
+          echo "=== Environment Info ==="
+          echo "OS: $(uname -a)"
+          echo "Flutter version: $(flutter --version)"
+          echo "Dart version: $(dart --version)"
+          echo "Working directory: $(pwd)"
+          echo "=== End Environment Info ==="
+
       - name: Get dependencies
-        run: flutter pub get -v
+        run: |
+          echo "=== Getting Flutter dependencies ==="
+          flutter pub get -v
+          echo "=== Dependencies completed ==="
         timeout-minutes: 15
 
       - name: Install iOS dependencies
-        run: cd ios && pod install --repo-update --verbose
+        run: |
+          echo "=== Installing CocoaPods ==="
+          cd ios && pod install --repo-update --verbose
+          echo "=== CocoaPods completed ==="
         timeout-minutes: 30
 
       - name: Build iOS (no codesign)
-        run: flutter build ios --release --no-codesign -v
+        run: |
+          echo "=== Building iOS ==="
+          flutter build ios --release --no-codesign -v
+          echo "=== iOS build completed ==="
         timeout-minutes: 30
 
       - name: Create IPA
         run: |
+          echo "=== Creating IPA ==="
           mkdir -p Payload
           mv ./build/ios/iphoneos/Runner.app Payload
           zip -r -y Payload.zip Payload/Runner.app
           mv Payload.zip ToneHarbor.ipa
           rm -Rf Payload
+          echo "IPA created: $(ls -la ToneHarbor.ipa)"
+          echo "=== IPA creation completed ==="
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
@@ -70,11 +91,18 @@ jobs:
           retention-days: 7
 
       - name: Build macOS
-        run: flutter build macos --release -v
+        run: |
+          echo "=== Building macOS ==="
+          flutter build macos --release -v
+          echo "=== macOS build completed ==="
         timeout-minutes: 30
 
       - name: Create ZIP archive
-        run: zip -r -y ToneHarbor-macOS.zip build/macos/Build/Products/Release/ToneHarbor.app
+        run: |
+          echo "=== Creating macOS ZIP ==="
+          zip -r -y ToneHarbor-macOS.zip build/macos/Build/Products/Release/ToneHarbor.app
+          echo "ZIP created: $(ls -la ToneHarbor-macOS.zip)"
+          echo "=== ZIP creation completed ==="
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
@@ -82,6 +110,17 @@ jobs:
           name: ToneHarbor-macOS
           path: ToneHarbor-macOS.zip
           retention-days: 7
+
+      - name: Debug info on failure
+        if: failure()
+        run: |
+          echo "=== DEBUG INFO ON FAILURE ==="
+          echo "Last exit code: $?"
+          echo "=== Directory listing ==="
+          ls -la
+          echo "=== Build directory ==="
+          ls -la build/ 2>/dev/null || echo "Build directory not found"
+          echo "=== End DEBUG INFO ==="
 
   create-release:
     name: Create Release
@@ -92,7 +131,7 @@ jobs:
       (github.event_name == 'workflow_dispatch' && github.event.inputs.version != '')
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Determine release version
         id: get_version
@@ -121,6 +160,12 @@ jobs:
         with:
           name: ToneHarbor-macOS
           path: ./artifacts
+
+      - name: List artifacts
+        run: |
+          echo "=== Downloaded artifacts ==="
+          ls -la ./artifacts
+          echo "=== End artifacts ==="
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
