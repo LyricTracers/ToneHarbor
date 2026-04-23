@@ -230,7 +230,7 @@ flutter build ios --release
 |:---:|:---:|
 | ![主界面](./extra_image/CleanShot%202026-04-23%20at%2008.12.06@2x.png) | ![全部歌单](./extra_image/CleanShot%202026-04-23%20at%2008.12.35@2x.png) |
 
-| 歌单类型 | 推荐页面 |
+| 歌单类型 | 歌单详情 |
 |:---:|:---:|
 | ![歌单类型](./extra_image/CleanShot%202026-04-23%20at%2008.12.51@2x.png) | ![歌单详情](./extra_image/CleanShot%202026-04-23%20at%2008.13.13@2x.png) |
 
@@ -247,12 +247,9 @@ flutter build ios --release
 | ![专辑详情](./extra_image/CleanShot%202026-04-23%20at%2008.15.26@2x.png) | ![搜索界面](./extra_image/CleanShot%202026-04-23%20at%2008.17.03@2x.png) |
 
 ### 移动端
-| 移动主页 | 移动播放界面 |
-|:---:|:---:|
-| ![移动主页](./extra_image/CleanShot%202026-04-23%20at%2008.17.52@2x.png) | ![移动播放界面](./extra_image/CleanShot%202026-04-23%20at%2008.18.16@2x.png) |
-| 移动端界面 |
-|:---:|
-| ![移动端界面](./extra_image/CleanShot%202026-04-23%20at%2008.18.32@2x.png) |
+| 移动主页 | 移动播放界面 | 移动端界面 |
+|:---:|:---:|:---:|
+| ![移动主页](./extra_image/CleanShot%202026-04-23%20at%2008.17.52@2x.png) | ![移动播放界面](./extra_image/CleanShot%202026-04-23%20at%2008.18.16@2x.png) | ![移动端界面](./extra_image/CleanShot%202026-04-23%20at%2008.18.32@2x.png) |
 
 ## 📄 许可证
 
