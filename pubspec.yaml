@@ -70,8 +70,8 @@ dependencies:
   collection: 1.19.1
   flutter_broadcasts:
     git:
-      url: https://github.com/KRTirtho/flutter_broadcasts.git
-      ref: 63931dfe06733d4fb7452e9981e1f0b23414d97a
+      url: https://git.nxcloud.club:12750/LyricTracers/flutter_broadcasts.git
+      ref: main
   package_info_plus: ^9.0.0
   archive_gbk:
     git:
