@@ -225,31 +225,37 @@ flutter build ios --release
 ## 📸 应用截图
 
 <p align="center">
-  <img src="extra_image/CleanShot%202026-04-23%20at%2008.12.06@2x.png" width="45%" alt="主界面">
-  <img src="extra_image/CleanShot%202026-04-23%20at%2008.12.35@2x.png" width="45%" alt="播放详情">
+  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.12.06@2x.png" width="45%" alt="主界面">
+  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.12.35@2x.png" width="45%" alt="播放详情">
 </p>
+
 <p align="center">
-  <img src="extra_image/CleanShot%202026-04-23%20at%2008.12.51@2x.png" width="45%" alt="歌单列表">
-  <img src="extra_image/CleanShot%202026-04-23%20at%2008.13.13@2x.png" width="45%" alt="推荐页面">
+  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.12.51@2x.png" width="45%" alt="歌单列表">
+  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.13.13@2x.png" width="45%" alt="推荐页面">
 </p>
+
 <p align="center">
-  <img src="extra_image/CleanShot%202026-04-23%20at%2008.13.36@2x.png" width="45%" alt="歌手详情">
-  <img src="extra_image/CleanShot%202026-04-23%20at%2008.13.59@2x.png" width="45%" alt="专辑详情">
+  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.13.36@2x.png" width="45%">
+  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.13.59@2x.png" width="45%">
 </p>
+
 <p align="center">
-  <img src="extra_image/CleanShot%202026-04-23%20at%2008.14.37@2x.png" width="45%" alt="歌词显示">
-  <img src="extra_image/CleanShot%202026-04-23%20at%2008.14.56@2x.png" width="45%" alt="翻译歌词">
+  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.14.37@2x.png" width="45%">
+  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.14.56@2x.png" width="45%">
 </p>
+
 <p align="center">
-  <img src="extra_image/CleanShot%202026-04-23%20at%2008.15.26@2x.png" width="45%" alt="下载管理">
-  <img src="extra_image/CleanShot%202026-04-23%20at%2008.17.03@2x.png" width="45%" alt="设置页面">
+  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.15.26@2x.png" width="45%">
+  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.17.03@2x.png" width="45%">
 </p>
+
 <p align="center">
-  <img src="extra_image/CleanShot%202026-04-23%20at%2008.17.52@2x.png" width="45%" alt="存储管理">
-  <img src="extra_image/CleanShot%202026-04-23%20at%2008.18.16@2x.png" width="45%" alt="Aria2设置">
+  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.17.52@2x.png" width="45%">
+  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.18.16@2x.png" width="45%">
 </p>
+
 <p align="center">
-  <img src="extra_image/CleanShot%202026-04-23%20at%2008.18.32@2x.png" width="45%" alt="移动端界面">
+  <img src="./extra_image/CleanShot%202026-04-23%20at%2008.18.32@2x.png" width="45%">
 </p>
 
 ## 📄 许可证
