@@ -34,7 +34,6 @@ jobs:
           channel: 'stable'
           cache: true
 
-      # ---------- Rust 环境 ----------
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -47,7 +46,6 @@ jobs:
           rustup target add aarch64-apple-ios --toolchain stable
           echo "=== Rust target fixed ==="
 
-      # ---------- 缓存 ----------
       - name: Cache Pub dependencies
         uses: actions/cache@v5
         with:
@@ -64,7 +62,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pods-
 
-      # ---------- 环境信息 ----------
       - name: Print environment info
         run: |
           echo "=== Environment Info ==="
@@ -74,7 +71,6 @@ jobs:
           echo "Working directory: $(pwd)"
           echo "=== End Environment Info ==="
 
-      # ---------- Flutter 依赖 ----------
       - name: Get dependencies
         run: |
           echo "=== Getting Flutter dependencies ==="
@@ -82,7 +78,6 @@ jobs:
           echo "=== Dependencies completed ==="
         timeout-minutes: 15
 
-      # ---------- CocoaPods 镜像修复与安装 ----------
       - name: Install iOS dependencies
         run: |
           echo "=== Installing CocoaPods ==="
@@ -120,34 +115,55 @@ jobs:
           echo "=== CocoaPods completed ==="
         timeout-minutes: 60
 
-      # ---------- iOS 构建（核心修复：环境变量 + 完整日志） ----------
-      - name: Build iOS (with ARM64 fix and full logging)
+      - name: Build iOS (xcodebuild from flutter command, with fixes and logging)
         run: |
-          echo "=== Building iOS (ARM64 runner) ==="
-          
+          echo "=== Building iOS via xcodebuild (ARM64 runner) ==="
+          cd ios
+
+          # 清理旧缓存
           rm -rf ~/Library/Developer/Xcode/DerivedData || true
-          rm -rf build/ios || true
-          
-          # 🔑 显式设置环境变量，修复 Flutter 3.35.7 在 ARM64 上的空指针缺陷
+          rm -rf ../build/ios || true
+
+          # 解锁钥匙串（避免卡死）
+          security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db 2>/dev/null || true
+          security set-keychain-settings -t 3600 -l ~/Library/Keychains/login.keychain-db 2>/dev/null || true
+
+          # 🔑 必须设置的环境变量（修复 Flutter 3.35.7 ARM64 空指针）
           export FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
-          export FLUTTER_APPLICATION_PATH="$(pwd)"
+          export FLUTTER_APPLICATION_PATH="$(cd .. && pwd)"
           echo "FLUTTER_ROOT=$FLUTTER_ROOT"
           echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
-          
-          # 安全检查
+
+          # 安全校验
           if [ ! -f "$FLUTTER_APPLICATION_PATH/pubspec.yaml" ]; then
-            echo "::error::pubspec.yaml not found in $FLUTTER_APPLICATION_PATH"
+            echo "::error::pubspec.yaml not found"
             exit 1
           fi
-          
-          LOGFILE="${GITHUB_WORKSPACE}/ios_build.log"
-          flutter build ios --release --no-codesign -v 2>&1 | tee "$LOGFILE"
+
+          LOGFILE="${GITHUB_WORKSPACE}/xcodebuild.log"
+
+          # 直接使用观察到的 xcodebuild 命令，并补充稳定性参数
+          /usr/bin/arch -arm64e xcrun xcodebuild \
+            -configuration Release \
+            VERBOSE_SCRIPT_LOGGING=YES \
+            -workspace Runner.xcworkspace \
+            -scheme Runner \
+            BUILD_DIR=../build/ios \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_IDENTITY="" \
+            ARCHS=arm64 \
+            ONLY_ACTIVE_ARCH=YES \
+            build \
+            2>&1 | tee "$LOGFILE"
+
           sync
           echo "Log saved to $LOGFILE"
           echo "=== iOS build completed ==="
         timeout-minutes: 60
 
-      # ---------- 验证 Runner.app ----------
       - name: Verify Runner.app
         run: |
           APP_PATH="build/ios/iphoneos/Runner.app"
@@ -156,19 +172,18 @@ jobs:
             echo "Size: $(du -sh "$APP_PATH")"
           else
             echo "::error::Runner.app not found at $APP_PATH"
+            ls -la build/ios/iphoneos/ 2>/dev/null || echo "iphoneos directory missing"
             exit 1
           fi
 
-      # ---------- 上传失败日志 ----------
-      - name: Upload iOS build log on failure
+      - name: Upload xcodebuild log on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: ios-build-log
-          path: ios_build.log
+          name: xcodebuild-log
+          path: xcodebuild.log
           retention-days: 3
 
-      # ---------- 创建 IPA ----------
       - name: Create IPA
         run: |
           echo "=== Creating IPA ==="
@@ -196,7 +211,6 @@ jobs:
           path: ToneHarbor.ipa
           retention-days: 7
 
-      # ---------- macOS 构建（保留 flutter 命令，动态查找 App 名） ----------
       - name: Build macOS
         run: |
           echo "=== Building macOS ==="
@@ -224,7 +238,6 @@ jobs:
           path: ToneHarbor-macOS.zip
           retention-days: 7
 
-      # ---------- 失败时全局调试 ----------
       - name: Debug info on failure
         if: failure()
         run: |
@@ -236,7 +249,6 @@ jobs:
           ls -la build/ 2>/dev/null || echo "No build directory"
           echo "=== End DEBUG INFO ==="
 
-  # ========== 自动发布 ==========
   create-release:
     name: Create Release
     needs: [build-multi-platform]
