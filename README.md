@@ -178,8 +178,7 @@ flutter run -d ios
 
 ### 歌词翻译设置
 1. 进入设置 → AI 翻译设置
-2. 输入智谱 AI API 密钥
-3. 选择翻译目标语言
+2. 选择翻译目标语言
 
 ### Aria2 远程下载设置
 1. 进入设置 → Aria2 设置
@@ -217,9 +216,8 @@ flutter build ios --release
 
 ### 项目依赖说明
 项目使用了多个自定义维护的 fork 版本：
-- `media_kit`: 修复 hot restart 崩溃问题
+- `media_kit`: 修复 bug
 - `tray_manager` / `window_manager`: macOS 特定优化
-- `lyricskit`: 歌词解析库
 - `flutter_lyric`: 歌词显示组件
 
 ## 📸 应用截图
