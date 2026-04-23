@@ -16,7 +16,11 @@ import "package:toneharbor/widgets/pages/cloud_add_to_playlists_page.dart";
 import "package:toneharbor/widgets/widgets.dart";
 
 mixin PlayingDetailMix {
-  Widget buildLyrics(WidgetRef ref, ValueNotifier<bool> showTranslated) {
+  Widget buildLyrics(
+    WidgetRef ref,
+    ValueNotifier<bool> showTranslated,
+    double extraFontSize,
+  ) {
     return Builder(
       builder: (context) {
         final originalLyrics = ref.watch(currentLyricsProvider).value;
@@ -25,19 +29,28 @@ mixin PlayingDetailMix {
         if (!showTranslated.value ||
             originalLyrics == null ||
             translatedText == null) {
-          return LyricsContentPage(currentLyrics: originalLyrics);
+          return LyricsContentPage(
+            currentLyrics: originalLyrics,
+            extraFontSize: extraFontSize,
+          );
         }
 
         final translatedLyrics = Lyrics.fromString(translatedText);
         if (translatedLyrics == null) {
-          return LyricsContentPage(currentLyrics: originalLyrics);
+          return LyricsContentPage(
+            currentLyrics: originalLyrics,
+            extraFontSize: extraFontSize,
+          );
         }
 
         final mergedLyrics = Lyrics.fromJson(originalLyrics.toJson());
 
         mergedLyrics.merge(translatedLyrics);
 
-        return LyricsContentPage(currentLyrics: mergedLyrics);
+        return LyricsContentPage(
+          currentLyrics: mergedLyrics,
+          extraFontSize: extraFontSize,
+        );
       },
     );
   }
@@ -63,7 +76,13 @@ mixin PlayingDetailMix {
           _buildSongIcon(ref, activeTrack, radius),
           const SizedBox(height: 12),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: radius * 0.25),
+            padding: EdgeInsets.symmetric(
+              horizontal: size.isXs
+                  ? radius * 0.1
+                  : size.lgAndDown
+                  ? radius * 0.2
+                  : radius * 0.25,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [

@@ -75,28 +75,8 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
           ),
         Column(
           children: [
-            if (size.lgAndUp)
-              Expanded(
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: buildMusic(
-                        ref,
-                        activeTrack,
-                        colorScheme,
-                        showTranslated,
-                        size,
-                        size.height > size.width / 2
-                            ? size.width / 2
-                            : size.height,
-                      ),
-                    ),
-                    Expanded(flex: 1, child: buildLyrics(ref, showTranslated)),
-                  ],
-                ),
-              ),
-            if (size.mdAndDown) ...[
+            // if (size.mdAndDown)
+            ...[
               Center(
                 child: Material(
                   color: colorScheme.tertiary.withValues(alpha: 0.1),
@@ -132,15 +112,48 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
                 child: TabBarView(
                   controller: tabController,
                   children: [
-                    buildMusic(
+                    if (size.mdAndDown)
+                      buildMusic(
+                        ref,
+                        activeTrack,
+                        colorScheme,
+                        showTranslated,
+                        size,
+                        min(size.width * 0.8, size.height * 0.75),
+                      ),
+                    if (size.lgAndUp)
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: buildMusic(
+                              ref,
+                              activeTrack,
+                              colorScheme,
+                              showTranslated,
+                              size,
+                              min(size.width * 0.4, size.height * 0.75),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: buildLyrics(
+                              ref,
+                              showTranslated,
+                              size.xlAndUp ? 1 : 0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    buildLyrics(
                       ref,
-                      activeTrack,
-                      colorScheme,
                       showTranslated,
-                      size,
-                      min(size.width * 0.8, size.height * 0.75),
+                      size.smAndDown
+                          ? -1
+                          : size.xlAndUp
+                          ? 3
+                          : 0,
                     ),
-                    buildLyrics(ref, showTranslated),
                   ],
                 ),
               ),

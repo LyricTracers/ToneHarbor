@@ -9,7 +9,12 @@ import 'package:toneharbor/utils/base_funs.dart';
 
 class LyricsContentPage extends HookConsumerWidget {
   final Lyrics? currentLyrics;
-  const LyricsContentPage({super.key, this.currentLyrics});
+  final double extraFontSize;
+  const LyricsContentPage({
+    super.key,
+    this.currentLyrics,
+    this.extraFontSize = 0,
+  });
 
   String formatDuration(Duration duration) {
     final minutes = duration.inMinutes.remainder(60);
@@ -34,8 +39,6 @@ class LyricsContentPage extends HookConsumerWidget {
         controller.dispose();
       };
     }, []);
-
-    const double extraFontSize = 0;
 
     final customStyle = useMemoized(
       () => LyricStyle(

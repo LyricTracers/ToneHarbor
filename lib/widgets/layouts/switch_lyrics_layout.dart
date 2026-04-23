@@ -140,6 +140,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
 
                   Expanded(
                     child: _lyricsContent(
+                      size.xlAndUp ? 3 : 0,
                       selectedIndex,
                       songId,
                       searchProvider,
@@ -270,6 +271,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
                       tabController: tabController,
                     ),
                     _lyricsContent(
+                      size.isXs ? -1 : 0,
                       selectedIndex,
                       songId,
                       searchProvider,
@@ -287,6 +289,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
   }
 
   Widget _lyricsContent(
+    double extraFontSize,
     ValueNotifier<int> selectedIndex,
     ValueNotifier<String> songId,
     AsyncValue<List<Lyrics>> searchProvider,
@@ -299,6 +302,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
               !searchProvider.isLoading)
           ? searchProvider.value![selectedIndex.value]
           : defaultLyrics.value,
+      extraFontSize: extraFontSize,
     );
   }
 
