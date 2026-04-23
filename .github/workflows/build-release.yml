@@ -34,13 +34,11 @@ jobs:
           channel: 'stable'
           cache: true
 
-      # 安装 Rust 工具链，并添加 iOS ARM64 目标，使用更新维护的 action
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-apple-ios
 
-      # 清理可能冲突的 Rust 目标，然后重新添加（解决 cargokit 报错）
       - name: Fix Rust target conflicts
         run: |
           echo "=== Fixing Rust target conflicts ==="
@@ -48,7 +46,6 @@ jobs:
           rustup target add aarch64-apple-ios --toolchain stable
           echo "=== Rust target fixed ==="
 
-      # 缓存 Pub 下载的依赖，加速构建并减少网络依赖
       - name: Cache Pub dependencies
         uses: actions/cache@v5
         with:
@@ -57,7 +54,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pub-
 
-      # 缓存 CocoaPods 安装的依赖
       - name: Cache CocoaPods
         uses: actions/cache@v5
         with:
@@ -66,7 +62,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pods-
 
-      # 打印环境信息，便于后续排查
       - name: Print environment info
         run: |
           echo "=== Environment Info ==="
@@ -83,95 +78,104 @@ jobs:
           echo "=== Dependencies completed ==="
         timeout-minutes: 15
 
-      # 修复 CocoaPods 镜像源问题，解决清华源超时，并清理 Xcode 项目配置冲突
       - name: Install iOS dependencies
         run: |
           echo "=== Installing CocoaPods ==="
           cd ios
           
-          # 移除 Podfile 中残留的清华源
+          # 1. 移除 Podfile 中的清华源声明
           sed -i '' '/mirrors.tuna.tsinghua.edu.cn/d' Podfile
           
-          # 如果未配置 CDN 源，则在文件首行添加
+          # 2. 如果 Podfile 中没有官方源，则在首行添加 CDN 源
           if ! grep -q "cdn.cocoapods.org" Podfile; then
             sed -i '' '1s/^/source "https:\/\/cdn.cocoapods.org\/"\n/' Podfile
           fi
           
-          # 移除 Xcode 项目中可能导致 CocoaPods 集成冲突的配置
+          # 3. 清理可能导致冲突的 Xcode 项目配置
           sed -i '' '/baseConfigurationReference/d' Runner.xcodeproj/project.pbxproj
           
-          # 清理本地 CocoaPods 仓库中缓存的清华源引用
+          # 4. 移除全局 CocoaPods 仓库中指向清华源的本地缓存
           echo "=== Cleaning CocoaPods repo cache ==="
           pod repo list | grep -B2 "mirrors.tuna.tsinghua.edu.cn" | grep -oE '^[a-zA-Z0-9_-]+' | while read repo_name; do
             echo "Removing repo: $repo_name"
             pod repo remove "$repo_name" || true
           done
           
-          # 如果没有 trunk 仓库则添加官方 CDN trunk
+          # 5. 若没有 CDN 的 trunk 仓库，则添加官方 CDN 源
           if ! pod repo list | grep -q "cdn.cocoapods.org"; then
             echo "Adding CDN trunk repo..."
             pod repo add trunk https://cdn.cocoapods.org/ || true
           fi
           
-          # 首次更新 trunk 仓库（后续 pod install 不再使用 --repo-update）
+          # 6. 更新 CDN 仓库（必要的首次更新）
           pod repo update trunk --verbose || true
           
-          # 执行安装，利用缓存加速
+          # 7. 执行 pod install（不再使用 --repo-update）
           pod install --verbose
           echo "=== CocoaPods completed ==="
         timeout-minutes: 60
 
-      # 构建 iOS App，设置动态环境变量修复 ARM64 下空指针异常，并保存详细日志
-      - name: Build iOS (ARM64 runner, with logging)
+      - name: Build iOS (xcodebuild with full logging and ARM64 fix)
         run: |
-          echo "=== Building iOS via flutter build ==="
-          
+          echo "=== Building iOS via xcodebuild (ARM64 runner) ==="
+          cd ios
+
           # 清理旧 DerivedData 避免架构缓存干扰
           rm -rf ~/Library/Developer/Xcode/DerivedData || true
-          
-          # 动态获取 Flutter 根目录（兼容所有版本和安装路径）
+
+          # 动态获取 Flutter 根目录
           FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
           export FLUTTER_ROOT
           echo "FLUTTER_ROOT=$FLUTTER_ROOT"
-          
+
           # 动态获取项目根目录（ios 文件夹的上一级）
           FLUTTER_APPLICATION_PATH="$(cd .. && pwd)"
           export FLUTTER_APPLICATION_PATH
           echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
 
+          # 验证路径正确性
           if [ ! -f "$FLUTTER_APPLICATION_PATH/pubspec.yaml" ]; then
             echo "::error::pubspec.yaml not found in $FLUTTER_APPLICATION_PATH"
             exit 1
           fi
-          
-          # 执行 Flutter 构建，-v 输出详细日志，并通过 tee 保存到文件
+
+          # 将日志保存到工作区根目录
+          LOGFILE="${GITHUB_WORKSPACE}/xcodebuild.log"
           xcodebuild -workspace Runner.xcworkspace \
-               -scheme Runner \
-               -configuration Release \
-               -sdk iphoneos \
-               -destination 'generic/platform=iOS' \
-               CODE_SIGNING_ALLOWED=NO \
-               CODE_SIGNING_REQUIRED=NO \
-               CODE_SIGNING_IDENTITY="" \
-               ARCHS=arm64 \
-               ONLY_ACTIVE_ARCH=YES \
-               build \
-               2>&1 | tee xcodebuild.log
-          if [ ! -d "./build/ios/iphoneos/Runner.app" ]; then
-            echo "::error::Runner.app not found in build/ios/iphoneos"
-            exit 1
-          fi
-          
+                     -scheme Runner \
+                     -configuration Release \
+                     -sdk iphoneos \
+                     -destination 'generic/platform=iOS' \
+                     CODE_SIGNING_ALLOWED=NO \
+                     CODE_SIGNING_REQUIRED=NO \
+                     CODE_SIGNING_IDENTITY="" \
+                     ARCHS=arm64 \
+                     ONLY_ACTIVE_ARCH=YES \
+                     BUILD_DIR=../build/ios \
+                     CONFIGURATION_BUILD_DIR=../build/ios/iphoneos \
+                     build \
+                     2>&1 | tee "$LOGFILE"
+          # 确保日志完全写入磁盘
+          sync
+          echo "Log file saved to $LOGFILE"
           echo "=== iOS build completed ==="
         timeout-minutes: 30
 
-      # 构建失败时上传日志供调试
-      - name: Upload iOS build log on failure
+      - name: Verify log file exists
+        if: always()
+        run: |
+          if [ -f xcodebuild.log ]; then
+            echo "Log file found: xcodebuild.log ($(wc -c < xcodebuild.log) bytes)"
+          else
+            echo "::warning::xcodebuild.log not found in workspace root"
+          fi
+
+      - name: Upload xcodebuild log on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: xcodebuild-log
-          path: ios/xcodebuild.log
+          path: xcodebuild.log
           retention-days: 3
 
       - name: Create IPA
