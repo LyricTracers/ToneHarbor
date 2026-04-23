@@ -34,6 +34,20 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          target: aarch64-apple-ios
+
+      - name: Fix Rust target conflicts
+        run: |
+          echo "=== Fixing Rust target conflicts ==="
+          # Remove conflicting Rust target if it exists
+          rustup target remove aarch64-apple-ios 2>/dev/null || true
+          # Reinstall with stable toolchain
+          rustup target add aarch64-apple-ios --toolchain stable
+          echo "=== Rust target fixed ==="
+
       - name: Cache Pub dependencies
         uses: actions/cache@v5
         with:
