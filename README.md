@@ -51,7 +51,7 @@
 - **Material Design 3**：采用最新设计规范，动态配色
 - **响应式布局**：桌面端侧边栏导航，移动端全屏体验
 - **动态背景**：从专辑封面提取主色调作为背景
-- **明暗主题**：自动跟随系统或手动切换
+- **亮度对比度**: 手动调整亮度对比度
 - **封面展示**：精美的专辑封面和元数据显示
 
 ### 💻 桌面深度集成
@@ -213,6 +213,26 @@ flutter build ios --release
 ```
 
 > 脚本会自动执行 `flutter build ios --release --no-codesign` 并打包成 IPA 文件，适用于越狱设备或侧装。
+
+### 自动构建（GitHub Actions）
+
+项目配置了 GitHub Actions 自动构建工作流，支持以下触发方式：
+
+**1. 推送 Tag 触发：**
+```bash
+# 创建并推送 tag
+git tag v2.3.5
+git push origin v2.3.5
+```
+
+**2. 手动触发：**
+在 GitHub 仓库页面 → Actions → Build and Release → Run workflow
+
+**构建产物：**
+- `ToneHarbor.ipa` - iOS 安装包
+- `ToneHarbor-macOS.zip` - macOS 应用程序包
+
+> 推送 tag 后会自动创建 GitHub Release，包含构建产物。
 
 ### 项目依赖说明
 项目使用了多个自定义维护的 fork 版本：
