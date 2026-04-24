@@ -13,7 +13,7 @@ on:
 
 permissions:
   contents: write
-  issues: write      # 允许创建 Issue
+  issues: write
 
 env:
   FLUTTER_VERSION: '3.35.7'
@@ -92,11 +92,10 @@ jobs:
           pod install --verbose
         timeout-minutes: 60
 
-      # ---------- 核心构建（包含手动 Rust 框架构建诊断） ----------
       - name: Build iOS with Rust frameworks diagnostic
         id: build
         run: |
-          set -x   # 显示每条命令
+          set -x
           echo "=== Building iOS (ARM64 runner) ==="
 
           rm -rf build/ios || true
@@ -132,11 +131,9 @@ jobs:
           done
           cd ..
 
-          # 检查生成的 framework
           echo "=== Checking generated frameworks ==="
           ls -la build/ios/Release-iphoneos/*.framework 2>/dev/null || echo "No frameworks found"
 
-          # 执行 flutter build
           LOGFILE="${RUNNER_WORKSPACE}/ios_build.log"
           if ! flutter build ios --release --no-codesign -v 2>&1 | tee "$LOGFILE"; then
             echo "BUILD_FAILED=true" >> $GITHUB_OUTPUT
@@ -149,7 +146,6 @@ jobs:
           echo "=== iOS build completed ==="
         timeout-minutes: 60
 
-      # ---------- 成功时继续打包 ----------
       - name: Verify Runner.app
         if: success()
         run: |
@@ -181,7 +177,6 @@ jobs:
           path: ToneHarbor.ipa
           retention-days: 7
 
-      # ---------- 失败时自动创建 Issue 并附带日志 ----------
       - name: Create issue with build log on failure
         if: failure()
         uses: actions/github-script@v7
@@ -191,7 +186,6 @@ jobs:
             const logPath = `${process.env.RUNNER_WORKSPACE}/ios_build.log`;
             let logContent = '';
             if (fs.existsSync(logPath)) {
-              // 只取最后 2000 行，避免 Issue 过大
               const data = fs.readFileSync(logPath, 'utf8');
               const lines = data.split('\n');
               logContent = lines.slice(-2000).join('\n');
@@ -220,17 +214,23 @@ jobs:
           env:
             RUNNER_WORKSPACE: ${{ runner.workspace }}
 
-  # ---------- 仅成功时发布 Release ----------
   create-release:
     name: Create Release
     needs: [build-ios]
-    if: success()
+    if: |
+      startsWith(github.ref, 'refs/tags/') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.version != '')
     runs-on: ubuntu-latest
     steps:
       - name: Determine release version
         id: get_version
         run: |
-          VERSION="${GITHUB_REF#refs/tags/}"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/}"
+          fi
+
           if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "::error::Invalid version format"
             exit 1
@@ -248,7 +248,16 @@ jobs:
         with:
           name: Release ${{ steps.get_version.outputs.VERSION }}
           tag_name: ${{ steps.get_version.outputs.VERSION }}
-          files: artifacts/ToneHarbor.ipa
+          body: |
+            ## ToneHarbor ${{ steps.get_version.outputs.VERSION }}
+            
+            ### 下载说明
+            - **ToneHarbor.ipa**: iOS 安装包，适用于越狱设备或侧装
+            
+            ### 更新内容
+            请查看 [Release 页面](https://github.com/${{ github.repository }}/releases/tag/${{ steps.get_version.outputs.VERSION }})
+          files: |
+            artifacts/ToneHarbor.ipa
           draft: false
           prerelease: false
         env:
