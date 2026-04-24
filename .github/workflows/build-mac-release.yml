@@ -1,4 +1,4 @@
-name: Build macOS App and Release
+name: Build macOS App
 
 on:
   push:
@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   build-macos:
-    name: Build macOS App
+    name: Build macOS APP
     runs-on: macos-15
     timeout-minutes: 90
     steps:
@@ -37,6 +37,7 @@ jobs:
           channel: 'stable'
           cache: true
 
+      # Rust 工具链（如果项目包含 Rust 依赖）
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -48,7 +49,6 @@ jobs:
           rustup target remove aarch64-apple-darwin 2>/dev/null || true
           rustup target add aarch64-apple-darwin --toolchain stable
           echo "=== Rust target fixed ==="
-
       - name: Cache Pub dependencies
         uses: actions/cache@v5
         with:
@@ -56,7 +56,6 @@ jobs:
           key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
           restore-keys: |
             ${{ runner.os }}-pub-
-
       - name: Print environment info
         run: |
           echo "=== Environment Info ==="
@@ -64,7 +63,6 @@ jobs:
           flutter --version
           dart --version
           echo "Working directory: $(pwd)"
-
       - name: Get dependencies
         run: |
           echo "=== Getting Flutter dependencies ==="
@@ -74,38 +72,23 @@ jobs:
       - name: Build macOS
         run: |
           echo "=== Building macOS ==="
-          security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db 2>/dev/null || true
-          security set-keychain-settings -t 3600 -l ~/Library/Keychains/login.keychain-db 2>/dev/null || true
-
-          export FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
-          export FLUTTER_APPLICATION_PATH="$(pwd)"
-          echo "FLUTTER_ROOT=$FLUTTER_ROOT"
-          echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
-
-          flutter build macos --release -v 2>&1 | tee macos_build.log
+          flutter build macos --release -v
           echo "=== macOS build completed ==="
-        timeout-minutes: 60
+        timeout-minutes: 30
 
-      - name: Upload build log on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-build-log
-          path: macos_build.log
-          retention-days: 3
-
+      # 动态查找 .app 文件并打包为 ZIP
       - name: Create macOS ZIP
         run: |
           echo "=== Creating macOS ZIP ==="
           APP_PATH=$(find build/macos/Build/Products/Release/ -name "*.app" -type d | head -1)
           if [ -z "$APP_PATH" ]; then
-            echo "::error::No .app found"
+            echo "::error::No .app found in build/macos/Build/Products/Release/"
             exit 1
           fi
           echo "Found app: $APP_PATH"
-          cd "$(dirname "$APP_PATH")"
-          zip -r -y "$OLDPWD/ToneHarbor-macOS.zip" "$(basename "$APP_PATH")"
-          echo "ZIP created successfully"
+          zip -r -y ToneHarbor-macOS.zip "$APP_PATH"
+          echo "ZIP created: $(ls -la ToneHarbor-macOS.zip)"
+        timeout-minutes: 5
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
@@ -121,7 +104,7 @@ jobs:
           echo "Last exit code: $?"
           ls -la
           ls -la build/ 2>/dev/null || echo "No build directory"
-
+  # 自动创建 Release（仅当推送标签或手动触发且填写版本号时）
   create-release:
     name: Create Release
     needs: [build-macos]
@@ -149,7 +132,6 @@ jobs:
           fi
           
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-
       - name: Download macOS artifact
         uses: actions/download-artifact@v4
         with:
@@ -160,7 +142,6 @@ jobs:
         run: |
           echo "=== Downloaded artifacts ==="
           ls -la ./artifacts
-
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
