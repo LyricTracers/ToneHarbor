@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   build-ios:
-    name: Build iOS IPA (Xcode 16.2, diagnostics)
+    name: Build iOS IPA (Xcode 16.2)
     runs-on: macos-14
     timeout-minutes: 90
     steps:
@@ -86,59 +86,36 @@ jobs:
         id: build
         run: |
           echo "=== Building iOS ==="
-
           rm -rf build/ios || true
           rm -rf ~/Library/Developer/Xcode/DerivedData || true
-
           security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db 2>/dev/null || true
           security set-keychain-settings -t 3600 -l ~/Library/Keychains/login.keychain-db 2>/dev/null || true
-
           export FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
           export FLUTTER_APPLICATION_PATH="$(pwd)"
           export CODE_SIGNING_ALLOWED=NO
           export CODE_SIGNING_REQUIRED=NO
           export EXPANDED_CODE_SIGN_IDENTITY=""
           export DEVELOPMENT_TEAM=""
-
           LOGFILE="${RUNNER_WORKSPACE}/ios_build.log"
-
           if ! flutter build ios --release --no-codesign -v 2>&1 | tee "$LOGFILE"; then
             echo "BUILD_FAILED=true" >> $GITHUB_OUTPUT
             echo "❌ BUILD FAILED"
-
             mkdir -p "${RUNNER_WORKSPACE}/debug"
             cp "$LOGFILE" "${RUNNER_WORKSPACE}/debug/ios_build.log"
-
             echo "🔍 Extracting xcresult errors..."
             XCRESULT_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d | sort -n | tail -1)
             ERROR_SUMMARY_FILE="${RUNNER_WORKSPACE}/debug/build_error_summary.txt"
             if [ -n "$XCRESULT_PATH" ]; then
               echo "Found xcresult: $XCRESULT_PATH"
-              xcresulttool get --path "$XCRESULT_PATH" --format json 2>/dev/null | python3 -c "
-import sys,json
-data=json.load(sys.stdin)
-def extract(obj):
-    res=[]
-    if isinstance(obj,dict):
-        if 'error' in str(obj.get('title','')).lower() or 'error' in str(obj.get('subtitle','')).lower():
-            res.append(json.dumps(obj,indent=2))
-        for v in obj.values():
-            res.extend(extract(v))
-    elif isinstance(obj,list):
-        for item in obj:
-            res.extend(extract(item))
-    return res
-print('\\n'.join(extract(data)))
-" > "$ERROR_SUMMARY_FILE" 2>/dev/null || echo "Failed to parse xcresult" >> "$ERROR_SUMMARY_FILE"
+              # 使用 Python 一行脚本提取错误，避免多行缩进问题
+              xcresulttool get --path "$XCRESULT_PATH" --format json 2>/dev/null | python3 -c "import sys,json; data=json.load(sys.stdin); def extract(obj): res=[]; [res.extend(extract(v)) for v in obj.values()] if isinstance(obj,dict) else [res.extend(extract(item)) for item in obj] if isinstance(obj,list) else None; [res.append(json.dumps(obj,indent=2)) for k in ['title','subtitle'] if 'error' in str(obj.get(k,'')).lower()] if isinstance(obj,dict) else None; return res; print('\n'.join(extract(data)))" > "$ERROR_SUMMARY_FILE" 2>/dev/null || echo "Failed to parse xcresult" >> "$ERROR_SUMMARY_FILE"
               echo "Error summary saved to $ERROR_SUMMARY_FILE"
             else
               echo "No .xcresult file found." > "$ERROR_SUMMARY_FILE"
             fi
-
             cat "$ERROR_SUMMARY_FILE"
             exit 1
           fi
-
           echo "=== iOS build completed ==="
         timeout-minutes: 60
 
@@ -204,7 +181,6 @@ print('\\n'.join(extract(data)))
             } catch (e) {
               logContent = `Error reading log: ${e.message}`;
             }
-
             const title = `❌ iOS Build Failed - ${process.env.GITHUB_REF}`;
             const body = `## 构建失败详情
             **工作流运行**: [${process.env.GITHUB_RUN_ID}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
@@ -214,12 +190,10 @@ print('\\n'.join(extract(data)))
             ${logContent}
             \`\`\`
             `;
-
             let safeBody = body;
             if (safeBody.length > 65000) {
               safeBody = safeBody.substring(0, 65000) + '\n... [日志自动截断，请查看 Debug Release 获取完整信息]';
             }
-
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -297,9 +271,9 @@ print('\\n'.join(extract(data)))
           body: |
             ## 🚨 构建失败诊断信息
             工作流运行: [查看运行](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-            
+
             请下载附件查看错误详情。
-            
+
             **注意：此 Release 仅用于调试，可随时删除。**
           files: |
             debug/*
