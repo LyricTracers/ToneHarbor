@@ -82,7 +82,7 @@ jobs:
           pod install --verbose
         timeout-minutes: 60
 
-      - name: Build iOS (with xcresult capture)
+      - name: Build iOS
         id: build
         run: |
           echo "=== Building iOS ==="
@@ -90,42 +90,23 @@ jobs:
           rm -rf ~/Library/Developer/Xcode/DerivedData || true
           security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db 2>/dev/null || true
           security set-keychain-settings -t 3600 -l ~/Library/Keychains/login.keychain-db 2>/dev/null || true
+
           export FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
           export FLUTTER_APPLICATION_PATH="$(pwd)"
           export CODE_SIGNING_ALLOWED=NO
           export CODE_SIGNING_REQUIRED=NO
           export EXPANDED_CODE_SIGN_IDENTITY=""
-          export DEVELOPMENT_TEAM=""
+          export DEVELOPMENT_TEAM="AAAAAAAAAA"
+
           LOGFILE="${RUNNER_WORKSPACE}/ios_build.log"
           if ! flutter build ios --release --no-codesign -v 2>&1 | tee "$LOGFILE"; then
             echo "BUILD_FAILED=true" >> $GITHUB_OUTPUT
             echo "❌ BUILD FAILED"
-            mkdir -p "${RUNNER_WORKSPACE}/debug"
-            cp "$LOGFILE" "${RUNNER_WORKSPACE}/debug/ios_build.log"
-            echo "🔍 Extracting xcresult errors..."
-            XCRESULT_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d | sort -n | tail -1)
-            ERROR_SUMMARY_FILE="${RUNNER_WORKSPACE}/debug/build_error_summary.txt"
-            if [ -n "$XCRESULT_PATH" ]; then
-              echo "Found xcresult: $XCRESULT_PATH"
-              # 使用 Python 一行脚本提取错误，避免多行缩进问题
-              xcresulttool get --path "$XCRESULT_PATH" --format json 2>/dev/null | python3 -c "import sys,json; data=json.load(sys.stdin); def extract(obj): res=[]; [res.extend(extract(v)) for v in obj.values()] if isinstance(obj,dict) else [res.extend(extract(item)) for item in obj] if isinstance(obj,list) else None; [res.append(json.dumps(obj,indent=2)) for k in ['title','subtitle'] if 'error' in str(obj.get(k,'')).lower()] if isinstance(obj,dict) else None; return res; print('\n'.join(extract(data)))" > "$ERROR_SUMMARY_FILE" 2>/dev/null || echo "Failed to parse xcresult" >> "$ERROR_SUMMARY_FILE"
-              echo "Error summary saved to $ERROR_SUMMARY_FILE"
-            else
-              echo "No .xcresult file found." > "$ERROR_SUMMARY_FILE"
-            fi
-            cat "$ERROR_SUMMARY_FILE"
+            tail -n 300 "$LOGFILE"
             exit 1
           fi
           echo "=== iOS build completed ==="
         timeout-minutes: 60
-
-      - name: Upload debug files on failure
-        if: failure()
-        uses: actions/upload-artifact@v5
-        with:
-          name: debug-files
-          path: debug/
-          retention-days: 3
 
       - name: Verify Runner.app
         if: success()
@@ -164,19 +145,13 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const errorSummaryPath = `${process.env.RUNNER_WORKSPACE}/debug/build_error_summary.txt`;
-            let logContent = '(No error summary file found)';
+            const logPath = `${process.env.RUNNER_WORKSPACE}/ios_build.log`;
+            let logContent = '(No log file found)';
             const MAX_CHARS = 60000;
             try {
-              if (fs.existsSync(errorSummaryPath)) {
-                const data = fs.readFileSync(errorSummaryPath, 'utf8');
+              if (fs.existsSync(logPath)) {
+                const data = fs.readFileSync(logPath, 'utf8');
                 logContent = data.length > MAX_CHARS ? data.substring(data.length - MAX_CHARS) : data;
-              } else {
-                const logPath = `${process.env.RUNNER_WORKSPACE}/ios_build.log`;
-                if (fs.existsSync(logPath)) {
-                  const raw = fs.readFileSync(logPath, 'utf8');
-                  logContent = raw.length > MAX_CHARS ? raw.substring(raw.length - MAX_CHARS) : raw;
-                }
               }
             } catch (e) {
               logContent = `Error reading log: ${e.message}`;
@@ -185,14 +160,14 @@ jobs:
             const body = `## 构建失败详情
             **工作流运行**: [${process.env.GITHUB_RUN_ID}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
 
-            ### 错误摘要 (完整细节请下载 Debug Release 中的附件):
+            ### 错误日志 (最后 60000 字符):
             \`\`\`
             ${logContent}
             \`\`\`
             `;
             let safeBody = body;
             if (safeBody.length > 65000) {
-              safeBody = safeBody.substring(0, 65000) + '\n... [日志自动截断，请查看 Debug Release 获取完整信息]';
+              safeBody = safeBody.substring(0, 65000) + '\n... [日志自动截断]';
             }
             await github.rest.issues.create({
               owner: context.repo.owner,
@@ -248,36 +223,5 @@ jobs:
             artifacts/ToneHarbor.ipa
           draft: false
           prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  create-debug-release:
-    name: Create Debug Release (Failure)
-    needs: [build-ios]
-    if: failure()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download debug artifacts
-        uses: actions/download-artifact@v5
-        with:
-          name: debug-files
-          path: ./debug
-
-      - name: Create Debug Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: debug-${{ github.run_id }}
-          name: Debug Build Failure - Run ${{ github.run_id }}
-          body: |
-            ## 🚨 构建失败诊断信息
-            工作流运行: [查看运行](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-            请下载附件查看错误详情。
-
-            **注意：此 Release 仅用于调试，可随时删除。**
-          files: |
-            debug/*
-          draft: false
-          prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
