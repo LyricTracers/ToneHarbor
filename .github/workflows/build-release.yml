@@ -262,8 +262,12 @@ jobs:
           done
           pod install --verbose
           # 🔑 修复 Swift Module Name 为空的问题
-          echo "Fixing empty PRODUCT_MODULE_NAME..."
+          echo "Fixing PRODUCT_MODULE_NAME..."
           sed -i '' 's/PRODUCT_MODULE_NAME = "";/PRODUCT_MODULE_NAME = "Runner";/g' Runner.xcodeproj/project.pbxproj
+          # 如果字段本身不存在，则添加
+          if ! grep -q "PRODUCT_MODULE_NAME" Runner.xcodeproj/project.pbxproj; then
+            sed -i '' 's/\(CODE_SIGNING_ALLOWED = NO;\)/\1\n\t\t\t\tPRODUCT_MODULE_NAME = "Runner";/g' Runner.xcodeproj/project.pbxproj
+          fi
         timeout-minutes: 60
 
       - name: Build macOS
