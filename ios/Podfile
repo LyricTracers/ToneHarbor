@@ -45,6 +45,9 @@ post_install do |installer|
         '$(inherited)',
         'AUDIO_SESSION_MICROPHONE=0'
       ]
+      # 下面两行是新增：解决 Xcode 16 Swift 6 严格并发错误
+      config.build_settings['SWIFT_VERSION'] = '5.0'
+      config.build_settings['SWIFT_STRICT_CONCURRENCY'] = 'minimal'
     end
   end
 end
