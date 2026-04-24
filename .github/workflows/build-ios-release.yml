@@ -184,13 +184,11 @@ jobs:
           script: |
             const fs = require('fs');
             const logPath = `${process.env.RUNNER_WORKSPACE}/ios_build.log`;
-            let logContent = '';
+            let logContent = '(No log file found)';
             if (fs.existsSync(logPath)) {
               const data = fs.readFileSync(logPath, 'utf8');
               const lines = data.split('\n');
               logContent = lines.slice(-2000).join('\n');
-            } else {
-              logContent = '(No log file found)';
             }
 
             const title = `❌ iOS Build Failed - ${process.env.GITHUB_REF}`;
@@ -211,8 +209,8 @@ jobs:
               title,
               body
             });
-          env:
-            RUNNER_WORKSPACE: ${{ runner.workspace }}
+        env:
+          RUNNER_WORKSPACE: ${{ runner.workspace }}
 
   create-release:
     name: Create Release
