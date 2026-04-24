@@ -1,9 +1,9 @@
 name: Build iOS IPA and Report Errors
 
 on:
-  push:
-    tags:
-      - 'v*'
+  # push:
+  #   tags:
+  #     - 'v*'
   workflow_dispatch:
     inputs:
       version:

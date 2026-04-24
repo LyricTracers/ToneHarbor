@@ -1,4 +1,4 @@
-name: Build and Release
+name: Build and Release (iOS + macOS)
 
 on:
   push:
@@ -11,6 +11,10 @@ on:
         required: true
         default: ''
 
+permissions:
+  contents: write
+  issues: write
+
 env:
   FLUTTER_VERSION: '3.35.7'
 
@@ -19,14 +23,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-multi-platform:
-    name: Build iOS IPA and macOS APP
+  # ==================== iOS 构建 ====================
+  build-ios:
+    name: Build iOS IPA
     runs-on: macos-15
-    timeout-minutes: 120
+    timeout-minutes: 90
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
 
+      # iOS 无需指定 Xcode 16.2（已经注释），使用默认即可
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -41,9 +47,183 @@ jobs:
 
       - name: Fix Rust target conflicts
         run: |
-          echo "=== Fixing Rust target conflicts ==="
           rustup target remove aarch64-apple-ios 2>/dev/null || true
           rustup target add aarch64-apple-ios --toolchain stable
+
+      - name: Cache Pub dependencies
+        uses: actions/cache@v5
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Print environment info
+        run: |
+          echo "=== Environment Info ==="
+          uname -a
+          xcodebuild -version
+          flutter --version
+          dart --version
+
+      - name: Get dependencies
+        run: flutter pub get -v
+        timeout-minutes: 15
+
+      - name: Install iOS dependencies
+        run: |
+          cd ios
+          rm -rf Pods Podfile.lock
+          sed -i '' '/mirrors.tuna.tsinghua.edu.cn/d' Podfile
+          if ! grep -q "cdn.cocoapods.org" Podfile; then
+            sed -i '' '1s/^/source "https:\/\/cdn.cocoapods.org\/"\n/' Podfile
+          fi
+          pod install --verbose
+        timeout-minutes: 60
+
+      # 注入占位 Development Team（解决证书问题）
+      - name: Inject team and profile into Runner project
+        run: |
+          cd ios
+          ruby -e "
+          require 'xcodeproj'
+          project = Xcodeproj::Project.open('Runner.xcodeproj')
+          project.targets.each do |target|
+            target.build_configurations.each do |config|
+              config.build_settings['DEVELOPMENT_TEAM'] = 'AAAAAAAAAA'
+              config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = 'ABCDEFGHIJ'
+              config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+              config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
+              config.build_settings['CODE_SIGNING_IDENTITY'] = ''
+            end
+          end
+          project.save
+          " || echo "Failed to inject via xcodeproj gem, fallback to sed"
+          if [ $? -ne 0 ]; then
+            sed -i '' '/DEVELOPMENT_TEAM/d' Runner.xcodeproj/project.pbxproj
+            sed -i '' '/PROVISIONING_PROFILE_SPECIFIER/d' Runner.xcodeproj/project.pbxproj
+            for file in $(grep -l "CODE_SIGNING_ALLOWED" Runner.xcodeproj/project.pbxproj); do
+              sed -i '' 's/\(CODE_SIGNING_ALLOWED = NO;\)/\1\n\t\t\t\tDEVELOPMENT_TEAM = "AAAAAAAAAA";\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "ABCDEFGHIJ";/' "$file"
+            done
+          fi
+          cd ..
+
+      - name: Build iOS
+        id: build
+        run: |
+          echo "=== Building iOS ==="
+          rm -rf build/ios || true
+          rm -rf ~/Library/Developer/Xcode/DerivedData || true
+          security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db 2>/dev/null || true
+          security set-keychain-settings -t 3600 -l ~/Library/Keychains/login.keychain-db 2>/dev/null || true
+
+          export FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
+          export FLUTTER_APPLICATION_PATH="$(pwd)"
+          export CODE_SIGNING_ALLOWED=NO
+          export CODE_SIGNING_REQUIRED=NO
+          export EXPANDED_CODE_SIGN_IDENTITY=""
+
+          LOGFILE="${RUNNER_WORKSPACE}/ios_build.log"
+          if ! flutter build ios --release --no-codesign -v 2>&1 | tee "$LOGFILE"; then
+            echo "❌ BUILD FAILED"
+            tail -n 300 "$LOGFILE"
+            exit 1
+          fi
+          echo "=== iOS build completed ==="
+        timeout-minutes: 60
+
+      - name: Verify Runner.app
+        if: success()
+        run: |
+          APP_PATH="build/ios/iphoneos/Runner.app"
+          if [ -d "$APP_PATH" ]; then
+            echo "✅ Runner.app found at: $APP_PATH"
+            du -sh "$APP_PATH"
+          else
+            echo "::error::Runner.app not found"
+            exit 1
+          fi
+
+      - name: Create IPA
+        if: success()
+        run: |
+          APP_PATH="build/ios/iphoneos/Runner.app"
+          mkdir -p Payload
+          cp -R "$APP_PATH" Payload/
+          zip -r -y Payload.zip Payload/
+          mv Payload.zip ToneHarbor.ipa
+          rm -rf Payload
+          echo "IPA created: $(ls -la ToneHarbor.ipa)"
+
+      - name: Upload IPA artifact
+        if: success()
+        uses: actions/upload-artifact@v5
+        with:
+          name: ToneHarbor-iOS
+          path: ToneHarbor.ipa
+          retention-days: 7
+
+      - name: Create issue with build log on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const logPath = `${process.env.RUNNER_WORKSPACE}/ios_build.log`;
+            let logContent = '(No log file found)';
+            const MAX_CHARS = 60000;
+            try {
+              if (fs.existsSync(logPath)) {
+                const data = fs.readFileSync(logPath, 'utf8');
+                logContent = data.length > MAX_CHARS ? data.substring(data.length - MAX_CHARS) : data;
+              }
+            } catch (e) {
+              logContent = `Error reading log: ${e.message}`;
+            }
+            const title = `❌ iOS Build Failed - ${process.env.GITHUB_REF}`;
+            const body = `## 构建失败详情
+            **工作流运行**: [${process.env.GITHUB_RUN_ID}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
+            
+            ### 错误日志 (最后 60000 字符):
+            \`\`\`
+            ${logContent}
+            \`\`\`
+            `;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body
+            });
+        env:
+          RUNNER_WORKSPACE: ${{ runner.workspace }}
+
+  # ==================== macOS 构建 ====================
+  build-macos:
+    name: Build macOS App
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin
+
+      - name: Fix Rust target conflicts
+        run: |
+          echo "=== Fixing Rust target conflicts ==="
+          rustup target remove aarch64-apple-darwin 2>/dev/null || true
+          rustup target add aarch64-apple-darwin --toolchain stable
           echo "=== Rust target fixed ==="
 
       - name: Cache Pub dependencies
@@ -54,14 +234,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pub-
 
-      - name: Cache CocoaPods
-        uses: actions/cache@v5
-        with:
-          path: ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
-
       - name: Print environment info
         run: |
           echo "=== Environment Info ==="
@@ -69,158 +241,70 @@ jobs:
           flutter --version
           dart --version
           echo "Working directory: $(pwd)"
-          echo "=== End Environment Info ==="
 
       - name: Get dependencies
         run: |
           echo "=== Getting Flutter dependencies ==="
           flutter pub get -v
-          echo "=== Dependencies completed ==="
         timeout-minutes: 15
 
-      - name: Install iOS dependencies
+      - name: Install macOS dependencies
         run: |
-          echo "=== Installing CocoaPods ==="
-          cd ios
-          
-          # 移除可能会超时的清华镜像源
+          echo "=== Installing CocoaPods for macOS ==="
+          cd macos
           sed -i '' '/mirrors.tuna.tsinghua.edu.cn/d' Podfile
-          
-          # 若没有 CDN 源，则添加官方源
           if ! grep -q "cdn.cocoapods.org" Podfile; then
             sed -i '' '1s/^/source "https:\/\/cdn.cocoapods.org\/"\n/' Podfile
           fi
-          
-          # 清理 Xcode 项目中的自定义配置引用
           sed -i '' '/baseConfigurationReference/d' Runner.xcodeproj/project.pbxproj
-          
-          # 清理本地 CocoaPods 仓库中残留的清华源
-          echo "=== Cleaning CocoaPods repo cache ==="
           pod repo list | grep -B2 "mirrors.tuna.tsinghua.edu.cn" | grep -oE '^[a-zA-Z0-9_-]+' | while read repo_name; do
             echo "Removing repo: $repo_name"
             pod repo remove "$repo_name" || true
           done
-          
-          # 添加 CDN trunk 仓库（若缺失）
-          if ! pod repo list | grep -q "cdn.cocoapods.org"; then
-            echo "Adding CDN trunk repo..."
-            pod repo add trunk https://cdn.cocoapods.org/ || true
-          fi
-          
-          # 首次更新 trunk
-          pod repo update trunk --verbose || true
-          
-          # 安装 Pod（不再使用 --repo-update，利用缓存加速）
           pod install --verbose
-          echo "=== CocoaPods completed ==="
         timeout-minutes: 60
 
-      - name: Build iOS (flutter build with all fixes and full logging)
+      - name: Build macOS
+        id: build
         run: |
-          echo "=== Building iOS (ARM64 runner) ==="
-
-          # 清理旧数据
-          rm -rf ~/Library/Developer/Xcode/DerivedData || true
-          rm -rf build/ios || true
-
-          # 钥匙串解锁（防卡死）
+          echo "=== Building macOS ==="
           security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db 2>/dev/null || true
           security set-keychain-settings -t 3600 -l ~/Library/Keychains/login.keychain-db 2>/dev/null || true
 
-          # 🔑 必须设置的环境变量（修复 Flutter 3.35.7 在 ARM64 上的空指针缺陷）
           export FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
           export FLUTTER_APPLICATION_PATH="$(pwd)"
           echo "FLUTTER_ROOT=$FLUTTER_ROOT"
           echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
-          export CODE_SIGNING_ALLOWED=NO
-          export CODE_SIGNING_REQUIRED=NO
-          export EXPANDED_CODE_SIGN_IDENTITY=""
-          export AD_HOC_CODE_SIGNING_ALLOWED=NO
-          export DEVELOPMENT_TEAM=""
 
-          if [ ! -f "$FLUTTER_APPLICATION_PATH/pubspec.yaml" ]; then
-            echo "::error::pubspec.yaml not found in $FLUTTER_APPLICATION_PATH"
-            exit 1
-          fi
-
-          # 构建并保存完整日志
-          LOGFILE="${RUNNER_WORKSPACE}/ios_build.log"
-          if ! flutter build ios --release --no-codesign -v 2>&1 | tee "$LOGFILE"; then
-            echo ""
-            echo "❌❌❌ BUILD FAILED ❌❌❌"
-            echo "👉 Last 300 lines of build log:"
-            tail -n 300 "$LOGFILE" || echo "(log empty)"
-            echo "========================================"
-            exit 1
-          fi
-
-          sync
-          echo "Log saved to $LOGFILE"
-          echo "=== iOS build completed ==="
+          flutter build macos --release -v 2>&1 | tee "${RUNNER_WORKSPACE}/macos_build.log"
+          echo "=== macOS build completed ==="
         timeout-minutes: 60
 
-      - name: Verify Runner.app
-        run: |
-          APP_PATH="build/ios/iphoneos/Runner.app"
-          if [ -d "$APP_PATH" ]; then
-            echo "Runner.app found at: $APP_PATH"
-            echo "Size: $(du -sh "$APP_PATH")"
-          else
-            echo "::error::Runner.app not found at $APP_PATH"
-            ls -la build/ios/iphoneos/ 2>/dev/null || echo "iphoneos directory missing"
-            exit 1
-          fi
-
-      - name: Upload iOS build log on failure
+      - name: Upload build log on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
-          name: ios-build-log
-          path: ${{ runner.workspace }}/ios_build.log
+          name: macos-build-log
+          path: macos_build.log
           retention-days: 3
 
-      - name: Create IPA
-        run: |
-          APP_PATH="build/ios/iphoneos/Runner.app"
-          if [ ! -d "$APP_PATH" ]; then
-            echo "::error::Runner.app not found"
-            exit 1
-          fi
-          mkdir -p Payload
-          cp -R "$APP_PATH" Payload/
-          zip -r -y Payload.zip Payload/
-          mv Payload.zip ToneHarbor.ipa
-          rm -rf Payload
-          echo "IPA created: $(ls -la ToneHarbor.ipa)"
-          echo "IPA size: $(du -sh ToneHarbor.ipa)"
-
-      - name: Upload IPA artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ToneHarbor-iOS
-          path: ToneHarbor.ipa
-          retention-days: 7
-
-      - name: Build macOS
-        run: |
-          echo "=== Building macOS ==="
-          flutter build macos --release -v
-          echo "=== macOS build completed ==="
-        timeout-minutes: 30
-
       - name: Create macOS ZIP
+        if: success()
         run: |
+          echo "=== Creating macOS ZIP ==="
           APP_PATH=$(find build/macos/Build/Products/Release/ -name "*.app" -type d | head -1)
           if [ -z "$APP_PATH" ]; then
-            echo "::error::No .app found in build/macos/Build/Products/Release/"
+            echo "::error::No .app found"
             exit 1
           fi
           echo "Found app: $APP_PATH"
-          zip -r -y ToneHarbor-macOS.zip "$APP_PATH"
-          echo "ZIP created: $(ls -la ToneHarbor-macOS.zip)"
+          cd "$(dirname "$APP_PATH")"
+          zip -r -y "$OLDPWD/ToneHarbor-macOS.zip" "$(basename "$APP_PATH")"
+          echo "ZIP created successfully"
 
       - name: Upload macOS artifact
-        uses: actions/upload-artifact@v4
+        if: success()
+        uses: actions/upload-artifact@v5
         with:
           name: ToneHarbor-macOS
           path: ToneHarbor-macOS.zip
@@ -234,13 +318,50 @@ jobs:
           ls -la
           ls -la build/ 2>/dev/null || echo "No build directory"
 
+      - name: Create issue with build log on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const logPath = `${process.env.RUNNER_WORKSPACE}/macos_build.log`;
+            let logContent = '(No log file found)';
+            const MAX_CHARS = 60000;
+            try {
+              if (fs.existsSync(logPath)) {
+                const data = fs.readFileSync(logPath, 'utf8');
+                logContent = data.length > MAX_CHARS ? data.substring(data.length - MAX_CHARS) : data;
+              }
+            } catch (e) {
+              logContent = `Error reading log: ${e.message}`;
+            }
+            const title = `❌ macOS Build Failed - ${process.env.GITHUB_REF}`;
+            const body = `## 构建失败详情
+            **工作流运行**: [${process.env.GITHUB_RUN_ID}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
+            
+            ### 错误日志 (最后 60000 字符):
+            \`\`\`
+            ${logContent}
+            \`\`\`
+            `;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body
+            });
+        env:
+          RUNNER_WORKSPACE: ${{ runner.workspace }}
+
+  # ==================== 统一 Release ====================
   create-release:
-    name: Create Release
-    needs: [build-multi-platform]
-    runs-on: ubuntu-latest
+    name: Create Release (iOS + macOS)
+    needs: [build-ios, build-macos]
     if: |
-      startsWith(github.ref, 'refs/tags/') ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.version != '')
+      (startsWith(github.ref, 'refs/tags/') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''))
+      && success()
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -253,22 +374,20 @@ jobs:
           else
             VERSION="${GITHUB_REF#refs/tags/}"
           fi
-          
           if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::Invalid version format. Expected: v1.2.3"
+            echo "::error::Invalid version format"
             exit 1
           fi
-          
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Download iOS artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ToneHarbor-iOS
           path: ./artifacts
 
       - name: Download macOS artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ToneHarbor-macOS
           path: ./artifacts
