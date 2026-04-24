@@ -160,7 +160,7 @@ jobs:
             } catch (e) {
               logContent = `Error reading log: ${e.message}`;
             }
-            const title = `❌ iOS Build Failed - ${process.env.GITHUB_REF}`;
+            const title = `❌ macOS Build Failed - ${process.env.GITHUB_REF}`;
             const body = `## 构建失败详情
             **工作流运行**: [${process.env.GITHUB_RUN_ID}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
             
