@@ -76,32 +76,35 @@ jobs:
         run: flutter pub get -v
         timeout-minutes: 60
 
-      - name: Install iOS dependencies and force Swift 5
+      - name: Install iOS dependencies & force Swift 5
         run: |
-          echo "=== Preparing clean CocoaPods environment ==="
           cd ios
           rm -rf Pods Podfile.lock
 
-          echo "=== Injecting Swift 5 & concurrency fix into Podfile ==="
-          # 如果 Podfile 中没有 SWIFT_STRICT_CONCURRENCY，则在 post_install 里注入设置
+          # 注入 Podfile 设置（双保险）
           if ! grep -q "SWIFT_STRICT_CONCURRENCY" Podfile; then
-            # 在 'target.build_configurations.each' 循环内部添加设置
             sed -i '' '/target.build_configurations.each do |config|/a\
             \ \ \ \ \ \ config.build_settings['"'"'SWIFT_VERSION'"'"'] = '"'"'5.0'"'"'\
             \ \ \ \ \ \ config.build_settings['"'"'SWIFT_STRICT_CONCURRENCY'"'"'] = '"'"'minimal'"'"'
             ' Podfile
           fi
 
-          echo "=== Installing CocoaPods ==="
-          # 修复 Podfile 源
+          # 修复源
           sed -i '' '/mirrors.tuna.tsinghua.edu.cn/d' Podfile
           if ! grep -q "cdn.cocoapods.org" Podfile; then
             sed -i '' '1s/^/source "https:\/\/cdn.cocoapods.org\/"\n/' Podfile
           fi
+
           pod install --verbose
 
-          echo "=== Double-check SWIFT_STRICT_CONCURRENCY settings ==="
-          # 在所有 xcconfig 中强制添加设置（防止某些 pod 遗漏）
+          # 🔥 关键步骤：直接修改所有 project.pbxproj，强制覆盖 Swift 6 设置
+          sed -i '' 's/SWIFT_VERSION = 6\.0;/SWIFT_VERSION = 5.0;/g' Pods/Pods.xcodeproj/project.pbxproj
+          sed -i '' 's/SWIFT_STRICT_CONCURRENCY = complete;/SWIFT_STRICT_CONCURRENCY = minimal;/g' Pods/Pods.xcodeproj/project.pbxproj
+
+          sed -i '' 's/SWIFT_VERSION = 6\.0;/SWIFT_VERSION = 5.0;/g' Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/SWIFT_STRICT_CONCURRENCY = complete;/SWIFT_STRICT_CONCURRENCY = minimal;/g' Runner.xcodeproj/project.pbxproj
+
+          # 对所有 xcconfig 再做一次确保
           find Pods -name "*.xcconfig" | while read file; do
             if ! grep -q "SWIFT_STRICT_CONCURRENCY" "$file"; then
               echo "SWIFT_STRICT_CONCURRENCY = minimal" >> "$file"
@@ -111,15 +114,6 @@ jobs:
             fi
           done
 
-          # 对 Runner 项目也确保设置
-          sed -i '' 's/SWIFT_VERSION = .*;/SWIFT_VERSION = 5.0;/g' Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/SWIFT_STRICT_CONCURRENCY = .*;/SWIFT_STRICT_CONCURRENCY = minimal;/g' Runner.xcodeproj/project.pbxproj
-
-          echo "=== Verification ==="
-          grep -r "SWIFT_STRICT_CONCURRENCY" Pods/Target\ Support\ Files/ || true
-          grep "SWIFT_VERSION" Runner.xcodeproj/project.pbxproj | head -3
-          echo "=== Done ==="
-        timeout-minutes: 60
 
       - name: Verify Swift settings
         run: |
