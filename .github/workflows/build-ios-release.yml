@@ -24,12 +24,15 @@ concurrency:
 
 jobs:
   build-ios:
-    name: Build iOS IPA
-    runs-on: macos-15
+    name: Build iOS IPA (Xcode 16.2)
+    runs-on: macos-14
     timeout-minutes: 90
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+
+      - name: Select Xcode 16.2
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -48,89 +51,70 @@ jobs:
           rustup target remove aarch64-apple-ios 2>/dev/null || true
           rustup target add aarch64-apple-ios --toolchain stable
 
-      # - name: Cache Pub dependencies
-      #   uses: actions/cache@v5
-      #   with:
-      #     path: ~/.pub-cache
-      #     key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-pub-
-
-      # - name: Cache CocoaPods
-      #   uses: actions/cache@v5
-      #   with:
-      #     path: ios/Pods
-      #     key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-pods-
+      - name: Cache Pub dependencies
+        uses: actions/cache@v5
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
 
       - name: Print environment info
         run: |
           echo "=== Environment Info ==="
           uname -a
+          xcodebuild -version
           flutter --version
           dart --version
-          echo "Working directory: $(pwd)"
 
       - name: Get dependencies
         run: flutter pub get -v
-        timeout-minutes: 60
+        timeout-minutes: 15
 
-      - name: Install iOS dependencies & force Swift 5
+      - name: Install iOS dependencies
         run: |
           cd ios
           rm -rf Pods Podfile.lock
-
-          # 注入 Podfile 设置（双保险）
-          if ! grep -q "SWIFT_STRICT_CONCURRENCY" Podfile; then
-            sed -i '' '/target.build_configurations.each do |config|/a\
-            \ \ \ \ \ \ config.build_settings['"'"'SWIFT_VERSION'"'"'] = '"'"'5.0'"'"'\
-            \ \ \ \ \ \ config.build_settings['"'"'SWIFT_STRICT_CONCURRENCY'"'"'] = '"'"'minimal'"'"'
-            ' Podfile
-          fi
-
-          # 修复源
           sed -i '' '/mirrors.tuna.tsinghua.edu.cn/d' Podfile
           if ! grep -q "cdn.cocoapods.org" Podfile; then
             sed -i '' '1s/^/source "https:\/\/cdn.cocoapods.org\/"\n/' Podfile
           fi
-
           pod install --verbose
+        timeout-minutes: 60
 
-          # 🔥 关键步骤：直接修改所有 project.pbxproj，强制覆盖 Swift 6 设置
-          sed -i '' 's/SWIFT_VERSION = 6\.0;/SWIFT_VERSION = 5.0;/g' Pods/Pods.xcodeproj/project.pbxproj
-          sed -i '' 's/SWIFT_STRICT_CONCURRENCY = complete;/SWIFT_STRICT_CONCURRENCY = minimal;/g' Pods/Pods.xcodeproj/project.pbxproj
-
-          sed -i '' 's/SWIFT_VERSION = 6\.0;/SWIFT_VERSION = 5.0;/g' Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/SWIFT_STRICT_CONCURRENCY = complete;/SWIFT_STRICT_CONCURRENCY = minimal;/g' Runner.xcodeproj/project.pbxproj
-
-          # 对所有 xcconfig 再做一次确保
-          find Pods -name "*.xcconfig" | while read file; do
-            if ! grep -q "SWIFT_STRICT_CONCURRENCY" "$file"; then
-              echo "SWIFT_STRICT_CONCURRENCY = minimal" >> "$file"
-            fi
-            if ! grep -q "SWIFT_VERSION" "$file"; then
-              echo "SWIFT_VERSION = 5.0" >> "$file"
-            fi
-          done
-
-
-      - name: Verify Swift settings
+      - name: Inject team and profile into Runner project
         run: |
           cd ios
-          echo "=== Checking Swift settings ==="
-          grep -r "SWIFT_STRICT_CONCURRENCY" Pods/Target\ Support\ Files/ || true
-          grep "SWIFT_VERSION" Runner.xcodeproj/project.pbxproj | head -3
+          ruby -e "
+          require 'xcodeproj'
+          project = Xcodeproj::Project.open('Runner.xcodeproj')
+          project.targets.each do |target|
+            target.build_configurations.each do |config|
+              config.build_settings['DEVELOPMENT_TEAM'] = 'AAAAAAAAAA'
+              config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = 'ABCDEFGHIJ'
+              config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+              config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
+              config.build_settings['CODE_SIGNING_IDENTITY'] = ''
+            end
+          end
+          project.save
+          " || echo "Failed to inject via xcodeproj gem, fallback to sed"
+          # 如果 xcodeproj 不可用，使用 sed 作为后备（但 macos 镜像一般已安装）
+          if [ $? -ne 0 ]; then
+            sed -i '' '/DEVELOPMENT_TEAM/d' Runner.xcodeproj/project.pbxproj
+            sed -i '' '/PROVISIONING_PROFILE_SPECIFIER/d' Runner.xcodeproj/project.pbxproj
+            for file in $(grep -l "CODE_SIGNING_ALLOWED" Runner.xcodeproj/project.pbxproj); do
+              sed -i '' 's/\(CODE_SIGNING_ALLOWED = NO;\)/\1\n\t\t\t\tDEVELOPMENT_TEAM = "AAAAAAAAAA";\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "ABCDEFGHIJ";/' "$file"
+            done
+          fi
+          cd ..
 
-      - name: Build iOS with Rust frameworks diagnostic
+      - name: Build iOS
         id: build
         run: |
-          set -x
-          echo "=== Building iOS (ARM64 runner) ==="
-
+          echo "=== Building iOS ==="
           rm -rf build/ios || true
           rm -rf ~/Library/Developer/Xcode/DerivedData || true
-
           security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db 2>/dev/null || true
           security set-keychain-settings -t 3600 -l ~/Library/Keychains/login.keychain-db 2>/dev/null || true
 
@@ -139,39 +123,13 @@ jobs:
           export CODE_SIGNING_ALLOWED=NO
           export CODE_SIGNING_REQUIRED=NO
           export EXPANDED_CODE_SIGN_IDENTITY=""
-          export AD_HOC_CODE_SIGNING_ALLOWED=NO
-          export DEVELOPMENT_TEAM=""
-          echo "FLUTTER_ROOT=$FLUTTER_ROOT"
-          echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
-
-          cd ios
-          for rust_dir in Pods/*/rust; do
-            if [ -f "$rust_dir/cargokit_build_pod.sh" ]; then
-              pod_name=$(basename $(dirname "$rust_dir"))
-              echo ">>> Building framework for $pod_name"
-              cd "$rust_dir"
-              bash cargokit_build_pod.sh \
-                --platform ios \
-                --rust-target aarch64-apple-ios \
-                --library-type staticlib 2>&1 | tee "../../../../${pod_name}_cargokit.log"
-              echo ">>> $pod_name build exit code: $?"
-              cd - > /dev/null
-            fi
-          done
-          cd ..
-
-          echo "=== Checking generated frameworks ==="
-          ls -la build/ios/Release-iphoneos/*.framework 2>/dev/null || echo "No frameworks found"
 
           LOGFILE="${RUNNER_WORKSPACE}/ios_build.log"
           if ! flutter build ios --release --no-codesign -v 2>&1 | tee "$LOGFILE"; then
-            echo "BUILD_FAILED=true" >> $GITHUB_OUTPUT
             echo "❌ BUILD FAILED"
-            tail -n 300 "$LOGFILE" || echo "(log empty)"
+            tail -n 300 "$LOGFILE"
             exit 1
           fi
-
-          set +x
           echo "=== iOS build completed ==="
         timeout-minutes: 60
 
@@ -214,63 +172,43 @@ jobs:
             const fs = require('fs');
             const logPath = `${process.env.RUNNER_WORKSPACE}/ios_build.log`;
             let logContent = '(No log file found)';
-            const MAX_CHARS = 40000;  // 严格限制，确保不超 65536
-
+            const MAX_CHARS = 60000;
             try {
               if (fs.existsSync(logPath)) {
                 const data = fs.readFileSync(logPath, 'utf8');
-                const lines = data.split('\n');
-                // 只保留含关键错误的行，减少噪音
-                let selected = lines.filter(line =>
-                  /error|fail|fatal|panic|exception|assert|undefined symbol/i.test(line)
-                );
-                if (selected.length === 0) selected = lines; // 若没有匹配则取全部
-                // 若行数过多，仅保留最后 800 行
-                if (selected.length > 800) selected = selected.slice(-800);
-                let raw = selected.join('\n');
-                // 最终硬截断到 MAX_CHARS
-                if (raw.length > MAX_CHARS) raw = raw.slice(-MAX_CHARS);
-                logContent = raw;
+                logContent = data.length > MAX_CHARS ? data.substring(data.length - MAX_CHARS) : data;
               }
             } catch (e) {
               logContent = `Error reading log: ${e.message}`;
             }
-
             const title = `❌ iOS Build Failed - ${process.env.GITHUB_REF}`;
             const body = `## 构建失败详情
-            **分支/标签**: ${process.env.GITHUB_REF}
-            **提交**: ${process.env.GITHUB_SHA}
             **工作流运行**: [${process.env.GITHUB_RUN_ID}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
-
-            ### 错误/警告摘要 (最后 800 行，最大 40000 字符)：
+            
+            ### 错误日志 (最后 60000 字符):
             \`\`\`
             ${logContent}
             \`\`\`
             `;
-
-            // 最终安全校验：若 body 仍超过 65536，则暴力截断
-            let safeBody = body;
-            if (safeBody.length > 65000) {
-              safeBody = safeBody.substring(0, 65000) + '\n... [日志自动截断]';
-            }
-
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title,
-              body: safeBody
+              body
             });
         env:
           RUNNER_WORKSPACE: ${{ runner.workspace }}
 
   create-release:
-    name: Create Release
+    name: Create Release (Success)
     needs: [build-ios]
     if: |
-      startsWith(github.ref, 'refs/tags/') ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.version != '')
+      success() && (startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''))
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
       - name: Determine release version
         id: get_version
         run: |
@@ -298,10 +236,8 @@ jobs:
           tag_name: ${{ steps.get_version.outputs.VERSION }}
           body: |
             ## ToneHarbor ${{ steps.get_version.outputs.VERSION }}
-            
             ### 下载说明
             - **ToneHarbor.ipa**: iOS 安装包，适用于越狱设备或侧装
-            
             ### 更新内容
             请查看 [Release 页面](https://github.com/${{ github.repository }}/releases/tag/${{ steps.get_version.outputs.VERSION }})
           files: |
