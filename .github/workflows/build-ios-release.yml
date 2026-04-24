@@ -25,7 +25,7 @@ concurrency:
 jobs:
   build-ios:
     name: Build iOS IPA
-    runs-on: macos-14   # ARM64 架构，免费运行器
+    runs-on: macos-15   # ARM64，免费
     timeout-minutes: 90
     steps:
       - name: Checkout repository
@@ -57,13 +57,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pub-
 
-      - name: Cache CocoaPods
-        uses: actions/cache@v5
-        with:
-          path: ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
+      # Pods 缓存暂时禁用，确保每次 clean build（待稳定后可恢复）
+      # - name: Cache CocoaPods
+      #   uses: actions/cache@v5
+      #   with:
+      #     path: ios/Pods
+      #     key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pods-
 
       - name: Print environment info
         run: |
@@ -77,65 +78,23 @@ jobs:
         run: flutter pub get -v
         timeout-minutes: 15
 
-      # ---------- CocoaPods + Swift 5 + 关闭警告即错误 ----------
-      - name: Install iOS dependencies & force Swift 5
+      # ---------- 简化的 CocoaPods 安装 ----------
+      - name: Install iOS dependencies
         run: |
           cd ios
           rm -rf Pods Podfile.lock
 
-          # 注入 Podfile 设置（如果没有）
-          if ! grep -q "SWIFT_STRICT_CONCURRENCY" Podfile; then
-            sed -i '' '/target.build_configurations.each do |config|/a\
-            \ \ \ \ \ \ config.build_settings['"'"'SWIFT_VERSION'"'"'] = '"'"'5.0'"'"'\
-            \ \ \ \ \ \ config.build_settings['"'"'SWIFT_STRICT_CONCURRENCY'"'"'] = '"'"'minimal'"'"'
-            ' Podfile
-          fi
-
-          # 修复源
+          # 修复源（防止清华源超时）
           sed -i '' '/mirrors.tuna.tsinghua.edu.cn/d' Podfile
           if ! grep -q "cdn.cocoapods.org" Podfile; then
             sed -i '' '1s/^/source "https:\/\/cdn.cocoapods.org\/"\n/' Podfile
           fi
 
           pod install --verbose
+        timeout-minutes: 60
 
-          # 直接修改 project.pbxproj，防止残留 Swift 6 配置
-          sed -i '' 's/SWIFT_VERSION = 6\.0;/SWIFT_VERSION = 5.0;/g' Pods/Pods.xcodeproj/project.pbxproj
-          sed -i '' 's/SWIFT_STRICT_CONCURRENCY = complete;/SWIFT_STRICT_CONCURRENCY = minimal;/g' Pods/Pods.xcodeproj/project.pbxproj
-          sed -i '' 's/SWIFT_VERSION = 6\.0;/SWIFT_VERSION = 5.0;/g' Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/SWIFT_STRICT_CONCURRENCY = complete;/SWIFT_STRICT_CONCURRENCY = minimal;/g' Runner.xcodeproj/project.pbxproj
-
-          # 🔥 新增：关闭“警告即错误”，防止 Unused variable 等警告导致构建失败
-          sed -i '' 's/SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;/SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;/g' Pods/Pods.xcodeproj/project.pbxproj
-          sed -i '' 's/GCC_TREAT_WARNINGS_AS_ERRORS = YES;/GCC_TREAT_WARNINGS_AS_ERRORS = NO;/g' Pods/Pods.xcodeproj/project.pbxproj
-          sed -i '' 's/SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;/SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;/g' Runner.xcodeproj/project.pbxproj
-          sed -i '' 's/GCC_TREAT_WARNINGS_AS_ERRORS = YES;/GCC_TREAT_WARNINGS_AS_ERRORS = NO;/g' Runner.xcodeproj/project.pbxproj
-
-          # 确保所有 xcconfig 文件也有设置
-          find Pods -name "*.xcconfig" | while read file; do
-            if ! grep -q "SWIFT_STRICT_CONCURRENCY" "$file"; then
-              echo "SWIFT_STRICT_CONCURRENCY = minimal" >> "$file"
-            fi
-            if ! grep -q "SWIFT_VERSION" "$file"; then
-              echo "SWIFT_VERSION = 5.0" >> "$file"
-            fi
-            if ! grep -q "SWIFT_TREAT_WARNINGS_AS_ERRORS" "$file"; then
-              echo "SWIFT_TREAT_WARNINGS_AS_ERRORS = NO" >> "$file"
-            fi
-            if ! grep -q "GCC_TREAT_WARNINGS_AS_ERRORS" "$file"; then
-              echo "GCC_TREAT_WARNINGS_AS_ERRORS = NO" >> "$file"
-            fi
-          done
-
-      - name: Verify Swift settings
-        run: |
-          cd ios
-          echo "=== Checking Swift settings ==="
-          grep -r "SWIFT_STRICT_CONCURRENCY" Pods/Target\ Support\ Files/ || true
-          grep "SWIFT_VERSION" Runner.xcodeproj/project.pbxproj | head -3
-
-      # ---------- 手动编译 Rust 框架 + flutter build ----------
-      - name: Build iOS with Rust frameworks diagnostic
+      # ---------- 手动编译 Rust 框架 + flutter build（关键参数） ----------
+      - name: Build iOS (with Rust fix & forced build settings)
         id: build
         run: |
           set -x
@@ -158,7 +117,7 @@ jobs:
           echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
 
           cd ios
-          # 手动构建 Rust frameworks
+          # 手动构建 Rust frameworks（确保链接器能找到库）
           for rust_dir in Pods/*/rust; do
             if [ -f "$rust_dir/cargokit_build_pod.sh" ]; then
               pod_name=$(basename $(dirname "$rust_dir"))
@@ -178,7 +137,13 @@ jobs:
           ls -la build/ios/Release-iphoneos/*.framework 2>/dev/null || echo "No frameworks found"
 
           LOGFILE="${RUNNER_WORKSPACE}/ios_build.log"
-          if ! flutter build ios --release --no-codesign -v 2>&1 | tee "$LOGFILE"; then
+          # 🔑 关键：通过 -- 向 xcodebuild 传递最高优先级的编译参数
+          if ! flutter build ios --release --no-codesign -v -- \
+            GCC_TREAT_WARNINGS_AS_ERRORS=NO \
+            SWIFT_TREAT_WARNINGS_AS_ERRORS=NO \
+            SWIFT_STRICT_CONCURRENCY=minimal \
+            SWIFT_VERSION=5.0 \
+            2>&1 | tee "$LOGFILE"; then
             echo "BUILD_FAILED=true" >> $GITHUB_OUTPUT
             echo "❌ BUILD FAILED"
             tail -n 300 "$LOGFILE" || echo "(log empty)"
