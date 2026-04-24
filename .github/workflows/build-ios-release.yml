@@ -114,7 +114,6 @@ jobs:
           echo "FLUTTER_ROOT=$FLUTTER_ROOT"
           echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
 
-          # 手动构建所有 Rust Pod 的 framework（诊断核心）
           cd ios
           for rust_dir in Pods/*/rust; do
             if [ -f "$rust_dir/cargokit_build_pod.sh" ]; then
@@ -185,19 +184,26 @@ jobs:
             const fs = require('fs');
             const logPath = `${process.env.RUNNER_WORKSPACE}/ios_build.log`;
             let logContent = '(No log file found)';
-            const MAX_CHARS = 60000;  // 安全上限，留有余量
+            const MAX_CHARS = 40000;  // 严格限制，确保不超 65536
 
-            if (fs.existsSync(logPath)) {
-              const data = fs.readFileSync(logPath, 'utf8');
-              const lines = data.split('\n');
-              // 优先提取包含错误/失败/致命信息的行
-              let selected = lines.filter(line => /error|fail|fatal|panic/i.test(line));
-              if (selected.length === 0) selected = lines; // 若没有匹配则取全部
-              // 如果行数过多，只保留最后 2000 行
-              if (selected.length > 2000) selected = selected.slice(-2000);
-              let raw = selected.join('\n');
-              if (raw.length > MAX_CHARS) raw = raw.slice(-MAX_CHARS);
-              logContent = raw;
+            try {
+              if (fs.existsSync(logPath)) {
+                const data = fs.readFileSync(logPath, 'utf8');
+                const lines = data.split('\n');
+                // 只保留含关键错误的行，减少噪音
+                let selected = lines.filter(line =>
+                  /error|fail|fatal|panic|exception|assert|undefined symbol/i.test(line)
+                );
+                if (selected.length === 0) selected = lines; // 若没有匹配则取全部
+                // 若行数过多，仅保留最后 800 行
+                if (selected.length > 800) selected = selected.slice(-800);
+                let raw = selected.join('\n');
+                // 最终硬截断到 MAX_CHARS
+                if (raw.length > MAX_CHARS) raw = raw.slice(-MAX_CHARS);
+                logContent = raw;
+              }
+            } catch (e) {
+              logContent = `Error reading log: ${e.message}`;
             }
 
             const title = `❌ iOS Build Failed - ${process.env.GITHUB_REF}`;
@@ -206,17 +212,23 @@ jobs:
             **提交**: ${process.env.GITHUB_SHA}
             **工作流运行**: [${process.env.GITHUB_RUN_ID}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
 
-            ### 错误/警告摘要（完整日志见工作流运行页面）：
+            ### 错误/警告摘要 (最后 800 行，最大 40000 字符)：
             \`\`\`
             ${logContent}
             \`\`\`
             `;
 
+            // 最终安全校验：若 body 仍超过 65536，则暴力截断
+            let safeBody = body;
+            if (safeBody.length > 65000) {
+              safeBody = safeBody.substring(0, 65000) + '\n... [日志自动截断]';
+            }
+
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title,
-              body
+              body: safeBody
             });
         env:
           RUNNER_WORKSPACE: ${{ runner.workspace }}
