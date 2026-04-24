@@ -185,10 +185,19 @@ jobs:
             const fs = require('fs');
             const logPath = `${process.env.RUNNER_WORKSPACE}/ios_build.log`;
             let logContent = '(No log file found)';
+            const MAX_CHARS = 60000;  // 安全上限，留有余量
+
             if (fs.existsSync(logPath)) {
               const data = fs.readFileSync(logPath, 'utf8');
               const lines = data.split('\n');
-              logContent = lines.slice(-2000).join('\n');
+              // 优先提取包含错误/失败/致命信息的行
+              let selected = lines.filter(line => /error|fail|fatal|panic/i.test(line));
+              if (selected.length === 0) selected = lines; // 若没有匹配则取全部
+              // 如果行数过多，只保留最后 2000 行
+              if (selected.length > 2000) selected = selected.slice(-2000);
+              let raw = selected.join('\n');
+              if (raw.length > MAX_CHARS) raw = raw.slice(-MAX_CHARS);
+              logContent = raw;
             }
 
             const title = `❌ iOS Build Failed - ${process.env.GITHUB_REF}`;
@@ -197,7 +206,7 @@ jobs:
             **提交**: ${process.env.GITHUB_SHA}
             **工作流运行**: [${process.env.GITHUB_RUN_ID}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
 
-            ### 最后 2000 行日志：
+            ### 错误/警告摘要（完整日志见工作流运行页面）：
             \`\`\`
             ${logContent}
             \`\`\`
@@ -228,7 +237,6 @@ jobs:
           else
             VERSION="${GITHUB_REF#refs/tags/}"
           fi
-
           if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "::error::Invalid version format"
             exit 1
