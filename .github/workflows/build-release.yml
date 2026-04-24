@@ -157,7 +157,7 @@ jobs:
 
       - name: Upload IPA artifact
         if: success()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: ToneHarbor-iOS
           path: ToneHarbor.ipa
@@ -282,7 +282,7 @@ jobs:
 
       - name: Upload build log on failure
         if: failure()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: macos-build-log
           path: macos_build.log
@@ -304,7 +304,7 @@ jobs:
 
       - name: Upload macOS artifact
         if: success()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: ToneHarbor-macOS
           path: ToneHarbor-macOS.zip
