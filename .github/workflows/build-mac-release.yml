@@ -69,7 +69,7 @@ jobs:
         run: |
           echo "=== Getting Flutter dependencies ==="
           flutter pub get -v
-        timeout-minutes: 15
+        timeout-minutes: 60
 
       - name: Build macOS
         run: |
@@ -84,7 +84,7 @@ jobs:
 
           flutter build macos --release -v 2>&1 | tee macos_build.log
           echo "=== macOS build completed ==="
-        timeout-minutes: 30
+        timeout-minutes: 60
 
       - name: Upload build log on failure
         if: failure()
