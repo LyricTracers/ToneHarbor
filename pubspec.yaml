@@ -116,6 +116,7 @@ dev_dependencies:
   json_serializable: 6.11.2
 
 dependency_overrides:
+  flutter_rust_bridge: 2.11.1
   media_kit_libs_ios_audio:
     # path: ../media-kit/libs/ios/media_kit_libs_ios_audio
     git:
