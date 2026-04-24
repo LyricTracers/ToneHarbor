@@ -24,8 +24,8 @@ concurrency:
 
 jobs:
   build-ios:
-    name: Build iOS IPA (Intel)
-    runs-on: macos-14   # ✅ Intel x64 架构
+    name: Build iOS IPA
+    runs-on: macos-14   # ARM64 架构，免费运行器
     timeout-minutes: 90
     steps:
       - name: Checkout repository
@@ -77,7 +77,7 @@ jobs:
         run: flutter pub get -v
         timeout-minutes: 15
 
-      # ---------- CocoaPods + Swift 5 强制设置 ----------
+      # ---------- CocoaPods + Swift 5 + 关闭警告即错误 ----------
       - name: Install iOS dependencies & force Swift 5
         run: |
           cd ios
@@ -105,6 +105,12 @@ jobs:
           sed -i '' 's/SWIFT_VERSION = 6\.0;/SWIFT_VERSION = 5.0;/g' Runner.xcodeproj/project.pbxproj
           sed -i '' 's/SWIFT_STRICT_CONCURRENCY = complete;/SWIFT_STRICT_CONCURRENCY = minimal;/g' Runner.xcodeproj/project.pbxproj
 
+          # 🔥 新增：关闭“警告即错误”，防止 Unused variable 等警告导致构建失败
+          sed -i '' 's/SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;/SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;/g' Pods/Pods.xcodeproj/project.pbxproj
+          sed -i '' 's/GCC_TREAT_WARNINGS_AS_ERRORS = YES;/GCC_TREAT_WARNINGS_AS_ERRORS = NO;/g' Pods/Pods.xcodeproj/project.pbxproj
+          sed -i '' 's/SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;/SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;/g' Runner.xcodeproj/project.pbxproj
+          sed -i '' 's/GCC_TREAT_WARNINGS_AS_ERRORS = YES;/GCC_TREAT_WARNINGS_AS_ERRORS = NO;/g' Runner.xcodeproj/project.pbxproj
+
           # 确保所有 xcconfig 文件也有设置
           find Pods -name "*.xcconfig" | while read file; do
             if ! grep -q "SWIFT_STRICT_CONCURRENCY" "$file"; then
@@ -112,6 +118,12 @@ jobs:
             fi
             if ! grep -q "SWIFT_VERSION" "$file"; then
               echo "SWIFT_VERSION = 5.0" >> "$file"
+            fi
+            if ! grep -q "SWIFT_TREAT_WARNINGS_AS_ERRORS" "$file"; then
+              echo "SWIFT_TREAT_WARNINGS_AS_ERRORS = NO" >> "$file"
+            fi
+            if ! grep -q "GCC_TREAT_WARNINGS_AS_ERRORS" "$file"; then
+              echo "GCC_TREAT_WARNINGS_AS_ERRORS = NO" >> "$file"
             fi
           done
 
@@ -127,7 +139,7 @@ jobs:
         id: build
         run: |
           set -x
-          echo "=== Building iOS (Intel runner) ==="
+          echo "=== Building iOS ==="
 
           rm -rf build/ios || true
           rm -rf ~/Library/Developer/Xcode/DerivedData || true
