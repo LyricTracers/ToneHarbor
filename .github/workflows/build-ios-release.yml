@@ -1,4 +1,4 @@
-name: Build iOS IPA and Release
+name: Build iOS IPA and Report Errors
 
 on:
   push:
@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: write
+  issues: write      # 允许创建 Issue
 
 env:
   FLUTTER_VERSION: '3.35.7'
@@ -44,10 +45,8 @@ jobs:
 
       - name: Fix Rust target conflicts
         run: |
-          echo "=== Fixing Rust target conflicts ==="
           rustup target remove aarch64-apple-ios 2>/dev/null || true
           rustup target add aarch64-apple-ios --toolchain stable
-          echo "=== Rust target fixed ==="
 
       - name: Cache Pub dependencies
         uses: actions/cache@v5
@@ -68,172 +67,174 @@ jobs:
       - name: Print environment info
         run: |
           echo "=== Environment Info ==="
-          echo "OS: $(uname -a)"
+          uname -a
           flutter --version
           dart --version
           echo "Working directory: $(pwd)"
 
       - name: Get dependencies
-        run: |
-          echo "=== Getting Flutter dependencies ==="
-          flutter pub get -v
+        run: flutter pub get -v
         timeout-minutes: 15
 
       - name: Install iOS dependencies
         run: |
           echo "=== Installing CocoaPods ==="
           cd ios
-          
           sed -i '' '/mirrors.tuna.tsinghua.edu.cn/d' Podfile
-          
           if ! grep -q "cdn.cocoapods.org" Podfile; then
             sed -i '' '1s/^/source "https:\/\/cdn.cocoapods.org\/"\n/' Podfile
           fi
-          
           sed -i '' '/baseConfigurationReference/d' Runner.xcodeproj/project.pbxproj
-          
-          echo "=== Cleaning CocoaPods repo cache ==="
           pod repo list | grep -B2 "mirrors.tuna.tsinghua.edu.cn" | grep -oE '^[a-zA-Z0-9_-]+' | while read repo_name; do
             echo "Removing repo: $repo_name"
             pod repo remove "$repo_name" || true
           done
-          
-          if ! pod repo list | grep -q "cdn.cocoapods.org"; then
-            echo "Adding CDN trunk repo..."
-            pod repo add trunk https://cdn.cocoapods.org/ || true
-          fi
-          
-          pod repo update trunk --verbose || true
-          
           pod install --verbose
         timeout-minutes: 60
 
-      # 🔑 关键步骤：使用 cargokit 官方命令编译所有 Rust 依赖
-      - name: Build Rust frameworks via cargokit
+      # ---------- 核心构建（包含手动 Rust 框架构建诊断） ----------
+      - name: Build iOS with Rust frameworks diagnostic
+        id: build
         run: |
-          echo "=== Building Rust libraries for iOS ==="
-          cd ios
-          dart run cargokit:main install \
-            --platform ios \
-            --rust-target aarch64-apple-ios \
-            --library-type staticlib
-        timeout-minutes: 20
-
-      - name: Build iOS (using flutter build, with environment fixes)
-        run: |
+          set -x   # 显示每条命令
           echo "=== Building iOS (ARM64 runner) ==="
 
-          rm -rf ~/Library/Developer/Xcode/DerivedData || true
           rm -rf build/ios || true
+          rm -rf ~/Library/Developer/Xcode/DerivedData || true
 
           security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db 2>/dev/null || true
           security set-keychain-settings -t 3600 -l ~/Library/Keychains/login.keychain-db 2>/dev/null || true
 
           export FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
           export FLUTTER_APPLICATION_PATH="$(pwd)"
-          echo "FLUTTER_ROOT=$FLUTTER_ROOT"
-          echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
           export CODE_SIGNING_ALLOWED=NO
           export CODE_SIGNING_REQUIRED=NO
           export EXPANDED_CODE_SIGN_IDENTITY=""
           export AD_HOC_CODE_SIGNING_ALLOWED=NO
           export DEVELOPMENT_TEAM=""
+          echo "FLUTTER_ROOT=$FLUTTER_ROOT"
+          echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
 
-          if [ ! -f "$FLUTTER_APPLICATION_PATH/pubspec.yaml" ]; then
-            echo "::error::pubspec.yaml not found"
-            exit 1
-          fi
+          # 手动构建所有 Rust Pod 的 framework（诊断核心）
+          cd ios
+          for rust_dir in Pods/*/rust; do
+            if [ -f "$rust_dir/cargokit_build_pod.sh" ]; then
+              pod_name=$(basename $(dirname "$rust_dir"))
+              echo ">>> Building framework for $pod_name"
+              cd "$rust_dir"
+              bash cargokit_build_pod.sh \
+                --platform ios \
+                --rust-target aarch64-apple-ios \
+                --library-type staticlib 2>&1 | tee "../../../../${pod_name}_cargokit.log"
+              echo ">>> $pod_name build exit code: $?"
+              cd - > /dev/null
+            fi
+          done
+          cd ..
 
+          # 检查生成的 framework
+          echo "=== Checking generated frameworks ==="
+          ls -la build/ios/Release-iphoneos/*.framework 2>/dev/null || echo "No frameworks found"
+
+          # 执行 flutter build
           LOGFILE="${RUNNER_WORKSPACE}/ios_build.log"
           if ! flutter build ios --release --no-codesign -v 2>&1 | tee "$LOGFILE"; then
-            echo ""
-            echo "❌❌❌ BUILD FAILED ❌❌❌"
-            echo "👉 Last 300 lines of build log:"
+            echo "BUILD_FAILED=true" >> $GITHUB_OUTPUT
+            echo "❌ BUILD FAILED"
             tail -n 300 "$LOGFILE" || echo "(log empty)"
-            echo "========================================"
             exit 1
           fi
 
-          sync
-          echo "Log saved to $LOGFILE"
+          set +x
           echo "=== iOS build completed ==="
         timeout-minutes: 60
 
+      # ---------- 成功时继续打包 ----------
       - name: Verify Runner.app
+        if: success()
         run: |
           APP_PATH="build/ios/iphoneos/Runner.app"
           if [ -d "$APP_PATH" ]; then
-            echo "Runner.app found at: $APP_PATH"
-            echo "Size: $(du -sh "$APP_PATH")"
+            echo "✅ Runner.app found at: $APP_PATH"
+            du -sh "$APP_PATH"
           else
-            echo "::error::Runner.app not found at $APP_PATH"
-            ls -la build/ios/iphoneos/ 2>/dev/null || echo "iphoneos directory missing"
-            exit 1
-          fi
-
-      - name: Upload iOS build log on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-build-log
-          path: ${{ runner.workspace }}/ios_build.log
-          retention-days: 3
-
-      - name: Create IPA
-        run: |
-          APP_PATH="build/ios/iphoneos/Runner.app"
-          if [ ! -d "$APP_PATH" ]; then
             echo "::error::Runner.app not found"
             exit 1
           fi
+
+      - name: Create IPA
+        if: success()
+        run: |
+          APP_PATH="build/ios/iphoneos/Runner.app"
           mkdir -p Payload
           cp -R "$APP_PATH" Payload/
           zip -r -y Payload.zip Payload/
           mv Payload.zip ToneHarbor.ipa
           rm -rf Payload
           echo "IPA created: $(ls -la ToneHarbor.ipa)"
-          echo "IPA size: $(du -sh ToneHarbor.ipa)"
 
       - name: Upload IPA artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: ToneHarbor-iOS
           path: ToneHarbor.ipa
           retention-days: 7
 
-      - name: Debug info on failure
+      # ---------- 失败时自动创建 Issue 并附带日志 ----------
+      - name: Create issue with build log on failure
         if: failure()
-        run: |
-          echo "=== DEBUG INFO ON FAILURE ==="
-          echo "Last exit code: $?"
-          ls -la
-          ls -la build/ 2>/dev/null || echo "No build directory"
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const logPath = `${process.env.RUNNER_WORKSPACE}/ios_build.log`;
+            let logContent = '';
+            if (fs.existsSync(logPath)) {
+              // 只取最后 2000 行，避免 Issue 过大
+              const data = fs.readFileSync(logPath, 'utf8');
+              const lines = data.split('\n');
+              logContent = lines.slice(-2000).join('\n');
+            } else {
+              logContent = '(No log file found)';
+            }
 
+            const title = `❌ iOS Build Failed - ${process.env.GITHUB_REF}`;
+            const body = `## 构建失败详情
+            **分支/标签**: ${process.env.GITHUB_REF}
+            **提交**: ${process.env.GITHUB_SHA}
+            **工作流运行**: [${process.env.GITHUB_RUN_ID}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
+
+            ### 最后 2000 行日志：
+            \`\`\`
+            ${logContent}
+            \`\`\`
+            `;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body
+            });
+          env:
+            RUNNER_WORKSPACE: ${{ runner.workspace }}
+
+  # ---------- 仅成功时发布 Release ----------
   create-release:
-    name: Create Release (iOS only)
+    name: Create Release
     needs: [build-ios]
-    if: |
-      startsWith(github.ref, 'refs/tags/') ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.version != '')
+    if: success()
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
       - name: Determine release version
         id: get_version
         run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            VERSION="${{ github.event.inputs.version }}"
-          else
-            VERSION="${GITHUB_REF#refs/tags/}"
-          fi
-          
+          VERSION="${GITHUB_REF#refs/tags/}"
           if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::Invalid version format. Expected: v1.2.3"
+            echo "::error::Invalid version format"
             exit 1
           fi
-          
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Download iOS artifact
@@ -242,26 +243,12 @@ jobs:
           name: ToneHarbor-iOS
           path: ./artifacts
 
-      - name: List artifacts
-        run: |
-          echo "=== Downloaded artifacts ==="
-          ls -la ./artifacts
-
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           name: Release ${{ steps.get_version.outputs.VERSION }}
           tag_name: ${{ steps.get_version.outputs.VERSION }}
-          body: |
-            ## ToneHarbor ${{ steps.get_version.outputs.VERSION }}
-            
-            ### 下载说明
-            - **ToneHarbor.ipa**: iOS 安装包，适用于越狱设备或侧装
-            
-            ### 更新内容
-            请查看 [Release 页面](https://github.com/${{ github.repository }}/releases/tag/${{ steps.get_version.outputs.VERSION }})
-          files: |
-            artifacts/ToneHarbor.ipa
+          files: artifacts/ToneHarbor.ipa
           draft: false
           prerelease: false
         env:
