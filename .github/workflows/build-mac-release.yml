@@ -72,6 +72,22 @@ jobs:
           flutter pub get -v
         timeout-minutes: 15
 
+      - name: Install macOS dependencies
+        run: |
+          echo "=== Installing CocoaPods ==="
+          cd ios
+          sed -i '' '/mirrors.tuna.tsinghua.edu.cn/d' Podfile
+          if ! grep -q "cdn.cocoapods.org" Podfile; then
+            sed -i '' '1s/^/source "https:\/\/cdn.cocoapods.org\/"\n/' Podfile
+          fi
+          sed -i '' '/baseConfigurationReference/d' Runner.xcodeproj/project.pbxproj
+          pod repo list | grep -B2 "mirrors.tuna.tsinghua.edu.cn" | grep -oE '^[a-zA-Z0-9_-]+' | while read repo_name; do
+            echo "Removing repo: $repo_name"
+            pod repo remove "$repo_name" || true
+          done
+          pod install --verbose
+        timeout-minutes: 60
+
       - name: Build macOS
         id: build
         run: |
