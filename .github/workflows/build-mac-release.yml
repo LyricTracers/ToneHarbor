@@ -94,7 +94,7 @@ jobs:
           path: macos_build.log
           retention-days: 3
 
-      - name: Create macOS ZIP (no nested folders)
+      - name: Create macOS ZIP
         run: |
           echo "=== Creating macOS ZIP ==="
           APP_PATH=$(find build/macos/Build/Products/Release/ -name "*.app" -type d | head -1)
@@ -104,15 +104,14 @@ jobs:
           fi
           echo "Found app: $APP_PATH"
           cd "$(dirname "$APP_PATH")"
-          zip -r -y ToneHarbor-macOS.zip "$(basename "$APP_PATH")"
-          mv ToneHarbor-macOS.zip "$RUNNER_WORKSPACE/"
-          ls -la "$RUNNER_WORKSPACE/ToneHarbor-macOS.zip" || exit 1
+          zip -r -y "$OLDPWD/ToneHarbor-macOS.zip" "$(basename "$APP_PATH")"
+          echo "ZIP created successfully"
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
           name: ToneHarbor-macOS
-          path: ${{ runner.workspace }}/ToneHarbor-macOS.zip
+          path: ToneHarbor-macOS.zip
           retention-days: 7
 
       - name: Debug info on failure
