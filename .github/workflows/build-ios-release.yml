@@ -48,13 +48,13 @@ jobs:
           rustup target remove aarch64-apple-ios 2>/dev/null || true
           rustup target add aarch64-apple-ios --toolchain stable
 
-      - name: Cache Pub dependencies
-        uses: actions/cache@v5
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
+      # - name: Cache Pub dependencies
+      #   uses: actions/cache@v5
+      #   with:
+      #     path: ~/.pub-cache
+      #     key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pub-
 
       # - name: Cache CocoaPods
       #   uses: actions/cache@v5
@@ -74,41 +74,51 @@ jobs:
 
       - name: Get dependencies
         run: flutter pub get -v
-        timeout-minutes: 15
+        timeout-minutes: 60
 
-      - name: Install iOS dependencies and fix Swift 6 errors
+      - name: Install iOS dependencies and force Swift 5
         run: |
-          echo "=== Installing CocoaPods ==="
+          echo "=== Preparing clean CocoaPods environment ==="
           cd ios
+          rm -rf Pods Podfile.lock
 
+          echo "=== Injecting Swift 5 & concurrency fix into Podfile ==="
+          # 如果 Podfile 中没有 SWIFT_STRICT_CONCURRENCY，则在 post_install 里注入设置
+          if ! grep -q "SWIFT_STRICT_CONCURRENCY" Podfile; then
+            # 在 'target.build_configurations.each' 循环内部添加设置
+            sed -i '' '/target.build_configurations.each do |config|/a\
+            \ \ \ \ \ \ config.build_settings['"'"'SWIFT_VERSION'"'"'] = '"'"'5.0'"'"'\
+            \ \ \ \ \ \ config.build_settings['"'"'SWIFT_STRICT_CONCURRENCY'"'"'] = '"'"'minimal'"'"'
+            ' Podfile
+          fi
+
+          echo "=== Installing CocoaPods ==="
           # 修复 Podfile 源
           sed -i '' '/mirrors.tuna.tsinghua.edu.cn/d' Podfile
           if ! grep -q "cdn.cocoapods.org" Podfile; then
             sed -i '' '1s/^/source "https:\/\/cdn.cocoapods.org\/"\n/' Podfile
           fi
-          sed -i '' '/baseConfigurationReference/d' Runner.xcodeproj/project.pbxproj
-          pod repo list | grep -B2 "mirrors.tuna.tsinghua.edu.cn" | grep -oE '^[a-zA-Z0-9_-]+' | while read repo_name; do
-            echo "Removing repo: $repo_name"
-            pod repo remove "$repo_name" || true
-          done
           pod install --verbose
 
-          echo "=== Fixing Swift 6 strict concurrency ==="
-          # 遍历所有 Pods 的 xcconfig 文件，强制写入设置
+          echo "=== Double-check SWIFT_STRICT_CONCURRENCY settings ==="
+          # 在所有 xcconfig 中强制添加设置（防止某些 pod 遗漏）
           find Pods -name "*.xcconfig" | while read file; do
-            # 先删除可能存在的旧值
-            sed -i '' '/SWIFT_STRICT_CONCURRENCY/d' "$file"
-            sed -i '' '/SWIFT_VERSION/d' "$file"
-            # 追加新设置
-            echo "SWIFT_STRICT_CONCURRENCY = minimal" >> "$file"
-            echo "SWIFT_VERSION = 5.0" >> "$file"
+            if ! grep -q "SWIFT_STRICT_CONCURRENCY" "$file"; then
+              echo "SWIFT_STRICT_CONCURRENCY = minimal" >> "$file"
+            fi
+            if ! grep -q "SWIFT_VERSION" "$file"; then
+              echo "SWIFT_VERSION = 5.0" >> "$file"
+            fi
           done
-          # 同样处理 Runner 项目
-          sed -i '' 's/SWIFT_STRICT_CONCURRENCY = .*;/SWIFT_STRICT_CONCURRENCY = minimal;/g' Runner.xcodeproj/project.pbxproj
+
+          # 对 Runner 项目也确保设置
           sed -i '' 's/SWIFT_VERSION = .*;/SWIFT_VERSION = 5.0;/g' Runner.xcodeproj/project.pbxproj
-          # 确保 Swift 6 的完整并发被关闭
-          plutil -replace objects -json '{}' 2>/dev/null || true  # 仅刷新
-          echo "=== Swift fix completed ==="
+          sed -i '' 's/SWIFT_STRICT_CONCURRENCY = .*;/SWIFT_STRICT_CONCURRENCY = minimal;/g' Runner.xcodeproj/project.pbxproj
+
+          echo "=== Verification ==="
+          grep -r "SWIFT_STRICT_CONCURRENCY" Pods/Target\ Support\ Files/ || true
+          grep "SWIFT_VERSION" Runner.xcodeproj/project.pbxproj | head -3
+          echo "=== Done ==="
         timeout-minutes: 60
 
       - name: Verify Swift settings
