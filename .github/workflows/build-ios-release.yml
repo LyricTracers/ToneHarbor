@@ -82,6 +82,33 @@ jobs:
           pod install --verbose
         timeout-minutes: 60
 
+      - name: Inject team and profile into Runner project
+        run: |
+          cd ios
+          ruby -e "
+          require 'xcodeproj'
+          project = Xcodeproj::Project.open('Runner.xcodeproj')
+          project.targets.each do |target|
+            target.build_configurations.each do |config|
+              config.build_settings['DEVELOPMENT_TEAM'] = 'AAAAAAAAAA'
+              config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = 'ABCDEFGHIJ'
+              config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+              config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
+              config.build_settings['CODE_SIGNING_IDENTITY'] = ''
+            end
+          end
+          project.save
+          " || echo "Failed to inject via xcodeproj gem, fallback to sed"
+          # 如果 xcodeproj 不可用，使用 sed 作为后备（但 macos 镜像一般已安装）
+          if [ $? -ne 0 ]; then
+            sed -i '' '/DEVELOPMENT_TEAM/d' Runner.xcodeproj/project.pbxproj
+            sed -i '' '/PROVISIONING_PROFILE_SPECIFIER/d' Runner.xcodeproj/project.pbxproj
+            for file in $(grep -l "CODE_SIGNING_ALLOWED" Runner.xcodeproj/project.pbxproj); do
+              sed -i '' 's/\(CODE_SIGNING_ALLOWED = NO;\)/\1\n\t\t\t\tDEVELOPMENT_TEAM = "AAAAAAAAAA";\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "ABCDEFGHIJ";/' "$file"
+            done
+          fi
+          cd ..
+
       - name: Build iOS
         id: build
         run: |
@@ -96,11 +123,9 @@ jobs:
           export CODE_SIGNING_ALLOWED=NO
           export CODE_SIGNING_REQUIRED=NO
           export EXPANDED_CODE_SIGN_IDENTITY=""
-          export DEVELOPMENT_TEAM="AAAAAAAAAA"
 
           LOGFILE="${RUNNER_WORKSPACE}/ios_build.log"
           if ! flutter build ios --release --no-codesign -v 2>&1 | tee "$LOGFILE"; then
-            echo "BUILD_FAILED=true" >> $GITHUB_OUTPUT
             echo "❌ BUILD FAILED"
             tail -n 300 "$LOGFILE"
             exit 1
@@ -159,21 +184,17 @@ jobs:
             const title = `❌ iOS Build Failed - ${process.env.GITHUB_REF}`;
             const body = `## 构建失败详情
             **工作流运行**: [${process.env.GITHUB_RUN_ID}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
-
+            
             ### 错误日志 (最后 60000 字符):
             \`\`\`
             ${logContent}
             \`\`\`
             `;
-            let safeBody = body;
-            if (safeBody.length > 65000) {
-              safeBody = safeBody.substring(0, 65000) + '\n... [日志自动截断]';
-            }
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title,
-              body: safeBody
+              body
             });
         env:
           RUNNER_WORKSPACE: ${{ runner.workspace }}
