@@ -262,6 +262,9 @@ jobs:
             pod repo remove "$repo_name" || true
           done
           pod install --verbose
+          # 🔑 修复 Swift Module Name 为空的问题
+          echo "Fixing empty PRODUCT_MODULE_NAME..."
+          sed -i '' 's/PRODUCT_MODULE_NAME = "";/PRODUCT_MODULE_NAME = "Runner";/g' Runner.xcodeproj/project.pbxproj
         timeout-minutes: 60
 
       - name: Build macOS
@@ -275,6 +278,7 @@ jobs:
           export FLUTTER_APPLICATION_PATH="$(pwd)"
           echo "FLUTTER_ROOT=$FLUTTER_ROOT"
           echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
+          export PRODUCT_MODULE_NAME="Runner"   # 强制设置 Swift 模块名
 
           flutter build macos --release -v 2>&1 | tee "${RUNNER_WORKSPACE}/macos_build.log"
           echo "=== macOS build completed ==="
