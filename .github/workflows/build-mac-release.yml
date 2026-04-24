@@ -86,15 +86,17 @@ jobs:
             exit 1
           fi
           echo "Found app: $APP_PATH"
-          zip -r -y ToneHarbor-macOS.zip "$APP_PATH"
-          echo "ZIP created: $(ls -la ToneHarbor-macOS.zip)"
+          cd "$(dirname "$APP_PATH")"          # 进入 app 所在目录
+          zip -r -y ToneHarbor-macOS.zip "$(basename "$APP_PATH")"
+          mv ToneHarbor-macOS.zip "$GITHUB_WORKSPACE/"
+          echo "ZIP created and moved to workspace root"
         timeout-minutes: 5
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
           name: ToneHarbor-macOS
-          path: ToneHarbor-macOS.zip
+          path: ${{ runner.workspace }}/ToneHarbor-macOS.zip
           retention-days: 7
 
       - name: Debug info on failure
