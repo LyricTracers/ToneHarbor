@@ -41,13 +41,12 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-darwin
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
 
       - name: Fix Rust target conflicts
         run: |
           echo "=== Fixing Rust target conflicts ==="
-          rustup target remove aarch64-apple-darwin 2>/dev/null || true
-          rustup target add aarch64-apple-darwin --toolchain stable
+          rustup target add x86_64-apple-darwin 2>/dev/null || true
           echo "=== Rust target fixed ==="
 
       - name: Cache Pub dependencies
@@ -95,14 +94,16 @@ jobs:
         id: build
         run: |
           echo "=== Building macOS ==="
+          rm -rf build/macos || true
+          rm -rf ~/Library/Developer/Xcode/DerivedData || true
           security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db 2>/dev/null || true
           security set-keychain-settings -t 3600 -l ~/Library/Keychains/login.keychain-db 2>/dev/null || true
 
           export FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
           export FLUTTER_APPLICATION_PATH="$(pwd)"
+          export PRODUCT_MODULE_NAME="Runner"
           echo "FLUTTER_ROOT=$FLUTTER_ROOT"
           echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
-          export PRODUCT_MODULE_NAME="Runner"   # 强制设置 Swift 模块名
 
           flutter build macos --release -v 2>&1 | tee "${RUNNER_WORKSPACE}/macos_build.log"
           echo "=== macOS build completed ==="
