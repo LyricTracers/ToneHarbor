@@ -72,13 +72,11 @@ jobs:
           flutter --version
           dart --version
           echo "Working directory: $(pwd)"
-          echo "=== End Environment Info ==="
 
       - name: Get dependencies
         run: |
           echo "=== Getting Flutter dependencies ==="
           flutter pub get -v
-          echo "=== Dependencies completed ==="
         timeout-minutes: 15
 
       - name: Install iOS dependencies
@@ -108,10 +106,20 @@ jobs:
           pod repo update trunk --verbose || true
           
           pod install --verbose
-          echo "=== CocoaPods completed ==="
         timeout-minutes: 60
 
-      - name: Build iOS (flutter build with all fixes and full logging)
+      # 🔑 关键步骤：使用 cargokit 官方命令编译所有 Rust 依赖
+      - name: Build Rust frameworks via cargokit
+        run: |
+          echo "=== Building Rust libraries for iOS ==="
+          cd ios
+          dart run cargokit:main install \
+            --platform ios \
+            --rust-target aarch64-apple-ios \
+            --library-type staticlib
+        timeout-minutes: 20
+
+      - name: Build iOS (using flutter build, with environment fixes)
         run: |
           echo "=== Building iOS (ARM64 runner) ==="
 
@@ -132,7 +140,7 @@ jobs:
           export DEVELOPMENT_TEAM=""
 
           if [ ! -f "$FLUTTER_APPLICATION_PATH/pubspec.yaml" ]; then
-            echo "::error::pubspec.yaml not found in $FLUTTER_APPLICATION_PATH"
+            echo "::error::pubspec.yaml not found"
             exit 1
           fi
 
@@ -204,10 +212,10 @@ jobs:
   create-release:
     name: Create Release (iOS only)
     needs: [build-ios]
-    runs-on: ubuntu-latest
     if: |
       startsWith(github.ref, 'refs/tags/') ||
       (github.event_name == 'workflow_dispatch' && github.event.inputs.version != '')
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
