@@ -1,4 +1,4 @@
-name: Build and Release
+name: Build iOS IPA and Release
 
 on:
   push:
@@ -11,6 +11,9 @@ on:
         required: true
         default: ''
 
+permissions:
+  contents: write
+
 env:
   FLUTTER_VERSION: '3.35.7'
 
@@ -19,10 +22,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-multi-platform:
-    name: Build iOS IPA and macOS APP
+  build-ios:
+    name: Build iOS IPA
     runs-on: macos-15
-    timeout-minutes: 120
+    timeout-minutes: 90
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -83,34 +86,27 @@ jobs:
           echo "=== Installing CocoaPods ==="
           cd ios
           
-          # 移除可能会超时的清华镜像源
           sed -i '' '/mirrors.tuna.tsinghua.edu.cn/d' Podfile
           
-          # 若没有 CDN 源，则添加官方源
           if ! grep -q "cdn.cocoapods.org" Podfile; then
             sed -i '' '1s/^/source "https:\/\/cdn.cocoapods.org\/"\n/' Podfile
           fi
           
-          # 清理 Xcode 项目中的自定义配置引用
           sed -i '' '/baseConfigurationReference/d' Runner.xcodeproj/project.pbxproj
           
-          # 清理本地 CocoaPods 仓库中残留的清华源
           echo "=== Cleaning CocoaPods repo cache ==="
           pod repo list | grep -B2 "mirrors.tuna.tsinghua.edu.cn" | grep -oE '^[a-zA-Z0-9_-]+' | while read repo_name; do
             echo "Removing repo: $repo_name"
             pod repo remove "$repo_name" || true
           done
           
-          # 添加 CDN trunk 仓库（若缺失）
           if ! pod repo list | grep -q "cdn.cocoapods.org"; then
             echo "Adding CDN trunk repo..."
             pod repo add trunk https://cdn.cocoapods.org/ || true
           fi
           
-          # 首次更新 trunk
           pod repo update trunk --verbose || true
           
-          # 安装 Pod（不再使用 --repo-update，利用缓存加速）
           pod install --verbose
           echo "=== CocoaPods completed ==="
         timeout-minutes: 60
@@ -119,15 +115,12 @@ jobs:
         run: |
           echo "=== Building iOS (ARM64 runner) ==="
 
-          # 清理旧数据
           rm -rf ~/Library/Developer/Xcode/DerivedData || true
           rm -rf build/ios || true
 
-          # 钥匙串解锁（防卡死）
           security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db 2>/dev/null || true
           security set-keychain-settings -t 3600 -l ~/Library/Keychains/login.keychain-db 2>/dev/null || true
 
-          # 🔑 必须设置的环境变量（修复 Flutter 3.35.7 在 ARM64 上的空指针缺陷）
           export FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
           export FLUTTER_APPLICATION_PATH="$(pwd)"
           echo "FLUTTER_ROOT=$FLUTTER_ROOT"
@@ -143,7 +136,6 @@ jobs:
             exit 1
           fi
 
-          # 构建并保存完整日志
           LOGFILE="${RUNNER_WORKSPACE}/ios_build.log"
           if ! flutter build ios --release --no-codesign -v 2>&1 | tee "$LOGFILE"; then
             echo ""
@@ -201,31 +193,6 @@ jobs:
           path: ToneHarbor.ipa
           retention-days: 7
 
-      - name: Build macOS
-        run: |
-          echo "=== Building macOS ==="
-          flutter build macos --release -v
-          echo "=== macOS build completed ==="
-        timeout-minutes: 30
-
-      - name: Create macOS ZIP
-        run: |
-          APP_PATH=$(find build/macos/Build/Products/Release/ -name "*.app" -type d | head -1)
-          if [ -z "$APP_PATH" ]; then
-            echo "::error::No .app found in build/macos/Build/Products/Release/"
-            exit 1
-          fi
-          echo "Found app: $APP_PATH"
-          zip -r -y ToneHarbor-macOS.zip "$APP_PATH"
-          echo "ZIP created: $(ls -la ToneHarbor-macOS.zip)"
-
-      - name: Upload macOS artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ToneHarbor-macOS
-          path: ToneHarbor-macOS.zip
-          retention-days: 7
-
       - name: Debug info on failure
         if: failure()
         run: |
@@ -235,8 +202,8 @@ jobs:
           ls -la build/ 2>/dev/null || echo "No build directory"
 
   create-release:
-    name: Create Release
-    needs: [build-multi-platform]
+    name: Create Release (iOS only)
+    needs: [build-ios]
     runs-on: ubuntu-latest
     if: |
       startsWith(github.ref, 'refs/tags/') ||
@@ -267,12 +234,6 @@ jobs:
           name: ToneHarbor-iOS
           path: ./artifacts
 
-      - name: Download macOS artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ToneHarbor-macOS
-          path: ./artifacts
-
       - name: List artifacts
         run: |
           echo "=== Downloaded artifacts ==="
@@ -288,13 +249,11 @@ jobs:
             
             ### 下载说明
             - **ToneHarbor.ipa**: iOS 安装包，适用于越狱设备或侧装
-            - **ToneHarbor-macOS.zip**: macOS 应用程序包
             
             ### 更新内容
             请查看 [Release 页面](https://github.com/${{ github.repository }}/releases/tag/${{ steps.get_version.outputs.VERSION }})
           files: |
             artifacts/ToneHarbor.ipa
-            artifacts/ToneHarbor-macOS.zip
           draft: false
           prerelease: false
         env:
