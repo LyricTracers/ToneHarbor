@@ -82,11 +82,7 @@ jobs:
         run: |
           echo "=== Installing CocoaPods ==="
           cd ios
-          
-          # 移除可能会超时的清华镜像源
           sed -i '' '/mirrors.tuna.tsinghua.edu.cn/d' Podfile
-          
-          # 若没有 CDN 源，则添加官方源
           if ! grep -q "cdn.cocoapods.org" Podfile; then
             sed -i '' '1s/^/source "https:\/\/cdn.cocoapods.org\/"\n/' Podfile
           fi
@@ -112,24 +108,42 @@ jobs:
           
           # 安装 Pod（不再使用 --repo-update，利用缓存加速）
           pod install --verbose
-          echo "=== CocoaPods completed ==="
         timeout-minutes: 60
 
-      - name: Build iOS (flutter build with all fixes & inline error log)
+      # ---------- 核心构建步骤：手动编译 Rust + xcodebuild ----------
+      - name: Build iOS (Rust arm64 manual build + xcodebuild)
         run: |
           echo "=== Building iOS (ARM64 runner) ==="
+          cd ios
 
-          # 清理旧数据
+          # 清理旧产物
+          rm -rf ../build/ios || true
           rm -rf ~/Library/Developer/Xcode/DerivedData || true
-          rm -rf build/ios || true
 
-          # 钥匙串解锁（防卡死）
+          # ---- 1. 手动编译所有 Rust Pods（arm64），并放入链接器搜索路径 ----
+          echo "=== Building Rust pods for arm64 ==="
+          for rust_dir in Pods/*/rust; do
+            if [ -f "$rust_dir/Cargo.toml" ]; then
+              pod_name=$(basename $(dirname "$rust_dir"))
+              echo "Building Rust for $pod_name"
+              cd "$rust_dir"
+              cargo build --release --target aarch64-apple-ios || exit 1
+              # 创建 Xcode 期望的库目录并复制静态库
+              LIB_DIR="../../../../build/ios/Release-iphoneos/${pod_name}"
+              mkdir -p "$LIB_DIR"
+              cp -f "target/aarch64-apple-ios/release/lib${pod_name}.a" "$LIB_DIR/" 2>/dev/null || \
+                echo "Warning: lib${pod_name}.a not found"
+              cd - > /dev/null
+            fi
+          done
+
+          # ---- 2. 钥匙串解锁 ----
           security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db 2>/dev/null || true
           security set-keychain-settings -t 3600 -l ~/Library/Keychains/login.keychain-db 2>/dev/null || true
 
-          # 环境变量修复 Flutter 3.35.7 ARM64 空指针
+          # ---- 3. 环境变量 ----
           export FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
-          export FLUTTER_APPLICATION_PATH="$(pwd)"
+          export FLUTTER_APPLICATION_PATH="$(cd .. && pwd)"
           echo "FLUTTER_ROOT=$FLUTTER_ROOT"
           echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
 
@@ -138,12 +152,28 @@ jobs:
             exit 1
           fi
 
-          # 日志保存到工作区根目录
-          LOGFILE="${RUNNER_WORKSPACE}/ios_build.log"
-          echo "Log will be saved to: $LOGFILE"
+          # ---- 4. 执行 xcodebuild 构建 ----
+          BUILD_DIR="../build/ios"
+          CONFIGURATION_BUILD_DIR="../build/ios/iphoneos"
+          LOGFILE="${RUNNER_WORKSPACE}/xcodebuild.log"
 
-          # 使用 flutter build ios，它会自动调用 Cargokit 等所有前置过程
-          if ! flutter build ios --release --no-codesign -v 2>&1 | tee "$LOGFILE"; then
+          if ! /usr/bin/arch -arm64e xcrun xcodebuild \
+            -configuration Release \
+            VERBOSE_SCRIPT_LOGGING=YES \
+            -workspace Runner.xcworkspace \
+            -scheme Runner \
+            BUILD_DIR="$BUILD_DIR" \
+            CONFIGURATION_BUILD_DIR="$CONFIGURATION_BUILD_DIR" \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_IDENTITY="" \
+            ARCHS=arm64 \
+            ONLY_ACTIVE_ARCH=YES \
+            build \
+            2>&1 | tee "$LOGFILE"; then
+
             echo ""
             echo "❌❌❌ BUILD FAILED ❌❌❌"
             echo "👉 Last 300 lines of build log:"
@@ -154,27 +184,27 @@ jobs:
 
           sync
           echo "Log saved to $LOGFILE"
-          echo "=== iOS build completed ==="
-        timeout-minutes: 60
 
-      - name: Verify Runner.app
-        run: |
-          APP_PATH="build/ios/iphoneos/Runner.app"
+          # ---- 5. 验证 Runner.app ----
+          APP_PATH="$CONFIGURATION_BUILD_DIR/Runner.app"
           if [ -d "$APP_PATH" ]; then
-            echo "Runner.app found at: $APP_PATH"
+            echo "✅ Runner.app successfully created at: $APP_PATH"
             echo "Size: $(du -sh "$APP_PATH")"
           else
-            echo "::error::Runner.app not found"
-            ls -la build/ios/iphoneos/ 2>/dev/null || echo "iphoneos missing"
+            echo "::error::Runner.app not found at $APP_PATH"
+            ls -la "$CONFIGURATION_BUILD_DIR" 2>/dev/null || echo "(directory missing)"
             exit 1
           fi
 
-      - name: Upload iOS build log on failure
+          echo "=== iOS build completed ==="
+        timeout-minutes: 60
+
+      - name: Upload xcodebuild log on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: ios-build-log
-          path: ${{ runner.workspace }}/ios_build.log
+          name: xcodebuild-log
+          path: ${{ runner.workspace }}/xcodebuild.log
           retention-days: 3
 
       - name: Create IPA
