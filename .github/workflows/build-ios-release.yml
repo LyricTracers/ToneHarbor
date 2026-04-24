@@ -25,7 +25,7 @@ concurrency:
 jobs:
   build-ios:
     name: Build iOS IPA
-    runs-on: macos-15   # ARM64，免费
+    runs-on: macos-15   # ARM64，公开仓库免费
     timeout-minutes: 90
     steps:
       - name: Checkout repository
@@ -57,7 +57,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pub-
 
-      # Pods 缓存暂时禁用，确保每次 clean build（待稳定后可恢复）
+      # Pods 缓存暂禁用，确保每次干净构建（待完全稳定后可恢复）
       # - name: Cache CocoaPods
       #   uses: actions/cache@v5
       #   with:
@@ -78,13 +78,12 @@ jobs:
         run: flutter pub get -v
         timeout-minutes: 15
 
-      # ---------- 简化的 CocoaPods 安装 ----------
       - name: Install iOS dependencies
         run: |
           cd ios
           rm -rf Pods Podfile.lock
 
-          # 修复源（防止清华源超时）
+          # 修复源（避免清华源超时）
           sed -i '' '/mirrors.tuna.tsinghua.edu.cn/d' Podfile
           if ! grep -q "cdn.cocoapods.org" Podfile; then
             sed -i '' '1s/^/source "https:\/\/cdn.cocoapods.org\/"\n/' Podfile
@@ -93,12 +92,12 @@ jobs:
           pod install --verbose
         timeout-minutes: 60
 
-      # ---------- 手动编译 Rust 框架 + flutter build（关键参数） ----------
-      - name: Build iOS (with Rust fix & forced build settings)
+      # ---------- 最终构建（手动 Rust + 全局关闭警告即错误 + flutter build） ----------
+      - name: Build iOS (complete final fix)
         id: build
         run: |
           set -x
-          echo "=== Building iOS ==="
+          echo "=== Building iOS (ARM64 runner) ==="
 
           rm -rf build/ios || true
           rm -rf ~/Library/Developer/Xcode/DerivedData || true
@@ -117,7 +116,8 @@ jobs:
           echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
 
           cd ios
-          # 手动构建 Rust frameworks（确保链接器能找到库）
+
+          # ---------- 1. 手动编译所有 Rust 依赖 ----------
           for rust_dir in Pods/*/rust; do
             if [ -f "$rust_dir/cargokit_build_pod.sh" ]; then
               pod_name=$(basename $(dirname "$rust_dir"))
@@ -131,19 +131,40 @@ jobs:
               cd - > /dev/null
             fi
           done
-          cd ..
 
-          echo "=== Checking generated frameworks ==="
-          ls -la build/ios/Release-iphoneos/*.framework 2>/dev/null || echo "No frameworks found"
+          # ---------- 2. 全局关闭“警告即错误”并统一 Swift 编译设置 ----------
+          echo "=== Patching all project files to ignore warnings-as-errors ==="
+          # 处理所有 project.pbxproj
+          find . -name "project.pbxproj" -not -path "*.xcodeproj/xcuserdata/*" | while read file; do
+            echo "Patching: $file"
+            sed -i '' 's/GCC_TREAT_WARNINGS_AS_ERRORS = YES;/GCC_TREAT_WARNINGS_AS_ERRORS = NO;/g' "$file"
+            sed -i '' 's/GCC_TREAT_WARNINGS_AS_ERRORS = YES_AGGRESSIVE;/GCC_TREAT_WARNINGS_AS_ERRORS = NO;/g' "$file"
+            sed -i '' 's/SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;/SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;/g' "$file"
+            sed -i '' 's/SWIFT_VERSION = 6\.0;/SWIFT_VERSION = 5.0;/g' "$file"
+            sed -i '' 's/SWIFT_STRICT_CONCURRENCY = complete;/SWIFT_STRICT_CONCURRENCY = minimal;/g' "$file"
+          done
 
+          # 处理所有 xcconfig
+          find . -name "*.xcconfig" | while read xcfile; do
+            if ! grep -q "GCC_TREAT_WARNINGS_AS_ERRORS = NO" "$xcfile"; then
+              echo "GCC_TREAT_WARNINGS_AS_ERRORS = NO" >> "$xcfile"
+            fi
+            if ! grep -q "SWIFT_TREAT_WARNINGS_AS_ERRORS = NO" "$xcfile"; then
+              echo "SWIFT_TREAT_WARNINGS_AS_ERRORS = NO" >> "$xcfile"
+            fi
+            if ! grep -q "SWIFT_VERSION = 5.0" "$xcfile"; then
+              echo "SWIFT_VERSION = 5.0" >> "$xcfile"
+            fi
+            if ! grep -q "SWIFT_STRICT_CONCURRENCY = minimal" "$xcfile"; then
+              echo "SWIFT_STRICT_CONCURRENCY = minimal" >> "$xcfile"
+            fi
+          done
+
+          cd ..   # 回到项目根目录
+
+          # ---------- 3. 执行 Flutter 构建 ----------
           LOGFILE="${RUNNER_WORKSPACE}/ios_build.log"
-          # 🔑 关键：通过 -- 向 xcodebuild 传递最高优先级的编译参数
-          if ! flutter build ios --release --no-codesign -v -- \
-            GCC_TREAT_WARNINGS_AS_ERRORS=NO \
-            SWIFT_TREAT_WARNINGS_AS_ERRORS=NO \
-            SWIFT_STRICT_CONCURRENCY=minimal \
-            SWIFT_VERSION=5.0 \
-            2>&1 | tee "$LOGFILE"; then
+          if ! flutter build ios --release --no-codesign -v 2>&1 | tee "$LOGFILE"; then
             echo "BUILD_FAILED=true" >> $GITHUB_OUTPUT
             echo "❌ BUILD FAILED"
             tail -n 300 "$LOGFILE" || echo "(log empty)"
