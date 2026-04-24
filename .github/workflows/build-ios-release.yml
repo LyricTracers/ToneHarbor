@@ -25,13 +25,12 @@ concurrency:
 jobs:
   build-ios:
     name: Build iOS IPA (Xcode 16.2)
-    runs-on: macos-15
+    runs-on: macos-14
     timeout-minutes: 90
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      # 🔑 显式选择 Xcode 16.2，确保CI环境与你本地完全一致
       - name: Select Xcode 16.2
         run: sudo xcode-select -s /Applications/Xcode_16.2.app
 
@@ -76,7 +75,6 @@ jobs:
         run: |
           cd ios
           rm -rf Pods Podfile.lock
-          # 修复源（避免清华源超时）
           sed -i '' '/mirrors.tuna.tsinghua.edu.cn/d' Podfile
           if ! grep -q "cdn.cocoapods.org" Podfile; then
             sed -i '' '1s/^/source "https:\/\/cdn.cocoapods.org\/"\n/' Podfile
@@ -106,7 +104,7 @@ jobs:
 
           cd ios
 
-          # 1. 手动编译 Rust 框架
+          # 手动编译 Rust 框架
           for rust_dir in Pods/*/rust; do
             if [ -f "$rust_dir/cargokit_build_pod.sh" ]; then
               pod_name=$(basename $(dirname "$rust_dir"))
@@ -120,7 +118,7 @@ jobs:
             fi
           done
 
-          # 2. 全局关闭“警告即错误”并确保 Swift 5 设置
+          # 全局关闭“警告即错误”
           find . -name "project.pbxproj" -not -path "*.xcodeproj/xcuserdata/*" | while read file; do
             sed -i '' 's/GCC_TREAT_WARNINGS_AS_ERRORS = YES;/GCC_TREAT_WARNINGS_AS_ERRORS = NO;/g' "$file"
             sed -i '' 's/SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;/SWIFT_TREAT_WARNINGS_AS_ERRORS = NO;/g' "$file"
@@ -133,7 +131,6 @@ jobs:
 
           cd ..
 
-          # 3. 构建
           LOGFILE="${RUNNER_WORKSPACE}/ios_build.log"
           if ! flutter build ios --release --no-codesign -v 2>&1 | tee "$LOGFILE"; then
             echo "BUILD_FAILED=true" >> $GITHUB_OUTPUT
@@ -197,15 +194,33 @@ jobs:
                 if (raw.length > MAX_CHARS) raw = raw.slice(-MAX_CHARS);
                 logContent = raw;
               }
-            } catch (e) { logContent = `Error reading log: ${e.message}`; }
+            } catch (e) {
+              logContent = `Error reading log: ${e.message}`;
+            }
 
             const title = `❌ iOS Build Failed - ${process.env.GITHUB_REF}`;
-            const body = `## 构建失败详情\n**工作流运行**: [${process.env.GITHUB_RUN_ID}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})\n\n### 错误摘要:\n\`\`\`\n${logContent}\n\`\`\``;
+            const body = `## 构建失败详情
+            **工作流运行**: [${process.env.GITHUB_RUN_ID}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
+            
+            ### 错误摘要:
+            \`\`\`
+            ${logContent}
+            \`\`\`
+            `;
+
             let safeBody = body;
-            if (safeBody.length > 65000) safeBody = safeBody.substring(0, 65000) + '\n... [日志自动截断]';
-            await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title, body: safeBody });
-          env:
-            RUNNER_WORKSPACE: ${{ runner.workspace }}
+            if (safeBody.length > 65000) {
+              safeBody = safeBody.substring(0, 65000) + '\n... [日志自动截断]';
+            }
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body: safeBody
+            });
+        env:
+          RUNNER_WORKSPACE: ${{ runner.workspace }}
 
   create-release:
     name: Create Release
