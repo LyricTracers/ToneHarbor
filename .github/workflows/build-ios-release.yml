@@ -25,7 +25,7 @@ concurrency:
 jobs:
   build-ios:
     name: Build iOS IPA (Intel)
-    runs-on: macos-15-large   # ✅ Intel x64 架构
+    runs-on: macos-14   # ✅ Intel x64 架构
     timeout-minutes: 90
     steps:
       - name: Checkout repository
