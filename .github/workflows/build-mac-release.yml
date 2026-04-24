@@ -1,4 +1,4 @@
-name: Build macOS App
+name: Build macOS App and Release
 
 on:
   push:
@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: write
+  issues: write          # 允许创建 Issue
 
 env:
   FLUTTER_VERSION: '3.35.7'
@@ -23,7 +24,7 @@ concurrency:
 
 jobs:
   build-macos:
-    name: Build macOS APP
+    name: Build macOS App
     runs-on: macos-15
     timeout-minutes: 90
     steps:
@@ -37,7 +38,6 @@ jobs:
           channel: 'stable'
           cache: true
 
-      # Rust 工具链（如果项目包含 Rust 依赖）
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -49,6 +49,7 @@ jobs:
           rustup target remove aarch64-apple-darwin 2>/dev/null || true
           rustup target add aarch64-apple-darwin --toolchain stable
           echo "=== Rust target fixed ==="
+
       - name: Cache Pub dependencies
         uses: actions/cache@v5
         with:
@@ -56,6 +57,7 @@ jobs:
           key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
           restore-keys: |
             ${{ runner.os }}-pub-
+
       - name: Print environment info
         run: |
           echo "=== Environment Info ==="
@@ -63,34 +65,53 @@ jobs:
           flutter --version
           dart --version
           echo "Working directory: $(pwd)"
+
       - name: Get dependencies
         run: |
           echo "=== Getting Flutter dependencies ==="
           flutter pub get -v
-        timeout-minutes: 60
+        timeout-minutes: 15
 
       - name: Build macOS
+        id: build
         run: |
           echo "=== Building macOS ==="
-          flutter build macos --release -v
-          echo "=== macOS build completed ==="
-        timeout-minutes: 30
+          security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db 2>/dev/null || true
+          security set-keychain-settings -t 3600 -l ~/Library/Keychains/login.keychain-db 2>/dev/null || true
 
-      # 动态查找 .app 文件并打包为 ZIP
+          export FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
+          export FLUTTER_APPLICATION_PATH="$(pwd)"
+          echo "FLUTTER_ROOT=$FLUTTER_ROOT"
+          echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
+
+          flutter build macos --release -v 2>&1 | tee "${RUNNER_WORKSPACE}/macos_build.log"
+          echo "=== macOS build completed ==="
+        timeout-minutes: 60
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-build-log
+          path: macos_build.log
+          retention-days: 3
+
       - name: Create macOS ZIP
+        if: success()
         run: |
           echo "=== Creating macOS ZIP ==="
           APP_PATH=$(find build/macos/Build/Products/Release/ -name "*.app" -type d | head -1)
           if [ -z "$APP_PATH" ]; then
-            echo "::error::No .app found in build/macos/Build/Products/Release/"
+            echo "::error::No .app found"
             exit 1
           fi
           echo "Found app: $APP_PATH"
-          zip -r -y ToneHarbor-macOS.zip "$APP_PATH"
-          echo "ZIP created: $(ls -la ToneHarbor-macOS.zip)"
-        timeout-minutes: 5
+          cd "$(dirname "$APP_PATH")"
+          zip -r -y "$OLDPWD/ToneHarbor-macOS.zip" "$(basename "$APP_PATH")"
+          echo "ZIP created successfully"
 
       - name: Upload macOS artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: ToneHarbor-macOS
@@ -104,11 +125,66 @@ jobs:
           echo "Last exit code: $?"
           ls -la
           ls -la build/ 2>/dev/null || echo "No build directory"
-  # 自动创建 Release（仅当推送标签或手动触发且填写版本号时）
+
+      # ---------- 失败时自动创建 Issue ----------
+      - name: Create issue with build log on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const logPath = `${process.env.RUNNER_WORKSPACE}/macos_build.log`;
+            let logContent = '(No log file found)';
+            const MAX_CHARS = 40000;
+
+            try {
+              if (fs.existsSync(logPath)) {
+                const data = fs.readFileSync(logPath, 'utf8');
+                const lines = data.split('\n');
+                // 只保留含关键错误信息的行
+                let selected = lines.filter(line =>
+                  /error|fail|fatal|panic|exception|assert|undefined symbol/i.test(line)
+                );
+                if (selected.length === 0) selected = lines;
+                if (selected.length > 800) selected = selected.slice(-800);
+                let raw = selected.join('\n');
+                if (raw.length > MAX_CHARS) raw = raw.slice(-MAX_CHARS);
+                logContent = raw;
+              }
+            } catch (e) {
+              logContent = `Error reading log: ${e.message}`;
+            }
+
+            const title = `❌ macOS Build Failed - ${process.env.GITHUB_REF}`;
+            const body = `## 构建失败详情
+            **分支/标签**: ${process.env.GITHUB_REF}
+            **提交**: ${process.env.GITHUB_SHA}
+            **工作流运行**: [${process.env.GITHUB_RUN_ID}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
+
+            ### 错误/警告摘要 (最多 40000 字符)：
+            \`\`\`
+            ${logContent}
+            \`\`\`
+            `;
+
+            // 最终安全校验
+            let safeBody = body;
+            if (safeBody.length > 65000) {
+              safeBody = safeBody.substring(0, 65000) + '\n... [日志自动截断]';
+            }
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body: safeBody
+            });
+        env:
+          RUNNER_WORKSPACE: ${{ runner.workspace }}
+
   create-release:
     name: Create Release
     needs: [build-macos]
-    # 保留原有的触发条件，同时依赖 needs 保证构建成功
     if: |
       startsWith(github.ref, 'refs/tags/') ||
       (github.event_name == 'workflow_dispatch' && github.event.inputs.version != '')
@@ -132,6 +208,7 @@ jobs:
           fi
           
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Download macOS artifact
         uses: actions/download-artifact@v4
         with:
@@ -142,6 +219,7 @@ jobs:
         run: |
           echo "=== Downloaded artifacts ==="
           ls -la ./artifacts
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
