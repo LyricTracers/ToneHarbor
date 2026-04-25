@@ -6,8 +6,6 @@ PODS:
     - FlutterMacOS
   - connectivity_plus (0.0.1):
     - FlutterMacOS
-  - file_picker (0.0.1):
-    - FlutterMacOS
   - flutter_inappwebview_macos (0.0.1):
     - FlutterMacOS
     - OrderedSet (~> 6.0.3)
@@ -70,7 +68,6 @@ DEPENDENCIES:
   - audio_service (from `Flutter/ephemeral/.symlinks/plugins/audio_service/darwin`)
   - audio_session (from `Flutter/ephemeral/.symlinks/plugins/audio_session/macos`)
   - connectivity_plus (from `Flutter/ephemeral/.symlinks/plugins/connectivity_plus/macos`)
-  - file_picker (from `Flutter/ephemeral/.symlinks/plugins/file_picker/macos`)
   - flutter_inappwebview_macos (from `Flutter/ephemeral/.symlinks/plugins/flutter_inappwebview_macos/macos`)
   - flutter_native_splash (from `Flutter/ephemeral/.symlinks/plugins/flutter_native_splash/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
@@ -90,7 +87,6 @@ DEPENDENCIES:
 SPEC REPOS:
   https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git:
     - OrderedSet
-  trunk:
     - sqlite3
 
 EXTERNAL SOURCES:
@@ -100,8 +96,6 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/audio_session/macos
   connectivity_plus:
     :path: Flutter/ephemeral/.symlinks/plugins/connectivity_plus/macos
-  file_picker:
-    :path: Flutter/ephemeral/.symlinks/plugins/file_picker/macos
   flutter_inappwebview_macos:
     :path: Flutter/ephemeral/.symlinks/plugins/flutter_inappwebview_macos/macos
   flutter_native_splash:
@@ -137,7 +131,6 @@ SPEC CHECKSUMS:
   audio_service: aa99a6ba2ae7565996015322b0bb024e1d25c6fd
   audio_session: eaca2512cf2b39212d724f35d11f46180ad3a33e
   connectivity_plus: 4adf20a405e25b42b9c9f87feff8f4b6fde18a4e
-  file_picker: 7584aae6fa07a041af2b36a2655122d42f578c1a
   flutter_inappwebview_macos: c2d68649f9f8f1831bfcd98d73fd6256366d9d1d
   flutter_native_splash: 9f095b07b279b8a0c3604af4d71d9c88f95f8761
   FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
@@ -156,6 +149,6 @@ SPEC CHECKSUMS:
   tray_manager: a104b5c81b578d83f3c3d0f40a997c8b10810166
   window_manager: b729e31d38fb04905235df9ea896128991cad99e
 
-PODFILE CHECKSUM: e769d90dc5909bf2303da5fc156a6c5ff2247377
+PODFILE CHECKSUM: 6dff955d8ee40ceb7cdd5615b3a1340869d48211
 
 COCOAPODS: 1.16.2
