@@ -217,12 +217,13 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-darwin, x86_64-apple-darwin
+          targets: aarch64-apple-darwin
 
       - name: Fix Rust target conflicts
         run: |
           echo "=== Fixing Rust target conflicts ==="
-          rustup target add x86_64-apple-darwin 2>/dev/null || true
+          rustup target remove aarch64-apple-darwin 2>/dev/null || true
+          rustup target add aarch64-apple-darwin --toolchain stable
           echo "=== Rust target fixed ==="
 
       - name: Cache Pub dependencies
@@ -244,8 +245,9 @@ jobs:
       - name: Get dependencies
         run: |
           echo "=== Getting Flutter dependencies ==="
+          flutter clean
           flutter pub get -v
-        timeout-minutes: 15
+        timeout-minutes: 30
 
       - name: Install macOS dependencies
         run: |
@@ -255,19 +257,11 @@ jobs:
           if ! grep -q "cdn.cocoapods.org" Podfile; then
             sed -i '' '1s/^/source "https:\/\/cdn.cocoapods.org\/"\n/' Podfile
           fi
-          sed -i '' '/baseConfigurationReference/d' Runner.xcodeproj/project.pbxproj
           pod repo list | grep -B2 "mirrors.tuna.tsinghua.edu.cn" | grep -oE '^[a-zA-Z0-9_-]+' | while read repo_name; do
             echo "Removing repo: $repo_name"
             pod repo remove "$repo_name" || true
           done
-          pod install --verbose
-          # # 🔑 修复 Swift Module Name 为空的问题
-          # echo "Fixing PRODUCT_MODULE_NAME..."
-          # sed -i '' 's/PRODUCT_MODULE_NAME = "";/PRODUCT_MODULE_NAME = "Runner";/g' Runner.xcodeproj/project.pbxproj
-          # # 如果字段本身不存在，则添加
-          # if ! grep -q "PRODUCT_MODULE_NAME" Runner.xcodeproj/project.pbxproj; then
-          #   sed -i '' 's/\(CODE_SIGNING_ALLOWED = NO;\)/\1\n\t\t\t\tPRODUCT_MODULE_NAME = "Runner";/g' Runner.xcodeproj/project.pbxproj
-          # fi
+          pod install  --verbose
         timeout-minutes: 60
 
       - name: Build macOS
@@ -276,16 +270,7 @@ jobs:
           echo "=== Building macOS ==="
           rm -rf build/macos || true
           rm -rf ~/Library/Developer/Xcode/DerivedData || true
-          security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db 2>/dev/null || true
-          security set-keychain-settings -t 3600 -l ~/Library/Keychains/login.keychain-db 2>/dev/null || true
 
-          # 🔑 关键环境变量：Cargokit 和 xcode_backend 都依赖它们
-          export FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
-          export FLUTTER_APPLICATION_PATH="$(pwd)"
-          echo "FLUTTER_ROOT=$FLUTTER_ROOT"
-          echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
-
-          # 直接使用 flutter build macos，Cargokit 会自动编译 Rust 依赖
           if ! flutter build macos --release -v 2>&1 | tee "${RUNNER_WORKSPACE}/macos_build.log"; then
             echo "❌ BUILD FAILED"
             tail -n 300 "${RUNNER_WORKSPACE}/macos_build.log"
