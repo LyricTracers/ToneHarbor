@@ -109,7 +109,7 @@ jobs:
           echo "FLUTTER_ROOT=$FLUTTER_ROOT"
           echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
 
-          fif ! flutter build macos --release -v 2>&1 | tee "${RUNNER_WORKSPACE}/macos_build.log"; then
+          if ! flutter build macos --release -v 2>&1 | tee "${RUNNER_WORKSPACE}/macos_build.log"; then
             echo "❌ BUILD FAILED"
             tail -n 300 "${RUNNER_WORKSPACE}/macos_build.log"
             exit 1
