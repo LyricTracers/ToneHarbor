@@ -141,7 +141,9 @@ abstract class BaseBgLayout extends HookConsumerWidget {
               left: 0,
               right: 0,
               child: Container(
-                height: kToolbarHeight * size.multiplier3,
+                height:
+                    kToolbarHeight * size.multiplier3 +
+                    MediaQuery.of(context).padding.top,
                 color: colorScheme.tertiary.withValues(alpha: 0.1),
               ),
             ),

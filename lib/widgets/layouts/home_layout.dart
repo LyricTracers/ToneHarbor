@@ -59,10 +59,7 @@ class HomeLayout extends BaseBgLayout {
                   child: Column(
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(
-                          top: Platform.isMacOS ? 20 : 0,
-                          bottom: 8,
-                        ),
+                        padding: EdgeInsets.only(top: 20, bottom: 8),
                         child: SearchHistoryTextField(
                           showHistoryIcon: false,
                           listTextStyle: const TextStyle(fontSize: 14),

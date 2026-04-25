@@ -99,61 +99,83 @@ class SwitchLyricsLayout extends BaseBgLayout {
 
     var size = MediaQuery.of(context).size;
     if (size.lgAndUp) {
-      return SafeArea(
-        top: true,
-        bottom: false,
-        child: Row(
-          children: [
-            SizedBox(
-              width: min(size.width * 0.3, 300),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 2000),
-                curve: Curves.easeInOutSine,
-                decoration: gradientDecoration,
-                child: _getListLyrics(
-                  titleController,
-                  artistController,
-                  l10n,
-                  activeTrack,
-                  currentTrack,
-                  title,
-                  artist,
-                  colorScheme,
-                  searchProvider,
-                  callBack,
-                  selectedIndex,
-                  size,
+      {
+        return Scaffold(
+          body: Stack(
+            children: [
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: MediaQuery.of(context).padding.top + kToolbarHeight,
+                  color: colorScheme.tertiary.withValues(alpha: 0.1),
                 ),
               ),
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  _appBar(
-                    ref,
-                    l10n,
-                    selectedIndex,
-                    songId,
-                    searchProvider,
-                    colorScheme,
-                  ),
 
-                  Expanded(
-                    child: _lyricsContent(
-                      size.xlAndUp ? 3 : 0,
-                      selectedIndex,
-                      songId,
-                      searchProvider,
-                      defaultLyrics,
+              SafeArea(
+                top: true,
+                bottom: false,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: min(size.width * 0.3, 300),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 2000),
+                        curve: Curves.easeInOutSine,
+                        decoration: gradientDecoration,
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 20, bottom: 8),
+                          child: _getListLyrics(
+                            titleController,
+                            artistController,
+                            l10n,
+                            activeTrack,
+                            currentTrack,
+                            title,
+                            artist,
+                            colorScheme,
+                            searchProvider,
+                            callBack,
+                            selectedIndex,
+                            size,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  BottomPlayer(showArrowType: ShowArrowType.none),
-                ],
+
+                    Expanded(
+                      child: Column(
+                        children: [
+                          _appBar(
+                            ref,
+                            l10n,
+                            selectedIndex,
+                            songId,
+                            searchProvider,
+                            colorScheme,
+                          ),
+
+                          Expanded(
+                            child: _lyricsContent(
+                              size.xlAndUp ? 3 : 0,
+                              selectedIndex,
+                              songId,
+                              searchProvider,
+                              defaultLyrics,
+                            ),
+                          ),
+                          BottomPlayer(showArrowType: ShowArrowType.none),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      );
+            ],
+          ),
+        );
+      }
     }
     final tabController = useTabController(initialLength: 2);
     return SafeArea(
