@@ -287,7 +287,11 @@ jobs:
           echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
 
           # 直接使用 flutter build macos，Cargokit 会自动编译 Rust 依赖
-          flutter build macos --release -v 2>&1 | tee "${RUNNER_WORKSPACE}/macos_build.log"
+          if ! flutter build macos --release -v 2>&1 | tee "${RUNNER_WORKSPACE}/macos_build.log"; then
+            echo "❌ BUILD FAILED"
+            tail -n 300 "${RUNNER_WORKSPACE}/macos_build.log"
+            exit 1
+          fi
           echo "=== macOS build completed ==="
         timeout-minutes: 60
 
