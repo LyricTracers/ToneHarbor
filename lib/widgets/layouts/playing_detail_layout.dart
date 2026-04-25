@@ -77,33 +77,38 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
           children: [
             // if (size.mdAndDown)
             ...[
-              Center(
-                child: Material(
-                  color: colorScheme.tertiary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(30),
-                  clipBehavior: Clip.antiAlias,
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: 200 * size.multiplier2,
-                      maxHeight: 40 * size.multiplier2,
-                    ),
-                    child: TabBar(
-                      controller: tabController,
-                      labelColor: colorScheme.primary,
-                      labelStyle: TextStyle(
-                        fontSize: 16 * size.multiplier2,
-                        fontWeight: FontWeight.bold,
+              SafeArea(
+                top: true,
+                bottom: false,
+                child: Center(
+                  child: Material(
+                    color: colorScheme.tertiary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(30),
+                    clipBehavior: Clip.antiAlias,
+
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: 200 * size.multiplier2,
+                        maxHeight: 40 * size.multiplier2,
                       ),
-                      unselectedLabelStyle: TextStyle(
-                        fontSize: 14 * size.multiplier2,
-                        fontWeight: FontWeight.normal,
+                      child: TabBar(
+                        controller: tabController,
+                        labelColor: colorScheme.primary,
+                        labelStyle: TextStyle(
+                          fontSize: 16 * size.multiplier2,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        unselectedLabelStyle: TextStyle(
+                          fontSize: 14 * size.multiplier2,
+                          fontWeight: FontWeight.normal,
+                        ),
+                        unselectedLabelColor: colorScheme.onSurface,
+                        indicatorColor: colorScheme.primary,
+                        tabs: [
+                          Tab(text: l10n.music),
+                          Tab(text: l10n.lyrics),
+                        ],
                       ),
-                      unselectedLabelColor: colorScheme.onSurface,
-                      indicatorColor: colorScheme.primary,
-                      tabs: [
-                        Tab(text: l10n.music),
-                        Tab(text: l10n.lyrics),
-                      ],
                     ),
                   ),
                 ),

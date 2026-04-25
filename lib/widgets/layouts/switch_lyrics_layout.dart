@@ -105,46 +105,45 @@ class SwitchLyricsLayout extends BaseBgLayout {
             children: [
               Positioned(
                 top: 0,
-                left: 0,
+                left: min(size.width * 0.3, 300),
                 right: 0,
                 child: Container(
-                  height: MediaQuery.of(context).padding.top + kToolbarHeight,
+                  height: MediaQuery.of(context).padding.top,
                   color: colorScheme.tertiary.withValues(alpha: 0.1),
                 ),
               ),
 
-              SafeArea(
-                top: true,
-                bottom: false,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: min(size.width * 0.3, 300),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 2000),
-                        curve: Curves.easeInOutSine,
-                        decoration: gradientDecoration,
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 20, bottom: 8),
-                          child: _getListLyrics(
-                            titleController,
-                            artistController,
-                            l10n,
-                            activeTrack,
-                            currentTrack,
-                            title,
-                            artist,
-                            colorScheme,
-                            searchProvider,
-                            callBack,
-                            selectedIndex,
-                            size,
-                          ),
+              Row(
+                children: [
+                  SizedBox(
+                    width: min(size.width * 0.3, 300),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 2000),
+                      curve: Curves.easeInOutSine,
+                      decoration: gradientDecoration,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: _getListLyrics(
+                          titleController,
+                          artistController,
+                          l10n,
+                          activeTrack,
+                          currentTrack,
+                          title,
+                          artist,
+                          colorScheme,
+                          searchProvider,
+                          callBack,
+                          selectedIndex,
+                          size,
                         ),
                       ),
                     ),
-
-                    Expanded(
+                  ),
+                  Expanded(
+                    child: SafeArea(
+                      top: true,
+                      bottom: false,
                       child: Column(
                         children: [
                           _appBar(
@@ -169,8 +168,8 @@ class SwitchLyricsLayout extends BaseBgLayout {
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
