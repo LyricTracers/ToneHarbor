@@ -49,13 +49,13 @@ jobs:
           rustup target add x86_64-apple-darwin 2>/dev/null || true
           echo "=== Rust target fixed ==="
 
-      - name: Cache Pub dependencies
-        uses: actions/cache@v5
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
+      # - name: Cache Pub dependencies
+      #   uses: actions/cache@v5
+      #   with:
+      #     path: ~/.pub-cache
+      #     key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pub-
 
       - name: Print environment info
         run: |
@@ -68,8 +68,9 @@ jobs:
       - name: Get dependencies
         run: |
           echo "=== Getting Flutter dependencies ==="
+          flutter clean
           flutter pub get -v
-        timeout-minutes: 15
+        timeout-minutes: 30
 
       - name: Install macOS dependencies
         run: |
@@ -84,7 +85,7 @@ jobs:
             echo "Removing repo: $repo_name"
             pod repo remove "$repo_name" || true
           done
-          pod install --verbose
+          pod install --repo-update --verbose
           # 🔑 修复 Swift Module Name 为空的问题
           # echo "Fixing PRODUCT_MODULE_NAME..."
           # sed -i '' 's/PRODUCT_MODULE_NAME = "";/PRODUCT_MODULE_NAME = "Runner";/g' Runner.xcodeproj/project.pbxproj
@@ -100,14 +101,14 @@ jobs:
           echo "=== Building macOS ==="
           rm -rf build/macos || true
           rm -rf ~/Library/Developer/Xcode/DerivedData || true
-          security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db 2>/dev/null || true
-          security set-keychain-settings -t 3600 -l ~/Library/Keychains/login.keychain-db 2>/dev/null || true
+          # security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db 2>/dev/null || true
+          # security set-keychain-settings -t 3600 -l ~/Library/Keychains/login.keychain-db 2>/dev/null || true
 
-          export FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
-          export FLUTTER_APPLICATION_PATH="$(pwd)"
+          # export FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
+          # export FLUTTER_APPLICATION_PATH="$(pwd)"
           # export PRODUCT_MODULE_NAME="Runner"
-          echo "FLUTTER_ROOT=$FLUTTER_ROOT"
-          echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
+          # echo "FLUTTER_ROOT=$FLUTTER_ROOT"
+          # echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
 
           if ! flutter build macos --release -v 2>&1 | tee "${RUNNER_WORKSPACE}/macos_build.log"; then
             echo "❌ BUILD FAILED"
