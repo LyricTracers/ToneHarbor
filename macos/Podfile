@@ -43,6 +43,10 @@ post_install do |installer|
             # 下面两行是新增：解决 Xcode 16 Swift 6 严格并发错误
       # config.build_settings['SWIFT_VERSION'] = '5.0'
       # config.build_settings['SWIFT_STRICT_CONCURRENCY'] = 'minimal'
+      config.build_settings['SWIFT_VERSION'] = '5.0'
+      config.build_settings['SWIFT_STRICT_CONCURRENCY'] = 'minimal'
+      config.build_settings['SWIFT_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
+      config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
     end
   end
 end

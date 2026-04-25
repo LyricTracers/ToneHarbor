@@ -86,12 +86,12 @@ jobs:
           done
           pod install --verbose
           # 🔑 修复 Swift Module Name 为空的问题
-          echo "Fixing PRODUCT_MODULE_NAME..."
-          sed -i '' 's/PRODUCT_MODULE_NAME = "";/PRODUCT_MODULE_NAME = "Runner";/g' Runner.xcodeproj/project.pbxproj
+          # echo "Fixing PRODUCT_MODULE_NAME..."
+          # sed -i '' 's/PRODUCT_MODULE_NAME = "";/PRODUCT_MODULE_NAME = "Runner";/g' Runner.xcodeproj/project.pbxproj
           # 如果字段本身不存在，则添加
-          if ! grep -q "PRODUCT_MODULE_NAME" Runner.xcodeproj/project.pbxproj; then
-            sed -i '' 's/\(CODE_SIGNING_ALLOWED = NO;\)/\1\n\t\t\t\tPRODUCT_MODULE_NAME = "Runner";/g' Runner.xcodeproj/project.pbxproj
-          fi
+          # if ! grep -q "PRODUCT_MODULE_NAME" Runner.xcodeproj/project.pbxproj; then
+            # sed -i '' 's/\(CODE_SIGNING_ALLOWED = NO;\)/\1\n\t\t\t\tPRODUCT_MODULE_NAME = "Runner";/g' Runner.xcodeproj/project.pbxproj
+          # fi
         timeout-minutes: 60
 
       - name: Build macOS
@@ -105,7 +105,7 @@ jobs:
 
           export FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))
           export FLUTTER_APPLICATION_PATH="$(pwd)"
-          export PRODUCT_MODULE_NAME="Runner"
+          # export PRODUCT_MODULE_NAME="Runner"
           echo "FLUTTER_ROOT=$FLUTTER_ROOT"
           echo "FLUTTER_APPLICATION_PATH=$FLUTTER_APPLICATION_PATH"
 

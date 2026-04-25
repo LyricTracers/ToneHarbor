@@ -15,7 +15,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: ^0.20.2
-  rhttp: ^0.15.0
   fl_chart: ^1.2.0
   media_kit:
     git:
@@ -115,6 +114,7 @@ dev_dependencies:
   json_serializable: 6.11.2
 
 dependency_overrides:
+  rhttp: ^0.15.1
   flutter_rust_bridge: 2.11.1
   media_kit_libs_ios_audio:
     # path: ../media-kit/libs/ios/media_kit_libs_ios_audio
