@@ -366,8 +366,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0    # 获取完整历史，以便找到上一个标签
 
-      - name: Determine release version
+      - name: Determine release version and change log
         id: get_version
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
@@ -375,11 +377,23 @@ jobs:
           else
             VERSION="${GITHUB_REF#refs/tags/}"
           fi
+
           if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "::error::Invalid version format"
             exit 1
           fi
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+          # 获取上一个语义版本标签，生成比较链接
+          git fetch --tags -q
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -2 | tail -1)
+          if [ -z "$PREVIOUS_TAG" ]; then
+            CHANGE_LOG="请查看提交记录"
+          else
+            COMPARE_URL="https://github.com/${{ github.repository }}/compare/${PREVIOUS_TAG}...${VERSION}"
+            CHANGE_LOG="查看变更: [${COMPARE_URL}](${COMPARE_URL})"
+          fi
+          echo "CHANGE_LOG=$CHANGE_LOG" >> $GITHUB_OUTPUT
 
       - name: Download iOS artifact
         uses: actions/download-artifact@v8
@@ -397,33 +411,6 @@ jobs:
         run: |
           echo "=== Downloaded artifacts ==="
           ls -la ./artifacts
-
-      - name: Determine release version and compare URL
-        id: get_version
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            VERSION="${{ github.event.inputs.version }}"
-          else
-            VERSION="${GITHUB_REF#refs/tags/}"
-          fi
-
-          if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::Invalid version format"
-            exit 1
-          fi
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-
-          # 获取上一个版本标签（按语义版本排序）
-          git fetch --tags -q
-          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -2 | tail -1)
-          if [ -z "$PREVIOUS_TAG" ]; then
-            CHANGE_LOG="请查看提交记录"
-          else
-            COMPARE_URL="https://github.com/${{ github.repository }}/compare/${PREVIOUS_TAG}...${VERSION}"
-            CHANGE_LOG="查看变更: [${COMPARE_URL}](${COMPARE_URL})"   # 或根据需要改成纯文本：CHANGE_LOG="查看变更: ${COMPARE_URL}"
-          fi
-          echo "COMPARE_URL=$COMPARE_URL" >> $GITHUB_OUTPUT
-          echo "CHANGE_LOG=$CHANGE_LOG" >> $GITHUB_OUTPUT
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
