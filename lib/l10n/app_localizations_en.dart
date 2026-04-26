@@ -214,6 +214,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_network_error => 'Network Error';
 
   @override
+  String get error_qc_resolve_failed => 'QuickConnect resolution failed';
+
+  @override
+  String get error_qc_server_unavailable => 'QuickConnect server unavailable';
+
+  @override
   String get error_response_parse_failed => 'Response Parsing failed';
 
   @override
@@ -224,6 +230,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get useHttps => 'Use HTTPS';
+
+  @override
+  String get useLANIP => 'Prefer LAN';
+
+  @override
+  String get useLANIPHint =>
+      'When enabled, LAN address will be used preferentially';
+
+  @override
+  String get quickConnectId => 'QuickConnect ID';
 
   @override
   String get username => 'Username';

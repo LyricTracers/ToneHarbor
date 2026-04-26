@@ -47,6 +47,7 @@ class LoginLayout extends BaseBgLayout {
     }, [accountInfo]);
 
     final useHttps = ref.watch(useHttpProvider);
+    final useLANIP = ref.watch(useLANIPProvider);
     final obscurePassword = useState(true);
     final serverUrlError = useState<String?>(null);
     final usernameError = useState<String?>(null);
@@ -72,6 +73,14 @@ class LoginLayout extends BaseBgLayout {
 
       testingConnection.value = true;
       try {
+        // 如果是 QuickConnect ID，先解析
+        if (!serverUrl.contains('.') &&
+            !serverUrl.contains(':') &&
+            serverUrl.length >= 3) {
+          // QuickConnect ID，解析后再测试
+          await ref.read(quickConnectTestProvider(serverUrl).future);
+        }
+
         final response = await ref.read(testConnectionProvider.future);
         logger.i("测试连通性响应: $response");
         if (context.mounted) {
@@ -292,14 +301,32 @@ class LoginLayout extends BaseBgLayout {
                       onSubmitted: (_) => handleLogin(context),
                     ),
                     const SizedBox(height: 16),
-                    Row(
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 8,
                       children: [
-                        Checkbox(
-                          value: useHttps,
-                          onChanged: (value) =>
-                              ref.read(useHttpProvider.notifier).toggle(),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Checkbox(
+                              value: useHttps,
+                              onChanged: (value) =>
+                                  ref.read(useHttpProvider.notifier).toggle(),
+                            ),
+                            Text(l10n.useHttps),
+                          ],
                         ),
-                        Text(l10n.useHttps),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Checkbox(
+                              value: useLANIP,
+                              onChanged: (value) =>
+                                  ref.read(useLANIPProvider.notifier).toggle(),
+                            ),
+                            Text(l10n.useLANIP),
+                          ],
+                        ),
                       ],
                     ),
                     const SizedBox(height: 24),

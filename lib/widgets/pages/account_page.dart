@@ -113,6 +113,10 @@ class AccountPage extends HookConsumerWidget with BuildItem {
   ) {
     var account = ref.read(accountInfoProvider);
     var url = ref.read(baseUrlProvider);
+    var serverUrl = ref.read(serverUrlProvider);
+    final isQuickConnect = !serverUrl.contains('.') &&
+        !serverUrl.contains(':') &&
+        serverUrl.length >= 3;
 
     return Column(
       children: [
@@ -123,6 +127,20 @@ class AccountPage extends HookConsumerWidget with BuildItem {
           multiplier: multiplier,
           onTap: () => copyToClipboard(url, ref.context, colorScheme.secondary),
         ),
+        if (isQuickConnect) ...[
+          _buildDivider(colorScheme),
+          _buildListTile(
+            title: l10n.quickConnectId,
+            value: serverUrl,
+            colorScheme: colorScheme,
+            multiplier: multiplier,
+            onTap: () => copyToClipboard(
+              serverUrl,
+              ref.context,
+              colorScheme.secondary,
+            ),
+          ),
+        ],
         _buildDivider(colorScheme),
         _buildListTile(
           title: l10n.proxy_url,

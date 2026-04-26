@@ -201,6 +201,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_network_error => '网络错误';
 
   @override
+  String get error_qc_resolve_failed => 'QuickConnect 解析失败';
+
+  @override
+  String get error_qc_server_unavailable => 'QuickConnect 服务器不可用';
+
+  @override
   String get error_response_parse_failed => '解析失败';
 
   @override
@@ -211,6 +217,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get useHttps => '使用HTTPS';
+
+  @override
+  String get useLANIP => '优先使用局域网';
+
+  @override
+  String get useLANIPHint => '启用后将优先使用局域网地址连接';
+
+  @override
+  String get quickConnectId => 'QuickConnect ID';
 
   @override
   String get username => '用户名';

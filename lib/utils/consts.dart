@@ -44,6 +44,11 @@ const String aria2SecretKey = 'aria2_secret';
 const String aria2UseHttpsKey = 'aria2_use_https';
 const String aria2DownloadDirKey = 'aria2_download_dir';
 
+// QuickConnect settings
+const String remoteBaseUrlKey = 'remote_base_url';
+const String localBaseUrlKey = 'local_base_url';
+const String useLANIPKey = 'use_lan_ip';
+
 // pic path
 const String appIcon = 'assets/icons/app_icon.png';
 const String iconPlaceholder = 'assets/icons/icon_placeholder.png';

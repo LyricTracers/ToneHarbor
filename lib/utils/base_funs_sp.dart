@@ -297,4 +297,33 @@ abstract class SharedPreferencesUtils {
       await sharedPreferences.setString(aria2DownloadDirKey, value);
     }
   }
+
+  // QuickConnect settings
+  static String? getRemoteBaseUrl() =>
+      sharedPreferences.getString(remoteBaseUrlKey);
+
+  static Future<void> setRemoteBaseUrl(String? value) async {
+    if (value == null || value.isEmpty) {
+      await sharedPreferences.remove(remoteBaseUrlKey);
+    } else {
+      await sharedPreferences.setString(remoteBaseUrlKey, value);
+    }
+  }
+
+  static String? getLocalBaseUrl() =>
+      sharedPreferences.getString(localBaseUrlKey);
+
+  static Future<void> setLocalBaseUrl(String? value) async {
+    if (value == null || value.isEmpty) {
+      await sharedPreferences.remove(localBaseUrlKey);
+    } else {
+      await sharedPreferences.setString(localBaseUrlKey, value);
+    }
+  }
+
+  static bool getUseLANIP() => sharedPreferences.getBool(useLANIPKey) ?? false;
+
+  static Future<void> setUseLANIP(bool value) async {
+    await sharedPreferences.setBool(useLANIPKey, value);
+  }
 }

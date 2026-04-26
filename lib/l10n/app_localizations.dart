@@ -482,6 +482,18 @@ abstract class AppLocalizations {
   /// **'Network Error'**
   String get error_network_error;
 
+  /// No description provided for @error_qc_resolve_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'QuickConnect resolution failed'**
+  String get error_qc_resolve_failed;
+
+  /// No description provided for @error_qc_server_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'QuickConnect server unavailable'**
+  String get error_qc_server_unavailable;
+
   /// No description provided for @error_response_parse_failed.
   ///
   /// In en, this message translates to:
@@ -505,6 +517,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use HTTPS'**
   String get useHttps;
+
+  /// No description provided for @useLANIP.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer LAN'**
+  String get useLANIP;
+
+  /// No description provided for @useLANIPHint.
+  ///
+  /// In en, this message translates to:
+  /// **'When enabled, LAN address will be used preferentially'**
+  String get useLANIPHint;
+
+  /// No description provided for @quickConnectId.
+  ///
+  /// In en, this message translates to:
+  /// **'QuickConnect ID'**
+  String get quickConnectId;
 
   /// No description provided for @username.
   ///

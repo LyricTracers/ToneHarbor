@@ -165,14 +165,24 @@ void copyToClipboard(String text, BuildContext context, Color color) {
 }
 
 bool isValidServerUrl(String url) {
+  // QuickConnect ID: 不含 . 和 : 的字符串，长度 >= 3
+  if (!url.contains('.') && !url.contains(':') && url.length >= 3) {
+    return true;
+  }
+
+  // IP地址必须带端口
   final ipPortPattern = RegExp(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}$');
-  final domainPortPattern = RegExp(
-    r'^[a-zA-Z0-9][a-zA-Z0-9\-\.]+\.[a-zA-Z0-9\-]+:\d{1,5}$',
+
+  // 域名可以有端口，也可以没有端口
+  final domainPattern = RegExp(
+    r'^[a-zA-Z0-9][a-zA-Z0-9\-\.]+\.[a-zA-Z0-9\-]+(:\d{1,5})?$',
   );
+
+  // localhost 必须带端口
   final localhostPattern = RegExp(r'^localhost:\d{1,5}$');
 
   return ipPortPattern.hasMatch(url) ||
-      domainPortPattern.hasMatch(url) ||
+      domainPattern.hasMatch(url) ||
       localhostPattern.hasMatch(url);
 }
 

@@ -111,6 +111,57 @@ abstract class _$ServerUrl extends $Notifier<String> {
   }
 }
 
+@ProviderFor(UseLANIP)
+final useLANIPProvider = UseLANIPProvider._();
+
+final class UseLANIPProvider extends $NotifierProvider<UseLANIP, bool> {
+  UseLANIPProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'useLANIPProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$useLANIPHash();
+
+  @$internal
+  @override
+  UseLANIP create() => UseLANIP();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$useLANIPHash() => r'b1eb086aa5cb4eba64fa17632f97bb175a9f7cc5';
+
+abstract class _$UseLANIP extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(AccountInfo)
 final accountInfoProvider = AccountInfoProvider._();
 
@@ -255,7 +306,7 @@ final class BaseUrlProvider extends $FunctionalProvider<String, String, String>
   }
 }
 
-String _$baseUrlHash() => r'7cfd93ec1d917e0fb10b3a36079b60ecb3492a91';
+String _$baseUrlHash() => r'0c27631bc4f8eb9484aa801cd4694adf8f40c414';
 
 @ProviderFor(AuthToken)
 final authTokenProvider = AuthTokenProvider._();
@@ -341,3 +392,81 @@ final class AuthHeadersProvider
 }
 
 String _$authHeadersHash() => r'eae957f92a96718581092966106fa674ee74554e';
+
+/// 测试 QuickConnect ID 解析（用于测试连通性）
+
+@ProviderFor(quickConnectTest)
+final quickConnectTestProvider = QuickConnectTestFamily._();
+
+/// 测试 QuickConnect ID 解析（用于测试连通性）
+
+final class QuickConnectTestProvider
+    extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
+    with $FutureModifier<void>, $FutureProvider<void> {
+  /// 测试 QuickConnect ID 解析（用于测试连通性）
+  QuickConnectTestProvider._({
+    required QuickConnectTestFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'quickConnectTestProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$quickConnectTestHash();
+
+  @override
+  String toString() {
+    return r'quickConnectTestProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<void> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<void> create(Ref ref) {
+    final argument = this.argument as String;
+    return quickConnectTest(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is QuickConnectTestProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$quickConnectTestHash() => r'12457f0342d92b7affb60ee07500c71e37f0c194';
+
+/// 测试 QuickConnect ID 解析（用于测试连通性）
+
+final class QuickConnectTestFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<void>, String> {
+  QuickConnectTestFamily._()
+    : super(
+        retry: null,
+        name: r'quickConnectTestProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// 测试 QuickConnect ID 解析（用于测试连通性）
+
+  QuickConnectTestProvider call(String quickConnectId) =>
+      QuickConnectTestProvider._(argument: quickConnectId, from: this);
+
+  @override
+  String toString() => r'quickConnectTestProvider';
+}

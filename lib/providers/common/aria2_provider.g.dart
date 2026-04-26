@@ -349,7 +349,7 @@ final class Aria2ClientProvider extends $NotifierProvider<Aria2Client, void> {
   }
 }
 
-String _$aria2ClientHash() => r'e5b9e6ce4ba73a76fd4837aec0399f377b6cc06e';
+String _$aria2ClientHash() => r'e1c0059eb1fc314cb36f11047efd6751363d00e4';
 
 abstract class _$Aria2Client extends $Notifier<void> {
   void build();
