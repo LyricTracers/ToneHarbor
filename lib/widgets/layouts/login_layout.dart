@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
@@ -164,150 +166,167 @@ class LoginLayout extends BaseBgLayout {
       }
     }
 
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(32),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 400),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  l10n.appTitle,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  l10n.appSubtitle,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: colorScheme.onSurface.withValues(alpha: .7),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
-                TextField(
-                  controller: serverUrlController,
-                  decoration: InputDecoration(
-                    labelText: l10n.serverUrl,
-                    hintText: '192.168.1.100:5000',
-                    prefixIcon: const Icon(Icons.dns),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        testingConnection.value
-                            ? Icons.hourglass_empty
-                            : Icons.wifi,
-                      ),
-                      onPressed: testingConnection.value || requestFlag
-                          ? null
-                          : handleTestConnection,
-                      tooltip: l10n.testConnection,
-                    ),
-                    border: const OutlineInputBorder(),
-                    errorText: serverUrlError.value,
-                    errorBorder: serverUrlError.value != null
-                        ? OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.error,
-                              width: 2,
-                            ),
-                          )
-                        : null,
-                  ),
-                  keyboardType: TextInputType.url,
-                  enabled: !requestFlag,
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: usernameController,
-                  decoration: InputDecoration(
-                    labelText: l10n.username,
-                    prefixIcon: const Icon(Icons.person),
-                    border: const OutlineInputBorder(),
-                    errorText: usernameError.value,
-                    errorBorder: usernameError.value != null
-                        ? OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.error,
-                              width: 2,
-                            ),
-                          )
-                        : null,
-                  ),
-                  keyboardType: TextInputType.text,
-                  enabled: !requestFlag,
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    labelText: l10n.password,
-                    prefixIcon: const Icon(Icons.lock),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        obscurePassword.value
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        obscurePassword.value = !obscurePassword.value;
-                      },
-                    ),
-                    border: const OutlineInputBorder(),
-                    errorText: passwordError.value,
-                    errorBorder: passwordError.value != null
-                        ? OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.error,
-                              width: 2,
-                            ),
-                          )
-                        : null,
-                  ),
-                  obscureText: obscurePassword.value,
-                  enabled: !requestFlag,
-                  onSubmitted: (_) => handleLogin(context),
-                ),
-                const SizedBox(height: 16),
-                Row(
+    return Stack(
+      children: [
+        Positioned(
+          right: 16,
+          top: 16,
+          child: IconButton(
+            onPressed: () {
+              ref.context.pushWrapper("/full_log");
+            },
+            icon: const Icon(Icons.more_vert_outlined, size: 18),
+            tooltip: l10n.log_viewer,
+          ),
+        ),
+        Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(32),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Checkbox(
-                      value: useHttps,
-                      onChanged: (value) =>
-                          ref.read(useHttpProvider.notifier).toggle(),
+                    Text(
+                      l10n.appTitle,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    Text(l10n.useHttps),
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.appSubtitle,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: colorScheme.onSurface.withValues(alpha: .7),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    TextField(
+                      controller: serverUrlController,
+                      decoration: InputDecoration(
+                        labelText: l10n.serverUrl,
+                        hintText: '192.168.1.100:5000',
+                        prefixIcon: const Icon(Icons.dns),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            testingConnection.value
+                                ? Icons.hourglass_empty
+                                : Icons.wifi,
+                          ),
+                          onPressed: testingConnection.value || requestFlag
+                              ? null
+                              : handleTestConnection,
+                          tooltip: l10n.testConnection,
+                        ),
+                        border: const OutlineInputBorder(),
+                        errorText: serverUrlError.value,
+                        errorBorder: serverUrlError.value != null
+                            ? OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.error,
+                                  width: 2,
+                                ),
+                              )
+                            : null,
+                      ),
+                      keyboardType: TextInputType.url,
+                      enabled: !requestFlag,
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: usernameController,
+                      decoration: InputDecoration(
+                        labelText: l10n.username,
+                        prefixIcon: const Icon(Icons.person),
+                        border: const OutlineInputBorder(),
+                        errorText: usernameError.value,
+                        errorBorder: usernameError.value != null
+                            ? OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.error,
+                                  width: 2,
+                                ),
+                              )
+                            : null,
+                      ),
+                      keyboardType: TextInputType.text,
+                      enabled: !requestFlag,
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        labelText: l10n.password,
+                        prefixIcon: const Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            obscurePassword.value
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: () {
+                            obscurePassword.value = !obscurePassword.value;
+                          },
+                        ),
+                        border: const OutlineInputBorder(),
+                        errorText: passwordError.value,
+                        errorBorder: passwordError.value != null
+                            ? OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.error,
+                                  width: 2,
+                                ),
+                              )
+                            : null,
+                      ),
+                      obscureText: obscurePassword.value,
+                      enabled: !requestFlag,
+                      onSubmitted: (_) => handleLogin(context),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: useHttps,
+                          onChanged: (value) =>
+                              ref.read(useHttpProvider.notifier).toggle(),
+                        ),
+                        Text(l10n.useHttps),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    FilledButton(
+                      onPressed: requestFlag
+                          ? null
+                          : () => handleLogin(context),
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: Text(l10n.signIn),
+                    ),
+                    const SizedBox(height: 16),
+                    TextButton.icon(
+                      onPressed: () {
+                        context.pushWrapper('/local_music');
+                      },
+                      icon: const Icon(Icons.library_music_outlined, size: 18),
+                      label: Text(l10n.local_songs),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 24),
-                FilledButton(
-                  onPressed: requestFlag ? null : () => handleLogin(context),
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: Text(l10n.signIn),
-                ),
-                const SizedBox(height: 16),
-                TextButton.icon(
-                  onPressed: () {
-                    context.pushWrapper('/local_music');
-                  },
-                  icon: const Icon(Icons.library_music_outlined, size: 18),
-                  label: Text(l10n.local_songs),
-                ),
-              ],
+              ),
             ),
           ),
         ),
-      ),
+      ],
     );
   }
 }

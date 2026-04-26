@@ -56,5 +56,12 @@
 		<real>320.0</real>
 		<key>NSWindowMinHeight</key>
 		<real>600.0</real>
+		<key>NSLocalNetworkUsageDescription</key>
+		<string>拾音坞需要访问本地网络以连接到局域网内的音频服务器</string>
+		<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSAllowsLocalNetworking</key>
+			<true/>
+		</dict>	
 	</dict>
 </plist>

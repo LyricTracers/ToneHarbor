@@ -16,6 +16,7 @@ import 'package:toneharbor/services/audio_player/connection_checker_service.dart
 import 'package:toneharbor/services/server/server_health_check.dart';
 import 'package:toneharbor/utils/cloud_playlist_static_data.dart';
 import 'package:toneharbor/utils/responsive.dart';
+import 'package:toneharbor/widgets/layouts/full_log_layout.dart';
 import 'package:toneharbor/widgets/layouts/local_songs_layout.dart';
 import 'package:toneharbor/widgets/mobile/layouts/mobile_full_layout.dart';
 import 'package:toneharbor/widgets/mobile/layouts/mobile_home_layout.dart';
@@ -48,6 +49,7 @@ final publicPaths = [
   '/switch_lyrics',
   '/local_music',
   '/test',
+  '/full_log',
 ];
 void main() async {
   await initialized();
@@ -1198,6 +1200,12 @@ class MyApp extends HookConsumerWidget {
             parentNavigatorKey: rootNavigatorKey,
             pageBuilder: (context, state) =>
                 buildPage(key: state.pageKey, child: const TestLayout()),
+          ),
+          GoRoute(
+            path: '/full_log',
+            pageBuilder: (context, state) {
+              return buildPage(key: state.pageKey, child: FullLogLayout());
+            },
           ),
         ],
       );
