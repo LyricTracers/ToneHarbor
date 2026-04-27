@@ -35,7 +35,7 @@ class QuickConnectService with WidgetsBindingObserver {
           }
         });
     _isMonitoring = true;
-    checkLANConnection();
+    Future.delayed(Duration.zero, () => checkLANConnection());
     logger.d('QuickConnect: 启动局域网监控');
   }
 
