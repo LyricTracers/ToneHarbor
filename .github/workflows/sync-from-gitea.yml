@@ -35,14 +35,21 @@ jobs:
           GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}           # Gitea 个人访问令牌
           SYNC_BRANCH: ${{ github.event.inputs.branch || 'main' }}  # 优先使用手动输入的 branch
         run: |
-          # 设置 git 用户信息
+          echo "GITEA_HOST: $GITEA_HOST"
+          echo "GITEA_REPO: $GITEA_REPO"
+          echo "SYNC_BRANCH: $SYNC_BRANCH"
+
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 添加 Gitea 远程（使用 token 认证）
-          git remote add gitea "https://oauth2:${GITEA_TOKEN}@${GITEA_HOST}/${GITEA_REPO}"
-
-          # 拉取 Gitea 指定分支
+          REMOTE_URL="https://oauth2:${GITEA_TOKEN}@${GITEA_HOST}/${GITEA_REPO}"
+          echo "Checking connection to Gitea..."
+          if ! git ls-remote "$REMOTE_URL" $SYNC_BRANCH; then
+            echo "::error::Failed to connect to Gitea or branch '$SYNC_BRANCH' not found."
+            exit 1
+          fi
+          git config --global http.sslVerify false
+          git remote add gitea "$REMOTE_URL"
           git fetch gitea $SYNC_BRANCH
 
           # 将当前 GitHub 分支重置为 Gitea 分支的状态（完全覆盖）
