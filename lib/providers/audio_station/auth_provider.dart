@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -126,33 +127,53 @@ class AudioStationCookiesInfo extends _$AudioStationCookiesInfo {
   }
 }
 
+@riverpod
+class LanConnected extends _$LanConnected {
+  StreamSubscription<bool>? _subscription;
+
+  @override
+  bool build() {
+    final service = QuickConnectService.instance;
+    _subscription = service.onLANConnectivityChanged.listen(
+      (connected) {
+        state = connected;
+      },
+      onError: (e) {
+        logger.w('LanConnected stream error: $e');
+      },
+      onDone: () {
+        logger.d('LanConnected stream done');
+      },
+    );
+
+    ref.onDispose(() {
+      _subscription?.cancel();
+    });
+
+    return service.isLANConnectedSync ?? false;
+  }
+}
+
 @keepAlive
 String baseUrl(Ref ref) {
-  // 根据 useLANIP 开关和局域网连接状态选择地址
   final useLANIP = ref.watch(useLANIPProvider);
   final localBaseUrl = SharedPreferencesUtils.getLocalBaseUrl();
   final remoteBaseUrl = SharedPreferencesUtils.getRemoteBaseUrl();
 
-  // 如果启用了 useLANIP，需要检测局域网连接状态
   if (useLANIP && localBaseUrl != null && localBaseUrl.isNotEmpty) {
-    // 检查局域网连接状态
-    final isLANConnected =
-        QuickConnectService.instance.isLANConnectedSync ?? false;
+    final isLANConnected = ref.watch(lanConnectedProvider);
+    logger.d('局域网连接状态: $isLANConnected');
 
     if (isLANConnected) {
-      // 局域网可达，使用局域网地址
       return localBaseUrl;
     } else if (remoteBaseUrl != null && remoteBaseUrl.isNotEmpty) {
-      // 局域网不可达，自动切换到远程地址
       logger.d('局域网不可达，自动切换到远程地址');
       return remoteBaseUrl;
     } else {
-      // 没有远程地址，仍然尝试局域网地址
       return localBaseUrl;
     }
   }
 
-  // 否则优先使用远程地址，其次使用局域网地址
   if (remoteBaseUrl != null && remoteBaseUrl.isNotEmpty) {
     return remoteBaseUrl;
   }

@@ -114,7 +114,8 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     var account = ref.read(accountInfoProvider);
     var url = ref.read(baseUrlProvider);
     var serverUrl = ref.read(serverUrlProvider);
-    final isQuickConnect = !serverUrl.contains('.') &&
+    final isQuickConnect =
+        !serverUrl.contains('.') &&
         !serverUrl.contains(':') &&
         serverUrl.length >= 3;
 
@@ -134,11 +135,8 @@ class AccountPage extends HookConsumerWidget with BuildItem {
             value: serverUrl,
             colorScheme: colorScheme,
             multiplier: multiplier,
-            onTap: () => copyToClipboard(
-              serverUrl,
-              ref.context,
-              colorScheme.secondary,
-            ),
+            onTap: () =>
+                copyToClipboard(serverUrl, ref.context, colorScheme.secondary),
           ),
         ],
         _buildDivider(colorScheme),
@@ -280,17 +278,17 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     return Column(
       children: [
         buildAppBar(context, ref, l10n, colorScheme, l10n.account, size),
-        dsmInfo.when(
-          data: (value) {
-            final uptime = useState(value.data?.uptime ?? 0);
-            useEffect(() {
-              final timer = Timer.periodic(const Duration(seconds: 1), (_) {
-                uptime.value++;
-              });
-              return () => timer.cancel();
-            }, []);
-            return buildContent(context, ref, l10n, colorScheme, [
-              ...buildItem(
+        buildContent(context, ref, l10n, colorScheme, [
+          ...dsmInfo.when(
+            data: (value) {
+              final uptime = useState(value.data?.uptime ?? 0);
+              useEffect(() {
+                final timer = Timer.periodic(const Duration(seconds: 1), (_) {
+                  uptime.value++;
+                });
+                return () => timer.cancel();
+              }, []);
+              return buildItem(
                 ref,
                 l10n,
                 colorScheme,
@@ -304,37 +302,44 @@ class AccountPage extends HookConsumerWidget with BuildItem {
                   multiplier,
                 ),
                 multiplier,
-              ),
-              SizedBox(height: 20),
-              ...buildItem(
-                ref,
-                l10n,
-                colorScheme,
-                l10n.userInfo,
-                _userInfo(ref, l10n, colorScheme, obscurePassword, multiplier),
-                multiplier,
-              ),
-              SizedBox(height: 20),
-              ...buildItem(
-                ref,
-                l10n,
-                colorScheme,
-                l10n.operation,
-                _logout(ref, l10n, colorScheme, multiplier),
-                multiplier,
-              ),
-            ]);
-          },
-          loading: () => Expanded(
-            child: CommonShimmerLoader.accountList(
-              colorScheme: colorScheme,
-              size: size,
+              );
+            },
+            loading: () => buildItem(
+              ref,
+              l10n,
+              colorScheme,
+              l10n.deviceInfo,
+              CommonShimmerLoader.deviceInfoItem(colorScheme: colorScheme),
+              multiplier,
+            ),
+            error: (error, stackTrace) => buildItem(
+              ref,
+              l10n,
+              colorScheme,
+              l10n.deviceInfo,
+              SizedBox.shrink(),
+              multiplier,
             ),
           ),
-          error: (error, stackTrace) {
-            return buildErrorView(context, ref, colorScheme, () {});
-          },
-        ),
+          SizedBox(height: 20),
+          ...buildItem(
+            ref,
+            l10n,
+            colorScheme,
+            l10n.userInfo,
+            _userInfo(ref, l10n, colorScheme, obscurePassword, multiplier),
+            multiplier,
+          ),
+          SizedBox(height: 20),
+          ...buildItem(
+            ref,
+            l10n,
+            colorScheme,
+            l10n.operation,
+            _logout(ref, l10n, colorScheme, multiplier),
+            multiplier,
+          ),
+        ]),
       ],
     );
   }

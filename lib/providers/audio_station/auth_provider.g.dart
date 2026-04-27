@@ -142,7 +142,7 @@ final class UseLANIPProvider extends $NotifierProvider<UseLANIP, bool> {
   }
 }
 
-String _$useLANIPHash() => r'b1eb086aa5cb4eba64fa17632f97bb175a9f7cc5';
+String _$useLANIPHash() => r'7b34072dec0d0cbffa2836434ef3139a160f79ae';
 
 abstract class _$UseLANIP extends $Notifier<bool> {
   bool build();
@@ -268,6 +268,57 @@ abstract class _$AudioStationCookiesInfo
   }
 }
 
+@ProviderFor(LanConnected)
+final lanConnectedProvider = LanConnectedProvider._();
+
+final class LanConnectedProvider extends $NotifierProvider<LanConnected, bool> {
+  LanConnectedProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'lanConnectedProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$lanConnectedHash();
+
+  @$internal
+  @override
+  LanConnected create() => LanConnected();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$lanConnectedHash() => r'4cf4a245beb4d6d10953634bb5734114ac656f11';
+
+abstract class _$LanConnected extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(baseUrl)
 final baseUrlProvider = BaseUrlProvider._();
 
@@ -306,7 +357,7 @@ final class BaseUrlProvider extends $FunctionalProvider<String, String, String>
   }
 }
 
-String _$baseUrlHash() => r'0c27631bc4f8eb9484aa801cd4694adf8f40c414';
+String _$baseUrlHash() => r'2672db6f11f06cb4782923385545634e5899eb0b';
 
 @ProviderFor(AuthToken)
 final authTokenProvider = AuthTokenProvider._();
@@ -447,7 +498,7 @@ final class QuickConnectTestProvider
   }
 }
 
-String _$quickConnectTestHash() => r'12457f0342d92b7affb60ee07500c71e37f0c194';
+String _$quickConnectTestHash() => r'891f372edd2f2b56068bf411fdb5fac9d0f1430d';
 
 /// 测试 QuickConnect ID 解析（用于测试连通性）
 

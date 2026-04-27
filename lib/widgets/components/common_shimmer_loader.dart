@@ -495,121 +495,6 @@ class CommonShimmerLoader {
     );
   }
 
-  static Widget accountList({
-    required ColorScheme colorScheme,
-    required Size size,
-  }) {
-    return Shimmer.fromColors(
-      baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-      highlightColor: colorScheme.surface.withValues(alpha: 1.0),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.only(left: 20, right: 20, top: 15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(height: 14, width: 60, color: Colors.white),
-            const SizedBox(height: 4),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Column(
-                children: List.generate(5, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              height: 16,
-                              width: 80,
-                              color: Colors.white,
-                            ),
-                            Container(
-                              height: 14,
-                              width: size.width * 0.35,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                        if (index < 4) ...[
-                          const SizedBox(height: 8),
-                          Container(height: 1, color: Colors.white),
-                          const SizedBox(height: 8),
-                        ],
-                      ],
-                    ),
-                  );
-                }),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(height: 14, width: 60, color: Colors.white),
-            const SizedBox(height: 4),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Column(
-                children: List.generate(4, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              height: 16,
-                              width: 80,
-                              color: Colors.white,
-                            ),
-                            Container(
-                              height: 14,
-                              width: size.width * 0.35,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                        if (index < 3) ...[
-                          const SizedBox(height: 8),
-                          Container(height: 1, color: Colors.white),
-                          const SizedBox(height: 8),
-                        ],
-                      ],
-                    ),
-                  );
-                }),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(height: 14, width: 60, color: Colors.white),
-            const SizedBox(height: 4),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Center(
-                child: Container(height: 16, width: 60, color: Colors.white),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   static Widget lyricsList({
     required ColorScheme colorScheme,
     required Size size,
@@ -847,6 +732,39 @@ class CommonShimmerLoader {
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
         ),
+      ),
+    );
+  }
+
+  static Widget deviceInfoItem({
+    required ColorScheme colorScheme,
+    int itemCount = 5,
+  }) {
+    return Shimmer.fromColors(
+      baseColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      highlightColor: colorScheme.surface.withValues(alpha: 1.0),
+      child: Column(
+        children: List.generate(itemCount, (index) {
+          return Column(
+            children: [
+              ListTile(
+                title: Container(height: 16, width: 80, color: Colors.white),
+                trailing: Container(
+                  height: 14,
+                  width: 100,
+                  color: Colors.white,
+                ),
+              ),
+              if (index < itemCount - 1)
+                Divider(
+                  height: 1,
+                  color: Colors.white,
+                  indent: 15,
+                  endIndent: 15,
+                ),
+            ],
+          );
+        }),
       ),
     );
   }
