@@ -386,7 +386,7 @@ jobs:
 
           # 获取上一个语义版本标签，生成比较链接
           git fetch --tags -q
-          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -2 | tail -1)
+          PREVIOUS_TAG=$(git tag --sort=-version:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -2 | tail -1)
           if [ -z "$PREVIOUS_TAG" ]; then
             CHANGE_LOG="请查看提交记录"
           else
