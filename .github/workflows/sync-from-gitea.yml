@@ -34,6 +34,7 @@ jobs:
           GITEA_HOST: ${{ secrets.GITEA_HOST }}             # 例如：gitea.yourdomain.com（不带 https://）
           GITEA_REPO: ${{ secrets.GITEA_REPO }}             # 例如：yourname/your-repo.git
           GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}           # Gitea 个人访问令牌
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}               # GitHub 个人访问令牌
           SYNC_BRANCH: ${{ github.event.inputs.branch || 'main' }}  # 优先使用手动输入的 branch
         run: |
           echo "GITEA_HOST: $GITEA_HOST"
@@ -68,6 +69,6 @@ jobs:
           git reset --hard gitea/$SYNC_BRANCH
 
           # 强制推送到 GitHub 的默认分支（或你希望同步到的分支）
-          git push origin HEAD:refs/heads/${{ github.event.repository.default_branch }} --force
+          git push "https://x-access-token:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/${{ github.event.repository.default_branch }}" --force
 
           echo "✅ 成功从 Gitea 同步分支 '$SYNC_BRANCH' 到 GitHub"
