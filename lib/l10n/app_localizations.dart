@@ -494,6 +494,42 @@ abstract class AppLocalizations {
   /// **'QuickConnect server unavailable'**
   String get error_qc_server_unavailable;
 
+  /// No description provided for @error_qc_server_request_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'QuickConnect server request failed'**
+  String get error_qc_server_request_failed;
+
+  /// No description provided for @error_qc_server_info_parse_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to parse QuickConnect server info'**
+  String get error_qc_server_info_parse_failed;
+
+  /// No description provided for @error_qc_cn_server_request_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'QuickConnect China server request failed'**
+  String get error_qc_cn_server_request_failed;
+
+  /// No description provided for @error_qc_cn_server_info_parse_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to parse QuickConnect China server info'**
+  String get error_qc_cn_server_info_parse_failed;
+
+  /// No description provided for @error_qc_invalid_id.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid QuickConnect ID'**
+  String get error_qc_invalid_id;
+
+  /// No description provided for @error_server_url_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Server URL cannot be empty'**
+  String get error_server_url_empty;
+
   /// No description provided for @error_response_parse_failed.
   ///
   /// In en, this message translates to:

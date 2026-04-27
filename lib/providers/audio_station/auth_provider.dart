@@ -164,7 +164,8 @@ String baseUrl(Ref ref) {
   // 最后使用原有的 serverUrl
   final serverUrl = ref.watch(serverUrlProvider);
   if (serverUrl.isEmpty) {
-    throw AudioStationException(message: '服务器地址不能为空');
+    final l10n = ref.read(l10nProvider);
+    throw AudioStationException(message: l10n.error_server_url_empty);
   }
   final useHttp = ref.watch(useHttpProvider);
   final scheme = useHttp ? 'https' : 'http';
@@ -297,7 +298,10 @@ bool _handleServerInfo(Map<String, dynamic> jsonBody) {
 }
 
 /// 解析 QuickConnect 服务器信息
-Future<void> _resolveQuickConnect(String quickConnectId) async {
+Future<void> _resolveQuickConnect(
+  String quickConnectId,
+  AppLocalizations l10n,
+) async {
   var getServerInfoUrl = 'https://global.quickconnect.cn/Serv.php';
 
   final params = {
@@ -317,7 +321,7 @@ Future<void> _resolveQuickConnect(String quickConnectId) async {
 
     if (response.statusCode != 200) {
       throw AudioStationException(
-        message: 'QuickConnect 服务器请求失败',
+        message: l10n.error_qc_server_request_failed,
         statusCode: response.statusCode,
       );
     }
@@ -361,18 +365,25 @@ Future<void> _resolveQuickConnect(String quickConnectId) async {
       await _resolveQuickConnectCN(
         'https://$controlHost/Serv.php',
         quickConnectId,
+        l10n,
       );
       return;
     }
 
-    throw AudioStationException(message: '无法解析 QuickConnect 服务器信息');
+    throw AudioStationException(
+      message: l10n.error_qc_server_info_parse_failed,
+    );
   } catch (e) {
     logger.w('QuickConnect 解析失败: $e');
     rethrow;
   }
 }
 
-Future<void> _resolveQuickConnectCN(String url, String quickConnectId) async {
+Future<void> _resolveQuickConnectCN(
+  String url,
+  String quickConnectId,
+  AppLocalizations l10n,
+) async {
   final params = {
     'location': 'zh_CN',
     'id': 'dsm',
@@ -395,7 +406,7 @@ Future<void> _resolveQuickConnectCN(String url, String quickConnectId) async {
 
     if (response.statusCode != 200) {
       throw AudioStationException(
-        message: 'QuickConnect 中国区服务器请求失败',
+        message: l10n.error_qc_cn_server_request_failed,
         statusCode: response.statusCode,
       );
     }
@@ -403,7 +414,9 @@ Future<void> _resolveQuickConnectCN(String url, String quickConnectId) async {
     final jsonBody = jsonDecode(response.body) as Map<String, dynamic>;
 
     if (!_handleServerInfo(jsonBody)) {
-      throw AudioStationException(message: '无法解析 QuickConnect 中国区服务器信息');
+      throw AudioStationException(
+        message: l10n.error_qc_cn_server_info_parse_failed,
+      );
     }
   } catch (e) {
     logger.w('QuickConnect 中国区解析失败: $e');
@@ -414,11 +427,12 @@ Future<void> _resolveQuickConnectCN(String url, String quickConnectId) async {
 /// 测试 QuickConnect ID 解析（用于测试连通性）
 @riverpod
 Future<void> quickConnectTest(Ref ref, String quickConnectId) async {
+  final l10n = ref.read(l10nProvider);
   if (!_isQuickConnectId(quickConnectId)) {
-    throw AudioStationException(message: '无效的 QuickConnect ID');
+    throw AudioStationException(message: l10n.error_qc_invalid_id);
   }
 
-  await _resolveQuickConnect(quickConnectId);
+  await _resolveQuickConnect(quickConnectId, l10n);
 }
 
 Future<AuthResponse> login(WidgetRef ref) async {
@@ -435,7 +449,7 @@ Future<AuthResponse> login(WidgetRef ref) async {
   if (isQuickConnect) {
     logger.d('检测到 QuickConnect ID: $serverUrl');
     try {
-      await _resolveQuickConnect(serverUrl);
+      await _resolveQuickConnect(serverUrl, l10n);
     } catch (e) {
       logger.w('QuickConnect 解析失败，清除缓存: $e');
       await SharedPreferencesUtils.setRemoteBaseUrl(null);

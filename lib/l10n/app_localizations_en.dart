@@ -220,6 +220,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_qc_server_unavailable => 'QuickConnect server unavailable';
 
   @override
+  String get error_qc_server_request_failed =>
+      'QuickConnect server request failed';
+
+  @override
+  String get error_qc_server_info_parse_failed =>
+      'Failed to parse QuickConnect server info';
+
+  @override
+  String get error_qc_cn_server_request_failed =>
+      'QuickConnect China server request failed';
+
+  @override
+  String get error_qc_cn_server_info_parse_failed =>
+      'Failed to parse QuickConnect China server info';
+
+  @override
+  String get error_qc_invalid_id => 'Invalid QuickConnect ID';
+
+  @override
+  String get error_server_url_empty => 'Server URL cannot be empty';
+
+  @override
   String get error_response_parse_failed => 'Response Parsing failed';
 
   @override

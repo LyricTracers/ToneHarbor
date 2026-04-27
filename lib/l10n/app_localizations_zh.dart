@@ -207,6 +207,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_qc_server_unavailable => 'QuickConnect 服务器不可用';
 
   @override
+  String get error_qc_server_request_failed => 'QuickConnect 服务器请求失败';
+
+  @override
+  String get error_qc_server_info_parse_failed => '无法解析 QuickConnect 服务器信息';
+
+  @override
+  String get error_qc_cn_server_request_failed => 'QuickConnect 中国区服务器请求失败';
+
+  @override
+  String get error_qc_cn_server_info_parse_failed =>
+      '无法解析 QuickConnect 中国区服务器信息';
+
+  @override
+  String get error_qc_invalid_id => '无效的 QuickConnect ID';
+
+  @override
+  String get error_server_url_empty => '服务器地址不能为空';
+
+  @override
   String get error_response_parse_failed => '解析失败';
 
   @override
