@@ -177,10 +177,10 @@ class LoginLayout extends BaseBgLayout {
 
     return Stack(
       children: [
-        SafeArea(
-          child: Positioned(
-            right: 16,
-            top: 16,
+        Positioned(
+          right: 16,
+          top: 16,
+          child: SafeArea(
             child: IconButton(
               onPressed: () {
                 ref.context.pushWrapper("/full_log");
