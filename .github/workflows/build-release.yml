@@ -378,21 +378,29 @@ jobs:
             VERSION="${GITHUB_REF#refs/tags/}"
           fi
 
-          if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          # 接受纯数字版本和预发布版本（如 v1.0.3-rc1）
+          if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([-\.].*)?$ ]]; then
             echo "::error::Invalid version format"
             exit 1
           fi
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
-          # 获取所有语义版本标签，排除当前版本，按语义排序
+          # 判断是否为预发布：如果版本号中包含 '-' 或用户手动指定，则视为预发布
+          if [[ "$VERSION" =~ - ]]; then
+            IS_PRERELEASE="true"
+          else
+            IS_PRERELEASE="false"
+          fi
+          # 手动触发时可以覆盖（如果你想增加 workflow_dispatch 的 prerelease 输入，也可以在这里读取）
+          echo "IS_PRERELEASE=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+
+          # 获取上一个标签（用于比较链接），跳过当前标签
           git fetch --tags -q
           echo "=== All version tags (sorted by semver) ==="
-          git tag | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | grep -v "^${VERSION}$"
+          git tag | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+' | sort -V | grep -v "^${VERSION}$"
           echo "============================================"
 
-          # 上一个版本就是排序后的最后一行
-          PREVIOUS_TAG=$(git tag | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | grep -v "^${VERSION}$" | tail -1)
-
+          PREVIOUS_TAG=$(git tag | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+' | sort -V | grep -v "^${VERSION}$" | tail -1)
           if [ -z "$PREVIOUS_TAG" ]; then
             CHANGE_LOG="请查看提交记录"
           else
@@ -436,6 +444,6 @@ jobs:
             artifacts/ToneHarbor.ipa
             artifacts/ToneHarbor-macOS.zip
           draft: false
-          prerelease: false
+          prerelease: ${{ steps.get_version.outputs.IS_PRERELEASE == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
