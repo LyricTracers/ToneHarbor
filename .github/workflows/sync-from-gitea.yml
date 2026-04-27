@@ -41,8 +41,14 @@ jobs:
           git config --global http.sslVerify false
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          echo "machine ${GITEA_HOST} login oauth2 password ${GITEA_TOKEN}" > ~/.netrc
-          chmod 600 ~/.netrc
+          # 1. 创建 Git 凭据文件（使用 Git 原生 credential store）
+          #    格式：https://<username>:<password>@<host>
+          #    Gitea 忽略用户名，只验证 Token 密码
+          echo "https://oauth2:${GITEA_TOKEN}@${GITEA_HOST}" > ~/.git-credentials
+          chmod 600 ~/.git-credentials
+
+          # 2. 配置 Git 使用 "store" 凭据助手，从 ~/.git-credentials 读取
+          git config --global credential.helper store
           REMOTE_URL="https://${GITEA_HOST}/${GITEA_REPO}"
 
           echo "Connecting to Gitea: $REMOTE_URL"
