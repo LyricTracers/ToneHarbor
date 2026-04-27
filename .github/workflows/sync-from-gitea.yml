@@ -1,0 +1,54 @@
+name: Sync from Gitea
+
+on:
+  # 允许手动触发（在 GitHub Actions 页面点击 Run workflow）
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Gitea branch to sync (e.g., master, main)'
+        required: true
+        default: 'main'
+  # 定时同步（可根据需要调整 cron 表达式）
+  schedule:
+    - cron: '0 */6 * * *'   # 每 6 小时自动同步一次
+  # 通过 Gitea Webhook 发送 repository_dispatch 事件触发
+  repository_dispatch:
+    types: [gitea_push]
+
+permissions:  
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub repository
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0   # 拉取完整历史，以便强制推送
+
+      - name: Sync from Gitea
+        env:
+          GITEA_HOST: ${{ secrets.GITEA_HOST }}             # 例如：gitea.yourdomain.com（不带 https://）
+          GITEA_REPO: ${{ secrets.GITEA_REPO }}             # 例如：yourname/your-repo.git
+          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}           # Gitea 个人访问令牌
+          SYNC_BRANCH: ${{ github.event.inputs.branch || 'main' }}  # 优先使用手动输入的 branch
+        run: |
+          # 设置 git 用户信息
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 添加 Gitea 远程（使用 token 认证）
+          git remote add gitea "https://oauth2:${GITEA_TOKEN}@${GITEA_HOST}/${GITEA_REPO}"
+
+          # 拉取 Gitea 指定分支
+          git fetch gitea $SYNC_BRANCH
+
+          # 将当前 GitHub 分支重置为 Gitea 分支的状态（完全覆盖）
+          git reset --hard gitea/$SYNC_BRANCH
+
+          # 强制推送到 GitHub 的默认分支（或你希望同步到的分支）
+          git push origin HEAD:refs/heads/${{ github.event.repository.default_branch }} --force
+
+          echo "✅ 成功从 Gitea 同步分支 '$SYNC_BRANCH' 到 GitHub"
