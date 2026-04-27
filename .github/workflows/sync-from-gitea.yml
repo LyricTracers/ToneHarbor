@@ -17,7 +17,6 @@ on:
 
 permissions:  
   contents: write
-  actions: write 
 
 jobs:
   sync:
@@ -26,21 +25,24 @@ jobs:
       - name: Checkout GitHub repository
         uses: actions/checkout@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0   # 拉取完整历史，以便强制推送
+          token: ${{ secrets.PAT_TOKEN }}
+          fetch-depth: 0
 
       - name: Sync from Gitea
         env:
-          GITEA_HOST: ${{ secrets.GITEA_HOST }}             # 例如：gitea.yourdomain.com（不带 https://）
-          GITEA_REPO: ${{ secrets.GITEA_REPO }}             # 例如：yourname/your-repo.git
-          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}           # Gitea 个人访问令牌
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}               # GitHub 个人访问令牌
-          SYNC_BRANCH: ${{ github.event.inputs.branch || 'main' }}  # 优先使用手动输入的 branch
+          GITEA_HOST: ${{ secrets.GITEA_HOST }}
+          GITEA_REPO: ${{ secrets.GITEA_REPO }}
+          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
+          SYNC_BRANCH: ${{ github.event.inputs.branch || github.event.repository.default_branch }}
+
         run: |
           echo "GITEA_HOST: $GITEA_HOST"
           echo "GITEA_REPO: $GITEA_REPO"
           echo "SYNC_BRANCH: $SYNC_BRANCH"
+          
+          # 如果 Gitea 使用自签名证书，请保留此行
           git config --global http.sslVerify false
+          
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           # 1. 创建 Git 凭据文件（使用 Git 原生 credential store）
@@ -68,7 +70,6 @@ jobs:
           # 将当前 GitHub 分支重置为 Gitea 分支的状态（完全覆盖）
           git reset --hard gitea/$SYNC_BRANCH
 
-          # 强制推送到 GitHub 的默认分支（或你希望同步到的分支）
-          git push "https://x-access-token:${PAT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/${{ github.event.repository.default_branch }}" --force
+          git push origin "HEAD:refs/heads/${{ github.event.repository.default_branch }}" --force
 
           echo "✅ 成功从 Gitea 同步分支 '$SYNC_BRANCH' 到 GitHub"
