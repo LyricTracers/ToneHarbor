@@ -516,9 +516,9 @@ Future<LogoutResponse> logout(WidgetRef ref) async {
 
   final authHeaders = await ref.read(authHeadersProvider.future);
   if (authHeaders == null) {
-    logger.w('认证失败，返回空结果');
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+      QuickConnectService.instance.stopMonitoring();
     });
     return LogoutResponse(success: false);
   }
@@ -530,35 +530,35 @@ Future<LogoutResponse> logout(WidgetRef ref) async {
     method: 'logout',
     version: '6',
   );
-
-  final response = await httpClientWrapper.get(
-    '$baseUrl/webapi/entry.cgi',
-    query: request.toJson().map(
-      (key, value) => MapEntry(key, value?.toString() ?? ''),
-    ),
-    headers: HttpHeaders.rawMap({'accept': '*/*', ...authHeaders}),
-  );
-
-  if (response.statusCode != 200) {
-    throw AudioStationException(
-      message: l10n.error_login_failed,
-      statusCode: response.statusCode,
+  try {
+    final response = await httpClientWrapper.get(
+      '$baseUrl/webapi/entry.cgi',
+      query: request.toJson().map(
+        (key, value) => MapEntry(key, value?.toString() ?? ''),
+      ),
+      headers: HttpHeaders.rawMap({'accept': '*/*', ...authHeaders}),
     );
+
+    if (response.statusCode != 200) {
+      throw AudioStationException(
+        message: l10n.error_login_failed,
+        statusCode: response.statusCode,
+      );
+    }
+
+    final jsonBody = parseJsonResponse(response.body);
+    final result = LogoutResponse.fromJson(jsonBody);
+
+    if (!result.success) {
+      throw AudioStationException(message: l10n.error_login_failed);
+    }
+  } catch (e) {
+    logger.w('登出请求失败: $e');
+  } finally {
+    // ref.invalidate(authTokenProvider);
+    await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+    QuickConnectService.instance.stopMonitoring();
   }
 
-  final jsonBody = parseJsonResponse(response.body);
-  final result = LogoutResponse.fromJson(jsonBody);
-
-  if (!result.success) {
-    throw AudioStationException(message: l10n.error_login_failed);
-  }
-
-  await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-  // ref.invalidate(authTokenProvider);
-
-  // 登出时停止 QuickConnect 监控
-  QuickConnectService.instance.stopMonitoring();
-  logger.d('登出成功，停止局域网监控');
-
-  return result;
+  return LogoutResponse(success: true);
 }
