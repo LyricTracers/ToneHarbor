@@ -153,6 +153,7 @@ class MyApp extends HookConsumerWidget {
             await audioPlayerSubscription?.cancel();
             if (audioPlayer.currentIndex >= 0) {
               final currentPlaylist = audioPlayer.playlist;
+              if (currentPlaylist.medias.isEmpty) return;
               final currentMedia =
                   currentPlaylist.medias[currentPlaylist.index];
               final currentTrack = ToneHarborTrackObject.fromJson(
