@@ -384,9 +384,15 @@ jobs:
           fi
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
-          # 获取上一个语义版本标签，生成比较链接
+          # 获取所有语义版本标签，排除当前版本，按语义排序
           git fetch --tags -q
-          PREVIOUS_TAG=$(git tag --sort=-version:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -2 | tail -1)
+          echo "=== All version tags (sorted by semver) ==="
+          git tag | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | grep -v "^${VERSION}$"
+          echo "============================================"
+
+          # 上一个版本就是排序后的最后一行
+          PREVIOUS_TAG=$(git tag | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | grep -v "^${VERSION}$" | tail -1)
+
           if [ -z "$PREVIOUS_TAG" ]; then
             CHANGE_LOG="请查看提交记录"
           else
@@ -394,7 +400,7 @@ jobs:
             CHANGE_LOG="查看变更: [${COMPARE_URL}](${COMPARE_URL})"
           fi
           echo "CHANGE_LOG=$CHANGE_LOG" >> $GITHUB_OUTPUT
-
+          
       - name: Download iOS artifact
         uses: actions/download-artifact@v8
         with:
