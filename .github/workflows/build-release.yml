@@ -378,20 +378,19 @@ jobs:
             VERSION="${GITHUB_REF#refs/tags/}"
           fi
 
-          # 接受纯数字版本和预发布版本（如 v1.0.3-rc1）
+          # 接受纯数字版本和预发布版本（如 v1.0.3-rc1, v1.0.2_rc1）
           if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([-\._].*)?$ ]]; then
             echo "::error::Invalid version format"
             exit 1
           fi
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
-          # 判断是否为预发布：如果版本号中包含 '-' 或用户手动指定，则视为预发布
-          if [[ "$VERSION" =~ - ]]; then
+          # 判断是否为预发布：如果版本号中包含 '-' 或 '_'，则视为预发布
+          if [[ "$VERSION" =~ [-_] ]]; then
             IS_PRERELEASE="true"
           else
             IS_PRERELEASE="false"
           fi
-          # 手动触发时可以覆盖（如果你想增加 workflow_dispatch 的 prerelease 输入，也可以在这里读取）
           echo "IS_PRERELEASE=$IS_PRERELEASE" >> $GITHUB_OUTPUT
 
           # 获取上一个标签（用于比较链接），跳过当前标签
@@ -400,7 +399,9 @@ jobs:
           git tag | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+' | sort -V | grep -v "^${VERSION}$"
           echo "============================================"
 
-          PREVIOUS_TAG=$(git tag | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+' | sort -V | grep -v "^${VERSION}$" | tail -1)
+          # 🔑 关键修改：只获取纯数字标签（不包含 - 或 _），确保上一个版本是正式版
+          PREVIOUS_TAG=$(git tag | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | grep -v "^${VERSION}$" | tail -1)
+
           if [ -z "$PREVIOUS_TAG" ]; then
             CHANGE_LOG="请查看提交记录"
           else
@@ -408,7 +409,7 @@ jobs:
             CHANGE_LOG="查看变更: [${COMPARE_URL}](${COMPARE_URL})"
           fi
           echo "CHANGE_LOG=$CHANGE_LOG" >> $GITHUB_OUTPUT
-          
+
       - name: Download iOS artifact
         uses: actions/download-artifact@v8
         with:
