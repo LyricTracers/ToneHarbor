@@ -273,6 +273,10 @@ git push origin v2.3.5
 
 MIT License
 
+## 👥 社区交流
+
+点击链接加入群聊【拾音坞】：[https://qm.qq.com/q/YVXarZeRuG](https://qm.qq.com/q/YVXarZeRuG)
+
 ## 🙏 致谢
 
 - [Synology Audio Station API](https://www.synology.com/)
