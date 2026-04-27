@@ -38,17 +38,21 @@ jobs:
           echo "GITEA_HOST: $GITEA_HOST"
           echo "GITEA_REPO: $GITEA_REPO"
           echo "SYNC_BRANCH: $SYNC_BRANCH"
-
+          git config --global http.sslVerify false
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global http.extraHeader "Authorization: Bearer ${GITEA_TOKEN}"
+          REMOTE_URL="https://${GITEA_HOST}/${GITEA_REPO}"
 
-          REMOTE_URL="https://oauth2:${GITEA_TOKEN}@${GITEA_HOST}/${GITEA_REPO}"
-          echo "Checking connection to Gitea..."
-          if ! git ls-remote "$REMOTE_URL" $SYNC_BRANCH; then
-            echo "::error::Failed to connect to Gitea or branch '$SYNC_BRANCH' not found."
+          echo "Connecting to Gitea: $REMOTE_URL"
+          echo "Branch: $SYNC_BRANCH"
+
+          if ! git ls-remote "$REMOTE_URL" "$SYNC_BRANCH"; then
+            echo "::error::Failed to connect to Gitea or branch not found."
+            echo "Available branches:"
+            git ls-remote --heads "$REMOTE_URL" || true
             exit 1
           fi
-          git config --global http.sslVerify false
           git remote add gitea "$REMOTE_URL"
           git fetch gitea $SYNC_BRANCH
 
