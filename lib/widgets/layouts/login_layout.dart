@@ -177,17 +177,20 @@ class LoginLayout extends BaseBgLayout {
 
     return Stack(
       children: [
-        Positioned(
-          right: 16,
-          top: 16,
-          child: IconButton(
-            onPressed: () {
-              ref.context.pushWrapper("/full_log");
-            },
-            icon: const Icon(Icons.more_vert_outlined, size: 18),
-            tooltip: l10n.log_viewer,
+        SafeArea(
+          child: Positioned(
+            right: 16,
+            top: 16,
+            child: IconButton(
+              onPressed: () {
+                ref.context.pushWrapper("/full_log");
+              },
+              icon: const Icon(Icons.more_vert_outlined, size: 18),
+              tooltip: l10n.log_viewer,
+            ),
           ),
         ),
+
         Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(32),
