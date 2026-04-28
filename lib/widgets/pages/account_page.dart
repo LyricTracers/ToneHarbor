@@ -105,15 +105,18 @@ class AccountPage extends HookConsumerWidget with BuildItem {
         try {
           await logout(ref);
         } finally {
-          await ref
-              .read(audioStationCookiesInfoProvider.notifier)
-              .clearCookie();
           await SharedPreferencesUtils.setRemoteBaseUrl(null);
           await SharedPreferencesUtils.setLocalBaseUrl(null);
           ref.read(requestFlagProvider.notifier).setRequestFlag(false);
-          if (ref.context.mounted) {
-            ref.context.go('/login');
-          }
+
+          await ref
+              .read(audioStationCookiesInfoProvider.notifier)
+              .clearCookie()
+              .then((value) {
+                if (ref.context.mounted) {
+                  ref.context.go('/login');
+                }
+              });
         }
       },
       title: Text(

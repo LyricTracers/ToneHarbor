@@ -108,7 +108,7 @@ abstract class SharedPreferencesUtils {
     final savedValue = sharedPreferences.getInt(audioQualityKey);
     return savedValue != null
         ? AudioQuality.values[savedValue]
-        : AudioQuality.high;
+        : AudioQuality.medium;
   }
 
   static Future<void> setAudioQuality(AudioQuality quality) async {
