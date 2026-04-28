@@ -51,6 +51,8 @@ final publicPaths = [
   '/test',
   '/full_log',
 ];
+final rootNavigatorKey = GlobalKey<NavigatorState>();
+final shellKey = GlobalKey<NavigatorState>();
 void main() async {
   await initialized();
   runApp(
@@ -212,8 +214,6 @@ class MyApp extends HookConsumerWidget {
       return NoTransitionPage<void>(key: key, child: child);
     }
 
-    final rootNavigatorKey = GlobalKey<NavigatorState>();
-    final shellKey = GlobalKey<NavigatorState>();
     final router = useMemoized(() {
       return GoRouter(
         navigatorKey: rootNavigatorKey,
@@ -1203,6 +1203,7 @@ class MyApp extends HookConsumerWidget {
           ),
           GoRoute(
             path: '/full_log',
+            parentNavigatorKey: rootNavigatorKey,
             pageBuilder: (context, state) {
               return buildPage(key: state.pageKey, child: FullLogLayout());
             },

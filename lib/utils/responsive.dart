@@ -133,8 +133,19 @@ extension Contextbreakpoints on BuildContext {
         go(location, extra: extra);
         return;
       }
-      await push<T>(location, extra: extra);
-      return;
+      final isInShell = Navigator.of(this).widget.key == shellKey;
+      if (isInShell) {
+        await push<T>(location, extra: extra);
+        return;
+      } else {
+        if (publicPaths.any((path) => location.startsWith(path))) {
+          await push<T>(location, extra: extra);
+          return;
+        } else {
+          go(location, extra: extra);
+          return;
+        }
+      }
     }
     if (location == '/') await push<T>(location, extra: extra);
     if (location.startsWith('/mobile_home')) {

@@ -316,7 +316,6 @@ class PlaylistPage extends HookConsumerWidget {
                       colorScheme: colorScheme,
                       i10n: i10n,
                       onTap: () {
-                        logger.i("track: $track");
                         audioPlayer.jumpTo(index);
                       },
                       onDeleteTap: () {
