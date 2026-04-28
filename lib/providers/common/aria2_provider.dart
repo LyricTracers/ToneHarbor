@@ -1,7 +1,7 @@
+import 'package:lyricskit/lyricskit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'dart:convert';
-import 'package:rhttp/rhttp.dart' as rhttp;
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_player/tone_harbor_track.dart';
 import 'package:toneharbor/services/cloud_music/song_url.dart';
@@ -122,8 +122,8 @@ class Aria2Client extends _$Aria2Client {
     try {
       final response = await httpClientWrapper.post(
         _baseUrl,
-        headers: rhttp.HttpHeaders.rawMap({'Content-Type': 'application/json'}),
-        body: rhttp.HttpBody.text(payload),
+        headers: HttpHeaders.rawMap({'Content-Type': 'application/json'}),
+        body: HttpBody.text(payload),
       );
 
       if (response.statusCode != 200) {

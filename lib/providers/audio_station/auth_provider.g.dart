@@ -111,57 +111,6 @@ abstract class _$ServerUrl extends $Notifier<String> {
   }
 }
 
-@ProviderFor(UseLANIP)
-final useLANIPProvider = UseLANIPProvider._();
-
-final class UseLANIPProvider extends $NotifierProvider<UseLANIP, bool> {
-  UseLANIPProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'useLANIPProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$useLANIPHash();
-
-  @$internal
-  @override
-  UseLANIP create() => UseLANIP();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(bool value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<bool>(value),
-    );
-  }
-}
-
-String _$useLANIPHash() => r'7b34072dec0d0cbffa2836434ef3139a160f79ae';
-
-abstract class _$UseLANIP extends $Notifier<bool> {
-  bool build();
-  @$mustCallSuper
-  @override
-  void runBuild() {
-    final ref = this.ref as $Ref<bool, bool>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<bool, bool>,
-              bool,
-              Object?,
-              Object?
-            >;
-    element.handleCreate(ref, build);
-  }
-}
-
 @ProviderFor(AccountInfo)
 final accountInfoProvider = AccountInfoProvider._();
 
@@ -268,75 +217,31 @@ abstract class _$AudioStationCookiesInfo
   }
 }
 
-@ProviderFor(LanConnected)
-final lanConnectedProvider = LanConnectedProvider._();
-
-final class LanConnectedProvider extends $NotifierProvider<LanConnected, bool> {
-  LanConnectedProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'lanConnectedProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$lanConnectedHash();
-
-  @$internal
-  @override
-  LanConnected create() => LanConnected();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(bool value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<bool>(value),
-    );
-  }
-}
-
-String _$lanConnectedHash() => r'4cf4a245beb4d6d10953634bb5734114ac656f11';
-
-abstract class _$LanConnected extends $Notifier<bool> {
-  bool build();
-  @$mustCallSuper
-  @override
-  void runBuild() {
-    final ref = this.ref as $Ref<bool, bool>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<bool, bool>,
-              bool,
-              Object?,
-              Object?
-            >;
-    element.handleCreate(ref, build);
-  }
-}
-
 @ProviderFor(baseUrl)
-final baseUrlProvider = BaseUrlProvider._();
+final baseUrlProvider = BaseUrlFamily._();
 
 final class BaseUrlProvider extends $FunctionalProvider<String, String, String>
     with $Provider<String> {
-  BaseUrlProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'baseUrlProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  BaseUrlProvider._({
+    required BaseUrlFamily super.from,
+    required bool super.argument,
+  }) : super(
+         retry: null,
+         name: r'baseUrlProvider',
+         isAutoDispose: false,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$baseUrlHash();
+
+  @override
+  String toString() {
+    return r'baseUrlProvider'
+        ''
+        '($argument)';
+  }
 
   @$internal
   @override
@@ -345,7 +250,8 @@ final class BaseUrlProvider extends $FunctionalProvider<String, String, String>
 
   @override
   String create(Ref ref) {
-    return baseUrl(ref);
+    final argument = this.argument as bool;
+    return baseUrl(ref, ignoreLANIP: argument);
   }
 
   /// {@macro riverpod.override_with_value}
@@ -355,9 +261,37 @@ final class BaseUrlProvider extends $FunctionalProvider<String, String, String>
       providerOverride: $SyncValueProvider<String>(value),
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is BaseUrlProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
 }
 
-String _$baseUrlHash() => r'2672db6f11f06cb4782923385545634e5899eb0b';
+String _$baseUrlHash() => r'4eccafcc0fefa8db98d06c92c70fcc2651d531f3';
+
+final class BaseUrlFamily extends $Family
+    with $FunctionalFamilyOverride<String, bool> {
+  BaseUrlFamily._()
+    : super(
+        retry: null,
+        name: r'baseUrlProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: false,
+      );
+
+  BaseUrlProvider call({bool ignoreLANIP = false}) =>
+      BaseUrlProvider._(argument: ignoreLANIP, from: this);
+
+  @override
+  String toString() => r'baseUrlProvider';
+}
 
 @ProviderFor(AuthToken)
 final authTokenProvider = AuthTokenProvider._();
@@ -409,13 +343,11 @@ final authHeadersProvider = AuthHeadersProvider._();
 final class AuthHeadersProvider
     extends
         $FunctionalProvider<
-          AsyncValue<Map<String, String>?>,
           Map<String, String>?,
-          FutureOr<Map<String, String>?>
+          Map<String, String>?,
+          Map<String, String>?
         >
-    with
-        $FutureModifier<Map<String, String>?>,
-        $FutureProvider<Map<String, String>?> {
+    with $Provider<Map<String, String>?> {
   AuthHeadersProvider._()
     : super(
         from: null,
@@ -432,17 +364,25 @@ final class AuthHeadersProvider
 
   @$internal
   @override
-  $FutureProviderElement<Map<String, String>?> $createElement(
+  $ProviderElement<Map<String, String>?> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $ProviderElement(pointer);
 
   @override
-  FutureOr<Map<String, String>?> create(Ref ref) {
+  Map<String, String>? create(Ref ref) {
     return authHeaders(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Map<String, String>? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Map<String, String>?>(value),
+    );
   }
 }
 
-String _$authHeadersHash() => r'eae957f92a96718581092966106fa674ee74554e';
+String _$authHeadersHash() => r'706b83e92dbff1fa816c2e09baf310f28f5877e3';
 
 /// 测试 QuickConnect ID 解析（用于测试连通性）
 
@@ -521,3 +461,42 @@ final class QuickConnectTestFamily extends $Family
   @override
   String toString() => r'quickConnectTestProvider';
 }
+
+@ProviderFor(login)
+final loginProvider = LoginProvider._();
+
+final class LoginProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<AuthResponse>,
+          AuthResponse,
+          FutureOr<AuthResponse>
+        >
+    with $FutureModifier<AuthResponse>, $FutureProvider<AuthResponse> {
+  LoginProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'loginProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$loginHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<AuthResponse> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<AuthResponse> create(Ref ref) {
+    return login(ref);
+  }
+}
+
+String _$loginHash() => r'b810c904f047507aa7338ab9604c59568af01877';

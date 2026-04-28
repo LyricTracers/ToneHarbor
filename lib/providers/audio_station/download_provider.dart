@@ -19,7 +19,8 @@ Future<String> streamUrl(
   AudioQuality? quality,
   String? container,
 }) async {
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = ref.watch(authHeadersProvider);
+  ;
   if (authHeaders == null) {
     return "";
   }
@@ -32,7 +33,7 @@ Future<String> streamUrl(
     return "";
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
   // final authToken = await ref.read(authTokenProvider.future);
   quality ??= ref.read(audioQualityProvider);
 
@@ -69,7 +70,8 @@ Future<String> streamUrl(
 @riverpod
 Future<String> coverUrlBySongId(Ref ref, {required String songId}) async {
   final link = ref.keepAlive();
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = ref.watch(authHeadersProvider);
+  ;
   if (authHeaders == null) {
     return "";
   }
@@ -116,7 +118,7 @@ Future<String> _getCoverUrlByArtist({
   required Ref ref,
   required String artistName,
 }) async {
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
   // final authToken = await ref.read(authTokenProvider.future);
 
   final queryParams = {
@@ -132,7 +134,7 @@ Future<String> _getCoverUrlByArtist({
       .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
       .join('&');
 
-  final coverUrl = '$baseUrl/music/webapi/AudioStation/cover.cgi?$queryString';
+  final coverUrl = '$baseUrl/webapi/AudioStation/cover.cgi?$queryString';
   return coverUrl;
 }
 
@@ -145,7 +147,7 @@ Future<String> _getCoverUrlByAlbum({
   bool isHr = true,
   String library = 'shared',
 }) async {
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
   // final authToken = await ref.read(authTokenProvider.future);
   // final timestamp = DateTime.now().millisecondsSinceEpoch;
 
@@ -167,7 +169,7 @@ Future<String> _getCoverUrlByAlbum({
       .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
       .join('&');
 
-  final coverUrl = '$baseUrl/music/webapi/AudioStation/cover.cgi?$queryString';
+  final coverUrl = '$baseUrl/webapi/AudioStation/cover.cgi?$queryString';
   // logger.i("getcoverUrl:${coverUrl}");
 
   return coverUrl;
@@ -178,7 +180,7 @@ Future<String> _getCoverUrlBySongId({
   required String songId,
   String library = 'all',
 }) async {
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
   // final authToken = await ref.read(authTokenProvider.future);
 
   final queryParams = {
@@ -211,7 +213,7 @@ Future<int> downloadSong({
   final streamUrl = await ref.read(
     streamUrlProvider(id: id, quality: quality, container: container).future,
   );
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
@@ -287,7 +289,7 @@ Future<Uint8List> downloadCover({
     ).future,
   );
 
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
@@ -338,7 +340,7 @@ Future<List<String>> batchDownloadSongs({
     throw AudioStationException(message: l10n.error_songListEmpty);
   }
 
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
@@ -347,7 +349,7 @@ Future<List<String>> batchDownloadSongs({
     return [];
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
   final defaultFilename = '${songIds.first}_batch_download.zip';
 
   final request = BatchDownloadRequest(
@@ -361,7 +363,7 @@ Future<List<String>> batchDownloadSongs({
 
   final encodedFilename = Uri.encodeComponent(defaultFilename);
   final downloadUrl =
-      '$baseUrl/music/webapi/AudioStation/download.cgi/$encodedFilename';
+      '$baseUrl/webapi/AudioStation/download.cgi/$encodedFilename';
 
   final response = await downloadHttpClientWrapper.getStream(
     downloadUrl,

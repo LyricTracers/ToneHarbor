@@ -79,8 +79,12 @@ class CommonSongs extends ConsumerWidget {
     final size = MediaQuery.of(context).size;
     config = config.multiply(multiplier: size.multiplier);
     return songs.when(
-      data: (data) =>
-          _buildHorizontalList(context, data.songs, colorScheme, config),
+      data: (data) {
+        if (data.songs.isEmpty) {
+          return SizedBox.shrink();
+        }
+        return _buildHorizontalList(context, data.songs, colorScheme, config);
+      },
       loading: () => _buildShimmerLoading(context, colorScheme, config),
       error: (error, stackTrace) {
         return SizedBox.shrink();

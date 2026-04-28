@@ -1030,7 +1030,7 @@ class DownloadManager extends _$DownloadManager {
       }
       Map<String, String>? authHeaders;
       if (!task.track.isCloudMusic) {
-        authHeaders = await ref.read(authHeadersProvider.future);
+        authHeaders = ref.read(authHeadersProvider);
         if (authHeaders == null) {
           throw Exception("No auth headers available");
         }

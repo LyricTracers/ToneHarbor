@@ -108,7 +108,7 @@ Future<Uint8List?> getCoverBytes(
     }
     rhttp.HttpHeaders? headers;
     if (!isCloudMusic) {
-      final authHeaders = await ref.read(authHeadersProvider.future);
+      final authHeaders = ref.read(authHeadersProvider);
       if (authHeaders == null) {
         logger.w('[Metadata] No auth headers, skipping cover download');
         return null;

@@ -170,7 +170,8 @@ class SongContextMenu {
               ref.read(requestFlagProvider.notifier).setRequestFlag(false);
             },
           ),
-          if (ref.read(aria2EnabledProvider)) ...[
+          if (ref.read(aria2EnabledProvider) &&
+              item is ToneHarborTrackObjectCloudMusic) ...[
             MenuItem(
               label: Text("Aria2 Download"),
               icon: Icon(Icons.cloud_download_rounded),
@@ -178,7 +179,7 @@ class SongContextMenu {
                 ref.read(requestFlagProvider.notifier).setRequestFlag(true);
                 final result = await ref
                     .read(aria2ClientProvider.notifier)
-                    .addDownloadTask(item as ToneHarborTrackObjectCloudMusic);
+                    .addDownloadTask(item);
                 ref.read(requestFlagProvider.notifier).setRequestFlag(false);
 
                 if (!ref.context.mounted) {

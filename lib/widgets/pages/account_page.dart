@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/syno_api_info.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
+import 'package:toneharbor/utils/api_cache_providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/common_shimmer_loader.dart';
@@ -86,6 +88,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
         try {
           await logout(ref);
         } finally {
+          invalidateApiCacheProvidersForWidget(ref);
           ref.read(requestFlagProvider.notifier).setRequestFlag(false);
           await ref
               .read(audioStationCookiesInfoProvider.notifier)
@@ -112,7 +115,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
     double multiplier,
   ) {
     var account = ref.read(accountInfoProvider);
-    var url = ref.read(baseUrlProvider);
+    var url = ref.read(baseUrlProvider());
     var serverUrl = ref.read(serverUrlProvider);
     final isQuickConnect =
         !serverUrl.contains('.') &&

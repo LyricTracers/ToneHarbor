@@ -13,7 +13,6 @@ import 'package:toneharbor/models/audio_station/folder.dart';
 import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/connection_checker_service.dart';
-import 'package:toneharbor/services/server/quick_connect_service.dart';
 import 'package:toneharbor/services/server/server_health_check.dart';
 import 'package:toneharbor/utils/cloud_playlist_static_data.dart';
 import 'package:toneharbor/utils/responsive.dart';
@@ -75,22 +74,6 @@ class MyApp extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(serverControllerProvider);
     ref.listen(audioPlayerStreamListenersProvider, (_, __) {});
-
-    useEffect(() {
-      final useLANIP = SharedPreferencesUtils.getUseLANIP();
-      final localBaseUrl = SharedPreferencesUtils.getLocalBaseUrl();
-      final hasLocalUrl = localBaseUrl != null && localBaseUrl.isNotEmpty;
-      final hasCookie = SharedPreferencesUtils.getCookie()?.isNotEmpty ?? false;
-
-      if (useLANIP && hasLocalUrl && hasCookie) {
-        QuickConnectService.instance.startMonitoring();
-      }
-
-      return () {
-        QuickConnectService.instance.stopMonitoring();
-      };
-    }, []);
-
     final previousServerPort = useRef<int?>(null);
 
     ref.listen<AsyncValue<HttpServer>>(serverControllerProvider, (

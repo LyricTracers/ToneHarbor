@@ -8,7 +8,7 @@ Future<ArtistResponse> _sendArtistRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -18,7 +18,7 @@ Future<ArtistResponse> _sendArtistRequest<T>({
     return ArtistResponse(success: false);
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   final params = Map<String, dynamic>.from(toJson())
     ..removeWhere((key, value) => value == null);
@@ -26,7 +26,7 @@ Future<ArtistResponse> _sendArtistRequest<T>({
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/artist.cgi',
+      '$baseUrl/webapi/AudioStation/artist.cgi',
       body: HttpBody.form(
         params.map((key, value) => MapEntry(key, value.toString())),
       ),
@@ -96,8 +96,9 @@ Future<ArtistResponse> _getArtists({
   Duration? cacheDuration,
   String groupKey = "artist",
 }) async {
+  final baseUrl = ref.read(baseUrlProvider());
   final cacheKey =
-      'getArtists:$limit:$offset:$library:$sortBy:$sortDirection:$additional';
+      'getArtists:$limit:$offset:$library:$sortBy:$sortDirection:$additional:${baseUrl.hashCode}';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<ArtistResponse>(
@@ -164,8 +165,9 @@ Future<ArtistResponse> _searchArtists({
   Duration? cacheDuration,
   String groupKey = "artist",
 }) async {
+  final baseUrl = ref.read(baseUrlProvider());
   final cacheKey =
-      'searchArtists:$filter:$library:$limit:$offset:$sortBy:$sortDirection';
+      'searchArtists:$filter:$library:$limit:$offset:$sortBy:$sortDirection:${baseUrl.hashCode}';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<ArtistResponse>(

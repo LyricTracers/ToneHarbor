@@ -27,12 +27,12 @@ String _getLoginErrorMessage(AppLocalizations l10n, int? errorCode) {
   }
 }
 
-Future<AuthResponse> _fullLogin(
-  WidgetRef ref,
+Future<AuthResponse> fullLogin(
+  Ref ref,
   Account account,
   AppLocalizations l10n,
 ) async {
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   final request = AuthRequest(
     api: 'SYNO.API.Auth',
@@ -54,7 +54,7 @@ Future<AuthResponse> _fullLogin(
   );
 
   final response = await httpClientWrapper.post(
-    '$baseUrl/music/webapi/entry.cgi?api=SYNO.API.Auth',
+    '$baseUrl/webapi/entry.cgi?api=SYNO.API.Auth',
     body: HttpBody.form(
       request.toJson().map(
         (key, value) => MapEntry(key, value?.toString() ?? ''),
@@ -65,8 +65,6 @@ Future<AuthResponse> _fullLogin(
       'x-requested-with': 'XMLHttpRequest',
       'accept': '*/*',
       'accept-language': 'zh-CN,zh;q=0.9',
-      'origin': baseUrl,
-      'referer': '$baseUrl/music/',
     }),
   );
 
@@ -156,12 +154,12 @@ Future<AuthResponse> _refreshToken(
   AppLocalizations l10n,
 ) async {
   // 直接使用传入的 serverUrl 构建 baseUrl，而不是通过 ref 获取
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
   logger.d('刷新Token，使用baseUrl: $baseUrl');
   final cookieString = 'did=${cookies.did}; id=${cookies.id}';
 
   final response = await httpClientWrapper.post(
-    '$baseUrl/music/webapi/entry.cgi?api=SYNO.API.Auth',
+    '$baseUrl/webapi/entry.cgi?api=SYNO.API.Auth',
     body: HttpBody.form({
       'method': 'token',
       'version': '6',
@@ -220,12 +218,12 @@ Future<AuthResponse> _refreshTokenWithWidgetRef(
   AudioStationCookies cookies,
   AppLocalizations l10n,
 ) async {
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
   logger.d('刷新Token，使用baseUrl: $baseUrl');
   final cookieString = 'did=${cookies.did}; id=${cookies.id}';
 
   final response = await httpClientWrapper.post(
-    '$baseUrl/music/webapi/entry.cgi?api=SYNO.API.Auth',
+    '$baseUrl/webapi/entry.cgi?api=SYNO.API.Auth',
     body: HttpBody.form({
       'method': 'token',
       'version': '6',

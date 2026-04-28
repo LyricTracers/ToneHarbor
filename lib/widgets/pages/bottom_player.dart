@@ -85,7 +85,7 @@ class _UIConfig {
 
 class _VolumeConfig {
   final double volume;
-  final AsyncValue<Map<String, String>?> authHeaders;
+  final Map<String, String>? authHeaders;
 
   _VolumeConfig({required this.volume, required this.authHeaders});
 }
@@ -327,8 +327,7 @@ class BottomPlayer extends HookConsumerWidget {
           ),
         ),
         _buildVolumeButton(volume: volumeConfig.volume, ref: ref),
-        if (!trackInfo.activeTrack.isLocal &&
-            volumeConfig.authHeaders.value != null)
+        if (!trackInfo.activeTrack.isLocal && volumeConfig.authHeaders != null)
           _buildRatingButton(
             ref,
             context,
@@ -504,7 +503,7 @@ class BottomPlayer extends HookConsumerWidget {
                 _buildVolumeButton(volume: volumeConfig.volume, ref: ref),
               if (uiConfig.size.smAndDown &&
                   !trackInfo.activeTrack.isLocal &&
-                  volumeConfig.authHeaders.value != null)
+                  volumeConfig.authHeaders != null)
                 _buildRatingButton(
                   ref,
                   context,
@@ -782,7 +781,7 @@ class BottomPlayer extends HookConsumerWidget {
 
           if (uiConfig.size.mdAndUp &&
               !trackInfo.activeTrack.isLocal &&
-              volumeConfig.authHeaders.value != null)
+              volumeConfig.authHeaders != null)
             _buildRatingButton(
               ref,
               context,

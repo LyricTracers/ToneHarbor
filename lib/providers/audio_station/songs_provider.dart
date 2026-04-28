@@ -161,7 +161,8 @@ class RandomSongs extends _$RandomSongs
     Duration? cacheDuration,
   }) async {
     ref.keepAliveFor(Duration(minutes: 10));
-    final authHeaders = await ref.watch(authHeadersProvider.future);
+    final authHeaders = ref.watch(authHeadersProvider);
+    ;
     if (authHeaders == null) {
       return const ToneHarborTrackObjectListEmpty();
     }
@@ -235,7 +236,8 @@ class FavoriteSongs extends _$FavoriteSongs
     Duration? cacheDuration = const Duration(minutes: 60),
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
-    final authHeaders = await ref.watch(authHeadersProvider.future);
+    final authHeaders = ref.watch(authHeadersProvider);
+    ;
     if (authHeaders == null) {
       return const ToneHarborTrackObjectListEmpty();
     }
@@ -349,7 +351,8 @@ class ArtistSongs extends _$ArtistSongs
     Duration? cacheDuration = const Duration(minutes: 5),
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
-    final authHeaders = await ref.watch(authHeadersProvider.future);
+    final authHeaders = ref.watch(authHeadersProvider);
+    ;
     if (authHeaders == null) {
       return const ToneHarborTrackObjectListEmpty();
     }
@@ -457,7 +460,8 @@ Future<ToneHarborTrackObjectList> searchSongs(
   Duration? keepAliveDuration,
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = ref.watch(authHeadersProvider);
+  ;
   if (authHeaders == null) {
     return const ToneHarborTrackObjectListEmpty();
   }
@@ -496,7 +500,8 @@ class AlbumSongs extends _$AlbumSongs
     Duration? cacheDuration = const Duration(minutes: 5),
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
-    final authHeaders = await ref.watch(authHeadersProvider.future);
+    final authHeaders = ref.watch(authHeadersProvider);
+    ;
     if (authHeaders == null) {
       return const ToneHarborTrackObjectListEmpty();
     }
@@ -615,7 +620,8 @@ class Songs extends _$Songs with ExtraProvider<ToneHarborTrackObjectList> {
     String group = 'songs',
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
-    final authHeaders = await ref.watch(authHeadersProvider.future);
+    final authHeaders = ref.watch(authHeadersProvider);
+    ;
     if (authHeaders == null) {
       return const ToneHarborTrackObjectListEmpty();
     }

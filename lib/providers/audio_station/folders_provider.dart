@@ -23,7 +23,8 @@ class Folders extends _$Folders with ExtraProvider<FolderResponse> {
     Duration? cacheDuration = const Duration(minutes: 100),
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
-    final authHeaders = await ref.watch(authHeadersProvider.future);
+    final authHeaders = ref.watch(authHeadersProvider);
+    ;
     if (authHeaders == null) {
       return const FolderResponse(success: false);
     }

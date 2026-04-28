@@ -1,4 +1,4 @@
-import 'package:rhttp/rhttp.dart';
+import 'package:lyricskit/lyricskit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
@@ -17,7 +17,8 @@ Future<AlbumResponse> randomAlbums(
   Duration? keepAliveDuration,
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = ref.watch(authHeadersProvider);
+  ;
   if (authHeaders == null) {
     return const AlbumResponse(success: false);
   }
@@ -45,7 +46,8 @@ Future<AlbumResponse> recentAlbums(
   Duration? keepAliveDuration = const Duration(minutes: 20),
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = ref.watch(authHeadersProvider);
+  ;
   if (authHeaders == null) {
     return const AlbumResponse(success: false);
   }
@@ -74,7 +76,8 @@ Future<AlbumResponse> artistAlbums(
   Duration? keepAliveDuration = const Duration(minutes: 5),
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = ref.watch(authHeadersProvider);
+  ;
   if (authHeaders == null) {
     return const AlbumResponse(success: false);
   }
@@ -105,7 +108,8 @@ Future<AlbumResponse> searchAlbums(
   Duration? keepAliveDuration,
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
-  final authHeaders = await ref.watch(authHeadersProvider.future);
+  final authHeaders = ref.watch(authHeadersProvider);
+  ;
   if (authHeaders == null) {
     return const AlbumResponse(success: false);
   }
@@ -144,7 +148,8 @@ class Albums extends _$Albums with ExtraProvider<AlbumResponse> {
     duration = cacheDuration;
     groupKey = "albums";
     ref.keepAliveFor(Duration(minutes: 5));
-    final authHeaders = await ref.watch(authHeadersProvider.future);
+    final authHeaders = ref.watch(authHeadersProvider);
+    ;
     if (authHeaders == null) {
       return const AlbumResponse(success: false);
     }

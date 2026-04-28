@@ -7,7 +7,7 @@ Future<PlaylistListResponse> _sendPlaylistRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -17,7 +17,7 @@ Future<PlaylistListResponse> _sendPlaylistRequest<T>({
     return PlaylistListResponse(success: false);
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   final params = Map<String, dynamic>.from(toJson())
     ..removeWhere((key, value) => value == null);
@@ -25,7 +25,7 @@ Future<PlaylistListResponse> _sendPlaylistRequest<T>({
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/playlist.cgi',
+      '$baseUrl/webapi/AudioStation/playlist.cgi',
       body: HttpBody.form(
         params.map((key, value) => MapEntry(key, value.toString())),
       ),
@@ -82,7 +82,7 @@ Future<PlaylistDetailResponse> _sendPlaylistDetailRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -92,7 +92,7 @@ Future<PlaylistDetailResponse> _sendPlaylistDetailRequest<T>({
     return PlaylistDetailResponse(success: false);
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   final params = Map<String, dynamic>.from(toJson())
     ..removeWhere((key, value) => value == null);
@@ -100,7 +100,7 @@ Future<PlaylistDetailResponse> _sendPlaylistDetailRequest<T>({
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/playlist.cgi',
+      '$baseUrl/webapi/AudioStation/playlist.cgi',
       body: HttpBody.form(
         params.map((key, value) => MapEntry(key, value.toString())),
       ),
@@ -160,8 +160,9 @@ Future<PlaylistListResponse> _getPlaylists({
   Duration? cacheDuration,
   String groupKey = 'playlist',
 }) async {
+  final baseUrl = ref.read(baseUrlProvider());
   final cacheKey =
-      'getPlaylists:$limit:$offset:$library:$sortBy:$sortDirection';
+      'getPlaylists:$limit:$offset:$library:$sortBy:$sortDirection:${baseUrl.hashCode}';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<PlaylistListResponse>(
@@ -221,8 +222,9 @@ Future<PlaylistDetailResponse> _getPlaylistDetail({
   Duration? cacheDuration,
   String groupKey = 'playlist',
 }) async {
+  final baseUrl = ref.read(baseUrlProvider());
   final cacheKey =
-      'getPlaylistDetail:$id:$library:$additional:$limit:$offset:$sortBy:$sortDirection';
+      'getPlaylistDetail:$id:$library:$additional:$limit:$offset:$sortBy:$sortDirection:${baseUrl.hashCode}';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<PlaylistDetailResponse>(
@@ -277,7 +279,8 @@ Future<PlaylistDetailResponse> _getPlaylistInfo({
   Duration? cacheDuration,
   String groupKey = 'playlist',
 }) async {
-  final cacheKey = 'getPlaylistInfo:$id:$additional';
+  final baseUrl = ref.read(baseUrlProvider());
+  final cacheKey = 'getPlaylistInfo:$id:$additional:${baseUrl.hashCode}';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<PlaylistDetailResponse>(
@@ -329,7 +332,7 @@ Future<CreatePlaylistResponse> _createPlaylist({
   required Ref ref,
   required String name,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -339,7 +342,7 @@ Future<CreatePlaylistResponse> _createPlaylist({
     return CreatePlaylistResponse(success: false);
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   final request = CreatePlaylistRequest(
     api: 'SYNO.AudioStation.Playlist',
@@ -357,7 +360,7 @@ Future<CreatePlaylistResponse> _createPlaylist({
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/playlist.cgi',
+      '$baseUrl/webapi/AudioStation/playlist.cgi',
       body: HttpBody.form(
         params.map((key, value) => MapEntry(key, value.toString())),
       ),
@@ -413,7 +416,7 @@ Future<RenamePlaylistResponse> _renamePlaylist({
   required String id,
   required String newName,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -423,7 +426,7 @@ Future<RenamePlaylistResponse> _renamePlaylist({
     return RenamePlaylistResponse(success: false);
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   final request = RenamePlaylistRequest(
     api: 'SYNO.AudioStation.Playlist',
@@ -441,7 +444,7 @@ Future<RenamePlaylistResponse> _renamePlaylist({
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/playlist.cgi',
+      '$baseUrl/webapi/AudioStation/playlist.cgi',
       body: HttpBody.form(
         params.map((key, value) => MapEntry(key, value.toString())),
       ),
@@ -496,7 +499,7 @@ Future<DeletePlaylistResponse> _deletePlaylist({
   required Ref ref,
   required String id,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -506,7 +509,7 @@ Future<DeletePlaylistResponse> _deletePlaylist({
     return DeletePlaylistResponse(success: false);
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   final request = DeletePlaylistRequest(
     api: 'SYNO.AudioStation.Playlist',
@@ -523,7 +526,7 @@ Future<DeletePlaylistResponse> _deletePlaylist({
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/playlist.cgi',
+      '$baseUrl/webapi/AudioStation/playlist.cgi',
       body: HttpBody.form(
         params.map((key, value) => MapEntry(key, value.toString())),
       ),
@@ -583,7 +586,7 @@ Future<AddPlaylistSongsResponse> _addSongToPlaylist({
   int limit = 0,
   bool skipDuplicate = false,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -593,7 +596,7 @@ Future<AddPlaylistSongsResponse> _addSongToPlaylist({
     return AddPlaylistSongsResponse(success: false);
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   final request = AddPlaylistSongsRequest(
     api: 'SYNO.AudioStation.Playlist',
@@ -614,7 +617,7 @@ Future<AddPlaylistSongsResponse> _addSongToPlaylist({
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/playlist.cgi',
+      '$baseUrl/webapi/AudioStation/playlist.cgi',
       body: HttpBody.form(
         params.map((key, value) => MapEntry(key, value.toString())),
       ),
@@ -669,7 +672,7 @@ Future<RemoveMissingSongsResponse> _removeMissingSongs({
   required Ref ref,
   required String id,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -679,7 +682,7 @@ Future<RemoveMissingSongsResponse> _removeMissingSongs({
     return RemoveMissingSongsResponse(success: false);
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   final request = RemoveMissingSongsRequest(
     api: 'SYNO.AudioStation.Playlist',
@@ -696,7 +699,7 @@ Future<RemoveMissingSongsResponse> _removeMissingSongs({
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/playlist.cgi',
+      '$baseUrl/webapi/AudioStation/playlist.cgi',
       body: HttpBody.form(
         params.map((key, value) => MapEntry(key, value.toString())),
       ),

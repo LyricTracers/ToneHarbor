@@ -57,3 +57,9 @@ void invalidateApiCacheProviders(Ref ref) {
     ref.invalidate(provider);
   }
 }
+
+void invalidateApiCacheProvidersForWidget(WidgetRef ref) {
+  for (final provider in apiCacheRelatedProviders) {
+    ref.invalidate(provider);
+  }
+}

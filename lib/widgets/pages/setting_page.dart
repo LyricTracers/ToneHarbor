@@ -447,7 +447,7 @@ class SettingPage extends HookConsumerWidget with BuildItem {
         style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
       ),
       subtitle: Text(
-        ref.read(baseUrlProvider),
+        ref.read(baseUrlProvider()),
         style: TextStyle(
           fontSize: 12,
           color: colorScheme.onSurface.withValues(alpha: 0.7),

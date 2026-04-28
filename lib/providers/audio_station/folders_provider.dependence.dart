@@ -8,7 +8,7 @@ Future<FolderResponse> _sendFolderRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -18,7 +18,7 @@ Future<FolderResponse> _sendFolderRequest<T>({
     return FolderResponse(success: false);
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   final params = Map<String, dynamic>.from(toJson())
     ..removeWhere((key, value) => value == null);
@@ -26,7 +26,7 @@ Future<FolderResponse> _sendFolderRequest<T>({
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/folder.cgi',
+      '$baseUrl/webapi/AudioStation/folder.cgi',
       body: HttpBody.form(
         params.map((key, value) => MapEntry(key, value.toString())),
       ),
@@ -98,8 +98,9 @@ Future<FolderResponse> _getFolders({
   Duration? cacheDuration,
   String groupKey = 'folders',
 }) async {
+  final baseUrl = ref.read(baseUrlProvider());
   final cacheKey =
-      'getFolders:$id:$limit:$offset:$library:$sortBy:$sortDirection:$additional';
+      'getFolders:$id:$limit:$offset:$library:$sortBy:$sortDirection:$additional:${baseUrl.hashCode}';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<FolderResponse>(

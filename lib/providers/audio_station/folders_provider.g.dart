@@ -60,7 +60,7 @@ final class FoldersProvider
   }
 }
 
-String _$foldersHash() => r'b9a38916cedcda0a6fd3fc98babbff345415abc0';
+String _$foldersHash() => r'7a69f848d4033479af7aa8a030c3bb0234706578';
 
 final class FoldersFamily extends $Family
     with

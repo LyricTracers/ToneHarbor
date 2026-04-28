@@ -8,7 +8,7 @@ Future<ToneHarborTrackObjectList> _sendSongRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   logger.d('authHeaders: $authHeaders');
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
@@ -21,7 +21,7 @@ Future<ToneHarborTrackObjectList> _sendSongRequest<T>({
   }
   logger.d('发送歌曲请求: $request');
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   final params = Map<String, dynamic>.from(toJson())
     ..removeWhere((key, value) => value == null);
@@ -29,7 +29,7 @@ Future<ToneHarborTrackObjectList> _sendSongRequest<T>({
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/song.cgi',
+      '$baseUrl/webapi/AudioStation/song.cgi',
       body: HttpBody.form(
         params.map((key, value) => MapEntry(key, value.toString())),
       ),
@@ -88,13 +88,13 @@ Future<LyricsResponse> _sendLyricsRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     return LyricsResponse(success: false);
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   final params = Map<String, dynamic>.from(toJson())
     ..removeWhere((key, value) => value == null);
@@ -102,7 +102,7 @@ Future<LyricsResponse> _sendLyricsRequest<T>({
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/lyrics.cgi',
+      '$baseUrl/webapi/AudioStation/lyrics.cgi',
       body: HttpBody.form(
         params.map((key, value) => MapEntry(key, value.toString())),
       ),
@@ -157,7 +157,7 @@ Future<SearchLyricsResponse> _sendSearchLyricsRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -168,12 +168,12 @@ Future<SearchLyricsResponse> _sendSearchLyricsRequest<T>({
     return SearchLyricsResponse(success: false);
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/lyrics_search.cgi',
+      '$baseUrl/webapi/AudioStation/lyrics_search.cgi',
       body: HttpBody.form(
         toJson().map((key, value) => MapEntry(key, value?.toString() ?? '')),
       ),
@@ -228,7 +228,7 @@ Future<SongInfoResponse> _sendSongInfoRequest<T>({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -238,7 +238,7 @@ Future<SongInfoResponse> _sendSongInfoRequest<T>({
     return SongInfoResponse(success: false, data: SongData(songs: []));
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   final params = Map<String, dynamic>.from(toJson())
     ..removeWhere((key, value) => value == null);
@@ -246,7 +246,7 @@ Future<SongInfoResponse> _sendSongInfoRequest<T>({
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/song.cgi',
+      '$baseUrl/webapi/AudioStation/song.cgi',
       body: HttpBody.form(
         params.map((key, value) => MapEntry(key, value.toString())),
       ),
@@ -317,8 +317,9 @@ Future<ToneHarborTrackObjectList> _getSongs({
   Duration? cacheDuration,
   String group = 'song',
 }) async {
+  final baseUrl = ref.read(baseUrlProvider());
   final cacheKey =
-      'getSongs:$limit:$offset:$library:$sortBy:$sortDirection:$additional:$artist:$songRatingMeq';
+      'getSongs:$limit:$offset:$library:$sortBy:$sortDirection:$additional:$artist:$songRatingMeq:${baseUrl.hashCode}';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<ToneHarborTrackObjectList>(
@@ -384,7 +385,7 @@ Future<SetRatingResponse> _setRating({
   required String id,
   int rating = 5,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -395,7 +396,7 @@ Future<SetRatingResponse> _setRating({
     return SetRatingResponse(success: false);
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   final request = SetRatingRequest(
     api: 'SYNO.AudioStation.Song',
@@ -413,7 +414,7 @@ Future<SetRatingResponse> _setRating({
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/song.cgi',
+      '$baseUrl/webapi/AudioStation/song.cgi',
       body: HttpBody.form(
         params.map((key, value) => MapEntry(key, value.toString())),
       ),
@@ -471,7 +472,8 @@ Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
   required Ref ref,
   Duration? cacheDuration,
 }) async {
-  final cacheKey = 'getNumberOfPlugIns';
+  final baseUrl = ref.read(baseUrlProvider());
+  final cacheKey = 'getNumberOfPlugIns:${baseUrl.hashCode}';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<GetNumberOfPlugInsResponse>(
@@ -484,7 +486,7 @@ Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
     }
   }
 
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -494,8 +496,6 @@ Future<GetNumberOfPlugInsResponse> _getNumberOfPlugIns({
     });
     return GetNumberOfPlugInsResponse(success: false, hasPlugIn: 0);
   }
-
-  final baseUrl = ref.read(baseUrlProvider);
 
   final request = GetNumberOfPlugInsRequest(action: 'getNumberOfPlugIns');
 
@@ -582,8 +582,9 @@ Future<ToneHarborTrackObjectList> _getAlbumSongs({
   Duration? cacheDuration,
   String groupKey = 'albumSongs',
 }) async {
+  final baseUrl = ref.read(baseUrlProvider());
   final cacheKey =
-      'getAlbumSongs:$album:$albumArtist:$limit:$offset:$library:$sortBy:$sortDirection:$additional:$artist';
+      'getAlbumSongs:$album:$albumArtist:$limit:$offset:$library:$sortBy:$sortDirection:$additional:$artist:${baseUrl.hashCode}';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<ToneHarborTrackObjectList>(
@@ -653,8 +654,9 @@ Future<ToneHarborTrackObjectList> _searchSongs({
   Duration? cacheDuration,
   String groupKey = 'search',
 }) async {
+  final baseUrl = ref.read(baseUrlProvider());
   final cacheKey =
-      'searchSongs:$title:$library:$limit:$offset:$sortDirection:$additional';
+      'searchSongs:$title:$library:$limit:$offset:$sortDirection:$additional:${baseUrl.hashCode}';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<ToneHarborTrackObjectList>(
@@ -710,7 +712,8 @@ Future<LyricsResponse> _getLyrics({
   required String id,
   Duration? cacheDuration,
 }) async {
-  final cacheKey = 'getLyrics:$id';
+  final baseUrl = ref.read(baseUrlProvider());
+  final cacheKey = 'getLyrics:$id:${baseUrl.hashCode}';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<LyricsResponse>(
@@ -773,7 +776,9 @@ Future<SearchLyricsResponse> _searchLyrics({
   String additional = 'full_lyrics',
   Duration? cacheDuration,
 }) async {
-  final cacheKey = 'searchLyrics:$title:$artist:$limit:$additional';
+  final baseUrl = ref.read(baseUrlProvider());
+  final cacheKey =
+      'searchLyrics:$title:$artist:$limit:$additional:${baseUrl.hashCode}';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<SearchLyricsResponse>(
@@ -829,7 +834,8 @@ Future<SongInfoResponse> _getSongInfo({
   String additional = 'song_rating',
   Duration? cacheDuration,
 }) async {
-  final cacheKey = 'getSongInfo:$id:$additional';
+  final baseUrl = ref.read(baseUrlProvider());
+  final cacheKey = 'getSongInfo:$id:$additional:${baseUrl.hashCode}';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<SongInfoResponse>(

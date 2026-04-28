@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/models/audio_station/auth.dart';
 import 'package:toneharbor/providers/providers.dart';
+import 'package:toneharbor/utils/api_cache_providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/excetions.dart';
 import 'package:toneharbor/utils/responsive.dart';
@@ -47,7 +48,6 @@ class LoginLayout extends BaseBgLayout {
     }, [accountInfo]);
 
     final useHttps = ref.watch(useHttpProvider);
-    final useLANIP = ref.watch(useLANIPProvider);
     final obscurePassword = useState(true);
     final serverUrlError = useState<String?>(null);
     final usernameError = useState<String?>(null);
@@ -147,8 +147,10 @@ class LoginLayout extends BaseBgLayout {
 
       try {
         ref.read(requestFlagProvider.notifier).setRequestFlag(true);
-        final response = await login(ref);
+        final response = await ref.read(loginProvider.future);
         if (response.success) {
+          ref.invalidate(baseUrlProvider);
+          invalidateApiCacheProvidersForWidget(ref);
           logger.i("登录成功");
           if (context.mounted) {
             // ref.invalidate(authTokenProvider);
@@ -317,17 +319,6 @@ class LoginLayout extends BaseBgLayout {
                                   ref.read(useHttpProvider.notifier).toggle(),
                             ),
                             Text(l10n.useHttps),
-                          ],
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Checkbox(
-                              value: useLANIP,
-                              onChanged: (value) =>
-                                  ref.read(useLANIPProvider.notifier).toggle(),
-                            ),
-                            Text(l10n.useLANIP),
                           ],
                         ),
                       ],

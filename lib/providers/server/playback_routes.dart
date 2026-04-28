@@ -229,7 +229,7 @@ class PlaybackRoutes {
       );
       if (streamUrl.isEmpty) return Response.notFound("Stream URL not found");
 
-      final authHeaders = await ref.read(authHeadersProvider.future);
+      final authHeaders = ref.read(authHeadersProvider);
       if (authHeaders == null) {
         _clearAuthOnFailure();
         return Response.forbidden("Not authenticated");
@@ -846,7 +846,7 @@ class PlaybackRoutes {
       return Response.notFound("Stream URL not found");
     }
 
-    final authHeaders = await ref.read(authHeadersProvider.future);
+    final authHeaders = ref.read(authHeadersProvider);
     if (authHeaders == null) {
       logger.e('[PlaybackRoutes] No auth headers');
       _clearAuthOnFailure();

@@ -11,7 +11,6 @@ import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/auth.dart';
 import 'package:toneharbor/providers/providers.dart';
-import 'package:toneharbor/services/server/quick_connect_service.dart';
 import 'package:toneharbor/utils/Excetions.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 
@@ -42,38 +41,6 @@ class ServerUrl extends _$ServerUrl {
   Future<void> setServerUrl(String serverUrl) async {
     await SharedPreferencesUtils.setServerUrl(serverUrl);
     state = serverUrl;
-  }
-}
-
-@keepAlive
-class UseLANIP extends _$UseLANIP {
-  @override
-  bool build() {
-    return SharedPreferencesUtils.getUseLANIP();
-  }
-
-  Future<void> toggle() async {
-    final useLANIP = SharedPreferencesUtils.getUseLANIP();
-    state = !useLANIP;
-    await SharedPreferencesUtils.setUseLANIP(!useLANIP);
-    _updateMonitoring(!useLANIP);
-  }
-
-  Future<void> setUseLANIP(bool value) async {
-    state = value;
-    await SharedPreferencesUtils.setUseLANIP(value);
-    _updateMonitoring(value);
-  }
-
-  void _updateMonitoring(bool enabled) {
-    if (enabled) {
-      final localBaseUrl = SharedPreferencesUtils.getLocalBaseUrl();
-      if (localBaseUrl != null && localBaseUrl.isNotEmpty) {
-        QuickConnectService.instance.startMonitoring();
-      }
-    } else {
-      QuickConnectService.instance.stopMonitoring();
-    }
   }
 }
 
@@ -127,62 +94,13 @@ class AudioStationCookiesInfo extends _$AudioStationCookiesInfo {
   }
 }
 
-@riverpod
-class LanConnected extends _$LanConnected {
-  StreamSubscription<bool>? _subscription;
-
-  @override
-  bool build() {
-    final service = QuickConnectService.instance;
-    _subscription = service.onLANConnectivityChanged.listen(
-      (connected) {
-        state = connected;
-      },
-      onError: (e) {
-        logger.w('LanConnected stream error: $e');
-      },
-      onDone: () {
-        logger.d('LanConnected stream done');
-      },
-    );
-
-    ref.onDispose(() {
-      _subscription?.cancel();
-    });
-
-    return service.isLANConnectedSync ?? false;
-  }
-}
-
 @keepAlive
-String baseUrl(Ref ref) {
-  final useLANIP = ref.watch(useLANIPProvider);
-  final localBaseUrl = SharedPreferencesUtils.getLocalBaseUrl();
+String baseUrl(Ref ref, {bool ignoreLANIP = false}) {
   final remoteBaseUrl = SharedPreferencesUtils.getRemoteBaseUrl();
-
-  if (useLANIP && localBaseUrl != null && localBaseUrl.isNotEmpty) {
-    final isLANConnected = ref.watch(lanConnectedProvider);
-    logger.d('局域网连接状态: $isLANConnected');
-
-    if (isLANConnected) {
-      return localBaseUrl;
-    } else if (remoteBaseUrl != null && remoteBaseUrl.isNotEmpty) {
-      logger.d('局域网不可达，自动切换到远程地址');
-      return remoteBaseUrl;
-    } else {
-      return localBaseUrl;
-    }
-  }
-
   if (remoteBaseUrl != null && remoteBaseUrl.isNotEmpty) {
     return remoteBaseUrl;
   }
 
-  if (localBaseUrl != null && localBaseUrl.isNotEmpty) {
-    return localBaseUrl;
-  }
-
-  // 最后使用原有的 serverUrl
   final serverUrl = ref.watch(serverUrlProvider);
   if (serverUrl.isEmpty) {
     final l10n = ref.read(l10nProvider);
@@ -228,7 +146,7 @@ class AuthToken extends _$AuthToken {
 }
 
 @keepAlive
-Future<Map<String, String>?> authHeaders(Ref ref) async {
+Map<String, String>? authHeaders(Ref ref) {
   // logger.d('获取 authHeaders');
   // final authToken = await ref.watch(authTokenProvider.future);
   // if (authToken == null) {
@@ -242,15 +160,16 @@ Future<Map<String, String>?> authHeaders(Ref ref) async {
     return null;
   }
 
-  final baseUrl = ref.watch(baseUrlProvider);
+  // final baseUrl = ref.read(baseUrlProvider());
 
   final headers = <String, String>{
     'x-requested-with': 'XMLHttpRequest',
     'accept': '*/*',
     'accept-language': 'zh-CN,zh;q=0.9',
-    'origin': baseUrl,
-    'referer': '$baseUrl/music/',
+    // 'origin': baseUrl,
+    // 'referer': baseUrl,
   };
+  logger.d('基础 headers: $headers');
 
   final cookiesInfo = ref.watch(audioStationCookiesInfoProvider);
 
@@ -348,6 +267,7 @@ Future<void> _resolveQuickConnect(
     }
 
     final jsonBody = jsonDecode(response.body) as Map<String, dynamic>;
+    logger.d('QuickConnect 响应: $jsonBody');
 
     if (_handleServerInfo(jsonBody)) {
       return;
@@ -456,74 +376,70 @@ Future<void> quickConnectTest(Ref ref, String quickConnectId) async {
   await _resolveQuickConnect(quickConnectId, l10n);
 }
 
-Future<AuthResponse> login(WidgetRef ref) async {
-  var l10n = ref.read(l10nProvider);
+@riverpod
+Future<AuthResponse> login(Ref ref) async {
+  final keepAlive = ref.keepAliveFor(null);
+  try {
+    var l10n = ref.read(l10nProvider);
 
-  final accountInfo = ref.watch(accountInfoProvider);
-  if (accountInfo == null) {
-    throw AudioStationException(message: l10n.error_account_info_invalid);
-  }
+    final accountInfo = ref.watch(accountInfoProvider);
+    if (accountInfo == null) {
+      throw AudioStationException(message: l10n.error_account_info_invalid);
+    }
 
-  final serverUrl = ref.watch(serverUrlProvider);
-  final isQuickConnect = _isQuickConnectId(serverUrl);
+    final serverUrl = ref.watch(serverUrlProvider);
+    final isQuickConnect = _isQuickConnectId(serverUrl);
 
-  if (isQuickConnect) {
-    logger.d('检测到 QuickConnect ID: $serverUrl');
-    try {
-      await _resolveQuickConnect(serverUrl, l10n);
-    } catch (e) {
-      logger.w('QuickConnect 解析失败，清除缓存: $e');
+    if (isQuickConnect) {
+      logger.d('检测到 QuickConnect ID: $serverUrl');
+      try {
+        await _resolveQuickConnect(serverUrl, l10n);
+      } catch (e) {
+        logger.w('QuickConnect 解析失败，清除缓存: $e');
+        await SharedPreferencesUtils.setRemoteBaseUrl(null);
+        await SharedPreferencesUtils.setLocalBaseUrl(null);
+        rethrow;
+      }
+    } else {
       await SharedPreferencesUtils.setRemoteBaseUrl(null);
       await SharedPreferencesUtils.setLocalBaseUrl(null);
-      rethrow;
     }
-  } else {
-    await SharedPreferencesUtils.setRemoteBaseUrl(null);
-    await SharedPreferencesUtils.setLocalBaseUrl(null);
-  }
 
-  final cookiesInfo = ref.watch(audioStationCookiesInfoProvider);
-  final hasValidCookies = cookiesInfo != null && cookiesInfo.isValid;
+    final cookiesInfo = ref.read(audioStationCookiesInfoProvider);
+    final hasValidCookies = cookiesInfo != null && cookiesInfo.isValid;
 
-  if (hasValidCookies) {
-    logger.d('Cookie 有效，尝试刷新 token');
-    try {
-      // return await _refreshTokenWithWidgetRef(ref, cookiesInfo, l10n);
-      return AuthResponse(success: true);
-    } catch (e) {
-      logger.w('刷新 token 失败，尝试完整登录: $e');
+    if (hasValidCookies) {
+      logger.d('Cookie 有效，尝试刷新 token');
+      try {
+        // return await _refreshTokenWithWidgetRef(ref, cookiesInfo, l10n);
+        return AuthResponse(success: true);
+      } catch (e) {
+        logger.w('刷新 token 失败，尝试完整登录: $e');
+      }
     }
+
+    final result = await fullLogin(ref, accountInfo, l10n);
+    logger.d('登录响应: $result');
+    return result;
+  } finally {
+    keepAlive.close();
   }
-
-  logger.d('进行完整登录');
-
-  final result = await _fullLogin(ref, accountInfo, l10n);
-
-  // 登录成功后，检查是否需要启动 QuickConnect 监控
-  if (result.success && isQuickConnect) {
-    final useLANIP = ref.read(useLANIPProvider);
-    if (useLANIP) {
-      QuickConnectService.instance.startMonitoring();
-      logger.d('QuickConnect 登录成功，启动局域网监控');
-    }
-  }
-
-  return result;
 }
 
 Future<LogoutResponse> logout(WidgetRef ref) async {
   final l10n = ref.read(l10nProvider);
 
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     Future.microtask(() async {
       await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      QuickConnectService.instance.stopMonitoring();
+      await SharedPreferencesUtils.setRemoteBaseUrl(null);
+      await SharedPreferencesUtils.setLocalBaseUrl(null);
     });
     return LogoutResponse(success: false);
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   final request = LogoutRequest(
     api: 'SYNO.API.Auth',
@@ -556,9 +472,17 @@ Future<LogoutResponse> logout(WidgetRef ref) async {
     logger.w('登出请求失败: $e');
   } finally {
     // ref.invalidate(authTokenProvider);
+
     await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-    QuickConnectService.instance.stopMonitoring();
   }
 
   return LogoutResponse(success: true);
+}
+
+Future<AuthResponse> retryLogin(Ref ref, AppLocalizations l10n) async {
+  final accountInfo = ref.read(accountInfoProvider);
+  if (accountInfo == null) {
+    throw AudioStationException(message: l10n.error_account_info_invalid);
+  }
+  return await fullLogin(ref, accountInfo, l10n);
 }

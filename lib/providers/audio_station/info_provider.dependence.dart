@@ -3,7 +3,7 @@ part of 'info_provider.dart';
 Future<Map<String, dynamic>> _testConnection({required Ref ref}) async {
   final l10n = ref.read(l10nProvider);
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   late final HttpTextResponse response;
   try {
@@ -53,7 +53,8 @@ Future<SynoAPIInfoResponse> _queryAPI({
 }) async {
   final l10n = ref.read(l10nProvider);
 
-  final cacheKey = 'queryAPI:$query';
+  final baseUrl = ref.read(baseUrlProvider());
+  final cacheKey = 'queryAPI:$query:${baseUrl.hashCode}';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<SynoAPIInfoResponse>(
@@ -66,8 +67,6 @@ Future<SynoAPIInfoResponse> _queryAPI({
       return cached;
     }
   }
-
-  final baseUrl = ref.read(baseUrlProvider);
 
   late final HttpTextResponse response;
   try {
@@ -139,7 +138,7 @@ Future<AudioStationInfoResponse> _sendAudioStationInfoRequest({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -149,7 +148,7 @@ Future<AudioStationInfoResponse> _sendAudioStationInfoRequest({
     return AudioStationInfoResponse(success: false);
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
+  final baseUrl = ref.read(baseUrlProvider());
 
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);
@@ -157,7 +156,7 @@ Future<AudioStationInfoResponse> _sendAudioStationInfoRequest({
   late final HttpTextResponse response;
   try {
     response = await httpClientWrapper.post(
-      '$baseUrl/music/webapi/AudioStation/info.cgi',
+      '$baseUrl/webapi/AudioStation/info.cgi',
       body: HttpBody.form(
         params.map((key, value) => MapEntry(key, value.toString())),
       ),
@@ -214,7 +213,7 @@ Future<DSMInfoResponse> _sendDSMInfoRequest({
   required String defaultError,
   required AppLocalizations l10n,
 }) async {
-  final authHeaders = await ref.read(authHeadersProvider.future);
+  final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
     logger.w('认证失败，返回空结果');
     Future.microtask(() async {
@@ -224,8 +223,8 @@ Future<DSMInfoResponse> _sendDSMInfoRequest({
     return DSMInfoResponse(success: false);
   }
 
-  final baseUrl = ref.read(baseUrlProvider);
-
+  final baseUrl = ref.read(baseUrlProvider());
+  logger.i("baseUrl: $baseUrl");
   final params = Map<String, dynamic>.from(request.toJson())
     ..removeWhere((key, value) => value == null);
 
@@ -261,9 +260,6 @@ Future<DSMInfoResponse> _sendDSMInfoRequest({
   final result = DSMInfoResponse.fromJson(jsonBody);
   if (!result.success) {
     final errorCode = jsonBody['error']?['code'];
-    if (errorCode == 105 || errorCode == 106 || errorCode == 119) {
-      ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-    }
     final errorMessage = errorCode is int
         ? getAudioReuqestErrorMessage(l10n, defaultError, errorCode)
         : defaultError;
@@ -284,7 +280,8 @@ Future<AudioStationInfoResponse> _getAudioStationInfo({
   required Ref ref,
   Duration? cacheDuration,
 }) async {
-  final cacheKey = 'getAudioStationInfo';
+  final baseUrl = ref.read(baseUrlProvider());
+  final cacheKey = 'getAudioStationInfo:${baseUrl.hashCode}';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<AudioStationInfoResponse>(
@@ -331,7 +328,8 @@ Future<DSMInfoResponse> _getDSMInfo({
   required Ref ref,
   Duration? cacheDuration,
 }) async {
-  final cacheKey = 'getDSMInfo';
+  final baseUrl = ref.read(baseUrlProvider());
+  final cacheKey = 'getDSMInfo:${baseUrl.hashCode}';
 
   if (cacheDuration != null) {
     final cached = await getFromCache<DSMInfoResponse>(
