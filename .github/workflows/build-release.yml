@@ -7,9 +7,19 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version tag (e.g., v2.3.4)'
+        description: 'Version tag (e.g., v1.0.0)'
         required: true
         default: ''
+      create_release:
+        description: '是否创建 Release'
+        type: boolean
+        required: true
+        default: true
+      push_tag:
+        description: '是否创建新的 Git 标签（若关闭，则发布到 latest 标签）'
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   contents: write
@@ -279,8 +289,6 @@ jobs:
           echo "=== macOS build completed ==="
         timeout-minutes: 60
 
-
-
       - name: Upload build log on failure
         if: failure()
         uses: actions/upload-artifact@v7
@@ -354,38 +362,50 @@ jobs:
         env:
           RUNNER_WORKSPACE: ${{ runner.workspace }}
 
-  # ==================== 统一 Release ====================
   create-release:
     name: Create Release (iOS + macOS)
     needs: [build-ios, build-macos]
     if: |
       (startsWith(github.ref, 'refs/tags/') ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''))
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.version != '' && github.event.inputs.create_release == 'true'))
       && success()
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0    # 获取完整历史，以便找到上一个标签
+          fetch-depth: 0
 
-      - name: Determine release version and change log
+      - name: Determine release version, tag and change log
         id: get_version
         run: |
+          # 显示版本号
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             VERSION="${{ github.event.inputs.version }}"
           else
             VERSION="${GITHUB_REF#refs/tags/}"
           fi
 
-          # 接受纯数字版本和预发布版本（如 v1.0.3-rc1, v1.0.2_rc1）
           if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([-\._].*)?$ ]]; then
             echo "::error::Invalid version format"
             exit 1
           fi
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
-          # 判断是否为预发布：如果版本号中包含 '-' 或 '_'，则视为预发布
+          # 决定真正的 Git 标签名
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            PUSH_TAG="${{ github.event.inputs.push_tag }}"
+            if [[ "$PUSH_TAG" == "true" ]]; then
+              TAG_NAME="$VERSION"
+            else
+              TAG_NAME="latest"
+            fi
+          else
+            TAG_NAME="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
+
+          # 预发布判定
           if [[ "$VERSION" =~ [-_] ]]; then
             IS_PRERELEASE="true"
           else
@@ -393,15 +413,12 @@ jobs:
           fi
           echo "IS_PRERELEASE=$IS_PRERELEASE" >> $GITHUB_OUTPUT
 
-          # 获取上一个标签（用于比较链接），跳过当前标签
+          # 获取上一个正式版标签（仅纯数字）
           git fetch --tags -q
-          echo "=== All version tags (sorted by semver) ==="
+          echo "=== All version tags (sorted) ==="
           git tag | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+' | sort -V | grep -v "^${VERSION}$"
-          echo "============================================"
-
-          # 🔑 关键修改：只获取纯数字标签（不包含 - 或 _），确保上一个版本是正式版
+          echo "================================"
           PREVIOUS_TAG=$(git tag | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | grep -v "^${VERSION}$" | tail -1)
-
           if [ -z "$PREVIOUS_TAG" ]; then
             CHANGE_LOG="请查看提交记录"
           else
@@ -431,7 +448,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           name: Release ${{ steps.get_version.outputs.VERSION }}
-          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          tag_name: ${{ steps.get_version.outputs.TAG_NAME }}
           body: |
             ## ToneHarbor ${{ steps.get_version.outputs.VERSION }}
             
@@ -446,5 +463,6 @@ jobs:
             artifacts/ToneHarbor-macOS.zip
           draft: false
           prerelease: ${{ steps.get_version.outputs.IS_PRERELEASE == 'true' }}
+          overwrite: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
