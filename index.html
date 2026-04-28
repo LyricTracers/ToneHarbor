@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ToneHarbor - Downloads</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            padding: 2.5rem;
+            margin-top: 2rem;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        .header .subtitle {
+            font-size: 1rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .version-card {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .version-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        .version-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.2rem;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.2em 0.8em;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .badge-prerelease {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+        .badge-stable {
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+        .version-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .download-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .download-link {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            text-decoration: none;
+            color: #e2e8f0;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .download-link:hover {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: rgba(56, 189, 248, 0.4);
+            transform: translateY(-1px);
+        }
+        .download-link .icon {
+            font-size: 1.5rem;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+        .empty-state {
+            text-align: center;
+            color: #64748b;
+            padding: 2rem;
+            font-style: italic;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 1.5rem; }
+            .header h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 ToneHarbor</h1>
+            <div class="subtitle">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Updated: 2026-04-28 07:19:55 UTC
+            </div>
+        </div>
+        <div id="content"></div>
+        <div class="footer">
+            Built with ❤️ using GitHub Actions
+        </div>
+    </div>
+    <script>
+        const LATEST_TAG = 'latest';
+        const LATEST_IS_PRERELEASE = true;
+        const LATEST_RELEASE_TAG = 'v1.0.1';
+        const GITHUB_REPOSITORY = 'LyricTracers/ToneHarbor';
+        
+        function createVersionCard(tag, type) {
+            const card = document.createElement('div');
+            card.className = 'version-card';
+            
+            const header = document.createElement('div');
+            header.className = 'version-header';
+            
+            const badge = document.createElement('span');
+            if (type === 'prerelease') {
+                badge.className = 'badge badge-prerelease';
+                badge.textContent = 'Pre-release';
+            } else {
+                badge.className = 'badge badge-stable';
+                badge.textContent = 'Stable';
+            }
+            
+            const title = document.createElement('span');
+            title.className = 'version-title';
+            title.textContent = `Version ${tag}`;
+            
+            header.appendChild(badge);
+            header.appendChild(title);
+            
+            const links = document.createElement('div');
+            links.className = 'download-links';
+            
+            const ipaLink = document.createElement('a');
+            ipaLink.className = 'download-link';
+            ipaLink.href = `https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/ToneHarbor-${tag}.ipa`;
+            ipaLink.innerHTML = '<span class="icon">📱</span> iOS IPA';
+            
+            const macLink = document.createElement('a');
+            macLink.className = 'download-link';
+            macLink.href = `https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/ToneHarbor-${tag}-macOS.zip`;
+            macLink.innerHTML = '<span class="icon">💻</span> macOS App';
+            
+            links.appendChild(ipaLink);
+            links.appendChild(macLink);
+            
+            card.appendChild(header);
+            card.appendChild(links);
+            return card;
+        }
+        
+        const content = document.getElementById('content');
+        if (LATEST_IS_PRERELEASE) {
+            content.appendChild(createVersionCard(LATEST_TAG, 'prerelease'));
+            if (LATEST_RELEASE_TAG) {
+                content.appendChild(createVersionCard(LATEST_RELEASE_TAG, 'stable'));
+            } else {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No stable release available yet.';
+                content.appendChild(empty);
+            }
+        } else {
+            content.appendChild(createVersionCard(LATEST_TAG, 'stable'));
+        }
+    </script>
+</body>
+</html>
