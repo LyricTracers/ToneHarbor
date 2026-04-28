@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:toneharbor/init/initialized.dart';
 import 'package:toneharbor/l10n/app_localizations.dart';
 import 'package:toneharbor/models/audio_station/syno_api_info.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
-import 'package:toneharbor/utils/api_cache_providers.dart';
 import 'package:toneharbor/utils/base_funs.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/components/common_shimmer_loader.dart';
@@ -31,6 +32,22 @@ class AccountPage extends HookConsumerWidget with BuildItem {
       return '$minutes ${l10n.minute} $seconds ${l10n.second}';
     } else {
       return '$seconds ${l10n.second}';
+    }
+  }
+
+  int _parseServerTimeToUptime(String serverTime) {
+    if (serverTime.isEmpty) {
+      return 0;
+    }
+    try {
+      final format = DateFormat("EEE MMM dd HH:mm:ss yyyy");
+      final serverDateTime = format.parse(serverTime);
+      final now = DateTime.now();
+      final difference = now.difference(serverDateTime);
+      return difference.inSeconds;
+    } catch (e) {
+      logger.e('解析服务器时间失败: $e');
+      return 0;
     }
   }
 
@@ -88,11 +105,15 @@ class AccountPage extends HookConsumerWidget with BuildItem {
         try {
           await logout(ref);
         } finally {
-          invalidateApiCacheProvidersForWidget(ref);
-          ref.read(requestFlagProvider.notifier).setRequestFlag(false);
           await ref
               .read(audioStationCookiesInfoProvider.notifier)
               .clearCookie();
+          await SharedPreferencesUtils.setRemoteBaseUrl(null);
+          await SharedPreferencesUtils.setLocalBaseUrl(null);
+          ref.read(requestFlagProvider.notifier).setRequestFlag(false);
+          if (ref.context.mounted) {
+            ref.context.go('/login');
+          }
         }
       },
       title: Text(
@@ -274,7 +295,9 @@ class AccountPage extends HookConsumerWidget with BuildItem {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = ref.watch(l10nProvider);
     final colorScheme = getColorSchemeWhenReady(ref);
-    var dsmInfo = ref.watch(dsmInfoProvider());
+    var dsmInfo = ref.watch(
+      dsmInfoProvider(cacheDuration: const Duration(hours: 1)),
+    );
     var obscurePassword = useState(true);
     final size = MediaQuery.of(context).size;
     final multiplier = size.multiplier2;
@@ -284,7 +307,10 @@ class AccountPage extends HookConsumerWidget with BuildItem {
         buildContent(context, ref, l10n, colorScheme, [
           ...dsmInfo.when(
             data: (value) {
-              final uptime = useState(value.data?.uptime ?? 0);
+              final serverUptime = value.data?.uptime ?? 0;
+              final serverTime = value.data?.time ?? '';
+              final baseUptime = _parseServerTimeToUptime(serverTime);
+              final uptime = useState(baseUptime + serverUptime);
               useEffect(() {
                 final timer = Timer.periodic(const Duration(seconds: 1), (_) {
                   uptime.value++;

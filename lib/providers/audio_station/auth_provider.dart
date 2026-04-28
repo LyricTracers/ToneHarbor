@@ -365,7 +365,6 @@ Future<void> _resolveQuickConnectCN(
   }
 }
 
-/// 测试 QuickConnect ID 解析（用于测试连通性）
 @riverpod
 Future<void> quickConnectTest(Ref ref, String quickConnectId) async {
   final l10n = ref.read(l10nProvider);
@@ -431,28 +430,27 @@ Future<LogoutResponse> logout(WidgetRef ref) async {
 
   final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
-    Future.microtask(() async {
-      await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-      await SharedPreferencesUtils.setRemoteBaseUrl(null);
-      await SharedPreferencesUtils.setLocalBaseUrl(null);
-    });
     return LogoutResponse(success: false);
   }
 
   final baseUrl = ref.read(baseUrlProvider());
-
   final request = LogoutRequest(
     api: 'SYNO.API.Auth',
     method: 'logout',
     version: '6',
   );
   try {
+    final cancelToken = CancelToken();
+    Future.delayed(const Duration(seconds: 10), () async {
+      await cancelToken.cancel();
+    });
     final response = await httpClientWrapper.get(
       '$baseUrl/webapi/entry.cgi',
       query: request.toJson().map(
         (key, value) => MapEntry(key, value?.toString() ?? ''),
       ),
       headers: HttpHeaders.rawMap({'accept': '*/*', ...authHeaders}),
+      cancelToken: cancelToken,
     );
 
     if (response.statusCode != 200) {
@@ -470,10 +468,6 @@ Future<LogoutResponse> logout(WidgetRef ref) async {
     }
   } catch (e) {
     logger.w('登出请求失败: $e');
-  } finally {
-    // ref.invalidate(authTokenProvider);
-
-    await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
   }
 
   return LogoutResponse(success: true);

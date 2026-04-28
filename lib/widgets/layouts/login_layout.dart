@@ -73,11 +73,9 @@ class LoginLayout extends BaseBgLayout {
 
       testingConnection.value = true;
       try {
-        // 如果是 QuickConnect ID，先解析
         if (!serverUrl.contains('.') &&
             !serverUrl.contains(':') &&
             serverUrl.length >= 3) {
-          // QuickConnect ID，解析后再测试
           await ref.read(quickConnectTestProvider(serverUrl).future);
         }
 
