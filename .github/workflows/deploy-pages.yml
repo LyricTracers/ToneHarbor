@@ -1,0 +1,236 @@
+name: Deploy GitHub Pages on Release or Tag
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Generate download page
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p public
+          BUILD_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+          RELEASES=$(gh release list --limit 50 --json tagName,isPrerelease --jq '.')
+          LATEST_TAG=$(echo "$RELEASES" | jq -r '.[0].tagName // ""')
+          LATEST_IS_PRERELEASE=$(echo "$RELEASES" | jq -r '.[0].isPrerelease // false')
+          LATEST_RELEASE_TAG=$(echo "$RELEASES" | jq -r '.[] | select(.isPrerelease==false) | .tagName' | head -1)
+
+          if [ -z "$LATEST_TAG" ]; then
+            echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>拾音坞 - Downloads</title></head><body style="background:#0f172a;color:#e2e8f0;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif"><p>暂无可用版本。</p></body></html>' > public/index.html
+            exit 0
+          fi
+
+          cat > public/index.html <<'HTML_EOF'
+          <!DOCTYPE html>
+          <html lang="zh-CN">
+          <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <title>拾音坞 - Downloads</title>
+              <link rel="preconnect" href="https://fonts.googleapis.com">
+              <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+              <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+              <style>
+                  * { margin: 0; padding: 0; box-sizing: border-box; }
+                  body {
+                      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                      color: #e2e8f0;
+                      min-height: 100vh;
+                      display: flex;
+                      flex-direction: column;
+                      align-items: center;
+                      padding: 2rem 1rem;
+                  }
+                  .container {
+                      width: 100%;
+                      max-width: 700px;
+                      background: rgba(30, 41, 59, 0.8);
+                      backdrop-filter: blur(12px);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255, 255, 255, 0.1);
+                      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                      padding: 2.5rem;
+                      margin-top: 2rem;
+                  }
+                  .header {
+                      text-align: center;
+                      margin-bottom: 2.5rem;
+                  }
+                  .header h1 {
+                      font-size: 2.5rem;
+                      font-weight: 700;
+                      background: linear-gradient(to right, #38bdf8, #818cf8);
+                      -webkit-background-clip: text;
+                      -webkit-text-fill-color: transparent;
+                      background-clip: text;
+                      margin-bottom: 0.3rem;
+                  }
+                  .header .subtitle {
+                      font-size: 1.05rem;
+                      color: #94a3b8;
+                  }
+                  .header .update-time {
+                      font-size: 0.85rem;
+                      color: #64748b;
+                      margin-top: 0.6rem;
+                  }
+                  .version-card {
+                      background: rgba(15, 23, 42, 0.6);
+                      border-radius: 16px;
+                      padding: 1.5rem;
+                      margin-bottom: 1.5rem;
+                      border: 1px solid rgba(255, 255, 255, 0.05);
+                  }
+                  .badge {
+                      display: inline-flex;
+                      align-items: center;
+                      padding: 0.2em 0.8em;
+                      border-radius: 20px;
+                      font-size: 0.8rem;
+                      font-weight: 600;
+                  }
+                  .badge-prerelease {
+                      background: rgba(251,191,36,0.2);
+                      color: #fbbf24;
+                      border: 1px solid rgba(251,191,36,0.3);
+                  }
+                  .badge-stable {
+                      background: rgba(52,211,153,0.2);
+                      color: #34d399;
+                      border: 1px solid rgba(52,211,153,0.3);
+                  }
+                  .version-title {
+                      font-size: 1.25rem;
+                      font-weight: 600;
+                  }
+                  .download-links {
+                      display: grid;
+                      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                      gap: 1rem;
+                      margin-top: 1rem;
+                  }
+                  .download-link {
+                      display: flex;
+                      align-items: center;
+                      gap: 0.6rem;
+                      background: rgba(255,255,255,0.05);
+                      border: 1px solid rgba(255,255,255,0.1);
+                      border-radius: 12px;
+                      padding: 1rem;
+                      text-decoration: none;
+                      color: #e2e8f0;
+                      font-weight: 500;
+                      transition: all 0.2s;
+                  }
+                  .download-link:hover {
+                      background: rgba(56,189,248,0.1);
+                      border-color: rgba(56,189,248,0.4);
+                  }
+                  .footer {
+                      text-align: center;
+                      margin-top: 2.5rem;
+                      color: #64748b;
+                      font-size: 0.85rem;
+                  }
+                  @media (max-width: 600px) {
+                      .container { padding: 1.5rem; }
+                      .header h1 { font-size: 2rem; }
+                  }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <div class="header">
+                      <h1>拾音坞</h1>
+                      <div class="subtitle">一坞藏万乐，双耳遇知音</div>
+                      <div class="update-time">Updated: __BUILD_TIME__</div>
+                  </div>
+                  <div id="content"></div>
+                  <div class="footer">Built with GitHub Actions</div>
+              </div>
+              <script>
+                  const LATEST_TAG = '__LATEST_TAG__';
+                  const LATEST_IS_PRERELEASE = __LATEST_IS_PRERELEASE__;
+                  const LATEST_RELEASE_TAG = '__LATEST_RELEASE_TAG__';
+                  const GITHUB_REPOSITORY = '__GITHUB_REPOSITORY__';
+
+                  function createCard(tag, type) {
+                      const card = document.createElement('div');
+                      card.className = 'version-card';
+                      const header = document.createElement('div');
+                      header.style.display = 'flex';
+                      header.style.alignItems = 'center';
+                      header.style.gap = '0.75rem';
+                      const badge = document.createElement('span');
+                      badge.className = type === 'prerelease' ? 'badge badge-prerelease' : 'badge badge-stable';
+                      badge.textContent = type === 'prerelease' ? 'Pre-release' : 'Stable';
+                      const title = document.createElement('span');
+                      title.className = 'version-title';
+                      title.textContent = `Version ${tag}`;
+                      header.appendChild(badge);
+                      header.appendChild(title);
+
+                      const linksDiv = document.createElement('div');
+                      linksDiv.className = 'download-links';
+                      const ipa = document.createElement('a');
+                      ipa.className = 'download-link';
+                      ipa.href = `https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/ToneHarbor-${tag}.ipa`;
+                      ipa.innerHTML = '<span class="icon">📱</span> iOS IPA';
+                      const mac = document.createElement('a');
+                      mac.className = 'download-link';
+                      mac.href = `https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/ToneHarbor-${tag}-macOS.zip`;
+                      mac.innerHTML = '<span class="icon">💻</span> macOS App';
+                      linksDiv.appendChild(ipa);
+                      linksDiv.appendChild(mac);
+
+                      card.appendChild(header);
+                      card.appendChild(linksDiv);
+                      return card;
+                  }
+
+                  const content = document.getElementById('content');
+                  if (LATEST_IS_PRERELEASE) {
+                      content.appendChild(createCard(LATEST_TAG, 'prerelease'));
+                      if (LATEST_RELEASE_TAG) {
+                          content.appendChild(createCard(LATEST_RELEASE_TAG, 'stable'));
+                      }
+                  } else {
+                      content.appendChild(createCard(LATEST_TAG, 'stable'));
+                  }
+              </script>
+          </body>
+          </html>
+          HTML_EOF
+
+          sed -i "s|__BUILD_TIME__|$BUILD_TIME|g" public/index.html
+          sed -i "s|__LATEST_TAG__|$LATEST_TAG|g" public/index.html
+          if [ "$LATEST_IS_PRERELEASE" = "true" ]; then
+              sed -i "s|__LATEST_IS_PRERELEASE__|true|g" public/index.html
+          else
+              sed -i "s|__LATEST_IS_PRERELEASE__|false|g" public/index.html
+          fi
+          sed -i "s|__LATEST_RELEASE_TAG__|$LATEST_RELEASE_TAG|g" public/index.html
+          sed -i "s|__GITHUB_REPOSITORY__|$GITHUB_REPOSITORY|g" public/index.html
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: public
+          branch: gh-pages
+          clean: true
