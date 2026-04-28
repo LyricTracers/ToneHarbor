@@ -42,7 +42,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      # iOS 无需指定 Xcode 16.2（已经注释），使用默认即可
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -91,7 +90,6 @@ jobs:
           pod install --verbose
         timeout-minutes: 60
 
-      # 注入占位 Development Team（解决证书问题）
       - name: Inject team and profile into Runner project
         run: |
           cd ios
@@ -379,7 +377,6 @@ jobs:
       - name: Determine release version, tag and change log
         id: get_version
         run: |
-          # 显示版本号
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             VERSION="${{ github.event.inputs.version }}"
           else
@@ -405,7 +402,6 @@ jobs:
           fi
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
 
-          # 预发布判定
           if [[ "$VERSION" =~ [-_] ]]; then
             IS_PRERELEASE="true"
           else
@@ -413,11 +409,8 @@ jobs:
           fi
           echo "IS_PRERELEASE=$IS_PRERELEASE" >> $GITHUB_OUTPUT
 
-          # 获取上一个正式版标签（仅纯数字）
+          # 获取上一个正式版标签
           git fetch --tags -q
-          echo "=== All version tags (sorted) ==="
-          git tag | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+' | sort -V | grep -v "^${VERSION}$"
-          echo "================================"
           PREVIOUS_TAG=$(git tag | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | grep -v "^${VERSION}$" | tail -1)
           if [ -z "$PREVIOUS_TAG" ]; then
             CHANGE_LOG="请查看提交记录"
@@ -439,6 +432,15 @@ jobs:
           name: ToneHarbor-macOS
           path: ./artifacts
 
+      - name: Rename artifacts with version
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          cd artifacts
+          mv ToneHarbor.ipa "ToneHarbor-${VERSION}.ipa"
+          mv ToneHarbor-macOS.zip "ToneHarbor-${VERSION}-macOS.zip"
+          echo "Renamed files:"
+          ls -la
+
       - name: List artifacts
         run: |
           echo "=== Downloaded artifacts ==="
@@ -453,14 +455,14 @@ jobs:
             ## ToneHarbor ${{ steps.get_version.outputs.VERSION }}
             
             ### 下载说明
-            - **ToneHarbor.ipa**: iOS 安装包，适用于越狱设备或侧装
-            - **ToneHarbor-macOS.zip**: macOS 应用程序包
+            - **ToneHarbor-${{ steps.get_version.outputs.VERSION }}.ipa**: iOS 安装包
+            - **ToneHarbor-${{ steps.get_version.outputs.VERSION }}-macOS.zip**: macOS 应用程序包
             
             ### 更新内容
             ${{ steps.get_version.outputs.CHANGE_LOG }}
           files: |
-            artifacts/ToneHarbor.ipa
-            artifacts/ToneHarbor-macOS.zip
+            artifacts/ToneHarbor-${{ steps.get_version.outputs.VERSION }}.ipa
+            artifacts/ToneHarbor-${{ steps.get_version.outputs.VERSION }}-macOS.zip
           draft: false
           prerelease: ${{ steps.get_version.outputs.IS_PRERELEASE == 'true' }}
           overwrite: true
