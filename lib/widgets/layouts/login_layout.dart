@@ -70,7 +70,7 @@ class LoginLayout extends BaseBgLayout {
 
       final serverUrlNotifier = ref.read(serverUrlProvider.notifier);
       await serverUrlNotifier.setServerUrl(serverUrl);
-
+      ref.invalidate(baseUrlProvider);
       testingConnection.value = true;
       try {
         if (!serverUrl.contains('.') &&
@@ -145,6 +145,7 @@ class LoginLayout extends BaseBgLayout {
 
       try {
         ref.read(requestFlagProvider.notifier).setRequestFlag(true);
+        ref.invalidate(baseUrlProvider);
         final response = await ref.read(loginProvider.future);
         if (response.success) {
           ref.invalidate(baseUrlProvider);
