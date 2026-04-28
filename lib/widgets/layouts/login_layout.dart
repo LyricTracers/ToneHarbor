@@ -226,7 +226,7 @@ class LoginLayout extends BaseBgLayout {
                       controller: serverUrlController,
                       decoration: InputDecoration(
                         labelText: l10n.serverUrl,
-                        hintText: '192.168.1.100:5000',
+                        hintText: l10n.server_url_hint,
                         prefixIcon: const Icon(Icons.dns),
                         suffixIcon: IconButton(
                           icon: Icon(

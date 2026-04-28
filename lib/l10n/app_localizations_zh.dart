@@ -226,6 +226,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_server_url_empty => '服务器地址不能为空';
 
   @override
+  String get server_url_hint => '地址或QuickConnect ID';
+
+  @override
   String get error_response_parse_failed => '解析失败';
 
   @override

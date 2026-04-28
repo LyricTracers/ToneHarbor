@@ -74,6 +74,7 @@
   "error_qc_cn_server_info_parse_failed": "无法解析 QuickConnect 中国区服务器信息",
   "error_qc_invalid_id": "无效的 QuickConnect ID",
   "error_server_url_empty": "服务器地址不能为空",
+  "server_url_hint": "地址或QuickConnect ID",
   "error_response_parse_failed": "解析失败",
   "testConnection": "测试连通性",
   "testConnectionSuccess": "连通性测试成功",

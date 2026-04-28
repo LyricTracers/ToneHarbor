@@ -530,6 +530,12 @@ abstract class AppLocalizations {
   /// **'Server URL cannot be empty'**
   String get error_server_url_empty;
 
+  /// No description provided for @server_url_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Address or QuickConnect ID'**
+  String get server_url_hint;
+
   /// No description provided for @error_response_parse_failed.
   ///
   /// In en, this message translates to:

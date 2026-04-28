@@ -242,6 +242,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_server_url_empty => 'Server URL cannot be empty';
 
   @override
+  String get server_url_hint => 'Address or QuickConnect ID';
+
+  @override
   String get error_response_parse_failed => 'Response Parsing failed';
 
   @override
