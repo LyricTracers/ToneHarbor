@@ -27,14 +27,13 @@ jobs:
           mkdir -p public
           BUILD_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
 
-          # 拉取所有标签
           git fetch --tags -q
 
-          # 1. 获取最新正式版标签（按语义排序）
-          LATEST_STABLE=$(git tag -l 'v*.*.*' | grep -v '-' | sort -V -r | head -1)
+          # 1. 获取最新正式版标签（严格匹配纯数字版本号）
+          LATEST_STABLE=$(git tag -l 'v*.*.*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V -r | head -1)
 
-          # 2. 检查是否存在 latest Release，并提取其真实版本号
-          LATEST_RELEASE_DATA=$(gh release view latest --json body,tagName --jq '.' 2>/dev/null || echo "")
+          # 2. 检查 latest Release 并提取真实版本号
+          LATEST_RELEASE_DATA=$(gh release view latest --json body,tagName 2>/dev/null || echo "")
           LATEST_TAG=$(echo "$LATEST_RELEASE_DATA" | jq -r '.tagName // ""')
           LATEST_VERSION=""
 
@@ -50,10 +49,10 @@ jobs:
           SHOW_STABLE=true
           SHOW_LATEST=false
           if [ -n "$LATEST_VERSION" ]; then
-            # 比较正式版和 latest 对应的版本（使用 sort -V）
             if [ -z "$LATEST_STABLE" ]; then
               SHOW_LATEST=true
             else
+              # 比较正式版和 latest 对应的版本号（使用 sort -V）
               HIGHER=$(printf "%s\n%s" "$LATEST_STABLE" "$LATEST_VERSION" | sort -V | tail -1)
               if [ "$HIGHER" = "$LATEST_VERSION" ]; then
                 SHOW_LATEST=true
@@ -61,13 +60,13 @@ jobs:
             fi
           fi
 
-          # 如果没有任何版本，显示提示
+          # 如果没有正式版且不显示 latest，则提示无版本
           if [ -z "$LATEST_STABLE" ] && [ "$SHOW_LATEST" = false ]; then
             echo '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>拾音坞</title></head><body style="background:#0f172a;color:#e2e8f0;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif"><p>暂无可用版本，敬请期待。</p></body></html>' > public/index.html
             exit 0
           fi
 
-          # 4. 生成 HTML 页面（与之前样式一致）
+          # 4. 生成 HTML 页面
           cat > public/index.html <<'HTML_EOF'
           <!DOCTYPE html>
           <html lang="zh-CN">
@@ -156,7 +155,7 @@ jobs:
               <script>
                   const GITHUB_REPOSITORY = '__GITHUB_REPOSITORY__';
                   const STABLE_TAG = '__STABLE_TAG__';
-                  const LATEST_VERSION = '__LATEST_VERSION__';  // latest 对应的真实版本号（如 v1.0.2_rc1）
+                  const LATEST_VERSION = '__LATEST_VERSION__';
                   const SHOW_LATEST = __SHOW_LATEST__;
 
                   function createCard(tag, type, displayTag) {
@@ -177,10 +176,8 @@ jobs:
 
                       const links = document.createElement('div');
                       links.className = 'links';
-                      // 正式版使用其自身标签
                       let dlTag = tag;
                       if (type === 'prerelease') {
-                          // latest 的下载链接需要用真实版本号构造附件名
                           dlTag = 'latest';
                       }
                       const ipaName = `ToneHarbor-${displayTag}.ipa`;
@@ -215,6 +212,9 @@ jobs:
           </html>
           HTML_EOF
 
+          # 清理变量中的换行符，确保 sed 安全
+          LATEST_STABLE=$(echo "$LATEST_STABLE" | tr -d '\n')
+          LATEST_VERSION=$(echo "$LATEST_VERSION" | tr -d '\n')
           # 替换占位符
           sed -i "s|__BUILD_TIME__|$BUILD_TIME|g" public/index.html
           sed -i "s|__GITHUB_REPOSITORY__|$GITHUB_REPOSITORY|g" public/index.html
