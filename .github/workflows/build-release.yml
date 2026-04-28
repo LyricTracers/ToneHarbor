@@ -402,6 +402,14 @@ jobs:
           fi
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_OUTPUT
 
+          # 🔑 如果使用 latest 标签，强制更新该标签指向当前 commit
+          git fetch --tags -q
+          if [[ "$TAG_NAME" == "latest" ]]; then
+            echo "Moving latest tag to current commit..."
+            git tag -f "$TAG_NAME"
+            git push origin "$TAG_NAME" --force
+          fi
+
           if [[ "$VERSION" =~ [-_] ]]; then
             IS_PRERELEASE="true"
           else
@@ -410,7 +418,6 @@ jobs:
           echo "IS_PRERELEASE=$IS_PRERELEASE" >> $GITHUB_OUTPUT
 
           # 获取上一个正式版标签
-          git fetch --tags -q
           PREVIOUS_TAG=$(git tag | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | grep -v "^${VERSION}$" | tail -1)
           if [ -z "$PREVIOUS_TAG" ]; then
             CHANGE_LOG="请查看提交记录"
