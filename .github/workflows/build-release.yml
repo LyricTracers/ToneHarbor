@@ -493,10 +493,21 @@ jobs:
           BUILD_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
           
           RELEASES=$(gh release list --limit 50 --json tagName,isPrerelease --jq '.')
-          LATEST_TAG=$(echo "$RELEASES" | jq -r '.[0].tagName')
-          LATEST_IS_PRERELEASE=$(echo "$RELEASES" | jq -r '.[0].isPrerelease')
+          LATEST_TAG=$(echo "$RELEASES" | jq -r '.[0].tagName // ""')
+          LATEST_IS_PRERELEASE=$(echo "$RELEASES" | jq -r '.[0].isPrerelease // false')
           LATEST_RELEASE_TAG=$(echo "$RELEASES" | jq -r '.[] | select(.isPrerelease==false) | .tagName' | head -1)
-          
+
+          # 如果没有 Release，生成简单空页面（使用 echo 避免 heredoc 问题）
+          if [ -z "$LATEST_TAG" ]; then
+            echo '<!DOCTYPE html>' > public/index.html
+            echo '<html lang="zh-CN">' >> public/index.html
+            echo '<head><meta charset="utf-8"><title>ToneHarbor - Downloads</title>' >> public/index.html
+            echo '<style>body{font-family:sans-serif;background:#0f172a;color:#e2e8f0;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}.empty{text-align:center;font-size:1.2rem;color:#94a3b8}</style>' >> public/index.html
+            echo '</head><body><div class="empty">No releases available yet. Check back soon!</div></body></html>' >> public/index.html
+            exit 0
+          fi
+
+          # 生成带完整样式的页面（主题部分）
           cat > public/index.html <<'HTML_EOF'
           <!DOCTYPE html>
           <html lang="zh-CN">
@@ -641,7 +652,7 @@ jobs:
                       <h1>🎵 ToneHarbor</h1>
                       <div class="subtitle">
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                          Updated: ${BUILD_TIME}
+                          Updated: __BUILD_TIME__
                       </div>
                   </div>
                   <div id="content"></div>
@@ -650,11 +661,10 @@ jobs:
                   </div>
               </div>
               <script>
-                  // 将 shell 变量注入 JS（在生成时通过后续 echo 替换）
-                  const LATEST_TAG = '${LATEST_TAG}';
-                  const LATEST_IS_PRERELEASE = ${LATEST_IS_PRERELEASE};
-                  const LATEST_RELEASE_TAG = '${LATEST_RELEASE_TAG}';
-                  const GITHUB_REPOSITORY = '${GITHUB_REPOSITORY}';
+                  const LATEST_TAG = '__LATEST_TAG__';
+                  const LATEST_IS_PRERELEASE = __LATEST_IS_PRERELEASE__;
+                  const LATEST_RELEASE_TAG = '__LATEST_RELEASE_TAG__';
+                  const GITHUB_REPOSITORY = '__GITHUB_REPOSITORY__';
                   
                   function createVersionCard(tag, type) {
                       const card = document.createElement('div');
@@ -718,18 +728,17 @@ jobs:
           </body>
           </html>
           HTML_EOF
-          
-          # 替换 shell 变量（因为使用了单引号 heredoc，变量不会展开，需要 sed 替换）
-          sed -i "s/\${BUILD_TIME}/$BUILD_TIME/g" public/index.html
-          sed -i "s/\${LATEST_TAG}/$LATEST_TAG/g" public/index.html
-          # LATEST_IS_PRERELEASE 是布尔值，需要特殊处理
+
+          # 安全替换占位符（使用 | 作为分隔符，避免路径中的 / 冲突）
+          sed -i "s|__BUILD_TIME__|$BUILD_TIME|g" public/index.html
+          sed -i "s|__LATEST_TAG__|$LATEST_TAG|g" public/index.html
           if [ "$LATEST_IS_PRERELEASE" = "true" ]; then
-              sed -i "s/\${LATEST_IS_PRERELEASE}/true/g" public/index.html
+              sed -i "s|__LATEST_IS_PRERELEASE__|true|g" public/index.html
           else
-              sed -i "s/\${LATEST_IS_PRERELEASE}/false/g" public/index.html
+              sed -i "s|__LATEST_IS_PRERELEASE__|false|g" public/index.html
           fi
-          sed -i "s/\${LATEST_RELEASE_TAG}/$LATEST_RELEASE_TAG/g" public/index.html
-          sed -i "s/\${GITHUB_REPOSITORY}/$GITHUB_REPOSITORY/g" public/index.html
+          sed -i "s|__LATEST_RELEASE_TAG__|$LATEST_RELEASE_TAG|g" public/index.html
+          sed -i "s|__GITHUB_REPOSITORY__|$GITHUB_REPOSITORY|g" public/index.html
 
       - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
