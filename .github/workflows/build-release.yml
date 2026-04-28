@@ -415,7 +415,7 @@ jobs:
           if [ -z "$PREVIOUS_TAG" ]; then
             CHANGE_LOG="请查看提交记录"
           else
-            COMPARE_URL="https://github.com/${{ github.repository }}/compare/${PREVIOUS_TAG}...${VERSION}"
+            COMPARE_URL="https://github.com/${{ github.repository }}/compare/${PREVIOUS_TAG}...${TAG_NAME}"
             CHANGE_LOG="查看变更: [${COMPARE_URL}](${COMPARE_URL})"
           fi
           echo "CHANGE_LOG=$CHANGE_LOG" >> $GITHUB_OUTPUT
