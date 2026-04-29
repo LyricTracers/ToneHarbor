@@ -133,6 +133,17 @@ class LyricsContentPage extends HookConsumerWidget {
               alignment: AlignmentDirectional.center,
               children: [
                 Positioned(
+                  left: 12,
+                  right: 12,
+                  child: Center(
+                    child: FractionallySizedBox(
+                      widthFactor: 0.75,
+                      child: Container(height: 1, color: Colors.white30),
+                    ),
+                  ),
+                ),
+
+                Positioned(
                   right: 20,
                   child: DecoratedBox(
                     decoration: _SelectionProgressDecoration(),
@@ -163,11 +174,6 @@ class LyricsContentPage extends HookConsumerWidget {
                       ),
                     ),
                   ),
-                ),
-                Positioned(
-                  left: 100,
-                  right: 100,
-                  child: Container(height: 1, color: Colors.white30),
                 ),
               ],
             ),
@@ -242,7 +248,7 @@ class _SelectionProgressBoxPainter extends BoxPainter {
         ),
         Radius.circular(radius),
       ),
-      Paint()..color = Colors.white10,
+      Paint()..color = const Color(0xFF424242),
     );
 
     final path = Path();
@@ -254,6 +260,6 @@ class _SelectionProgressBoxPainter extends BoxPainter {
     path.lineTo(offset.dx, offset.dy + radius / 2);
     path.lineTo(offset.dx, offset.dy + configuration.size!.height - radius / 2);
     path.close();
-    canvas.drawPath(path, Paint()..color = Colors.white10);
+    canvas.drawPath(path, Paint()..color = const Color(0xFF424242));
   }
 }

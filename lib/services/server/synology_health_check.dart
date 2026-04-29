@@ -23,11 +23,10 @@ class SynologyHealthCheckService with WidgetsBindingObserver {
   }) {
     _healthCheckTimer?.cancel();
 
-    // 立即执行一次检查
     if (WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed) {
       _scheduleCheck();
     }
-    // 然后启动定时器
+
     _healthCheckTimer = Timer.periodic(interval, (_) {
       if (WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed) {
         _scheduleCheck();
@@ -55,7 +54,6 @@ class SynologyHealthCheckService with WidgetsBindingObserver {
   }
 
   Future<void> _isSynologyHealthy({required String serverUrl}) async {
-    // 如果已经在检查中，直接返回
     if (_isChecking) {
       logger.i('健康检查正在进行中，跳过本次检查');
       return;
@@ -65,6 +63,7 @@ class SynologyHealthCheckService with WidgetsBindingObserver {
     bool healthy = false;
 
     try {
+      _ref.invalidate(testConnectionProvider);
       await _ref.read(testConnectionProvider.future);
       healthy = true;
     } catch (e) {
