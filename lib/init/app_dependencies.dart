@@ -101,6 +101,10 @@ class AppDependencies {
         delay: (attempt) => Duration(milliseconds: 500 * (attempt + 1)),
         beforeRetry: (attempt, request, response, exception) async {
           logger.w('after【Retrying $attempt count】 throw $exception');
+          if (exception is RhttpUnknownException) {
+            logger.e('CancelRetry RhttpUnknownException: ${exception.message}');
+            return null;
+          }
           return request;
         },
       ),

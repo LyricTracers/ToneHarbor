@@ -162,7 +162,7 @@ class RandomSongs extends _$RandomSongs
   }) async {
     ref.keepAliveFor(Duration(minutes: 10));
     final authHeaders = ref.watch(authHeadersProvider);
-    ;
+
     if (authHeaders == null) {
       return const ToneHarborTrackObjectListEmpty();
     }
@@ -237,7 +237,7 @@ class FavoriteSongs extends _$FavoriteSongs
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
     final authHeaders = ref.watch(authHeadersProvider);
-    ;
+
     if (authHeaders == null) {
       return const ToneHarborTrackObjectListEmpty();
     }
@@ -352,7 +352,7 @@ class ArtistSongs extends _$ArtistSongs
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
     final authHeaders = ref.watch(authHeadersProvider);
-    ;
+
     if (authHeaders == null) {
       return const ToneHarborTrackObjectListEmpty();
     }
@@ -461,7 +461,7 @@ Future<ToneHarborTrackObjectList> searchSongs(
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
   final authHeaders = ref.watch(authHeadersProvider);
-  ;
+
   if (authHeaders == null) {
     return const ToneHarborTrackObjectListEmpty();
   }
@@ -501,7 +501,7 @@ class AlbumSongs extends _$AlbumSongs
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
     final authHeaders = ref.watch(authHeadersProvider);
-    ;
+
     if (authHeaders == null) {
       return const ToneHarborTrackObjectListEmpty();
     }
@@ -621,7 +621,7 @@ class Songs extends _$Songs with ExtraProvider<ToneHarborTrackObjectList> {
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
     final authHeaders = ref.watch(authHeadersProvider);
-    ;
+
     if (authHeaders == null) {
       return const ToneHarborTrackObjectListEmpty();
     }

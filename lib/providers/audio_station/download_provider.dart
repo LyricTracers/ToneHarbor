@@ -20,7 +20,7 @@ Future<String> streamUrl(
   String? container,
 }) async {
   final authHeaders = ref.watch(authHeadersProvider);
-  ;
+
   if (authHeaders == null) {
     return "";
   }
@@ -71,7 +71,7 @@ Future<String> streamUrl(
 Future<String> coverUrlBySongId(Ref ref, {required String songId}) async {
   final link = ref.keepAlive();
   final authHeaders = ref.watch(authHeadersProvider);
-  ;
+
   if (authHeaders == null) {
     return "";
   }

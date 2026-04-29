@@ -18,7 +18,6 @@ Future<AlbumResponse> randomAlbums(
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
   final authHeaders = ref.watch(authHeadersProvider);
-  ;
   if (authHeaders == null) {
     return const AlbumResponse(success: false);
   }
@@ -47,7 +46,6 @@ Future<AlbumResponse> recentAlbums(
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
   final authHeaders = ref.watch(authHeadersProvider);
-  ;
   if (authHeaders == null) {
     return const AlbumResponse(success: false);
   }
@@ -77,7 +75,7 @@ Future<AlbumResponse> artistAlbums(
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
   final authHeaders = ref.watch(authHeadersProvider);
-  ;
+
   if (authHeaders == null) {
     return const AlbumResponse(success: false);
   }
@@ -109,7 +107,7 @@ Future<AlbumResponse> searchAlbums(
 }) async {
   final link = ref.keepAliveFor(keepAliveDuration);
   final authHeaders = ref.watch(authHeadersProvider);
-  ;
+
   if (authHeaders == null) {
     return const AlbumResponse(success: false);
   }
@@ -149,7 +147,7 @@ class Albums extends _$Albums with ExtraProvider<AlbumResponse> {
     groupKey = "albums";
     ref.keepAliveFor(Duration(minutes: 5));
     final authHeaders = ref.watch(authHeadersProvider);
-    ;
+
     if (authHeaders == null) {
       return const AlbumResponse(success: false);
     }

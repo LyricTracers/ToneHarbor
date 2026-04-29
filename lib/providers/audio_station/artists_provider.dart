@@ -23,7 +23,7 @@ class SearchArtist extends _$SearchArtist {
   }) async {
     ref.keepAliveFor(Duration(minutes: 5));
     final authHeaders = ref.watch(authHeadersProvider);
-    ;
+
     if (authHeaders == null) {
       return const ArtistResponse(success: false);
     }
@@ -57,7 +57,7 @@ class Artists extends _$Artists with ExtraProvider<ArtistResponse> {
     groupKey = 'artists';
     ref.keepAliveFor(Duration(minutes: 5));
     final authHeaders = ref.watch(authHeadersProvider);
-    ;
+
     if (authHeaders == null) {
       return const ArtistResponse(success: false);
     }
