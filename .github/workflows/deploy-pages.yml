@@ -29,30 +29,35 @@ jobs:
 
           git fetch --tags -q
 
-          # 1. 获取最新正式版标签（严格匹配纯数字版本号）
+          # ---- 1. 获取最新正式版标签（纯数字版本） ----
           LATEST_STABLE=$(git tag -l 'v*.*.*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V -r | head -1)
 
-          # 2. 检查 latest Release 并提取真实版本号
+          # ---- 2. 从 latest Release 的 body 中提取真实版本号 ----
           LATEST_RELEASE_DATA=$(gh release view latest --json body,tagName 2>/dev/null || echo "")
           LATEST_TAG=$(echo "$LATEST_RELEASE_DATA" | jq -r '.tagName // ""')
           LATEST_VERSION=""
 
           if [ "$LATEST_TAG" = "latest" ] && [ -n "$LATEST_RELEASE_DATA" ]; then
-            # 从 body 中提取版本号（例如 "## ToneHarbor v1.0.2_rc1"）
-            EXTRACTED_VERSION=$(echo "$LATEST_RELEASE_DATA" | jq -r '.body | capture("## ToneHarbor (?<ver>v[^ ]+)") | .ver // ""')
+            # 提取版本号：匹配形如 v1.0.3_pre1、v1.0.3-rc1 等字符串
+            # 优先从 body 的标题行（以 ## ToneHarbor 开头）中抓取
+            EXTRACTED_VERSION=$(echo "$LATEST_RELEASE_DATA" | jq -r '.body | capture("(v[0-9]+\\.[0-9]+\\.[0-9]+[-._]?[0-9a-zA-Z]*)") | .0 // ""')
+            if [ -z "$EXTRACTED_VERSION" ]; then
+              # 备用：从整个 body 中搜索第一个 v 开头的版本号
+              EXTRACTED_VERSION=$(echo "$LATEST_RELEASE_DATA" | jq -r '.body | capture("(v[0-9]+\\.[0-9]+\\.[0-9]+)") | .0 // ""')
+            fi
             if [ -n "$EXTRACTED_VERSION" ]; then
               LATEST_VERSION="$EXTRACTED_VERSION"
             fi
           fi
 
-          # 3. 决定显示逻辑
+          # ---- 3. 显示逻辑 ----
           SHOW_STABLE=true
           SHOW_LATEST=false
           if [ -n "$LATEST_VERSION" ]; then
             if [ -z "$LATEST_STABLE" ]; then
               SHOW_LATEST=true
             else
-              # 比较正式版和 latest 对应的版本号（使用 sort -V）
+              # 语义版本比较：如果 LATEST_VERSION 比 LATEST_STABLE 更新，则展示预发布卡片
               HIGHER=$(printf "%s\n%s" "$LATEST_STABLE" "$LATEST_VERSION" | sort -V | tail -1)
               if [ "$HIGHER" = "$LATEST_VERSION" ]; then
                 SHOW_LATEST=true
@@ -60,13 +65,12 @@ jobs:
             fi
           fi
 
-          # 如果没有正式版且不显示 latest，则提示无版本
+          # ---- 4. 生成页面 ----
           if [ -z "$LATEST_STABLE" ] && [ "$SHOW_LATEST" = false ]; then
             echo '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>拾音坞</title></head><body style="background:#0f172a;color:#e2e8f0;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif"><p>暂无可用版本，敬请期待。</p></body></html>' > public/index.html
             exit 0
           fi
 
-          # 4. 生成 HTML 页面
           cat > public/index.html <<'HTML_EOF'
           <!DOCTYPE html>
           <html lang="zh-CN">
@@ -212,7 +216,7 @@ jobs:
           </html>
           HTML_EOF
 
-          # 清理变量中的换行符，确保 sed 安全
+          # 确保变量中没有换行符干扰 sed
           LATEST_STABLE=$(echo "$LATEST_STABLE" | tr -d '\n')
           LATEST_VERSION=$(echo "$LATEST_VERSION" | tr -d '\n')
           # 替换占位符
