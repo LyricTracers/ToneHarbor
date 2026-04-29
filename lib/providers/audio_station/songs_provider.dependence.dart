@@ -67,7 +67,10 @@ Future<ToneHarborTrackObjectList> _sendSongRequest<T>({
         ? getAudioReuqestErrorMessage(l10n, defaultError, errorCode)
         : defaultError;
     logger.e('请求失败，错误码：$errorCode，错误信息：$errorMessage');
-    if (errorCode == 105 || errorCode == 106) {
+    if (errorCode == 105 ||
+        errorCode == 106 ||
+        errorCode == 107 ||
+        errorCode == 150) {
       ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
     }
     throw AudioStationException(

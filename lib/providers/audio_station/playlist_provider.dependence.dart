@@ -59,7 +59,10 @@ Future<PlaylistListResponse> _sendPlaylistRequest<T>({
   final result = PlaylistListResponse.fromJson(jsonBody);
   if (!result.success) {
     final errorCode = jsonBody['error']?['code'];
-    if (errorCode == 105 || errorCode == 106) {
+    if (errorCode == 105 ||
+        errorCode == 106 ||
+        errorCode == 107 ||
+        errorCode == 150) {
       ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
     }
     final errorMessage = errorCode is int
@@ -134,7 +137,10 @@ Future<PlaylistDetailResponse> _sendPlaylistDetailRequest<T>({
   final result = PlaylistDetailResponse.fromJson(jsonBody);
   if (!result.success) {
     final errorCode = jsonBody['error']?['code'];
-    if (errorCode == 105 || errorCode == 106) {
+    if (errorCode == 105 ||
+        errorCode == 106 ||
+        errorCode == 107 ||
+        errorCode == 150) {
       ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
     }
     final errorMessage = errorCode is int
