@@ -3,9 +3,8 @@ part of 'info_provider.dart';
 Future<Map<String, dynamic>> _testConnection({required Ref ref}) async {
   final l10n = ref.read(l10nProvider);
 
-  final baseUrl = ref.read(baseUrlProvider());
-
   late final HttpTextResponse response;
+  final baseUrl = ref.read(baseUrlProvider());
   try {
     response = await httpClientWrapper.get(
       '$baseUrl/webman/pingpong.cgi',
@@ -83,16 +82,6 @@ Future<SynoAPIInfoResponse> _queryAPI({
     );
   } catch (e) {
     logger.e('发送请求失败: $e,StackTrace.current:${StackTrace.current.toString()}');
-    if (e is RhttpUnknownException && !isRetry) {
-      return retryRequest(
-        jsonBody: null,
-        ref: ref,
-        l10n: l10n,
-        isRetry: isRetry,
-        defaultError: l10n.error_network_error,
-        request: () => _queryAPI(ref: ref, query: query, isRetry: true),
-      );
-    }
     throw AudioStationException(message: l10n.error_network_error);
   }
 

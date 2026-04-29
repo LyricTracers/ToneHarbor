@@ -38,23 +38,6 @@ Future<PlaylistListResponse> _sendPlaylistRequest<T>({
     );
   } catch (e) {
     logger.e('发送请求失败: $e,StackTrace.current:${StackTrace.current.toString()}');
-    if (e is RhttpUnknownException && !isRetry) {
-      return retryRequest(
-        jsonBody: null,
-        ref: ref,
-        l10n: l10n,
-        isRetry: isRetry,
-        defaultError: defaultError,
-        request: () => _sendPlaylistRequest(
-          ref: ref,
-          request: request,
-          toJson: toJson,
-          defaultError: defaultError,
-          l10n: l10n,
-          isRetry: true,
-        ),
-      );
-    }
     throw AudioStationException(message: l10n.error_network_error);
   }
 

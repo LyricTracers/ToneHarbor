@@ -100,14 +100,20 @@ class AppDependencies {
         maxRetries: 3,
         delay: (attempt) => Duration(milliseconds: 500 * (attempt + 1)),
         beforeRetry: (attempt, request, response, exception) async {
-          logger.w('after【Retrying $attempt count】 throw $exception');
-          if (exception is RhttpUnknownException) {
-            logger.e('CancelRetry RhttpUnknownException: ${exception.message}');
-            return null;
-          }
+          logger.w(
+            'after【Retrying $attempt count】[${request.url}]  throw $exception',
+          );
           return request;
         },
+        shouldRetry: (response, exception) {
+          if (exception is RhttpUnknownException) {
+            logger.e('CancelRetry RhttpUnknownException: ${exception.message}');
+            return false;
+          }
+          return true;
+        },
       ),
+
       loggingInterceptor: LoggingInterceptor(logger: logger),
     );
   }

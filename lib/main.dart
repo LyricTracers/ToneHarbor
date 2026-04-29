@@ -14,6 +14,7 @@ import 'package:toneharbor/models/cloud_music/cloud_music_models.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/connection_checker_service.dart';
 import 'package:toneharbor/services/server/server_health_check.dart';
+import 'package:toneharbor/services/server/synology_health_check.dart';
 import 'package:toneharbor/utils/cloud_playlist_static_data.dart';
 import 'package:toneharbor/utils/responsive.dart';
 import 'package:toneharbor/widgets/layouts/full_log_layout.dart';
@@ -115,6 +116,7 @@ class MyApp extends HookConsumerWidget {
     final cookiesInfoAsync = ref.watch(audioStationCookiesInfoProvider);
 
     useEffect(() {
+      ref.read(synologyHealthCheckProvider).startPeriodicHealthCheck();
       if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
         _DesktopListener(ref).initListeners();
       }
