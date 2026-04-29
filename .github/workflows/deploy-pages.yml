@@ -29,7 +29,7 @@ jobs:
 
           git fetch --tags -q
 
-          # 1. 获取最新正式版标签（纯数字版本号，如 v1.0.2）
+          # 1. 获取最新正式版标签（纯数字版本号）
           LATEST_STABLE=$(git tag -l 'v*.*.*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V -r | head -1)
 
           # 2. 检查 latest Release 并提取真实版本号
@@ -38,26 +38,23 @@ jobs:
           LATEST_VERSION=""
 
           if [ "$LATEST_TAG" = "latest" ] && [ -n "$LATEST_RELEASE_DATA" ]; then
-            # 从 body 中提取版本号（例如 "## ToneHarbor v1.0.3_pre1"）
-            # 使用原始有效的正则捕获组
+            # 从 body 中提取版本号（例如 "## ToneHarbor v1.0.3_pre1 ###"）
             EXTRACTED_VERSION=$(echo "$LATEST_RELEASE_DATA" | jq -r '.body | capture("## ToneHarbor (?<ver>v[^ ]+)") | .ver // ""')
             if [ -n "$EXTRACTED_VERSION" ]; then
-              # 去除前后空白符和换行符，确保干净
-              LATEST_VERSION=$(echo "$EXTRACTED_VERSION" | tr -d '\n\r' | xargs)
+              # 去除可能跟随的 #、空格及其他多余字符，只保留纯粹版本号
+              LATEST_VERSION=$(echo "$EXTRACTED_VERSION" | sed 's/[# ].*//' | tr -d '\n\r' | xargs)
             fi
           fi
 
-          # 3. 决定显示逻辑（基于纯数字版本号比较）
+          # 3. 显示逻辑（基于纯数字版本比较）
           SHOW_STABLE=true
           SHOW_LATEST=false
           if [ -n "$LATEST_VERSION" ]; then
             if [ -z "$LATEST_STABLE" ]; then
               SHOW_LATEST=true
             else
-              # 提取纯数字部分，例如 v1.0.2、v1.0.3
               STABLE_NUM=$(echo "$LATEST_STABLE" | grep -oE '^v[0-9]+\.[0-9]+\.[0-9]+')
               LATEST_NUM=$(echo "$LATEST_VERSION" | grep -oE '^v[0-9]+\.[0-9]+\.[0-9]+')
-              # 使用 sort -V 比较纯数字版本
               HIGHER_NUM=$(printf "%s\n%s" "${STABLE_NUM}" "${LATEST_NUM}" | sort -V | tail -1)
               if [ "$HIGHER_NUM" = "${LATEST_NUM}" ] && [ "${STABLE_NUM}" != "${LATEST_NUM}" ]; then
                 SHOW_LATEST=true
@@ -65,13 +62,13 @@ jobs:
             fi
           fi
 
-          # 如果没有正式版且不显示 latest，则提示无版本
+          # 无版本时显示占位页
           if [ -z "$LATEST_STABLE" ] && [ "$SHOW_LATEST" = false ]; then
             echo '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>拾音坞</title></head><body style="background:#0f172a;color:#e2e8f0;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif"><p>暂无可用版本，敬请期待。</p></body></html>' > public/index.html
             exit 0
           fi
 
-          # 4. 生成 HTML 页面（样式和脚本保持不变）
+          # 4. 生成 HTML 页面
           cat > public/index.html <<'HTML_EOF'
           <!DOCTYPE html>
           <html lang="zh-CN">
@@ -217,10 +214,9 @@ jobs:
           </html>
           HTML_EOF
 
-          # 再次清理所有可能引入多余字符的变量
+          # 最终清理并替换占位符
           LATEST_STABLE=$(echo "$LATEST_STABLE" | tr -d '\n\r' | xargs)
           LATEST_VERSION=$(echo "$LATEST_VERSION" | tr -d '\n\r' | xargs)
-          # 替换占位符
           sed -i "s|__BUILD_TIME__|$BUILD_TIME|g" public/index.html
           sed -i "s|__GITHUB_REPOSITORY__|$GITHUB_REPOSITORY|g" public/index.html
           sed -i "s|__STABLE_TAG__|$LATEST_STABLE|g" public/index.html
