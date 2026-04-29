@@ -50,6 +50,7 @@ Future<SynoAPIInfoResponse> _queryAPI({
   required Ref ref,
   String query = 'all',
   Duration? cacheDuration,
+  bool isRetry = false,
 }) async {
   final l10n = ref.read(l10nProvider);
 
@@ -81,7 +82,17 @@ Future<SynoAPIInfoResponse> _queryAPI({
       cancelToken: ref.cancelToken(),
     );
   } catch (e) {
-    logger.e('发送请求失败: $e');
+    logger.e('发送请求失败: $e,StackTrace.current:${StackTrace.current.toString()}');
+    if (e is RhttpUnknownException && !isRetry) {
+      return retryRequest(
+        jsonBody: null,
+        ref: ref,
+        l10n: l10n,
+        isRetry: isRetry,
+        defaultError: l10n.error_network_error,
+        request: () => _queryAPI(ref: ref, query: query, isRetry: true),
+      );
+    }
     throw AudioStationException(message: l10n.error_network_error);
   }
 
@@ -109,9 +120,9 @@ Future<SynoAPIInfoResponse> _queryAPI({
       jsonBody: jsonBody,
       ref: ref,
       l10n: l10n,
-      isRetry: true,
+      isRetry: isRetry,
       defaultError: l10n.error_network_error,
-      request: () => _queryAPI(ref: ref, query: query),
+      request: () => _queryAPI(ref: ref, query: query, isRetry: true),
     );
   }
 
@@ -134,6 +145,7 @@ Future<AudioStationInfoResponse> _sendAudioStationInfoRequest({
   required AudioStationInfoRequest request,
   required String defaultError,
   required AppLocalizations l10n,
+  bool isRetry = false,
 }) async {
   final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
@@ -164,7 +176,24 @@ Future<AudioStationInfoResponse> _sendAudioStationInfoRequest({
       cancelToken: ref.cancelToken(),
     );
   } catch (e) {
-    logger.e('发送请求失败: $e');
+    logger.e('发送请求失败: $e,StackTrace.current:${StackTrace.current.toString()}');
+    if (e is RhttpUnknownException && !isRetry) {
+      return retryRequest(
+        jsonBody: null,
+        ref: ref,
+        l10n: l10n,
+        isRetry: isRetry,
+        defaultError: defaultError,
+        request: () => _sendAudioStationInfoRequest(
+          ref: ref,
+          request: request,
+          defaultError: defaultError,
+          l10n: l10n,
+          isRetry: true,
+        ),
+      );
+    }
+
     throw AudioStationException(message: l10n.error_network_error);
   }
 
@@ -190,13 +219,14 @@ Future<AudioStationInfoResponse> _sendAudioStationInfoRequest({
       jsonBody: jsonBody,
       ref: ref,
       l10n: l10n,
-      isRetry: true,
+      isRetry: isRetry,
       defaultError: defaultError,
       request: () => _sendAudioStationInfoRequest(
         ref: ref,
         request: request,
         defaultError: defaultError,
         l10n: l10n,
+        isRetry: true,
       ),
     );
   }

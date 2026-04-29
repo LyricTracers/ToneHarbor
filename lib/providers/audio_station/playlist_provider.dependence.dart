@@ -6,6 +6,7 @@ Future<PlaylistListResponse> _sendPlaylistRequest<T>({
   required Map<String, dynamic> Function() toJson,
   required String defaultError,
   required AppLocalizations l10n,
+  bool isRetry = false,
 }) async {
   final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
@@ -36,7 +37,24 @@ Future<PlaylistListResponse> _sendPlaylistRequest<T>({
       cancelToken: ref.cancelToken(),
     );
   } catch (e) {
-    logger.e('发送请求失败: $e');
+    logger.e('发送请求失败: $e,StackTrace.current:${StackTrace.current.toString()}');
+    if (e is RhttpUnknownException && !isRetry) {
+      return retryRequest(
+        jsonBody: null,
+        ref: ref,
+        l10n: l10n,
+        isRetry: isRetry,
+        defaultError: defaultError,
+        request: () => _sendPlaylistRequest(
+          ref: ref,
+          request: request,
+          toJson: toJson,
+          defaultError: defaultError,
+          l10n: l10n,
+          isRetry: true,
+        ),
+      );
+    }
     throw AudioStationException(message: l10n.error_network_error);
   }
 
@@ -62,7 +80,7 @@ Future<PlaylistListResponse> _sendPlaylistRequest<T>({
       jsonBody: jsonBody,
       ref: ref,
       l10n: l10n,
-      isRetry: true,
+      isRetry: isRetry,
       defaultError: defaultError,
       request: () => _sendPlaylistRequest(
         ref: ref,
@@ -70,6 +88,7 @@ Future<PlaylistListResponse> _sendPlaylistRequest<T>({
         toJson: toJson,
         defaultError: defaultError,
         l10n: l10n,
+        isRetry: true,
       ),
     );
   }
@@ -83,6 +102,7 @@ Future<PlaylistDetailResponse> _sendPlaylistDetailRequest<T>({
   required Map<String, dynamic> Function() toJson,
   required String defaultError,
   required AppLocalizations l10n,
+  bool isRetry = false,
 }) async {
   final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
@@ -113,7 +133,24 @@ Future<PlaylistDetailResponse> _sendPlaylistDetailRequest<T>({
       cancelToken: ref.cancelToken(),
     );
   } catch (e) {
-    logger.e('发送请求失败: $e');
+    logger.e('发送请求失败: $e,StackTrace.current:${StackTrace.current.toString()}');
+    if (e is RhttpUnknownException && !isRetry) {
+      return retryRequest(
+        jsonBody: null,
+        ref: ref,
+        l10n: l10n,
+        isRetry: isRetry,
+        defaultError: defaultError,
+        request: () => _sendPlaylistDetailRequest(
+          ref: ref,
+          request: request,
+          toJson: toJson,
+          defaultError: defaultError,
+          l10n: l10n,
+          isRetry: true,
+        ),
+      );
+    }
     throw AudioStationException(message: l10n.error_network_error);
   }
 
@@ -139,7 +176,7 @@ Future<PlaylistDetailResponse> _sendPlaylistDetailRequest<T>({
       jsonBody: jsonBody,
       ref: ref,
       l10n: l10n,
-      isRetry: true,
+      isRetry: isRetry,
       defaultError: defaultError,
       request: () => _sendPlaylistDetailRequest(
         ref: ref,
@@ -147,6 +184,7 @@ Future<PlaylistDetailResponse> _sendPlaylistDetailRequest<T>({
         toJson: toJson,
         defaultError: defaultError,
         l10n: l10n,
+        isRetry: true,
       ),
     );
   }

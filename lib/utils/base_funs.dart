@@ -1008,14 +1008,14 @@ String formatYear(int? publishTime) {
 }
 
 Future<T> retryRequest<T>({
-  required Map<String, dynamic> jsonBody,
+  required Map<String, dynamic>? jsonBody,
   bool isRetry = false,
   required Ref ref,
   required AppLocalizations l10n,
   required String defaultError,
   required Future<T> Function() request,
 }) async {
-  final errorCode = jsonBody['error']?['code'];
+  final errorCode = jsonBody?['error']?['code'] ?? 105;
   if (errorCode == 105 ||
       errorCode == 106 ||
       errorCode == 107 ||

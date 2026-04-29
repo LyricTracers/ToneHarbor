@@ -7,6 +7,7 @@ Future<ToneHarborTrackObjectList> _sendSongRequest<T>({
   required Map<String, dynamic> Function() toJson,
   required String defaultError,
   required AppLocalizations l10n,
+  bool isRetry = false,
 }) async {
   final authHeaders = ref.read(authHeadersProvider);
   logger.d('authHeaders: $authHeaders');
@@ -40,7 +41,24 @@ Future<ToneHarborTrackObjectList> _sendSongRequest<T>({
       cancelToken: ref.cancelToken(),
     );
   } catch (e) {
-    logger.e('发送请求失败: $e');
+    logger.e('发送请求失败: $e,StackTrace.current:${StackTrace.current.toString()}');
+    if (e is RhttpUnknownException && !isRetry) {
+      return retryRequest(
+        jsonBody: null,
+        ref: ref,
+        l10n: l10n,
+        isRetry: isRetry,
+        defaultError: defaultError,
+        request: () => _sendSongRequest(
+          ref: ref,
+          request: request,
+          toJson: toJson,
+          defaultError: defaultError,
+          l10n: l10n,
+          isRetry: true,
+        ),
+      );
+    }
     throw AudioStationException(message: l10n.error_network_error);
   }
 
@@ -66,7 +84,7 @@ Future<ToneHarborTrackObjectList> _sendSongRequest<T>({
       jsonBody: jsonBody,
       ref: ref,
       l10n: l10n,
-      isRetry: true,
+      isRetry: isRetry,
       defaultError: defaultError,
       request: () => _sendSongRequest(
         ref: ref,
@@ -74,6 +92,7 @@ Future<ToneHarborTrackObjectList> _sendSongRequest<T>({
         toJson: toJson,
         defaultError: defaultError,
         l10n: l10n,
+        isRetry: true,
       ),
     );
   }
