@@ -29,47 +29,46 @@ jobs:
 
           git fetch --tags -q
 
-          # 1. 获取最新正式版标签（严格匹配纯数字版本号）
+          # 1. 获取最新正式版标签（纯数字版本号，如 v1.0.2）
           LATEST_STABLE=$(git tag -l 'v*.*.*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V -r | head -1)
 
-          # 2. 检查 latest Release 并提取真实版本号
-          LATEST_RELEASE_DATA=$(gh release view latest --json body,tagName 2>/dev/null || echo "")
-          LATEST_TAG=$(echo "$LATEST_RELEASE_DATA" | jq -r '.tagName // ""')
+          # 2. 从 latest Release 中提取真实版本号（如 v1.0.3_pre1）
           LATEST_VERSION=""
-
-          if [ "$LATEST_TAG" = "latest" ] && [ -n "$LATEST_RELEASE_DATA" ]; then
-            # 从 body 中提取版本号（例如 "## ToneHarbor v1.0.2_rc1"）
-            EXTRACTED_VERSION=$(echo "$LATEST_RELEASE_DATA" | jq -r '.body | capture("## ToneHarbor (?<ver>v[^ ]+)") | .ver // ""')
+          if gh release view latest --json tagName 2>/dev/null | grep -q '"latest"'; then
+            # 获取 body 全文，然后使用 grep 提取 "## ToneHarbor v1.0.3_pre1" 中的版本部分
+            BODY=$(gh release view latest --json body --jq '.body')
+            EXTRACTED_VERSION=$(echo "$BODY" | grep -oP '## ToneHarbor \Kv[^ ]+' | head -1)
             if [ -n "$EXTRACTED_VERSION" ]; then
               LATEST_VERSION="$EXTRACTED_VERSION"
             fi
           fi
 
-          # 3. 决定显示逻辑（修复比较算法）
-          SHOW_STABLE=true
+          # 3. 判断是否显示 latest 卡片（只比较主版本号）
           SHOW_LATEST=false
           if [ -n "$LATEST_VERSION" ]; then
             if [ -z "$LATEST_STABLE" ]; then
               SHOW_LATEST=true
             else
-              # 提取前三位数字版本号（例如 v1.0.2 和 v1.0.3）进行比较
-              STABLE_MAJMINPAT=$(echo "$LATEST_STABLE" | grep -oE '^v[0-9]+\.[0-9]+\.[0-9]+')
-              LATEST_MAJMINPAT=$(echo "$LATEST_VERSION" | grep -oE '^v[0-9]+\.[0-9]+\.[0-9]+')
-              # 使用 sort -V 比较这两个纯数字版本号
-              HIGHER_NUM=$(printf "%s\n%s" "${STABLE_MAJMINPAT}" "${LATEST_MAJMINPAT}" | sort -V | tail -1)
-              if [ "$HIGHER_NUM" = "${LATEST_MAJMINPAT}" ] && [ "${STABLE_MAJMINPAT}" != "${LATEST_MAJMINPAT}" ]; then
-                SHOW_LATEST=true
+              # 提取主版本号 (v1.0.2 和 v1.0.3)
+              STABLE_MAJ=$(echo "$LATEST_STABLE" | grep -oE '^v[0-9]+\.[0-9]+\.[0-9]+')
+              LATEST_MAJ=$(echo "$LATEST_VERSION" | grep -oE '^v[0-9]+\.[0-9]+\.[0-9]+')
+              if [ -n "$LATEST_MAJ" ] && [ "$LATEST_MAJ" != "$STABLE_MAJ" ]; then
+                # 使用 sort -V 比较主版本号，如果 latest 的主版本号更大，则显示
+                HIGHER=$(printf "%s\n%s" "$STABLE_MAJ" "$LATEST_MAJ" | sort -V | tail -1)
+                if [ "$HIGHER" = "$LATEST_MAJ" ]; then
+                  SHOW_LATEST=true
+                fi
               fi
             fi
           fi
 
-          # 如果没有正式版且不显示 latest，则提示无版本
+          # 如果既没有正式版也没有预发布版，显示空页面
           if [ -z "$LATEST_STABLE" ] && [ "$SHOW_LATEST" = false ]; then
             echo '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>拾音坞</title></head><body style="background:#0f172a;color:#e2e8f0;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif"><p>暂无可用版本，敬请期待。</p></body></html>' > public/index.html
             exit 0
           fi
 
-          # 4. 生成 HTML 页面（与之前一致的样式和脚本）
+          # 4. 生成 HTML 页面
           cat > public/index.html <<'HTML_EOF'
           <!DOCTYPE html>
           <html lang="zh-CN">
