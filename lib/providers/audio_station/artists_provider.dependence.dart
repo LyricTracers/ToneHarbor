@@ -7,6 +7,7 @@ Future<ArtistResponse> _sendArtistRequest<T>({
   required Map<String, dynamic> Function() toJson,
   required String defaultError,
   required AppLocalizations l10n,
+  bool isRetry = false,
 }) async {
   final authHeaders = ref.read(authHeadersProvider);
   if (authHeaders == null) {
@@ -58,23 +59,7 @@ Future<ArtistResponse> _sendArtistRequest<T>({
   }
 
   final result = ArtistResponse.fromJson(jsonBody);
-  if (!result.success) {
-    final errorCode = jsonBody['error']?['code'];
-    if (errorCode == 105 ||
-        errorCode == 106 ||
-        errorCode == 107 ||
-        errorCode == 150) {
-      ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-    }
-    final errorMessage = errorCode is int
-        ? getAudioReuqestErrorMessage(l10n, defaultError, errorCode)
-        : defaultError;
-    logger.e('请求失败，错误码：$errorCode，错误信息：$errorMessage');
-    throw AudioStationException(
-      message: errorMessage,
-      statusCode: errorCode is int ? errorCode : null,
-    );
-  }
+  if (!result.success) {}
 
   return result;
 }

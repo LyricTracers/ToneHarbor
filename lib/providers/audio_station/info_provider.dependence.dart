@@ -105,19 +105,13 @@ Future<SynoAPIInfoResponse> _queryAPI({
   final result = SynoAPIInfoResponse.fromJson(jsonBody);
 
   if (!result.success) {
-    final errorCode = jsonBody['error']?['code'];
-    if (errorCode == 105 ||
-        errorCode == 106 ||
-        errorCode == 107 ||
-        errorCode == 150) {
-      ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-    }
-    final errorMessage = errorCode is int
-        ? getAudioReuqestErrorMessage(l10n, l10n.error_network_error, errorCode)
-        : l10n.error_network_error;
-    throw AudioStationException(
-      message: errorMessage,
-      statusCode: errorCode is int ? errorCode : null,
+    return retryRequest(
+      jsonBody: jsonBody,
+      ref: ref,
+      l10n: l10n,
+      isRetry: true,
+      defaultError: l10n.error_network_error,
+      request: () => _queryAPI(ref: ref, query: query),
     );
   }
 
@@ -192,20 +186,18 @@ Future<AudioStationInfoResponse> _sendAudioStationInfoRequest({
 
   final result = AudioStationInfoResponse.fromJson(jsonBody);
   if (!result.success) {
-    final errorCode = jsonBody['error']?['code'];
-    if (errorCode == 105 ||
-        errorCode == 106 ||
-        errorCode == 107 ||
-        errorCode == 150) {
-      ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-    }
-    final errorMessage = errorCode is int
-        ? getAudioReuqestErrorMessage(l10n, defaultError, errorCode)
-        : defaultError;
-    logger.e('请求失败，错误码：$errorCode，错误信息：$errorMessage');
-    throw AudioStationException(
-      message: errorMessage,
-      statusCode: errorCode is int ? errorCode : null,
+    return retryRequest(
+      jsonBody: jsonBody,
+      ref: ref,
+      l10n: l10n,
+      isRetry: true,
+      defaultError: defaultError,
+      request: () => _sendAudioStationInfoRequest(
+        ref: ref,
+        request: request,
+        defaultError: defaultError,
+        l10n: l10n,
+      ),
     );
   }
 

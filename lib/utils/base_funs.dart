@@ -1006,3 +1006,45 @@ String formatYear(int? publishTime) {
   }
   return '';
 }
+
+Future<T> retryRequest<T>({
+  required Map<String, dynamic> jsonBody,
+  bool isRetry = false,
+  required Ref ref,
+  required AppLocalizations l10n,
+  required String defaultError,
+  required Future<T> Function() request,
+}) async {
+  final errorCode = jsonBody['error']?['code'];
+  if (errorCode == 105 ||
+      errorCode == 106 ||
+      errorCode == 107 ||
+      errorCode == 150) {
+    if (!isRetry) {
+      logger.i('Session过期，尝试重新登录');
+      try {
+        final authResponse = await retryLogin(ref, l10n);
+        if (!authResponse.success) {
+          await ref
+              .read(audioStationCookiesInfoProvider.notifier)
+              .clearCookie();
+        } else {
+          return await request();
+        }
+      } catch (e) {
+        logger.e('重新登录失败: $e');
+        await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+      }
+    } else {
+      await ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
+    }
+  }
+  final errorMessage = errorCode is int
+      ? getAudioReuqestErrorMessage(l10n, defaultError, errorCode)
+      : defaultError;
+  logger.e('请求失败，错误码：$errorCode，错误信息：$errorMessage');
+  throw AudioStationException(
+    message: errorMessage,
+    statusCode: errorCode is int ? errorCode : null,
+  );
+}

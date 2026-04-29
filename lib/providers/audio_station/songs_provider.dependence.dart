@@ -62,20 +62,19 @@ Future<ToneHarborTrackObjectList> _sendSongRequest<T>({
 
   final result = SongListResponse.fromJson(jsonBody);
   if (!result.success) {
-    final errorCode = jsonBody['error']?['code'];
-    final errorMessage = errorCode is int
-        ? getAudioReuqestErrorMessage(l10n, defaultError, errorCode)
-        : defaultError;
-    logger.e('请求失败，错误码：$errorCode，错误信息：$errorMessage');
-    if (errorCode == 105 ||
-        errorCode == 106 ||
-        errorCode == 107 ||
-        errorCode == 150) {
-      ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-    }
-    throw AudioStationException(
-      message: errorMessage,
-      statusCode: errorCode is int ? errorCode : null,
+    return retryRequest(
+      jsonBody: jsonBody,
+      ref: ref,
+      l10n: l10n,
+      isRetry: true,
+      defaultError: defaultError,
+      request: () => _sendSongRequest(
+        ref: ref,
+        request: request,
+        toJson: toJson,
+        defaultError: defaultError,
+        l10n: l10n,
+      ),
     );
   }
   final trackObjectList = result.asTrackObjectList();

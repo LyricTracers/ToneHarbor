@@ -58,20 +58,19 @@ Future<PlaylistListResponse> _sendPlaylistRequest<T>({
 
   final result = PlaylistListResponse.fromJson(jsonBody);
   if (!result.success) {
-    final errorCode = jsonBody['error']?['code'];
-    if (errorCode == 105 ||
-        errorCode == 106 ||
-        errorCode == 107 ||
-        errorCode == 150) {
-      ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-    }
-    final errorMessage = errorCode is int
-        ? getAudioReuqestErrorMessage(l10n, defaultError, errorCode)
-        : defaultError;
-    logger.e('请求失败，错误码：$errorCode，错误信息：$errorMessage');
-    throw AudioStationException(
-      message: errorMessage,
-      statusCode: errorCode is int ? errorCode : null,
+    return retryRequest(
+      jsonBody: jsonBody,
+      ref: ref,
+      l10n: l10n,
+      isRetry: true,
+      defaultError: defaultError,
+      request: () => _sendPlaylistRequest(
+        ref: ref,
+        request: request,
+        toJson: toJson,
+        defaultError: defaultError,
+        l10n: l10n,
+      ),
     );
   }
 
@@ -136,20 +135,19 @@ Future<PlaylistDetailResponse> _sendPlaylistDetailRequest<T>({
 
   final result = PlaylistDetailResponse.fromJson(jsonBody);
   if (!result.success) {
-    final errorCode = jsonBody['error']?['code'];
-    if (errorCode == 105 ||
-        errorCode == 106 ||
-        errorCode == 107 ||
-        errorCode == 150) {
-      ref.read(audioStationCookiesInfoProvider.notifier).clearCookie();
-    }
-    final errorMessage = errorCode is int
-        ? getAudioReuqestErrorMessage(l10n, defaultError, errorCode)
-        : defaultError;
-    logger.e('请求失败，错误码：$errorCode，错误信息：$errorMessage');
-    throw AudioStationException(
-      message: errorMessage,
-      statusCode: errorCode is int ? errorCode : null,
+    return retryRequest(
+      jsonBody: jsonBody,
+      ref: ref,
+      l10n: l10n,
+      isRetry: true,
+      defaultError: defaultError,
+      request: () => _sendPlaylistDetailRequest(
+        ref: ref,
+        request: request,
+        toJson: toJson,
+        defaultError: defaultError,
+        l10n: l10n,
+      ),
     );
   }
 
