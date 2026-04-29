@@ -181,7 +181,7 @@ class CommonAlbums extends ConsumerWidget {
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           padding: EdgeInsets.symmetric(horizontal: config.horizontalPadding),
-          itemCount: 5,
+          itemCount: 20,
           itemBuilder: (context, index) {
             return Padding(
               padding: EdgeInsets.only(right: config.itemSpacing),
