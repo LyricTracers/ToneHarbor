@@ -85,6 +85,7 @@ class CloudSearchPage extends HookConsumerWidget {
                 icon: const Icon(Icons.settings_rounded, size: 18),
                 tooltip: l10n.settings,
               ),
+            SizedBox(width: 8 * multiplier),
           ],
         ),
 
