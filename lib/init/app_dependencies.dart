@@ -120,11 +120,12 @@ class AppDependencies {
 
   HttpClientWrapper _initDownloadHttpClientWrapper() {
     return HttpClientWrapper(
-      settings: const ClientSettings(
-        timeoutSettings: TimeoutSettings(
+      settings: ClientSettings(
+        timeoutSettings: const TimeoutSettings(
           timeout: Duration(minutes: 30),
           connectTimeout: Duration(seconds: 30),
         ),
+        tlsSettings: const TlsSettings(verifyCertificates: false),
       ),
       retryInterceptor: RetryInterceptor(maxRetries: 0),
       loggingInterceptor: LoggingInterceptor(logger: logger),
