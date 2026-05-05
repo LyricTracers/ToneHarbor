@@ -6,14 +6,17 @@ import 'package:lyricskit/lyricskit.dart';
 import 'package:toneharbor/providers/providers.dart';
 import 'package:toneharbor/services/audio_player/audio_player.dart';
 import 'package:toneharbor/utils/base_funs.dart';
+import 'package:toneharbor/utils/responsive.dart';
 
 class LyricsContentPage extends HookConsumerWidget {
   final Lyrics? currentLyrics;
   final double extraFontSize;
+  final bool half;
   const LyricsContentPage({
     super.key,
     this.currentLyrics,
     this.extraFontSize = 0,
+    this.half = false,
   });
 
   String formatDuration(Duration duration) {
@@ -40,25 +43,27 @@ class LyricsContentPage extends HookConsumerWidget {
       };
     }, []);
 
+    final fontSizeOffset = useState(0.0);
+
     final customStyle = useMemoized(
       () => LyricStyle(
         textStyle: TextStyle(
-          fontSize: 16 + extraFontSize,
+          fontSize: 16 + extraFontSize + fontSizeOffset.value,
           color: colorScheme.onSurface.withValues(alpha: .7),
         ),
         activeStyle: TextStyle(
-          fontSize: 18 + extraFontSize,
+          fontSize: 18 + extraFontSize + fontSizeOffset.value,
           color: colorScheme.primary,
           fontWeight: FontWeight.bold,
         ),
         translationActiveColor: colorScheme.primary,
         translationStyle: TextStyle(
-          fontSize: 15 + extraFontSize,
+          fontSize: 15 + extraFontSize + fontSizeOffset.value,
           color: colorScheme.onSurface.withValues(alpha: .7),
         ),
         lineTextAlign: TextAlign.center,
-        lineGap: 26,
-        translationLineGap: 10,
+        lineGap: 26 + fontSizeOffset.value * 0.5,
+        translationLineGap: 10 + fontSizeOffset.value * 0.3,
         contentAlignment: CrossAxisAlignment.center,
         contentPadding: const EdgeInsets.only(
           top: 100,
@@ -86,7 +91,7 @@ class LyricsContentPage extends HookConsumerWidget {
         switchExitCurve: Curves.easeOutQuint,
         selectionAlignment: MainAxisAlignment.center,
       ),
-      [colorScheme, extraFontSize],
+      [colorScheme, extraFontSize, fontSizeOffset.value],
     );
 
     useEffect(() {
@@ -111,7 +116,7 @@ class LyricsContentPage extends HookConsumerWidget {
       controller.anchorPositionNotifier,
     );
     final selectedIndex = useValueListenable(controller.selectedIndexNotifier);
-
+    final size = MediaQuery.of(context).size;
     Widget buildSelectionProgress() {
       if (!isSelecting) return const SizedBox.shrink();
       final lyricModel = controller.lyricNotifier.value;
@@ -182,6 +187,78 @@ class LyricsContentPage extends HookConsumerWidget {
       );
     }
 
+    Widget buildSlideFontSize() {
+      return Positioned(
+        top: 50,
+        right: 16,
+        child: SafeArea(
+          child: Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.text_increase,
+                    size: 14,
+                    color: colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
+                  SizedBox(
+                    height: 100,
+                    child: RotatedBox(
+                      quarterTurns: 3,
+                      child: SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          trackHeight: 2.0,
+                          thumbShape: const RoundSliderThumbShape(
+                            enabledThumbRadius: 6.0,
+                          ),
+                          overlayShape: const RoundSliderOverlayShape(
+                            overlayRadius: 12.0,
+                          ),
+                        ),
+                        child: Slider(
+                          value: fontSizeOffset.value,
+                          min: -4,
+                          max: 4,
+                          divisions: 8,
+                          activeColor: colorScheme.primary,
+                          inactiveColor: colorScheme.onSurface.withValues(
+                            alpha: 0.3,
+                          ),
+                          thumbColor: colorScheme.primary,
+                          onChanged: (value) {
+                            fontSizeOffset.value = value;
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    Icons.text_decrease,
+                    size: 14,
+                    color: colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
+                  Text(
+                    '${(18 + extraFontSize + fontSizeOffset.value).toStringAsFixed(0)}sp',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return currentLyrics != null
         ? RepaintBoundary(
             child: Stack(
@@ -216,6 +293,7 @@ class LyricsContentPage extends HookConsumerWidget {
                   child: LyricView(controller: controller, style: customStyle),
                 ),
                 buildSelectionProgress(),
+                if (size.lgAndUp && !half) buildSlideFontSize(),
               ],
             ),
           )

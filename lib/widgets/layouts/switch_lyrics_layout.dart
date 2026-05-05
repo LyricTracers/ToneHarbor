@@ -324,6 +324,7 @@ class SwitchLyricsLayout extends BaseBgLayout {
           ? searchProvider.value![selectedIndex.value]
           : defaultLyrics.value,
       extraFontSize: extraFontSize,
+      half: true,
     );
   }
 

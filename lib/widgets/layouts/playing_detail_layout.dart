@@ -146,6 +146,7 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
                               ref,
                               showTranslated,
                               size.xlAndUp ? 1 : 0,
+                              size.xlAndUp ? false : true,
                             ),
                           ),
                         ],
@@ -158,6 +159,7 @@ class PlayingDetailLayout extends BaseBgLayout with PlayingDetailMix {
                           : size.xlAndUp
                           ? 3
                           : 0,
+                      false,
                     ),
                   ],
                 ),

@@ -20,6 +20,7 @@ mixin PlayingDetailMix {
     WidgetRef ref,
     ValueNotifier<bool> showTranslated,
     double extraFontSize,
+    bool half,
   ) {
     return Builder(
       builder: (context) {
@@ -32,6 +33,7 @@ mixin PlayingDetailMix {
           return LyricsContentPage(
             currentLyrics: originalLyrics,
             extraFontSize: extraFontSize,
+            half: half,
           );
         }
 
@@ -40,6 +42,7 @@ mixin PlayingDetailMix {
           return LyricsContentPage(
             currentLyrics: originalLyrics,
             extraFontSize: extraFontSize,
+            half: half,
           );
         }
 
@@ -50,6 +53,7 @@ mixin PlayingDetailMix {
         return LyricsContentPage(
           currentLyrics: mergedLyrics,
           extraFontSize: extraFontSize,
+          half: half,
         );
       },
     );
