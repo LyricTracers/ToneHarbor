@@ -46,7 +46,7 @@ class AccountPage extends HookConsumerWidget with BuildItem {
       final difference = now.difference(serverDateTime);
       return difference.inSeconds;
     } catch (e) {
-      logger.e('解析服务器时间失败: $e');
+      logger.e('解析服务器时间失败: $e, 服务器时间: $serverTime');
       return 0;
     }
   }
