@@ -39,16 +39,17 @@ class LocalMusicStateService {
     int? actualBitrate,
   }) async {
     try {
-      final existing = await (db.select(
-        db.localMusicState,
-      )..where((t) => t.trackId.equals(track.id))).getSingleOrNull();
-
       final container = track.isCloudMusic
           ? (actualContainer ?? track.container)
           : (quality.isTranscode
                 ? 'mp3'
                 : (actualContainer ?? track.container));
       final externalUri = track.externalUri;
+
+      final existing = await (db.select(
+        db.localMusicState,
+      )..where((t) => t.trackId.equals(track.id))).getSingleOrNull();
+
       if (existing != null) {
         final currentQualities = _bitmaskToQualities(existing.qualities);
         currentQualities.add(quality);
@@ -61,25 +62,48 @@ class LocalMusicStateService {
           ),
         );
       } else {
-        await db
-            .into(db.localMusicState)
-            .insert(
-              LocalMusicStateCompanion.insert(
-                trackId: track.id,
-                qualities: _qualitiesToBitmask({quality}),
-                title: track.title,
-                artist: Value(track.artist),
-                album: Value(track.album),
-                container: container,
-                externalUri: Value(externalUri),
-                duration: Value(track.duration.inMilliseconds),
-                fileSize: Value(actualFileSize ?? track.filesize),
-                bitrate: Value(actualBitrate ?? track.bitrate),
-                channel: Value(track.channel),
-                codec: Value(track.codec),
-                frequency: Value(track.frequency),
-              ),
-            );
+        try {
+          await db
+              .into(db.localMusicState)
+              .insert(
+                LocalMusicStateCompanion.insert(
+                  trackId: track.id,
+                  qualities: _qualitiesToBitmask({quality}),
+                  title: track.title,
+                  artist: Value(track.artist),
+                  album: Value(track.album),
+                  container: container,
+                  externalUri: Value(externalUri),
+                  duration: Value(track.duration.inMilliseconds),
+                  fileSize: Value(actualFileSize ?? track.filesize),
+                  bitrate: Value(actualBitrate ?? track.bitrate),
+                  channel: Value(track.channel),
+                  codec: Value(track.codec),
+                  frequency: Value(track.frequency),
+                ),
+              );
+        } catch (e) {
+          if (e.toString().contains('UNIQUE constraint failed')) {
+            final existing = await (db.select(
+              db.localMusicState,
+            )..where((t) => t.trackId.equals(track.id))).getSingleOrNull();
+
+            if (existing != null) {
+              final currentQualities = _bitmaskToQualities(existing.qualities);
+              currentQualities.add(quality);
+              await (db.update(
+                db.localMusicState,
+              )..where((t) => t.trackId.equals(track.id))).write(
+                LocalMusicStateCompanion(
+                  qualities: Value(_qualitiesToBitmask(currentQualities)),
+                  updatedAt: Value(DateTime.now()),
+                ),
+              );
+            }
+          } else {
+            rethrow;
+          }
+        }
       }
 
       logger.i(
